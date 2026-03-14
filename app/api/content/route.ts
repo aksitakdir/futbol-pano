@@ -2,6 +2,11 @@ import { NextRequest, NextResponse } from "next/server";
 
 const ANTHROPIC_API_URL = "https://api.anthropic.com/v1/messages";
 
+type AnthropicMessage = {
+  role: "user" | "assistant";
+  content: { type: "text"; text: string }[];
+};
+
 export async function POST(req: NextRequest) {
   const apiKey = process.env.ANTHROPIC_API_KEY;
 
@@ -32,121 +37,112 @@ export async function POST(req: NextRequest) {
     );
   }
 
-  const prompt = `Konu: "${topic}"
+  // Kullanılacak sistem promptu
+  const systemPrompt =
+    "Sen bir futbol analiz uzmanısın. 2025-26 sezonu hakkında Türkçe, detaylı, markdown formatında içerik üret. Başlık, alt başlıklar, oyuncu listesi ve analizler içersin.";
+
+  const userPrompt = `Konu: "${topic}"
 Slug: "${slug ?? "bilinmiyor"}"
 
 Görev:
-- 2025-26 sezonuna ait en güncel verileri ve haberleri web'den araştır.
-- Türkçe, analitik ve akıcı bir futbol içeriği üret.
-- İçeriği markdown formatında üret (başlıklar, listeler, kalın vurgular, blok alıntılar vb. serbest).
-- Özellikle genç oyuncular, trendler, taktiksel notlar ve dikkat çeken verilerden bahset.
+- 2025-26 sezonuna odaklan.
+- İçeriği yalnızca kendi bilgin ve futbol analiz perspektifinle oluştur; ek web araması yapma.
+- İçeriği markdown formatında yaz (başlıklar, alt başlıklar, listeler, kalın vurgular).
+- Genç oyuncular, öne çıkan performanslar, taktiksel eğilimler ve dikkat çeken verileri işle.
 `;
 
   try {
-    const response = await fetch(ANTHROPIC_API_URL, {
-      method: "POST",
-      headers: {
-        "content-type": "application/json",
-        "x-api-key": apiKey,
-        "anthropic-version": "2023-06-01",
+    const messages: AnthropicMessage[] = [
+      {
+        role: "user",
+        content: [
+          {
+            type: "text",
+            text: userPrompt,
+          },
+        ],
       },
-      body: JSON.stringify({
-        model: "claude-sonnet-4-20250514",
-        max_tokens: 1200,
-        system:
-          "Sen bir futbol analiz uzmanısın. Web'i tarayarak güncel 2025-26 sezonu verilerine göre Türkçe içerik üret.",
-        tools: [
-          {
-            name: "web_search_20250305",
-            description:
-              "Güncel 2025-26 futbol sezonu verilerini, haberlerini ve istatistiklerini web üzerinden aramak için kullanılır.",
-            input_schema: {
-              type: "object",
-              properties: {
-                query: {
-                  type: "string",
-                  description:
-                    "Aranacak futbol konusu veya oyuncu/lig/maç adı.",
-                },
-                language: {
-                  type: "string",
-                  enum: ["tr", "en"],
-                  description:
-                    "Arama sonuçlarının tercih edilen dili. Varsayılan 'tr'.",
-                },
-              },
-              required: ["query"],
-            },
-          },
-        ],
-        messages: [
-          {
-            role: "user",
-            content: [
-              {
-                type: "text",
-                text: prompt,
-              },
-            ],
-          },
-        ],
-      }),
-    });
+    ];
 
-    if (!response.ok) {
-      const text = await response.text();
-      return NextResponse.json(
-        {
-          error: "Anthropic API isteği başarısız oldu.",
-          status: response.status,
-          details: text,
+    let fullText = "";
+    let stopReason: string | null = null;
+    let safetyCounter = 0;
+
+    // stop_reason "end_turn" olana kadar (veya güvenlik sınırına kadar) döngü
+    while (stopReason !== "end_turn" && safetyCounter < 3) {
+      safetyCounter += 1;
+
+      const response = await fetch(ANTHROPIC_API_URL, {
+        method: "POST",
+        headers: {
+          "content-type": "application/json",
+          "x-api-key": apiKey,
+          "anthropic-version": "2023-06-01",
         },
-        { status: 502 }
+        body: JSON.stringify({
+          model: "claude-sonnet-4-20250514",
+          max_tokens: 1600,
+          system: systemPrompt,
+          messages,
+        }),
+      });
+
+      if (!response.ok) {
+        const text = await response.text();
+        return NextResponse.json(
+          {
+            error: "Anthropic API isteği başarısız oldu.",
+            status: response.status,
+            details: text,
+          },
+          { status: 502 }
+        );
+      }
+
+      const data = await response.json();
+      console.log(
+        "[Scout Intelligence] Anthropic raw response:",
+        JSON.stringify(data, null, 2)
       );
+
+      stopReason = data?.stop_reason ?? null;
+
+      const chunkText =
+        Array.isArray(data?.content) && data.content.length > 0
+          ? data.content
+              .filter((part: any) => part?.type === "text")
+              .map((part: any) => part.text)
+              .join("\n\n")
+          : "";
+
+      if (chunkText) {
+        fullText += (fullText ? "\n\n" : "") + chunkText;
+      }
+
+      // Konuşma geçmişine asistan cevabını ekle
+      if (Array.isArray(data?.content)) {
+        messages.push({
+          role: "assistant",
+          content: data.content.filter(
+            (part: any) => part?.type === "text" && typeof part.text === "string"
+          ),
+        });
+      }
+
+      // Eğer model max_tokens ile durduysa, döngü bir kez daha devam edip
+      // kalan içeriği tamamlamaya çalışabilir. safetyCounter bunu sınırlar.
+      if (!stopReason) {
+        break;
+      }
     }
 
-    const data = await response.json();
-    console.log(
-      "[Scout Intelligence] Anthropic raw response:",
-      JSON.stringify(data, null, 2)
-    );
-
-    const extractText = (node: any): string[] => {
-      if (!node) return [];
-
-      if (Array.isArray(node)) {
-        return node.flatMap((item) => extractText(item));
-      }
-
-      if (typeof node === "object") {
-        if (node.type === "text" && typeof node.text === "string") {
-          return [node.text];
-        }
-
-        // tool_result içerikleri genellikle kendi content alanına sahiptir
-        if (node.type === "tool_result" && node.content) {
-          return extractText(node.content);
-        }
-
-        // Diğer objelerde iç alanları da gez
-        const collected: string[] = [];
-        for (const value of Object.values(node)) {
-          collected.push(...extractText(value));
-        }
-        return collected;
-      }
-
-      return [];
-    };
-
-    const allTextParts = extractText(data?.content);
-    const content = allTextParts.join("\n\n").trim();
+    const markdown = fullText.trim();
 
     return NextResponse.json(
       {
         topic,
         slug: slug ?? null,
-        markdown: content,
+        markdown,
       },
       { status: 200 }
     );
