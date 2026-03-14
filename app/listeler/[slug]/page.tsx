@@ -8,6 +8,7 @@ import {
   IconList,
   IconRadar,
   IconUsers,
+  IconBracket,
 } from "../../components/icons";
 
 type Player = {
@@ -337,6 +338,9 @@ export default function ListDetailPage() {
               </Link>
               <Link href="/oyuncular" className="flex items-center gap-1.5 transition-colors hover:text-emerald-300">
                 <IconUsers /> Oyuncular
+              </Link>
+              <Link href="/turnuva" className="flex items-center gap-1.5 transition-colors hover:text-emerald-300">
+                <IconBracket /> Turnuva
               </Link>
             </nav>
             <div className="flex items-center gap-1 rounded-full border border-slate-700/80 bg-slate-900/70 p-0.5 text-xs">

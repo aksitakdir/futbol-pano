@@ -1,0 +1,769 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Gelecek Yıldızlar Turnuvası</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: #06101f;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      min-height: 100vh;
+      padding: 32px 16px;
+      font-family: 'Trebuchet MS', 'Segoe UI', sans-serif;
+    }
+
+    #app {
+      background: #0a1628;
+      width: 100%;
+      max-width: 960px;
+      padding: 20px 16px 16px;
+      border-radius: 14px;
+      color: #fff;
+      border: 1px solid #1a3050;
+    }
+
+    h1 {
+      text-align: center;
+      font-size: 20px;
+      font-weight: 700;
+      letter-spacing: 3px;
+      color: #00d4aa;
+      text-transform: uppercase;
+      margin-bottom: 2px;
+    }
+
+    .subtitle {
+      text-align: center;
+      font-size: 11px;
+      color: #7090b0;
+      margin-bottom: 14px;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+    }
+
+    .bracket-container {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr 88px 1fr 1fr 1fr;
+      align-items: center;
+      min-height: 530px;
+    }
+
+    .round-col {
+      display: flex;
+      flex-direction: column;
+      justify-content: space-around;
+      padding: 4px 3px;
+    }
+
+    .match-group {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      margin: 6px 0;
+    }
+
+    .team-slot {
+      background: #1a2f50;
+      border: 1px solid #2a4a7a;
+      border-radius: 4px;
+      padding: 5px 8px;
+      font-size: 11px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.22s, border-color 0.22s, color 0.22s, opacity 0.3s, box-shadow 0.22s;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      min-height: 34px;
+      color: #cce0ff;
+      letter-spacing: 0.5px;
+      overflow: hidden;
+      user-select: none;
+    }
+
+    .team-slot .player-name {
+      font-size: 11px;
+      font-weight: 700;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .team-slot .player-club {
+      font-size: 9px;
+      font-weight: 400;
+      opacity: 0.6;
+      margin-top: 1px;
+    }
+
+    .team-slot:hover {
+      background: #243d66;
+      border-color: #00d4aa;
+      color: #fff;
+    }
+
+    .team-slot.winner {
+      background: #0d3028;
+      border-color: #00d4aa;
+      color: #00d4aa;
+    }
+
+    .team-slot.loser {
+      background: #1a1a2a;
+      border-color: #2a2a3a;
+      color: #405060;
+      text-decoration: line-through;
+    }
+
+    .team-slot.empty {
+      background: #0f1e35;
+      border: 1px dashed #2a3a50;
+      color: #304050;
+      cursor: default;
+      font-style: italic;
+    }
+
+    .team-slot.champion {
+      background: #003d30;
+      border-color: #00d4aa;
+      color: #00d4aa;
+      animation: champGlow 1.5s ease-in-out infinite alternate;
+    }
+
+    @keyframes champGlow {
+      from { box-shadow: 0 0 4px #00d4aa44; }
+      to   { box-shadow: 0 0 18px #00d4aa99; }
+    }
+
+    .team-slot.j-active-win {
+      background: #0d3028 !important;
+      border-color: #00d4aa !important;
+      color: #00d4aa !important;
+      box-shadow: 0 0 10px #00d4aa55 !important;
+      opacity: 1 !important;
+    }
+
+    .team-slot.j-active-lose {
+      background: #2a1010 !important;
+      border-color: #7a3030 !important;
+      color: #c07070 !important;
+      text-decoration: line-through;
+      opacity: 1 !important;
+    }
+
+    .team-slot.j-done-win {
+      background: #082018 !important;
+      border-color: #0a5040 !important;
+      color: #00a880 !important;
+      opacity: 0.7 !important;
+    }
+
+    .team-slot.j-done-lose {
+      background: #0a1010 !important;
+      border-color: #1a1a1a !important;
+      color: #304040 !important;
+      text-decoration: line-through;
+      opacity: 0.4 !important;
+    }
+
+    .team-slot.j-dim {
+      opacity: 0.15 !important;
+    }
+
+    .team-slot.j-champion-final {
+      background: #003d30 !important;
+      border-color: #00d4aa !important;
+      color: #00d4aa !important;
+      box-shadow: 0 0 18px #00d4aa99 !important;
+      animation: champGlow 1s ease-in-out infinite alternate !important;
+    }
+
+    .round-label {
+      text-align: center;
+      font-size: 9px;
+      font-weight: 700;
+      letter-spacing: 1.5px;
+      color: #4a7ab8;
+      text-transform: uppercase;
+      margin-bottom: 6px;
+      padding-bottom: 4px;
+      border-bottom: 1px solid #1a3050;
+      transition: color 0.2s;
+    }
+
+    .round-label.j-active-round {
+      color: #00d4aa;
+      border-bottom-color: #00d4aa55;
+    }
+
+    .center-col {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+
+    .trophy { font-size: 34px; text-align: center; }
+
+    .final-label {
+      font-size: 9px;
+      font-weight: 700;
+      letter-spacing: 2px;
+      color: #00d4aa;
+      text-transform: uppercase;
+      text-align: center;
+    }
+
+    #championDisplay {
+      display: none;
+      text-align: center;
+      margin-top: 12px;
+      padding: 10px;
+      background: #003d30;
+      border: 1px solid #00d4aa;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 700;
+      color: #00d4aa;
+      letter-spacing: 1px;
+    }
+
+    #shareBtn {
+      display: none;
+      margin: 8px auto 0;
+      background: #1da1f2;
+      border: none;
+      border-radius: 4px;
+      color: #fff;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 1px;
+      padding: 6px 16px;
+      cursor: pointer;
+      text-transform: uppercase;
+    }
+
+    #shareBtn:hover { background: #0d8fd8; }
+
+    #stepInfo {
+      min-height: 30px;
+      margin-top: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      font-size: 11px;
+      flex-wrap: wrap;
+    }
+
+    .step-badge {
+      background: #1a3050;
+      border: 1px solid #2a4a7a;
+      border-radius: 4px;
+      padding: 3px 10px;
+      color: #7090b0;
+      font-size: 10px;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+    }
+
+    .step-badge.active {
+      background: #003d30;
+      border-color: #00d4aa;
+      color: #00d4aa;
+    }
+
+    .step-winner { color: #00d4aa; font-weight: 700; }
+
+    #progressDots {
+      display: none;
+      justify-content: center;
+      gap: 5px;
+      margin-top: 5px;
+      flex-wrap: wrap;
+    }
+
+    .pdot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: #1a3050;
+      border: 1px solid #2a4a7a;
+      transition: background 0.3s;
+    }
+
+    .pdot.done   { background: #00a880; border-color: #00d4aa; }
+    .pdot.active { background: #00d4aa; border-color: #00ffcc; }
+
+    .btn-row {
+      display: flex;
+      justify-content: center;
+      gap: 8px;
+      margin-top: 10px;
+    }
+
+    .btn {
+      font-family: inherit;
+      font-size: 11px;
+      padding: 7px 18px;
+      border-radius: 4px;
+      cursor: pointer;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      transition: all 0.2s;
+    }
+
+    .btn-reset {
+      background: #1a2f50;
+      border: 1px solid #2a4a7a;
+      color: #7090c0;
+    }
+
+    .btn-reset:hover {
+      background: #243d66;
+      color: #aac0e0;
+    }
+
+    .btn-journey {
+      display: none;
+      background: #003d30;
+      border: 1px solid #00d4aa;
+      color: #00d4aa;
+    }
+
+    .btn-journey:hover { background: #005040; }
+
+    .btn-journey.stop {
+      background: #001a14;
+      border-color: #00d4aa55;
+      color: #00d4aa88;
+    }
+
+    @media (max-width: 600px) {
+      .team-slot {
+        font-size: 9px;
+        padding: 4px 5px;
+        min-height: 28px;
+      }
+      .bracket-container {
+        grid-template-columns: 1fr 1fr 1fr 60px 1fr 1fr 1fr;
+      }
+      .trophy { font-size: 22px; }
+    }
+  </style>
+</head>
+<body>
+
+<div id="app">
+  <h1>Gelecek Yıldızlar Turnuvası</h1>
+  <div class="subtitle">Kim daha büyük olacak? Seçimlerini yap</div>
+
+  <div class="bracket-container" id="bracket"></div>
+
+  <div id="championDisplay"></div>
+  <button id="shareBtn" onclick="shareFavorite()">Twitter'da Paylaş</button>
+
+  <div id="stepInfo"></div>
+  <div id="progressDots"></div>
+
+  <div class="btn-row">
+    <button class="btn btn-reset" onclick="resetBracket()">Sıfırla</button>
+    <button class="btn btn-journey" id="btnJourney" onclick="toggleJourney()">Yolculuğu Göster ▶</button>
+  </div>
+</div>
+
+<script>
+const MATCHES_R16 = [
+  { t1: 'L. Yamal',      c1: 'Barcelona',    t2: 'Arda Güler',    c2: 'R. Madrid'   },
+  { t1: 'Pau Cubarsí',   c1: 'Barcelona',    t2: 'Leny Yoro',     c2: 'Man United'  },
+  { t1: 'K. Mainoo',     c1: 'Man United',   t2: 'Zaïre-Emery',   c2: 'PSG'         },
+  { t1: 'Endrick',       c1: 'R. Madrid',    t2: 'K. Yıldız',     c2: 'Juventus'    },
+  { t1: 'Garnacho',      c1: 'Man United',   t2: 'R. Cherki',     c2: 'Dortmund'    },
+  { t1: 'D. Huijsen',    c1: 'Bournemouth',  t2: 'Mathys Tel',    c2: 'Bayern'      },
+  { t1: 'E. Anderson',   c1: "Nott'm F.",    t2: 'G. Scalvini',   c2: 'Atalanta'    },
+  { t1: 'C. Lukeba',     c1: 'Leipzig',      t2: 'Zabarnyi',      c2: 'Bournemouth' },
+];
+
+let state = {
+  r16: Array(8).fill(null),
+  qf: Array(4).fill(null),
+  sf: Array(2).fill(null),
+  champion: null,
+};
+
+let journeyMode = false;
+let journeyTimer = null;
+let journeySteps = [];
+let journeyIdx = 0;
+
+function getQFM() {
+  return [0, 1, 2, 3].map(i => ({
+    t1: state.r16[i * 2] || null,
+    t2: state.r16[i * 2 + 1] || null,
+  }));
+}
+
+function getSFM() {
+  return [0, 1].map(i => ({
+    t1: state.qf[i * 2] || null,
+    t2: state.qf[i * 2 + 1] || null,
+  }));
+}
+
+function getFM() {
+  return { t1: state.sf[0] || null, t2: state.sf[1] || null };
+}
+
+function getClub(name) {
+  for (const m of MATCHES_R16) {
+    if (m.t1 === name) return m.c1;
+    if (m.t2 === name) return m.c2;
+  }
+  return '';
+}
+
+function selectWinner(round, idx, team) {
+  if (journeyMode || !team) return;
+
+  if (round === 'r16') {
+    state.r16[idx] = team;
+    state.qf[Math.floor(idx / 2)] = null;
+    state.sf[Math.floor(idx / 4)] = null;
+    state.champion = null;
+  } else if (round === 'qf') {
+    state.qf[idx] = team;
+    state.sf[Math.floor(idx / 2)] = null;
+    state.champion = null;
+  } else if (round === 'sf') {
+    state.sf[idx] = team;
+    state.champion = null;
+  } else if (round === 'final') {
+    state.champion = team;
+  }
+
+  render();
+  checkComplete();
+}
+
+function checkComplete() {
+  const ok = !!state.champion;
+  const cd = document.getElementById('championDisplay');
+  const sb = document.getElementById('shareBtn');
+
+  cd.style.display = ok ? 'block' : 'none';
+  sb.style.display = ok ? 'block' : 'none';
+
+  if (ok) {
+    cd.innerHTML =
+      '⭐ Senin Favori Yeteneğin: <span style="color:#fff">' +
+      state.champion + '</span> (' + getClub(state.champion) + ')';
+  }
+
+  document.getElementById('btnJourney').style.display = ok ? 'inline-block' : 'none';
+}
+
+function shareFavorite() {
+  const text = encodeURIComponent(
+    'Benim favori gençlik yeteneğim: ' + state.champion +
+    ' (' + getClub(state.champion) + ') 🌟 #ScoutIntelligence #FutbolYetenek'
+  );
+  window.open('https://twitter.com/intent/tweet?text=' + text, '_blank');
+}
+
+function resetBracket() {
+  stopJourney();
+  state = {
+    r16: Array(8).fill(null),
+    qf: Array(4).fill(null),
+    sf: Array(2).fill(null),
+    champion: null,
+  };
+  render();
+  checkComplete();
+  document.getElementById('stepInfo').innerHTML = '';
+  document.getElementById('progressDots').style.display = 'none';
+}
+
+function slot(team, win, lose, oc, extraCls) {
+  let c = 'team-slot' + ((!team) ? ' empty' : win ? ' winner' : lose ? ' loser' : '');
+  if (extraCls) c += ' ' + extraCls;
+  const club = team ? getClub(team) : '';
+  const inner = team
+    ? '<div class="player-name">' + team + '</div><div class="player-club">' + club + '</div>'
+    : '?';
+  return '<div class="' + c + '" onclick="' + (oc || '') + '">' + inner + '</div>';
+}
+
+function r16g(i) {
+  const m = MATCHES_R16[i];
+  const w = state.r16[i];
+  return '<div class="match-group" data-g="r16-' + i + '">'
+    + slot(m.t1, w === m.t1, w && w !== m.t1, "selectWinner('r16'," + i + ",'" + m.t1 + "')")
+    + slot(m.t2, w === m.t2, w && w !== m.t2, "selectWinner('r16'," + i + ",'" + m.t2 + "')")
+    + '</div>';
+}
+
+function qfg(i) {
+  const qf = getQFM();
+  const m = qf[i];
+  const w = state.qf[i];
+  if (!m.t1 && !m.t2) {
+    return '<div class="match-group" data-g="qf-' + i + '">'
+      + slot(null, false, false, '') + slot(null, false, false, '') + '</div>';
+  }
+  return '<div class="match-group" data-g="qf-' + i + '">'
+    + slot(m.t1, w === m.t1, w && w !== m.t1, m.t1 ? "selectWinner('qf'," + i + ",'" + m.t1 + "')" : '')
+    + slot(m.t2, w === m.t2, w && w !== m.t2, m.t2 ? "selectWinner('qf'," + i + ",'" + m.t2 + "')" : '')
+    + '</div>';
+}
+
+function sfg(i) {
+  const sf = getSFM();
+  const m = sf[i];
+  const w = state.sf[i];
+  if (!m.t1 && !m.t2) {
+    return '<div class="match-group" data-g="sf-' + i + '">'
+      + slot(null, false, false, '') + slot(null, false, false, '') + '</div>';
+  }
+  return '<div class="match-group" data-g="sf-' + i + '">'
+    + slot(m.t1, w === m.t1, w && w !== m.t1, m.t1 ? "selectWinner('sf'," + i + ",'" + m.t1 + "')" : '')
+    + slot(m.t2, w === m.t2, w && w !== m.t2, m.t2 ? "selectWinner('sf'," + i + ",'" + m.t2 + "')" : '')
+    + '</div>';
+}
+
+function fg() {
+  const fm = getFM();
+  const ch = state.champion;
+
+  const s1 = fm.t1
+    ? '<div class="team-slot' + (ch === fm.t1 ? ' champion' : '') + '" onclick="selectWinner(\'final\',-1,\'' + fm.t1 + '\')">'
+      + '<div class="player-name">' + fm.t1 + '</div><div class="player-club">' + getClub(fm.t1) + '</div></div>'
+    : '<div class="team-slot empty">?</div>';
+
+  const s2 = fm.t2
+    ? '<div class="team-slot' + (ch === fm.t2 ? ' champion' : '') + '" onclick="selectWinner(\'final\',-1,\'' + fm.t2 + '\')">'
+      + '<div class="player-name">' + fm.t2 + '</div><div class="player-club">' + getClub(fm.t2) + '</div></div>'
+    : '<div class="team-slot empty">?</div>';
+
+  return '<div class="match-group" data-g="final">' + s1 + s2 + '</div>';
+}
+
+function render() {
+  document.getElementById('bracket').innerHTML =
+    '<div class="round-col">'
+      + '<div class="round-label" data-rl="r16l">Son 16</div>'
+      + [0, 1, 2, 3].map(r16g).join('')
+    + '</div>'
+    + '<div class="round-col">'
+      + '<div class="round-label" data-rl="qfl">Çeyrek Final</div>'
+      + [0, 1].map(qfg).join('')
+    + '</div>'
+    + '<div class="round-col">'
+      + '<div class="round-label" data-rl="sfl">Yarı Final</div>'
+      + sfg(0)
+    + '</div>'
+    + '<div class="center-col">'
+      + '<div class="trophy">⭐</div>'
+      + '<div class="final-label" data-rl="finl">Final</div>'
+      + fg()
+    + '</div>'
+    + '<div class="round-col" style="align-items:flex-end">'
+      + '<div class="round-label" data-rl="sfr">Yarı Final</div>'
+      + sfg(1)
+    + '</div>'
+    + '<div class="round-col" style="align-items:flex-end">'
+      + '<div class="round-label" data-rl="qfr">Çeyrek Final</div>'
+      + [2, 3].map(qfg).join('')
+    + '</div>'
+    + '<div class="round-col" style="align-items:flex-end">'
+      + '<div class="round-label" data-rl="r16r">Son 16</div>'
+      + [4, 5, 6, 7].map(r16g).join('')
+    + '</div>';
+}
+
+function buildSteps() {
+  const steps = [];
+
+  for (let i = 0; i < 8; i++) {
+    const m = MATCHES_R16[i];
+    const w = state.r16[i];
+    steps.push({ round: 'Son 16', roundKey: 'r16', matchIdx: i, t1: m.t1, t2: m.t2, winner: w });
+  }
+
+  const qfm = getQFM();
+  for (let i = 0; i < 4; i++) {
+    const m = qfm[i];
+    const w = state.qf[i];
+    if (m.t1 && m.t2) {
+      steps.push({ round: 'Çeyrek Final', roundKey: 'qf', matchIdx: i, t1: m.t1, t2: m.t2, winner: w });
+    }
+  }
+
+  const sfm = getSFM();
+  for (let i = 0; i < 2; i++) {
+    const m = sfm[i];
+    const w = state.sf[i];
+    if (m.t1 && m.t2) {
+      steps.push({ round: 'Yarı Final', roundKey: 'sf', matchIdx: i, t1: m.t1, t2: m.t2, winner: w });
+    }
+  }
+
+  const fm = getFM();
+  if (fm.t1 && fm.t2) {
+    steps.push({ round: 'Final', roundKey: 'final', matchIdx: -1, t1: fm.t1, t2: fm.t2, winner: state.champion });
+  }
+
+  return steps;
+}
+
+function getAllSlots() {
+  return Array.from(document.querySelectorAll('.team-slot'));
+}
+
+function getSlotsByTeam(name) {
+  return getAllSlots().filter(el => {
+    const pn = el.querySelector('.player-name');
+    return pn && pn.textContent.trim() === name;
+  });
+}
+
+function applyJourneyState(steps, currentIdx) {
+  getAllSlots().forEach(el => {
+    el.className = el.className.replace(/\bj-[a-z-]+\b/g, '').trim();
+    el.classList.add('j-dim');
+  });
+
+  for (let i = 0; i < currentIdx; i++) {
+    const s = steps[i];
+    const loser = s.t1 === s.winner ? s.t2 : s.t1;
+    getSlotsByTeam(s.winner).forEach(el => {
+      el.classList.remove('j-dim', 'j-active-win', 'j-active-lose');
+      el.classList.add('j-done-win');
+    });
+    getSlotsByTeam(loser).forEach(el => {
+      el.classList.remove('j-dim', 'j-active-win', 'j-active-lose');
+      el.classList.add('j-done-lose');
+    });
+  }
+
+  if (currentIdx < steps.length) {
+    const s = steps[currentIdx];
+    const loser = s.t1 === s.winner ? s.t2 : s.t1;
+    const gKey = s.roundKey === 'final' ? 'final' : s.roundKey + '-' + s.matchIdx;
+    const group = document.querySelector('[data-g="' + gKey + '"]');
+    if (group) {
+      group.querySelectorAll('.team-slot').forEach(el => {
+        const t = el.querySelector('.player-name') ? el.querySelector('.player-name').textContent.trim() : '';
+        el.classList.remove('j-dim', 'j-done-win', 'j-done-lose');
+        if (t === s.winner) el.classList.add('j-active-win');
+        else if (t === loser) el.classList.add('j-active-lose');
+      });
+    }
+  }
+
+  document.querySelectorAll('[data-rl]').forEach(el => el.classList.remove('j-active-round'));
+
+  if (currentIdx < steps.length) {
+    const rk = steps[currentIdx].roundKey;
+    const map = { r16: ['r16l', 'r16r'], qf: ['qfl', 'qfr'], sf: ['sfl', 'sfr'], final: ['finl'] };
+    (map[rk] || []).forEach(id => {
+      document.querySelectorAll('[data-rl="' + id + '"]').forEach(e => e.classList.add('j-active-round'));
+    });
+  }
+}
+
+function showChampionFinal() {
+  getSlotsByTeam(state.champion).forEach(el => {
+    el.classList.remove('j-dim', 'j-done-win', 'j-active-win');
+    el.classList.add('j-champion-final');
+  });
+}
+
+function updateDots(idx) {
+  journeySteps.forEach((_, i) => {
+    const el = document.getElementById('pd' + i);
+    if (el) el.className = 'pdot' + (i < idx ? ' done' : i === idx ? ' active' : '');
+  });
+}
+
+function showStepInfo(step, isEnd) {
+  const el = document.getElementById('stepInfo');
+  if (isEnd) {
+    el.innerHTML = '<span class="step-badge active">⭐ Favori Yetenek</span>'
+      + '<span class="step-winner">' + state.champion + '</span>';
+    return;
+  }
+  if (!step) { el.innerHTML = ''; return; }
+  el.innerHTML =
+    '<span class="step-badge active">' + step.round + '</span>'
+    + '<span style="color:#cce0ff">' + step.t1 + ' <span style="color:#405060">vs</span> ' + step.t2 + '</span>'
+    + '<span style="color:#405060;font-size:10px">→</span>'
+    + '<span class="step-winner">' + step.winner + ' geçti</span>';
+}
+
+function toggleJourney() {
+  if (journeyMode) { stopJourney(); return; }
+  startJourney();
+}
+
+function startJourney() {
+  journeyMode = true;
+  journeySteps = buildSteps();
+  journeyIdx = 0;
+
+  const btn = document.getElementById('btnJourney');
+  btn.textContent = '⏹ Durdur';
+  btn.classList.add('stop');
+
+  const pd = document.getElementById('progressDots');
+  pd.style.display = 'flex';
+  pd.innerHTML = journeySteps.map((_, i) => '<div class="pdot" id="pd' + i + '"></div>').join('');
+
+  runStep();
+}
+
+function runStep() {
+  if (journeyIdx > journeySteps.length) { stopJourney(); return; }
+
+  if (journeyIdx === journeySteps.length) {
+    showChampionFinal();
+    document.querySelectorAll('[data-rl]').forEach(el => el.classList.remove('j-active-round'));
+    showStepInfo(null, true);
+    journeyTimer = setTimeout(() => stopJourney(), 2500);
+    return;
+  }
+
+  applyJourneyState(journeySteps, journeyIdx);
+  updateDots(journeyIdx);
+  showStepInfo(journeySteps[journeyIdx], false);
+  journeyIdx++;
+  journeyTimer = setTimeout(runStep, 1500);
+}
+
+function stopJourney() {
+  journeyMode = false;
+  if (journeyTimer) clearTimeout(journeyTimer);
+  journeyTimer = null;
+
+  const btn = document.getElementById('btnJourney');
+  btn.textContent = 'Yolculuğu Göster ▶';
+  btn.classList.remove('stop');
+
+  document.getElementById('progressDots').style.display = 'none';
+  document.getElementById('stepInfo').innerHTML = '';
+  document.querySelectorAll('[data-rl]').forEach(el => el.classList.remove('j-active-round'));
+
+  render();
+  checkComplete();
+}
+
+render();
+</script>
+</body>
+</html>

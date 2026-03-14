@@ -7,6 +7,7 @@ import {
   IconList,
   IconRadar,
   IconUsers,
+  IconBracket,
   IconShield,
   IconTrendUp,
   IconStar,
@@ -144,6 +145,9 @@ export default function Home() {
               </Link>
               <Link href="/oyuncular" className="flex items-center gap-1.5 transition-colors hover:text-emerald-300">
                 <IconUsers /> Oyuncular
+              </Link>
+              <Link href="/turnuva" className="flex items-center gap-1.5 transition-colors hover:text-emerald-300">
+                <IconBracket /> Turnuva
               </Link>
             </nav>
             <div className="flex items-center gap-1 rounded-full border border-slate-700/80 bg-slate-900/70 p-0.5 text-xs">
@@ -394,30 +398,30 @@ export default function Home() {
                     Kürasyonlu içerik listeleri
                   </span>
                 </div>
-                <div className="grid gap-4 md:grid-cols-3">
+                <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
                   {[
-                    { title: "En Değerli 10 Genç Stoper", slug: "en-iyi-10-genc-stoper", icon: <IconShield className="text-emerald-300" /> },
-                    { title: "Süper Lig'in Gizli İsimleri", slug: "super-lig-gizli-isimler", icon: <IconTrendUp className="text-sky-300" /> },
-                    { title: "Bu Sezonun Sürpriz İsimleri", slug: "surpriz-isimler-2025", icon: <IconStar className="text-amber-300" /> },
+                    { title: "En Değerli 10 Genç Stoper", slug: "en-iyi-10-genc-stoper", icon: <IconShield className="text-emerald-300" />, desc: "Detaylı analiz, performans metrikleri ve scout notları ile birlikte.", href: "/listeler/en-iyi-10-genc-stoper", tag: "Liste", cta: "Listeyi aç" },
+                    { title: "Süper Lig'in Gizli İsimleri", slug: "super-lig-gizli-isimler", icon: <IconTrendUp className="text-sky-300" />, desc: "Detaylı analiz, performans metrikleri ve scout notları ile birlikte.", href: "/listeler/super-lig-gizli-isimler", tag: "Liste", cta: "Listeyi aç" },
+                    { title: "Bu Sezonun Sürpriz İsimleri", slug: "surpriz-isimler-2025", icon: <IconStar className="text-amber-300" />, desc: "Detaylı analiz, performans metrikleri ve scout notları ile birlikte.", href: "/listeler/surpriz-isimler-2025", tag: "Liste", cta: "Listeyi aç" },
+                    { title: "Favori Yeteneğini Seç", slug: "turnuva", icon: <IconBracket className="text-[#00d4aa]" />, desc: "16 genç yetenek, tek şampiyon. Kim kazanır?", href: "/turnuva", tag: "Turnuva", cta: "Oyna" },
                   ].map((item) => (
                     <Link
                       key={item.slug}
-                      href={`/listeler/${item.slug}`}
+                      href={item.href}
                       className="group flex flex-col items-start rounded-2xl border border-slate-800/80 bg-slate-950/60 px-4 py-4 text-left text-sm text-slate-200 shadow-[0_16px_50px_rgba(15,23,42,0.8)] transition hover:-translate-y-1 hover:border-emerald-500/70 hover:bg-slate-900/80"
                     >
                       <span className="mb-2 flex items-center gap-2">
                         {item.icon}
                         <span className="inline-flex rounded-full bg-emerald-500/10 px-2 py-1 text-[10px] font-semibold uppercase tracking-[0.18em] text-emerald-300">
-                          Liste
+                          {item.tag}
                         </span>
                       </span>
                       <span className="text-sm font-semibold">{item.title}</span>
                       <span className="mt-1 text-xs text-slate-400">
-                        Detaylı analiz, performans metrikleri ve scout notları
-                        ile birlikte.
+                        {item.desc}
                       </span>
                       <span className="mt-3 inline-flex items-center text-xs font-semibold text-emerald-300">
-                        Listeyi aç
+                        {item.cta}
                         <span className="ml-1 transition-transform group-hover:translate-x-0.5">
                           →
                         </span>
