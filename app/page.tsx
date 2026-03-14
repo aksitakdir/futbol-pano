@@ -1,6 +1,16 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Link from "next/link";
+import {
+  IconHome,
+  IconList,
+  IconRadar,
+  IconUsers,
+  IconShield,
+  IconTrendUp,
+  IconStar,
+} from "./components/icons";
 
 export default function Home() {
   type FilterKey = "all" | "stoper" | "mid" | "forward";
@@ -18,13 +28,8 @@ export default function Home() {
     goals?: number;
   };
 
-  type UiPlayer = ApiPlayer & {
-    analysis: string;
-  };
-
-  const [players, setPlayers] = useState<UiPlayer[]>([]);
+  const [players, setPlayers] = useState<ApiPlayer[]>([]);
   const [activeFilter, setActiveFilter] = useState<FilterKey>("all");
-  const [expandedPlayer, setExpandedPlayer] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -91,27 +96,9 @@ export default function Home() {
           ? json.players
           : [];
 
-        const uiPlayers: UiPlayer[] = apiPlayers.map((p) => {
-          const baseName = p.name ?? "Bilinmeyen Oyuncu";
-          const team = p.team ?? "Bilinmeyen Kulüp";
-          const pos = p.position ?? "Bilinmeyen Pozisyon";
-          const minutes = p.minutes ?? 0;
-          const goals = p.goals ?? 0;
-
-          const per90 =
-            minutes > 0 ? (goals / (minutes / 90)).toFixed(2) : "0.00";
-
-          const analysis = `Model, ${baseName} için ${team} formasıyla ${pos.toLowerCase()} rolünde oynarken özellikle dakikalarına oranla gol katkısının (≈ ${per90} gol / 90 dk) ve sahadaki sürekliliğinin altını çiziyor.`;
-
-          return {
-            ...p,
-            analysis,
-          };
-        });
-
         if (!isMounted) return;
 
-        setPlayers(uiPlayers);
+        setPlayers(apiPlayers);
       } catch (err) {
         console.error("Unexpected error fetching /api/players:", err);
         if (!isMounted) return;
@@ -145,16 +132,19 @@ export default function Home() {
                 SCOUT INTELLIGENCE
               </span>
             </div>
-            <nav className="hidden items-center gap-8 text-xs font-medium text-slate-300 md:flex">
-              <button className="transition-colors hover:text-emerald-300">
-                Listeler
-              </button>
-              <button className="transition-colors hover:text-emerald-300">
-                Radar
-              </button>
-              <button className="transition-colors hover:text-emerald-300">
-                Oyuncular
-              </button>
+            <nav className="hidden items-center gap-6 text-xs font-medium text-slate-300 md:flex">
+              <Link href="/" className="flex items-center gap-1.5 text-emerald-300">
+                <IconHome /> Ana Sayfa
+              </Link>
+              <Link href="/listeler" className="flex items-center gap-1.5 transition-colors hover:text-emerald-300">
+                <IconList /> Listeler
+              </Link>
+              <Link href="/radar" className="flex items-center gap-1.5 transition-colors hover:text-emerald-300">
+                <IconRadar /> Radar
+              </Link>
+              <Link href="/oyuncular" className="flex items-center gap-1.5 transition-colors hover:text-emerald-300">
+                <IconUsers /> Oyuncular
+              </Link>
             </nav>
             <div className="flex items-center gap-1 rounded-full border border-slate-700/80 bg-slate-900/70 p-0.5 text-xs">
               <button className="rounded-full bg-emerald-500/20 px-3 py-1 font-semibold text-emerald-200 shadow-[0_0_18px_rgba(16,185,129,0.5)]">
@@ -251,13 +241,10 @@ export default function Home() {
                   </div>
                 </div>
 
-                <div className="mt-6 flex flex-wrap items-center gap-3">
+                <div className="mt-6">
                   <button className="inline-flex items-center justify-center rounded-full bg-gradient-to-r from-emerald-400 to-cyan-400 px-5 py-2 text-xs font-semibold text-slate-950 shadow-[0_0_30px_rgba(16,185,129,0.8)] transition hover:brightness-110">
                     Profili Gör
                   </button>
-                  <span className="text-[11px] text-slate-400">
-                    AI destekli profil kartı yakında aktif olacak.
-                  </span>
                 </div>
               </div>
 
@@ -276,7 +263,7 @@ export default function Home() {
                   <ul className="mt-4 space-y-2 text-xs text-slate-300">
                     <li>• API-Football verileriyle canlı performans takibi</li>
                     <li>• Pozisyona göre filtrelenebilir listeler</li>
-                    <li>• AI tarafından özetlenen oyuncu profilleri</li>
+                    <li>• Detaylı scout raporları ve oyuncu profilleri</li>
                   </ul>
                 </div>
               </div>
@@ -364,73 +351,33 @@ export default function Home() {
                         </tr>
                       </thead>
                       <tbody>
-                        {filteredPlayers.map((player, index) => {
-                          const isExpanded = expandedPlayer === player.name;
-                          return (
-                            <>
-                              <tr
-                                key={player.id ?? player.name}
-                                onClick={() =>
-                                  setExpandedPlayer(
-                                    isExpanded ? null : player.name
-                                  )
-                                }
-                                className={[
-                                  "group cursor-pointer transition-all duration-200",
-                                  "hover:bg-slate-800/70 hover:shadow-[0_0_0_1px_rgba(45,212,191,0.4)]",
-                                  isExpanded ? "bg-slate-900/80" : "",
-                                ].join(" ")}
-                              >
-                                <td className="sticky left-0 z-10 border-b border-slate-800/80 bg-slate-900/80 px-3 py-3 text-xs font-semibold text-slate-300">
-                                  <span className="inline-flex h-6 w-6 items-center justify-center rounded-full bg-slate-800/80 text-[11px] text-emerald-300 ring-1 ring-emerald-500/40">
-                                    {index + 1}
-                                  </span>
-                                </td>
-                                <td className="border-b border-slate-800/80 px-3 py-3 text-sm font-medium text-slate-100">
-                                  <div className="flex items-center gap-2">
-                                    <span className="block">
-                                      {player.name}
-                                    </span>
-                                    <span className="text-[10px] font-medium uppercase tracking-[0.16em] text-emerald-300/80">
-                                      {isExpanded
-                                        ? "Analizi gizle"
-                                        : "AI analizi"}
-                                    </span>
-                                  </div>
-                                </td>
-                                <td className="border-b border-slate-800/80 px-3 py-3 text-xs font-medium text-emerald-300">
-                                  {player.position ?? "—"}
-                                </td>
-                                <td className="border-b border-slate-800/80 px-3 py-3 text-xs text-slate-300">
-                                  {player.age ?? "—"}
-                                </td>
-                                <td className="border-b border-slate-800/80 px-3 py-3 text-xs text-slate-300">
-                                  {player.team ?? "—"}
-                                </td>
-                                <td className="border-b border-slate-800/80 px-3 py-3 text-right text-sm font-semibold text-emerald-300">
-                                  {player.goals ?? 0}
-                                </td>
-                              </tr>
-                              {isExpanded && (
-                                <tr className="bg-slate-950/70">
-                                  <td
-                                    colSpan={6}
-                                    className="border-b border-slate-800/80 px-3 py-3 text-xs text-slate-200"
-                                  >
-                                    <div className="flex gap-3">
-                                      <div className="mt-1 flex h-6 w-6 flex-none items-center justify-center rounded-full bg-emerald-500/15 text-[10px] font-semibold text-emerald-300 ring-1 ring-emerald-500/40">
-                                        AI
-                                      </div>
-                                      <p className="leading-relaxed">
-                                        {player.analysis}
-                                      </p>
-                                    </div>
-                                  </td>
-                                </tr>
-                              )}
-                            </>
-                          );
-                        })}
+                        {filteredPlayers.map((player, index) => (
+                          <tr
+                            key={player.id ?? player.name}
+                            className="group transition-all duration-200 hover:bg-slate-800/70 hover:shadow-[0_0_0_1px_rgba(45,212,191,0.4)]"
+                          >
+                            <td className="sticky left-0 z-10 border-b border-slate-800/80 bg-slate-900/80 px-3 py-3 text-xs font-semibold text-slate-300">
+                              <span className="inline-flex h-6 w-6 items-center justify-center rounded-full bg-slate-800/80 text-[11px] text-emerald-300 ring-1 ring-emerald-500/40">
+                                {index + 1}
+                              </span>
+                            </td>
+                            <td className="border-b border-slate-800/80 px-3 py-3 text-sm font-medium text-slate-100">
+                              {player.name}
+                            </td>
+                            <td className="border-b border-slate-800/80 px-3 py-3 text-xs font-medium text-emerald-300">
+                              {player.position ?? "—"}
+                            </td>
+                            <td className="border-b border-slate-800/80 px-3 py-3 text-xs text-slate-300">
+                              {player.age ?? "—"}
+                            </td>
+                            <td className="border-b border-slate-800/80 px-3 py-3 text-xs text-slate-300">
+                              {player.team ?? "—"}
+                            </td>
+                            <td className="border-b border-slate-800/80 px-3 py-3 text-right text-sm font-semibold text-emerald-300">
+                              {player.goals ?? 0}
+                            </td>
+                          </tr>
+                        ))}
                       </tbody>
                     </table>
                   )}
@@ -449,18 +396,22 @@ export default function Home() {
                 </div>
                 <div className="grid gap-4 md:grid-cols-3">
                   {[
-                    "En Değerli 10 Genç Stoper",
-                    "Süper Lig'in Gizli İsimleri",
-                    "Bu Sezonun Sürpriz İsimleri",
-                  ].map((title) => (
-                    <button
-                      key={title}
+                    { title: "En Değerli 10 Genç Stoper", slug: "en-iyi-10-genc-stoper", icon: <IconShield className="text-emerald-300" /> },
+                    { title: "Süper Lig'in Gizli İsimleri", slug: "super-lig-gizli-isimler", icon: <IconTrendUp className="text-sky-300" /> },
+                    { title: "Bu Sezonun Sürpriz İsimleri", slug: "surpriz-isimler-2025", icon: <IconStar className="text-amber-300" /> },
+                  ].map((item) => (
+                    <Link
+                      key={item.slug}
+                      href={`/listeler/${item.slug}`}
                       className="group flex flex-col items-start rounded-2xl border border-slate-800/80 bg-slate-950/60 px-4 py-4 text-left text-sm text-slate-200 shadow-[0_16px_50px_rgba(15,23,42,0.8)] transition hover:-translate-y-1 hover:border-emerald-500/70 hover:bg-slate-900/80"
                     >
-                      <span className="mb-2 inline-flex rounded-full bg-emerald-500/10 px-2 py-1 text-[10px] font-semibold uppercase tracking-[0.18em] text-emerald-300">
-                        Liste
+                      <span className="mb-2 flex items-center gap-2">
+                        {item.icon}
+                        <span className="inline-flex rounded-full bg-emerald-500/10 px-2 py-1 text-[10px] font-semibold uppercase tracking-[0.18em] text-emerald-300">
+                          Liste
+                        </span>
                       </span>
-                      <span className="text-sm font-semibold">{title}</span>
+                      <span className="text-sm font-semibold">{item.title}</span>
                       <span className="mt-1 text-xs text-slate-400">
                         Detaylı analiz, performans metrikleri ve scout notları
                         ile birlikte.
@@ -471,7 +422,7 @@ export default function Home() {
                           →
                         </span>
                       </span>
-                    </button>
+                    </Link>
                   ))}
                 </div>
               </div>
@@ -494,12 +445,12 @@ export default function Home() {
                     </p>
                   </div>
                   <div className="flex flex-col items-start gap-3 sm:items-end">
-                    <button className="inline-flex items-center justify-center rounded-full bg-slate-100 px-5 py-2 text-xs font-semibold text-slate-950 shadow-[0_0_25px_rgba(148,163,184,0.5)] transition hover:bg-white">
+                    <Link
+                      href="/radar"
+                      className="inline-flex items-center justify-center rounded-full bg-slate-100 px-5 py-2 text-xs font-semibold text-slate-950 shadow-[0_0_25px_rgba(148,163,184,0.5)] transition hover:bg-white"
+                    >
                       Tümünü Oku
-                    </button>
-                    <span className="text-[11px] text-slate-400">
-                      Yazı arşivi yakında aktif olacak.
-                    </span>
+                    </Link>
                   </div>
                 </div>
               </div>
