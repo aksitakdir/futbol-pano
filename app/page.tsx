@@ -1,45 +1,157 @@
+"use client";
+
+import { useEffect, useState } from "react";
+
 export default function Home() {
-  const players = [
-    {
-      name: "Arda Kaya",
-      age: 18,
-      club: "Galatasaray U19",
-      value: "€3.5M",
-      position: "Ofansif Orta Saha",
-    },
-    {
-      name: "Mert Demir",
-      age: 19,
-      club: "Fenerbahçe U19",
-      value: "€2.8M",
-      position: "Santrafor",
-    },
-    {
-      name: "Enes Yıldız",
-      age: 17,
-      club: "Beşiktaş U19",
-      value: "€2.2M",
-      position: "Stoper",
-    },
-    {
-      name: "Can Karaca",
-      age: 18,
-      club: "Trabzonspor U19",
-      value: "€1.9M",
-      position: "Sol Bek",
-    },
-    {
-      name: "Emir Sağlam",
-      age: 19,
-      club: "Adana Demirspor U19",
-      value: "€1.5M",
-      position: "Merkez Orta Saha",
-    },
+  type FilterKey = "all" | "stoper" | "mid" | "forward";
+
+  type ApiPlayer = {
+    id: number;
+    name: string;
+    age: number;
+    nationality?: string;
+    position?: string;
+    team?: string;
+    league?: string;
+    appearances?: number;
+    minutes?: number;
+    goals?: number;
+  };
+
+  type UiPlayer = ApiPlayer & {
+    analysis: string;
+  };
+
+  const [players, setPlayers] = useState<UiPlayer[]>([]);
+  const [activeFilter, setActiveFilter] = useState<FilterKey>("all");
+  const [expandedPlayer, setExpandedPlayer] = useState<string | null>(null);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string | null>(null);
+
+  const filterButtons: { key: FilterKey; label: string }[] = [
+    { key: "all", label: "Tümü" },
+    { key: "stoper", label: "Stoper" },
+    { key: "mid", label: "Orta Saha" },
+    { key: "forward", label: "Forvet" },
   ];
+
+  const filteredPlayers = players.filter((player) => {
+    const pos = (player.position ?? "").toLowerCase();
+
+    if (activeFilter === "all") return true;
+
+    if (activeFilter === "stoper") {
+      return (
+        pos.includes("defender") ||
+        pos.includes("centre-back") ||
+        pos.includes("center back") ||
+        pos.includes("centre back") ||
+        pos.includes("cb")
+      );
+    }
+
+    if (activeFilter === "mid") {
+      return pos.includes("midfielder") || pos.includes("cm") || pos.includes("dm") || pos.includes("am");
+    }
+
+    if (activeFilter === "forward") {
+      return (
+        pos.includes("attacker") ||
+        pos.includes("forward") ||
+        pos.includes("striker") ||
+        pos.includes("winger")
+      );
+    }
+
+    return true;
+  });
+
+  useEffect(() => {
+    let isMounted = true;
+
+    async function loadPlayers() {
+      try {
+        setLoading(true);
+        setError(null);
+
+        const res = await fetch("/api/players", { cache: "no-store" });
+
+        if (!res.ok) {
+          const text = await res.text();
+          if (!isMounted) return;
+          setError(
+            `Oyuncu verileri alınırken bir hata oluştu (status ${res.status}).`
+          );
+          console.error("Failed to fetch /api/players:", text);
+          return;
+        }
+
+        const json = await res.json();
+        const apiPlayers: ApiPlayer[] = Array.isArray(json?.players)
+          ? json.players
+          : [];
+
+        const uiPlayers: UiPlayer[] = apiPlayers.map((p) => {
+          const baseName = p.name ?? "Bilinmeyen Oyuncu";
+          const team = p.team ?? "Bilinmeyen Kulüp";
+          const pos = p.position ?? "Bilinmeyen Pozisyon";
+          const minutes = p.minutes ?? 0;
+          const goals = p.goals ?? 0;
+
+          const per90 =
+            minutes > 0 ? (goals / (minutes / 90)).toFixed(2) : "0.00";
+
+          const analysis = `Model, ${baseName} için ${team} formasıyla ${pos.toLowerCase()} rolünde oynarken özellikle dakikalarına oranla gol katkısının (≈ ${per90} gol / 90 dk) ve sahadaki sürekliliğinin altını çiziyor.`;
+
+          return {
+            ...p,
+            analysis,
+          };
+        });
+
+        if (!isMounted) return;
+
+        setPlayers(uiPlayers);
+      } catch (err) {
+        console.error("Unexpected error fetching /api/players:", err);
+        if (!isMounted) return;
+        setError("Oyuncu verileri alınırken beklenmeyen bir hata oluştu.");
+      } finally {
+        if (isMounted) {
+          setLoading(false);
+        }
+      }
+    }
+
+    loadPlayers();
+
+    return () => {
+      isMounted = false;
+    };
+  }, []);
+
+  const lastUpdated = "14 Mart 2026";
 
   return (
     <main className="min-h-screen bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950 text-slate-100">
       <div className="mx-auto max-w-6xl px-4 py-10 lg:py-14">
+        <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+          <div className="inline-flex items-center gap-3 rounded-full border border-slate-700/80 bg-slate-900/80 px-4 py-2 text-xs text-slate-300 shadow-[0_10px_30px_rgba(15,23,42,0.9)]">
+            <span className="h-2 w-2 rounded-full bg-emerald-400 shadow-[0_0_12px_rgba(16,185,129,0.9)]" />
+            <span className="font-medium text-slate-200">Son güncelleme:</span>
+            <span className="text-slate-300/90">{lastUpdated}</span>
+          </div>
+          <div className="inline-flex items-center gap-2 text-xs text-emerald-300">
+            <span className="relative flex h-2.5 w-2.5">
+              <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-60" />
+              <span className="relative inline-flex h-2.5 w-2.5 rounded-full bg-emerald-400" />
+            </span>
+            <span className="font-medium tracking-wide">
+              Veri yenileniyor<span className="animate-pulse">...</span>
+            </span>
+          </div>
+        </div>
+
         <header className="mb-10 flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
           <div>
             <p className="text-xs font-semibold uppercase tracking-[0.25em] text-emerald-400/80">
@@ -81,64 +193,145 @@ export default function Home() {
                 </p>
               </div>
               <span className="inline-flex items-center rounded-full bg-emerald-500/15 px-3 py-1 text-xs font-medium text-emerald-300 ring-1 ring-emerald-500/40">
-                U19 Segmenti
+              U19 Segmenti
               </span>
             </div>
 
+          <div className="relative z-10 border-t border-slate-800/80 px-5 pb-3 pt-2 sm:px-6">
+            <div className="flex flex-wrap gap-2 text-xs">
+              {filterButtons.map((filter) => {
+                const isActive = activeFilter === filter.key;
+                return (
+                  <button
+                    key={filter.key}
+                    type="button"
+                    onClick={() => setActiveFilter(filter.key)}
+                    className={[
+                      "rounded-full border px-3 py-1.5 transition-all duration-150",
+                      "backdrop-blur hover:-translate-y-[1px]",
+                      isActive
+                        ? "border-emerald-500/80 bg-emerald-500/20 text-emerald-100 shadow-[0_0_25px_rgba(16,185,129,0.5)]"
+                        : "border-slate-700/90 bg-slate-900/80 text-slate-300 hover:border-emerald-500/60 hover:text-emerald-100",
+                    ].join(" ")}
+                  >
+                    {filter.label}
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+
             <div className="relative overflow-x-auto">
-              <table className="min-w-full border-separate border-spacing-0 text-sm">
-                <thead>
-                  <tr className="bg-slate-900/80">
-                    <th className="sticky left-0 z-10 border-b border-slate-700/80 bg-slate-900/90 px-3 py-3 text-left text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-400">
-                      #
-                    </th>
-                    <th className="border-b border-slate-700/80 px-3 py-3 text-left text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-400">
-                      Oyuncu
-                    </th>
-                    <th className="border-b border-slate-700/80 px-3 py-3 text-left text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-400">
-                      Pozisyon
-                    </th>
-                    <th className="border-b border-slate-700/80 px-3 py-3 text-left text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-400">
-                      Yaş
-                    </th>
-                    <th className="border-b border-slate-700/80 px-3 py-3 text-left text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-400">
-                      Kulüp
-                    </th>
-                    <th className="border-b border-slate-700/80 px-3 py-3 text-right text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-400">
-                      Piyasa Değeri
-                    </th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {players.map((player, index) => (
-                    <tr
-                      key={player.name}
-                      className="group transition-all duration-200 hover:bg-slate-800/70 hover:shadow-[0_0_0_1px_rgba(45,212,191,0.4)]"
-                    >
-                      <td className="sticky left-0 z-10 border-b border-slate-800/80 bg-slate-900/80 px-3 py-3 text-xs font-semibold text-slate-300">
-                        <span className="inline-flex h-6 w-6 items-center justify-center rounded-full bg-slate-800/80 text-[11px] text-emerald-300 ring-1 ring-emerald-500/40">
-                          {index + 1}
-                        </span>
-                      </td>
-                      <td className="border-b border-slate-800/80 px-3 py-3 text-sm font-medium text-slate-100">
-                        <span className="block">{player.name}</span>
-                      </td>
-                      <td className="border-b border-slate-800/80 px-3 py-3 text-xs font-medium text-emerald-300">
-                        {player.position}
-                      </td>
-                      <td className="border-b border-slate-800/80 px-3 py-3 text-xs text-slate-300">
-                        {player.age}
-                      </td>
-                      <td className="border-b border-slate-800/80 px-3 py-3 text-xs text-slate-300">
-                        {player.club}
-                      </td>
-                      <td className="border-b border-slate-800/80 px-3 py-3 text-right text-sm font-semibold text-emerald-300">
-                        {player.value}
-                      </td>
+              {loading && (
+                <div className="flex min-h-[200px] items-center justify-center text-sm text-slate-300">
+                  <span className="mr-2 h-4 w-4 animate-spin rounded-full border-2 border-emerald-400 border-t-transparent" />
+                  Yükleniyor...
+                </div>
+              )}
+
+              {!loading && error && (
+                <div className="min-h-[200px] rounded-xl border border-red-500/40 bg-red-500/5 px-4 py-3 text-sm text-red-200">
+                  {error}
+                </div>
+              )}
+
+              {!loading && !error && filteredPlayers.length === 0 && (
+                <div className="min-h-[200px] rounded-xl border border-slate-700/70 bg-slate-900/70 px-4 py-3 text-sm text-slate-300">
+                  Seçili filtreye uygun oyuncu bulunamadı.
+                </div>
+              )}
+
+              {!loading && !error && filteredPlayers.length > 0 && (
+                <table className="min-w-full border-separate border-spacing-0 text-sm">
+                  <thead>
+                    <tr className="bg-slate-900/80">
+                      <th className="sticky left-0 z-10 border-b border-slate-700/80 bg-slate-900/90 px-3 py-3 text-left text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-400">
+                        #
+                      </th>
+                      <th className="border-b border-slate-700/80 px-3 py-3 text-left text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-400">
+                        Oyuncu
+                      </th>
+                      <th className="border-b border-slate-700/80 px-3 py-3 text-left text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-400">
+                        Pozisyon
+                      </th>
+                      <th className="border-b border-slate-700/80 px-3 py-3 text-left text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-400">
+                        Yaş
+                      </th>
+                      <th className="border-b border-slate-700/80 px-3 py-3 text-left text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-400">
+                        Kulüp
+                      </th>
+                      <th className="border-b border-slate-700/80 px-3 py-3 text-right text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-400">
+                        Goller
+                      </th>
                     </tr>
-                  ))}
-                </tbody>
-              </table>
+                  </thead>
+                  <tbody>
+                    {filteredPlayers.map((player, index) => {
+                      const isExpanded = expandedPlayer === player.name;
+                      return (
+                        <>
+                          <tr
+                            key={player.id ?? player.name}
+                            onClick={() =>
+                              setExpandedPlayer(
+                                isExpanded ? null : player.name
+                              )
+                            }
+                            className={[
+                              "group cursor-pointer transition-all duration-200",
+                              "hover:bg-slate-800/70 hover:shadow-[0_0_0_1px_rgba(45,212,191,0.4)]",
+                              isExpanded ? "bg-slate-900/80" : "",
+                            ].join(" ")}
+                          >
+                            <td className="sticky left-0 z-10 border-b border-slate-800/80 bg-slate-900/80 px-3 py-3 text-xs font-semibold text-slate-300">
+                              <span className="inline-flex h-6 w-6 items-center justify-center rounded-full bg-slate-800/80 text-[11px] text-emerald-300 ring-1 ring-emerald-500/40">
+                                {index + 1}
+                              </span>
+                            </td>
+                            <td className="border-b border-slate-800/80 px-3 py-3 text-sm font-medium text-slate-100">
+                              <div className="flex items-center gap-2">
+                                <span className="block">{player.name}</span>
+                                <span className="text-[10px] font-medium uppercase tracking-[0.16em] text-emerald-300/80">
+                                  {isExpanded ? "Analizi gizle" : "AI analizi"}
+                                </span>
+                              </div>
+                            </td>
+                            <td className="border-b border-slate-800/80 px-3 py-3 text-xs font-medium text-emerald-300">
+                              {player.position ?? "—"}
+                            </td>
+                            <td className="border-b border-slate-800/80 px-3 py-3 text-xs text-slate-300">
+                              {player.age ?? "—"}
+                            </td>
+                            <td className="border-b border-slate-800/80 px-3 py-3 text-xs text-slate-300">
+                              {player.team ?? "—"}
+                            </td>
+                            <td className="border-b border-slate-800/80 px-3 py-3 text-right text-sm font-semibold text-emerald-300">
+                              {player.goals ?? 0}
+                            </td>
+                          </tr>
+                          {isExpanded && (
+                            <tr className="bg-slate-950/70">
+                              <td
+                                colSpan={6}
+                                className="border-b border-slate-800/80 px-3 py-3 text-xs text-slate-200"
+                              >
+                                <div className="flex gap-3">
+                                  <div className="mt-1 flex h-6 w-6 flex-none items-center justify-center rounded-full bg-emerald-500/15 text-[10px] font-semibold text-emerald-300 ring-1 ring-emerald-500/40">
+                                    AI
+                                  </div>
+                                  <p className="leading-relaxed">
+                                    {player.analysis}
+                                  </p>
+                                </div>
+                              </td>
+                            </tr>
+                          )}
+                        </>
+                      );
+                    })}
+                  </tbody>
+                </table>
+              )}
             </div>
           </div>
 
