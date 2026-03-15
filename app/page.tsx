@@ -3,16 +3,13 @@
 import { useEffect, useState, useCallback, useRef } from "react";
 import Link from "next/link";
 import {
-  IconList,
-  IconRadar,
-  IconUsers,
   IconBracket,
-  IconTaktik,
   IconShield,
   IconTrendUp,
   IconStar,
   IconArrowRight,
 } from "./components/icons";
+import SiteHeader from "./components/site-header";
 import { supabase } from "@/lib/supabase";
 
 type SlideContent = {
@@ -201,46 +198,11 @@ export default function Home() {
   return (
     <main className="min-h-screen bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950 text-slate-100">
       <div className="flex min-h-screen flex-col">
-        {/* Üst navigasyon */}
-        <header className="border-b border-slate-800/80 bg-slate-950/80 backdrop-blur">
-          <div className="mx-auto flex max-w-6xl items-center justify-between px-4 py-4">
-            <div className="flex items-center gap-2">
-              <div className="h-8 w-8 rounded-xl bg-gradient-to-tr from-emerald-400 to-cyan-500 shadow-[0_0_40px_rgba(16,185,129,0.7)]" />
-              <span className="bg-gradient-to-r from-emerald-400 via-cyan-400 to-sky-500 bg-clip-text text-sm font-semibold tracking-[0.22em] text-transparent">
-                SCOUT INTELLIGENCE
-              </span>
-            </div>
-            <nav className="hidden items-center gap-6 text-xs font-medium text-slate-300 md:flex">
-              <Link href="/listeler" className="flex items-center gap-1.5 transition-colors hover:text-emerald-300">
-                <IconList /> Listeler
-              </Link>
-              <Link href="/radar" className="flex items-center gap-1.5 transition-colors hover:text-emerald-300">
-                <IconRadar /> Radar
-              </Link>
-              <Link href="/oyuncular" className="flex items-center gap-1.5 transition-colors hover:text-emerald-300">
-                <IconUsers /> Oyuncular
-              </Link>
-              <Link href="/taktik-lab" className="flex items-center gap-1.5 transition-colors hover:text-emerald-300">
-                <IconTaktik /> Taktik Lab
-              </Link>
-              <Link href="/turnuva" className="flex items-center gap-1.5 transition-colors hover:text-emerald-300">
-                <IconBracket /> Turnuva
-              </Link>
-            </nav>
-            <div className="flex items-center gap-1 rounded-full border border-slate-700/80 bg-slate-900/70 p-0.5 text-xs">
-              <button className="rounded-full bg-emerald-500/20 px-3 py-1 font-semibold text-emerald-200 shadow-[0_0_18px_rgba(16,185,129,0.5)]">
-                TR
-              </button>
-              <button className="rounded-full px-3 py-1 text-slate-300 hover:text-emerald-200">
-                EN
-              </button>
-            </div>
-          </div>
-        </header>
+        <SiteHeader />
 
         {/* Hero slider */}
         {slides.length > 0 && (
-          <section className="relative h-[420px] w-full overflow-hidden">
+          <section className="relative h-[280px] w-full overflow-hidden md:h-[420px]">
             {/* Noise/geometric background */}
             <div className="absolute inset-0 bg-gradient-to-br from-slate-950 via-slate-900 to-emerald-950/40" />
             <div className="absolute inset-0 opacity-[0.04]" style={{ backgroundImage: "url(\"data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='1'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E\")" }} />
@@ -260,10 +222,10 @@ export default function Home() {
                   <span className={`mb-3 inline-flex w-fit items-center rounded-full border px-2.5 py-0.5 text-[10px] font-semibold uppercase tracking-[0.16em] ${CATEGORY_COLOR[slide.category] ?? "bg-slate-500/15 text-slate-300 border-slate-500/40"}`}>
                     {CATEGORY_LABEL[slide.category] ?? slide.category}
                   </span>
-                  <h2 className="mb-3 max-w-3xl bg-gradient-to-r from-emerald-400 via-cyan-400 to-sky-500 bg-clip-text text-3xl font-extrabold leading-tight tracking-tight text-transparent md:text-[48px] md:leading-[1.15]">
+                  <h2 className="mb-2 max-w-3xl bg-gradient-to-r from-emerald-400 via-cyan-400 to-sky-500 bg-clip-text text-[22px] font-extrabold leading-tight tracking-tight text-transparent sm:text-3xl md:mb-3 md:text-[48px] md:leading-[1.15]">
                     {slide.title}
                   </h2>
-                  <p className="mb-6 max-w-2xl text-sm leading-relaxed text-slate-300">
+                  <p className="mb-4 hidden max-w-2xl text-sm leading-relaxed text-slate-300 sm:block md:mb-6">
                     {slide.content.replace(/[#*_\n]/g, " ").trim().slice(0, 120)}…
                   </p>
                   <Link
@@ -277,11 +239,11 @@ export default function Home() {
             ))}
 
             {/* Arrows */}
-            <button onClick={prevSlide} className="absolute left-4 top-1/2 z-20 flex h-9 w-9 -translate-y-1/2 items-center justify-center rounded-full border border-slate-700/60 bg-slate-900/80 text-slate-300 backdrop-blur transition hover:border-emerald-500/60 hover:text-emerald-300">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M15 19l-7-7 7-7" /></svg>
+            <button onClick={prevSlide} className="absolute left-2 top-1/2 z-20 flex h-7 w-7 -translate-y-1/2 items-center justify-center rounded-full border border-slate-700/60 bg-slate-900/80 text-slate-300 backdrop-blur transition hover:border-emerald-500/60 hover:text-emerald-300 md:left-4 md:h-9 md:w-9">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" className="md:h-[14px] md:w-[14px]"><path d="M15 19l-7-7 7-7" /></svg>
             </button>
-            <button onClick={nextSlide} className="absolute right-4 top-1/2 z-20 flex h-9 w-9 -translate-y-1/2 items-center justify-center rounded-full border border-slate-700/60 bg-slate-900/80 text-slate-300 backdrop-blur transition hover:border-emerald-500/60 hover:text-emerald-300">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M9 5l7 7-7 7" /></svg>
+            <button onClick={nextSlide} className="absolute right-2 top-1/2 z-20 flex h-7 w-7 -translate-y-1/2 items-center justify-center rounded-full border border-slate-700/60 bg-slate-900/80 text-slate-300 backdrop-blur transition hover:border-emerald-500/60 hover:text-emerald-300 md:right-4 md:h-9 md:w-9">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" className="md:h-[14px] md:w-[14px]"><path d="M9 5l7 7-7 7" /></svg>
             </button>
 
             {/* Dots */}
@@ -512,10 +474,10 @@ export default function Home() {
                           <th className="border-b border-slate-700/80 px-3 py-3 text-left text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-400">
                             Pozisyon
                           </th>
-                          <th className="border-b border-slate-700/80 px-3 py-3 text-left text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-400">
+                          <th className="hidden border-b border-slate-700/80 px-3 py-3 text-left text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-400 md:table-cell">
                             Yaş
                           </th>
-                          <th className="border-b border-slate-700/80 px-3 py-3 text-left text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-400">
+                          <th className="hidden border-b border-slate-700/80 px-3 py-3 text-left text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-400 md:table-cell">
                             Kulüp
                           </th>
                           <th className="border-b border-slate-700/80 px-3 py-3 text-right text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-400">
@@ -555,10 +517,10 @@ export default function Home() {
                             <td className="border-b border-slate-800/80 px-3 py-3 text-xs font-medium text-emerald-300">
                               {player.position ?? "—"}
                             </td>
-                            <td className="border-b border-slate-800/80 px-3 py-3 text-xs text-slate-300">
+                            <td className="hidden border-b border-slate-800/80 px-3 py-3 text-xs text-slate-300 md:table-cell">
                               {player.age ?? "—"}
                             </td>
-                            <td className="border-b border-slate-800/80 px-3 py-3 text-xs text-slate-300">
+                            <td className="hidden border-b border-slate-800/80 px-3 py-3 text-xs text-slate-300 md:table-cell">
                               {player.team ?? "—"}
                             </td>
                             <td className="border-b border-slate-800/80 px-3 py-3 text-right text-sm font-semibold text-emerald-300">

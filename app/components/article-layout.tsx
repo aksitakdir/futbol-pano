@@ -4,14 +4,11 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import ReactMarkdown from "react-markdown";
 import {
-  IconList,
   IconRadar,
-  IconUsers,
-  IconBracket,
-  IconTaktik,
   IconClock,
   IconArrowRight,
 } from "./icons";
+import SiteHeader from "./site-header";
 import Breadcrumb from "./breadcrumb";
 import { supabase } from "@/lib/supabase";
 
@@ -134,38 +131,7 @@ export default function ArticleLayout({
       <meta property="og:type" content="article" />
 
       <div className="flex min-h-screen flex-col">
-        {/* Header */}
-        <header className="border-b border-slate-800/80 bg-slate-950/80 backdrop-blur">
-          <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-4">
-            <Link href="/" className="flex items-center gap-2">
-              <div className="h-8 w-8 rounded-xl bg-gradient-to-tr from-emerald-400 to-cyan-500 shadow-[0_0_40px_rgba(16,185,129,0.7)]" />
-              <span className="bg-gradient-to-r from-emerald-400 via-cyan-400 to-sky-500 bg-clip-text text-sm font-semibold tracking-[0.22em] text-transparent">
-                SCOUT INTELLIGENCE
-              </span>
-            </Link>
-            <nav className="hidden items-center gap-6 text-xs font-medium text-slate-300 md:flex">
-              <Link href="/listeler" className={`flex items-center gap-1.5 transition-colors ${activeNav === "listeler" ? "text-emerald-300" : "hover:text-emerald-300"}`}>
-                <IconList /> Listeler
-              </Link>
-              <Link href="/radar" className={`flex items-center gap-1.5 transition-colors ${activeNav === "radar" ? "text-emerald-300" : "hover:text-emerald-300"}`}>
-                <IconRadar /> Radar
-              </Link>
-              <Link href="/oyuncular" className="flex items-center gap-1.5 transition-colors hover:text-emerald-300">
-                <IconUsers /> Oyuncular
-              </Link>
-              <Link href="/taktik-lab" className={`flex items-center gap-1.5 transition-colors ${activeNav === "taktik-lab" ? "text-emerald-300" : "hover:text-emerald-300"}`}>
-                <IconTaktik /> Taktik Lab
-              </Link>
-              <Link href="/turnuva" className="flex items-center gap-1.5 transition-colors hover:text-emerald-300">
-                <IconBracket /> Turnuva
-              </Link>
-            </nav>
-            <div className="flex items-center gap-1 rounded-full border border-slate-700/80 bg-slate-900/70 p-0.5 text-xs">
-              <button className="rounded-full bg-emerald-500/20 px-3 py-1 font-semibold text-emerald-200 shadow-[0_0_18px_rgba(16,185,129,0.5)]">TR</button>
-              <button className="rounded-full px-3 py-1 text-slate-300 hover:text-emerald-200">EN</button>
-            </div>
-          </div>
-        </header>
+        <SiteHeader activeNav={activeNav} maxWidth="max-w-7xl" />
 
         <div className="flex-1">
           <div className="mx-auto max-w-7xl px-4 py-8 lg:py-10">
@@ -284,12 +250,12 @@ export default function ArticleLayout({
                   {similar.length > 0 && (
                     <div className="rounded-2xl border border-slate-800/80 bg-slate-950/70 p-5">
                       <h3 className="mb-3 text-[11px] font-semibold uppercase tracking-[0.2em] text-slate-400">Benzer İçerikler</h3>
-                      <div className="space-y-3">
+                      <div className="flex gap-3 overflow-x-auto pb-1 lg:flex-col lg:overflow-x-visible lg:pb-0">
                         {similar.map((item) => (
                           <Link
                             key={item.id}
                             href={`${categoryPath(item.category)}/${item.slug}`}
-                            className="group block rounded-xl border border-slate-800/60 bg-slate-900/40 p-3 transition hover:border-emerald-500/50"
+                            className="group block min-w-[200px] shrink-0 rounded-xl border border-slate-800/60 bg-slate-900/40 p-3 transition hover:border-emerald-500/50 lg:min-w-0 lg:shrink"
                           >
                             <p className="text-xs font-semibold text-slate-100 transition group-hover:text-emerald-300">{item.title}</p>
                             <p className="mt-1 text-[10px] text-slate-500">
