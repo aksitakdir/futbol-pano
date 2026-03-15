@@ -146,13 +146,13 @@ export default function Home() {
     };
   }, []);
 
-  const lastUpdated = "14 Mart 2026";
   const featuredPlayer = players[0] ?? null;
 
   const [slides, setSlides] = useState<SlideContent[]>([]);
   const [recentItems, setRecentItems] = useState<SlideContent[]>([]);
   const [activeSlide, setActiveSlide] = useState(0);
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
+
 
   useEffect(() => {
     async function fetchSlider() {
@@ -295,26 +295,6 @@ export default function Home() {
         {/* İçerik */}
         <div className="flex-1">
           <div className="mx-auto max-w-6xl px-4 py-8 lg:py-12">
-            {/* Üst durum satırı */}
-            <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-              <div className="inline-flex items-center gap-3 rounded-full border border-slate-700/80 bg-slate-900/80 px-4 py-2 text-xs text-slate-300 shadow-[0_10px_30px_rgba(15,23,42,0.9)]">
-                <span className="h-2 w-2 rounded-full bg-emerald-400 shadow-[0_0_12px_rgba(16,185,129,0.9)]" />
-                <span className="font-medium text-slate-200">
-                  Son güncelleme:
-                </span>
-                <span className="text-slate-300/90">{lastUpdated}</span>
-              </div>
-              <div className="inline-flex items-center gap-2 text-xs text-emerald-300">
-                <span className="relative flex h-2.5 w-2.5">
-                  <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-60" />
-                  <span className="relative inline-flex h-2.5 w-2.5 rounded-full bg-emerald-400" />
-                </span>
-                <span className="font-medium tracking-wide">
-                  Veri yenileniyor<span className="animate-pulse">...</span>
-                </span>
-              </div>
-            </div>
-
             {/* Hero: Bu haftanın öne çıkan oyuncusu */}
             <section className="mb-10 grid gap-6 md:grid-cols-[minmax(0,1.7fr)_minmax(0,1.3fr)]">
               <div className="relative overflow-hidden rounded-2xl border border-slate-800/80 bg-gradient-to-br from-slate-950 via-slate-900 to-emerald-950/40 p-6 shadow-[0_24px_80px_rgba(15,23,42,0.9)]">
@@ -383,23 +363,51 @@ export default function Home() {
                 </div>
               </div>
 
-              <div className="space-y-4">
-                <div className="rounded-2xl border border-slate-800/80 bg-slate-900/80 p-5">
+              <div className="relative overflow-hidden rounded-2xl border border-slate-800/80 bg-slate-900/80 p-5">
+                {/* Decorative elements */}
+                <div className="pointer-events-none absolute -right-8 -top-8 h-32 w-32 rounded-full bg-emerald-500/10 blur-[60px]" />
+                <div className="pointer-events-none absolute -bottom-6 -left-6 h-24 w-24 rounded-full bg-cyan-500/10 blur-[50px]" />
+                <div className="pointer-events-none absolute inset-0 opacity-[0.03]" style={{ backgroundImage: "url(\"data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='1'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E\")" }} />
+
+                <div className="relative">
                   <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-slate-400">
                     Platform Özeti
                   </p>
-                  <p className="mt-3 text-sm text-slate-200">
-                    Scout Intelligence, Avrupa çapındaki genç yetenekleri
-                    gerçek zamanlı verilerle tarayan bir içerik ve analiz
-                    platformudur. Her hafta öne çıkan oyuncuları, gizli
-                    kalmış profilleri ve radar yazılarını tek bir yerde
-                    toplar.
+                  <p className="mt-3 text-sm leading-relaxed text-slate-200">
+                    Scout Intelligence, Avrupa&apos;nın en parlak genç
+                    yeteneklerini takip eden, haftalık analizler üreten
+                    ve taktik derinlik sunan bir futbol keşif platformudur.
                   </p>
-                  <ul className="mt-4 space-y-2 text-xs text-slate-300">
-                    <li>• API-Football verileriyle canlı performans takibi</li>
-                    <li>• Pozisyona göre filtrelenebilir listeler</li>
-                    <li>• Detaylı scout raporları ve oyuncu profilleri</li>
-                  </ul>
+
+                  <div className="mt-4 space-y-3">
+                    <div className="flex items-start gap-3 rounded-xl border border-slate-700/50 bg-slate-950/40 p-3">
+                      <span className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-lg bg-emerald-500/15 text-emerald-300">
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" /></svg>
+                      </span>
+                      <div>
+                        <p className="text-xs font-semibold text-slate-100">Kürasyonlu Listeler</p>
+                        <p className="mt-0.5 text-[11px] leading-relaxed text-slate-400">Pozisyona ve profile göre hazırlanmış genç yetenek listeleri ve scout notları</p>
+                      </div>
+                    </div>
+                    <div className="flex items-start gap-3 rounded-xl border border-slate-700/50 bg-slate-950/40 p-3">
+                      <span className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-lg bg-sky-500/15 text-sky-300">
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="10" /><path d="M12 6v6l4 2" /></svg>
+                      </span>
+                      <div>
+                        <p className="text-xs font-semibold text-slate-100">Haftalık Radar</p>
+                        <p className="mt-0.5 text-[11px] leading-relaxed text-slate-400">Her hafta güncellenen derinlemesine oyuncu analizleri ve performans raporları</p>
+                      </div>
+                    </div>
+                    <div className="flex items-start gap-3 rounded-xl border border-slate-700/50 bg-slate-950/40 p-3">
+                      <span className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-lg bg-violet-500/15 text-violet-300">
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" /></svg>
+                      </span>
+                      <div>
+                        <p className="text-xs font-semibold text-slate-100">Taktik Lab</p>
+                        <p className="mt-0.5 text-[11px] leading-relaxed text-slate-400">Modern futbolun pozisyon arketiplerini keşfet: False 9, Inverted Winger ve daha fazlası</p>
+                      </div>
+                    </div>
+                  </div>
                 </div>
               </div>
             </section>
