@@ -262,35 +262,50 @@ export default function Home() {
           </section>
         )}
 
-        {/* Son Eklenenler horizontal band */}
-        {recentItems.length > 0 && (
-          <section className="border-b border-slate-800/60 bg-slate-950/80 py-6">
-            <div className="mx-auto max-w-6xl px-4">
-              <h3 className="mb-4 text-[11px] font-semibold uppercase tracking-[0.22em] text-slate-400">
-                Son Eklenenler
+        {/* Öne Çıkan Listeler band */}
+        <section className="border-b border-slate-800/60 bg-slate-950/80 py-6">
+          <div className="mx-auto max-w-6xl px-4">
+            <div className="mb-4 flex items-center justify-between">
+              <h3 className="text-[11px] font-semibold uppercase tracking-[0.22em] text-slate-400">
+                Öne Çıkan Listeler
               </h3>
-              <div className="flex gap-4 overflow-x-auto pb-2 scrollbar-none">
-                {recentItems.map((item) => (
-                  <Link
-                    key={item.id}
-                    href={`${categoryPath(item.category)}/${item.slug}`}
-                    className="group flex w-64 shrink-0 flex-col rounded-xl border border-slate-800/80 bg-slate-950/70 p-4 transition hover:-translate-y-0.5 hover:border-emerald-500/50"
-                  >
-                    <span className={`mb-2 inline-flex w-fit items-center rounded-full border px-2 py-0.5 text-[9px] font-semibold uppercase tracking-[0.14em] ${CATEGORY_COLOR[item.category] ?? "bg-slate-500/15 text-slate-300 border-slate-500/40"}`}>
-                      {CATEGORY_LABEL[item.category] ?? item.category}
-                    </span>
-                    <p className="line-clamp-2 text-xs font-semibold text-slate-100 transition group-hover:text-emerald-300">
-                      {item.title}
-                    </p>
-                    <span className="mt-auto pt-2 text-[10px] text-slate-500">
-                      {new Date(item.created_at).toLocaleDateString("tr-TR", { day: "numeric", month: "short" })}
-                    </span>
-                  </Link>
-                ))}
-              </div>
+              <span className="text-[11px] text-slate-400">
+                Kürasyonlu içerik listeleri
+              </span>
             </div>
-          </section>
-        )}
+            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+              {[
+                { title: "En Değerli 10 Genç Stoper", slug: "en-iyi-10-genc-stoper", icon: <IconShield className="text-emerald-300" />, desc: "Detaylı analiz, performans metrikleri ve scout notları ile birlikte.", href: "/listeler/en-iyi-10-genc-stoper", tag: "Liste", cta: "Listeyi aç" },
+                { title: "Süper Lig'in Gizli İsimleri", slug: "super-lig-gizli-isimler", icon: <IconTrendUp className="text-sky-300" />, desc: "Detaylı analiz, performans metrikleri ve scout notları ile birlikte.", href: "/listeler/super-lig-gizli-isimler", tag: "Liste", cta: "Listeyi aç" },
+                { title: "Bu Sezonun Sürpriz İsimleri", slug: "surpriz-isimler-2025", icon: <IconStar className="text-amber-300" />, desc: "Detaylı analiz, performans metrikleri ve scout notları ile birlikte.", href: "/listeler/surpriz-isimler-2025", tag: "Liste", cta: "Listeyi aç" },
+                { title: "Favori Yeteneğini Seç", slug: "turnuva", icon: <IconBracket className="text-[#00d4aa]" />, desc: "16 genç yetenek, tek şampiyon. Kim kazanır?", href: "/turnuva", tag: "Turnuva", cta: "Oyna" },
+              ].map((item) => (
+                <Link
+                  key={item.slug}
+                  href={item.href}
+                  className="group flex flex-col items-start rounded-2xl border border-slate-800/80 bg-slate-950/60 px-4 py-4 text-left text-sm text-slate-200 shadow-[0_16px_50px_rgba(15,23,42,0.8)] transition hover:-translate-y-1 hover:border-emerald-500/70 hover:bg-slate-900/80"
+                >
+                  <span className="mb-2 flex items-center gap-2">
+                    {item.icon}
+                    <span className="inline-flex rounded-full bg-emerald-500/10 px-2 py-1 text-[10px] font-semibold uppercase tracking-[0.18em] text-emerald-300">
+                      {item.tag}
+                    </span>
+                  </span>
+                  <span className="text-sm font-semibold">{item.title}</span>
+                  <span className="mt-1 text-xs text-slate-400">
+                    {item.desc}
+                  </span>
+                  <span className="mt-3 inline-flex items-center text-xs font-semibold text-emerald-300">
+                    {item.cta}
+                    <span className="ml-1 transition-transform group-hover:translate-x-0.5">
+                      →
+                    </span>
+                  </span>
+                </Link>
+              ))}
+            </div>
+          </div>
+        </section>
 
         {/* İçerik */}
         <div className="flex-1">
@@ -542,48 +557,33 @@ export default function Home() {
                 </div>
               </div>
 
-              {/* Öne çıkan listeler */}
-              <div>
-                <div className="mb-4 flex items-center justify-between">
-                  <h2 className="text-sm font-semibold uppercase tracking-[0.22em] text-slate-400">
-                    Öne Çıkan Listeler
+              {/* Son Eklenenler */}
+              {recentItems.length > 0 && (
+                <div>
+                  <h2 className="mb-4 text-sm font-semibold uppercase tracking-[0.22em] text-slate-400">
+                    Son Eklenenler
                   </h2>
-                  <span className="text-[11px] text-slate-400">
-                    Kürasyonlu içerik listeleri
-                  </span>
-                </div>
-                <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-                  {[
-                    { title: "En Değerli 10 Genç Stoper", slug: "en-iyi-10-genc-stoper", icon: <IconShield className="text-emerald-300" />, desc: "Detaylı analiz, performans metrikleri ve scout notları ile birlikte.", href: "/listeler/en-iyi-10-genc-stoper", tag: "Liste", cta: "Listeyi aç" },
-                    { title: "Süper Lig'in Gizli İsimleri", slug: "super-lig-gizli-isimler", icon: <IconTrendUp className="text-sky-300" />, desc: "Detaylı analiz, performans metrikleri ve scout notları ile birlikte.", href: "/listeler/super-lig-gizli-isimler", tag: "Liste", cta: "Listeyi aç" },
-                    { title: "Bu Sezonun Sürpriz İsimleri", slug: "surpriz-isimler-2025", icon: <IconStar className="text-amber-300" />, desc: "Detaylı analiz, performans metrikleri ve scout notları ile birlikte.", href: "/listeler/surpriz-isimler-2025", tag: "Liste", cta: "Listeyi aç" },
-                    { title: "Favori Yeteneğini Seç", slug: "turnuva", icon: <IconBracket className="text-[#00d4aa]" />, desc: "16 genç yetenek, tek şampiyon. Kim kazanır?", href: "/turnuva", tag: "Turnuva", cta: "Oyna" },
-                  ].map((item) => (
-                    <Link
-                      key={item.slug}
-                      href={item.href}
-                      className="group flex flex-col items-start rounded-2xl border border-slate-800/80 bg-slate-950/60 px-4 py-4 text-left text-sm text-slate-200 shadow-[0_16px_50px_rgba(15,23,42,0.8)] transition hover:-translate-y-1 hover:border-emerald-500/70 hover:bg-slate-900/80"
-                    >
-                      <span className="mb-2 flex items-center gap-2">
-                        {item.icon}
-                        <span className="inline-flex rounded-full bg-emerald-500/10 px-2 py-1 text-[10px] font-semibold uppercase tracking-[0.18em] text-emerald-300">
-                          {item.tag}
+                  <div className="flex gap-4 overflow-x-auto pb-2 scrollbar-none">
+                    {recentItems.map((item) => (
+                      <Link
+                        key={item.id}
+                        href={`${categoryPath(item.category)}/${item.slug}`}
+                        className="group flex w-64 shrink-0 flex-col rounded-xl border border-slate-800/80 bg-slate-950/70 p-4 transition hover:-translate-y-0.5 hover:border-emerald-500/50"
+                      >
+                        <span className={`mb-2 inline-flex w-fit items-center rounded-full border px-2 py-0.5 text-[9px] font-semibold uppercase tracking-[0.14em] ${CATEGORY_COLOR[item.category] ?? "bg-slate-500/15 text-slate-300 border-slate-500/40"}`}>
+                          {CATEGORY_LABEL[item.category] ?? item.category}
                         </span>
-                      </span>
-                      <span className="text-sm font-semibold">{item.title}</span>
-                      <span className="mt-1 text-xs text-slate-400">
-                        {item.desc}
-                      </span>
-                      <span className="mt-3 inline-flex items-center text-xs font-semibold text-emerald-300">
-                        {item.cta}
-                        <span className="ml-1 transition-transform group-hover:translate-x-0.5">
-                          →
+                        <p className="line-clamp-2 text-xs font-semibold text-slate-100 transition group-hover:text-emerald-300">
+                          {item.title}
+                        </p>
+                        <span className="mt-auto pt-2 text-[10px] text-slate-500">
+                          {new Date(item.created_at).toLocaleDateString("tr-TR", { day: "numeric", month: "short" })}
                         </span>
-                      </span>
-                    </Link>
-                  ))}
+                      </Link>
+                    ))}
+                  </div>
                 </div>
-              </div>
+              )}
 
               {/* Haftalık Radar */}
               <div className="rounded-2xl border border-slate-800/80 bg-gradient-to-r from-slate-950 via-slate-900 to-emerald-950/40 px-5 py-5 sm:px-6">
@@ -605,7 +605,7 @@ export default function Home() {
                   <div className="flex flex-col items-start gap-3 sm:items-end">
                     <Link
                       href="/radar"
-                      className="inline-flex items-center justify-center rounded-full bg-slate-100 px-5 py-2 text-xs font-semibold text-slate-950 shadow-[0_0_25px_rgba(148,163,184,0.5)] transition hover:bg-white"
+                      className="inline-flex items-center justify-center rounded-full bg-gradient-to-r from-emerald-400 to-cyan-400 px-5 py-2 text-xs font-semibold text-slate-950 shadow-[0_0_30px_rgba(16,185,129,0.6)] transition hover:brightness-110"
                     >
                       Tümünü Oku
                     </Link>
