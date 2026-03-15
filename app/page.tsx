@@ -1,17 +1,47 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback, useRef } from "react";
 import Link from "next/link";
 import {
-  IconHome,
   IconList,
   IconRadar,
   IconUsers,
   IconBracket,
+  IconTaktik,
   IconShield,
   IconTrendUp,
   IconStar,
+  IconArrowRight,
 } from "./components/icons";
+import { supabase } from "@/lib/supabase";
+
+type SlideContent = {
+  id: string;
+  title: string;
+  slug: string;
+  category: string;
+  content: string;
+  created_at: string;
+};
+
+const CATEGORY_LABEL: Record<string, string> = {
+  listeler: "Listeler",
+  radar: "Radar",
+  "taktik-lab": "Taktik Lab",
+};
+
+const CATEGORY_COLOR: Record<string, string> = {
+  listeler: "bg-sky-500/15 text-sky-300 border-sky-500/40",
+  radar: "bg-emerald-500/15 text-emerald-300 border-emerald-500/40",
+  "taktik-lab": "bg-violet-500/15 text-violet-300 border-violet-500/40",
+};
+
+function categoryPath(cat: string): string {
+  if (cat === "listeler") return "/listeler";
+  if (cat === "radar") return "/radar";
+  if (cat === "taktik-lab") return "/taktik-lab";
+  return "/";
+}
 
 export default function Home() {
   type FilterKey = "all" | "stoper" | "mid" | "forward";
@@ -121,6 +151,52 @@ export default function Home() {
   const lastUpdated = "14 Mart 2026";
   const featuredPlayer = players[0] ?? null;
 
+  const [slides, setSlides] = useState<SlideContent[]>([]);
+  const [recentItems, setRecentItems] = useState<SlideContent[]>([]);
+  const [activeSlide, setActiveSlide] = useState(0);
+  const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
+
+  useEffect(() => {
+    async function fetchSlider() {
+      const { data } = await supabase
+        .from("contents")
+        .select("id, title, slug, category, content, created_at")
+        .eq("status", "yayinda")
+        .order("created_at", { ascending: false })
+        .limit(4);
+      if (data && data.length > 0) setSlides(data);
+    }
+    async function fetchRecent() {
+      const { data } = await supabase
+        .from("contents")
+        .select("id, title, slug, category, content, created_at")
+        .eq("status", "yayinda")
+        .order("created_at", { ascending: false })
+        .limit(6);
+      if (data && data.length > 0) setRecentItems(data);
+    }
+    fetchSlider();
+    fetchRecent();
+  }, []);
+
+  const goToSlide = useCallback((i: number) => {
+    setActiveSlide(i);
+  }, []);
+
+  const nextSlide = useCallback(() => {
+    setActiveSlide((p) => (p + 1) % Math.max(slides.length, 1));
+  }, [slides.length]);
+
+  const prevSlide = useCallback(() => {
+    setActiveSlide((p) => (p - 1 + slides.length) % Math.max(slides.length, 1));
+  }, [slides.length]);
+
+  useEffect(() => {
+    if (slides.length < 2) return;
+    timerRef.current = setInterval(nextSlide, 5000);
+    return () => { if (timerRef.current) clearInterval(timerRef.current); };
+  }, [slides.length, nextSlide]);
+
   return (
     <main className="min-h-screen bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950 text-slate-100">
       <div className="flex min-h-screen flex-col">
@@ -134,9 +210,6 @@ export default function Home() {
               </span>
             </div>
             <nav className="hidden items-center gap-6 text-xs font-medium text-slate-300 md:flex">
-              <Link href="/" className="flex items-center gap-1.5 text-emerald-300">
-                <IconHome /> Ana Sayfa
-              </Link>
               <Link href="/listeler" className="flex items-center gap-1.5 transition-colors hover:text-emerald-300">
                 <IconList /> Listeler
               </Link>
@@ -145,6 +218,9 @@ export default function Home() {
               </Link>
               <Link href="/oyuncular" className="flex items-center gap-1.5 transition-colors hover:text-emerald-300">
                 <IconUsers /> Oyuncular
+              </Link>
+              <Link href="/taktik-lab" className="flex items-center gap-1.5 transition-colors hover:text-emerald-300">
+                <IconTaktik /> Taktik Lab
               </Link>
               <Link href="/turnuva" className="flex items-center gap-1.5 transition-colors hover:text-emerald-300">
                 <IconBracket /> Turnuva
@@ -160,6 +236,98 @@ export default function Home() {
             </div>
           </div>
         </header>
+
+        {/* Hero slider */}
+        {slides.length > 0 && (
+          <section className="relative h-[420px] w-full overflow-hidden">
+            {/* Noise/geometric background */}
+            <div className="absolute inset-0 bg-gradient-to-br from-slate-950 via-slate-900 to-emerald-950/40" />
+            <div className="absolute inset-0 opacity-[0.04]" style={{ backgroundImage: "url(\"data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='1'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E\")" }} />
+            <div className="pointer-events-none absolute -left-20 top-10 h-64 w-64 rounded-full bg-emerald-500/20 blur-[100px]" />
+            <div className="pointer-events-none absolute -right-10 bottom-10 h-48 w-48 rounded-full bg-cyan-500/15 blur-[80px]" />
+
+            {/* Slides */}
+            {slides.map((slide, i) => (
+              <div
+                key={slide.id}
+                className={[
+                  "absolute inset-0 flex items-center transition-opacity duration-700",
+                  i === activeSlide ? "opacity-100 z-10" : "opacity-0 z-0",
+                ].join(" ")}
+              >
+                <div className="mx-auto flex max-w-6xl flex-col justify-center px-6 lg:px-8">
+                  <span className={`mb-3 inline-flex w-fit items-center rounded-full border px-2.5 py-0.5 text-[10px] font-semibold uppercase tracking-[0.16em] ${CATEGORY_COLOR[slide.category] ?? "bg-slate-500/15 text-slate-300 border-slate-500/40"}`}>
+                    {CATEGORY_LABEL[slide.category] ?? slide.category}
+                  </span>
+                  <h2 className="mb-3 max-w-3xl bg-gradient-to-r from-emerald-400 via-cyan-400 to-sky-500 bg-clip-text text-3xl font-extrabold leading-tight tracking-tight text-transparent md:text-[48px] md:leading-[1.15]">
+                    {slide.title}
+                  </h2>
+                  <p className="mb-6 max-w-2xl text-sm leading-relaxed text-slate-300">
+                    {slide.content.replace(/[#*_\n]/g, " ").trim().slice(0, 120)}…
+                  </p>
+                  <Link
+                    href={`${categoryPath(slide.category)}/${slide.slug}`}
+                    className="inline-flex w-fit items-center gap-1.5 rounded-full bg-gradient-to-r from-emerald-400 to-cyan-400 px-5 py-2.5 text-xs font-semibold text-slate-950 shadow-[0_0_30px_rgba(16,185,129,0.6)] transition hover:brightness-110"
+                  >
+                    Oku <IconArrowRight />
+                  </Link>
+                </div>
+              </div>
+            ))}
+
+            {/* Arrows */}
+            <button onClick={prevSlide} className="absolute left-4 top-1/2 z-20 flex h-9 w-9 -translate-y-1/2 items-center justify-center rounded-full border border-slate-700/60 bg-slate-900/80 text-slate-300 backdrop-blur transition hover:border-emerald-500/60 hover:text-emerald-300">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M15 19l-7-7 7-7" /></svg>
+            </button>
+            <button onClick={nextSlide} className="absolute right-4 top-1/2 z-20 flex h-9 w-9 -translate-y-1/2 items-center justify-center rounded-full border border-slate-700/60 bg-slate-900/80 text-slate-300 backdrop-blur transition hover:border-emerald-500/60 hover:text-emerald-300">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M9 5l7 7-7 7" /></svg>
+            </button>
+
+            {/* Dots */}
+            <div className="absolute bottom-5 left-1/2 z-20 flex -translate-x-1/2 gap-2">
+              {slides.map((_, i) => (
+                <button
+                  key={i}
+                  onClick={() => goToSlide(i)}
+                  className={[
+                    "h-2 rounded-full transition-all",
+                    i === activeSlide ? "w-6 bg-emerald-400 shadow-[0_0_12px_rgba(16,185,129,0.8)]" : "w-2 bg-slate-600 hover:bg-slate-400",
+                  ].join(" ")}
+                />
+              ))}
+            </div>
+          </section>
+        )}
+
+        {/* Son Eklenenler horizontal band */}
+        {recentItems.length > 0 && (
+          <section className="border-b border-slate-800/60 bg-slate-950/80 py-6">
+            <div className="mx-auto max-w-6xl px-4">
+              <h3 className="mb-4 text-[11px] font-semibold uppercase tracking-[0.22em] text-slate-400">
+                Son Eklenenler
+              </h3>
+              <div className="flex gap-4 overflow-x-auto pb-2 scrollbar-none">
+                {recentItems.map((item) => (
+                  <Link
+                    key={item.id}
+                    href={`${categoryPath(item.category)}/${item.slug}`}
+                    className="group flex w-64 shrink-0 flex-col rounded-xl border border-slate-800/80 bg-slate-950/70 p-4 transition hover:-translate-y-0.5 hover:border-emerald-500/50"
+                  >
+                    <span className={`mb-2 inline-flex w-fit items-center rounded-full border px-2 py-0.5 text-[9px] font-semibold uppercase tracking-[0.14em] ${CATEGORY_COLOR[item.category] ?? "bg-slate-500/15 text-slate-300 border-slate-500/40"}`}>
+                      {CATEGORY_LABEL[item.category] ?? item.category}
+                    </span>
+                    <p className="line-clamp-2 text-xs font-semibold text-slate-100 transition group-hover:text-emerald-300">
+                      {item.title}
+                    </p>
+                    <span className="mt-auto pt-2 text-[10px] text-slate-500">
+                      {new Date(item.created_at).toLocaleDateString("tr-TR", { day: "numeric", month: "short" })}
+                    </span>
+                  </Link>
+                ))}
+              </div>
+            </div>
+          </section>
+        )}
 
         {/* İçerik */}
         <div className="flex-1">

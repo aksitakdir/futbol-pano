@@ -2,12 +2,13 @@
 
 import Link from "next/link";
 import {
-  IconHome,
   IconList,
   IconRadar,
   IconUsers,
   IconBracket,
+  IconTaktik,
 } from "../components/icons";
+import Breadcrumb from "../components/breadcrumb";
 
 export default function TurnuvaPage() {
   return (
@@ -21,9 +22,6 @@ export default function TurnuvaPage() {
             </span>
           </Link>
           <nav className="hidden items-center gap-6 text-xs font-medium text-slate-300 md:flex">
-            <Link href="/" className="flex items-center gap-1.5 transition-colors hover:text-emerald-300">
-              <IconHome /> Ana Sayfa
-            </Link>
             <Link href="/listeler" className="flex items-center gap-1.5 transition-colors hover:text-emerald-300">
               <IconList /> Listeler
             </Link>
@@ -32,6 +30,9 @@ export default function TurnuvaPage() {
             </Link>
             <Link href="/oyuncular" className="flex items-center gap-1.5 transition-colors hover:text-emerald-300">
               <IconUsers /> Oyuncular
+            </Link>
+            <Link href="/taktik-lab" className="flex items-center gap-1.5 transition-colors hover:text-emerald-300">
+              <IconTaktik /> Taktik Lab
             </Link>
             <Link href="/turnuva" className="flex items-center gap-1.5 text-[#00d4aa]">
               <IconBracket /> Turnuva
@@ -48,10 +49,14 @@ export default function TurnuvaPage() {
         </div>
       </header>
 
+      <div className="mx-auto max-w-7xl px-4 py-3">
+        <Breadcrumb items={[{ label: "Turnuva" }]} />
+      </div>
+
       <iframe
         src="/ucl-bracket.html"
         className="flex-1 border-none"
-        style={{ minHeight: "calc(100vh - 57px)" }}
+        style={{ minHeight: "calc(100vh - 97px)" }}
         title="Gelecek Yıldızlar Turnuvası"
       />
     </main>

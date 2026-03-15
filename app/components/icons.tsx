@@ -128,6 +128,19 @@ export function IconArrowRight({ className = "" }: { className?: string }) {
   );
 }
 
+export function IconTaktik({ className = "" }: { className?: string }) {
+  return (
+    <svg className={`${cn} ${className}`} width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <rect x="2" y="2" width="20" height="14" rx="2" />
+      <line x1="12" y1="2" x2="12" y2="16" />
+      <line x1="2" y1="9" x2="22" y2="9" />
+      <circle cx="7" cy="5.5" r="1" fill="currentColor" stroke="none" />
+      <circle cx="17" cy="12.5" r="1" fill="currentColor" stroke="none" />
+      <path d="M7 5.5L12 9L17 12.5" strokeDasharray="2 2" />
+    </svg>
+  );
+}
+
 export function IconBracket({ className = "" }: { className?: string }) {
   return (
     <svg className={`${cn} ${className}`} width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">

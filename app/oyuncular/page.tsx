@@ -3,16 +3,17 @@
 import { useState } from "react";
 import Link from "next/link";
 import {
-  IconHome,
   IconList,
   IconRadar,
   IconUsers,
   IconBracket,
+  IconTaktik,
   IconSearch,
   IconShield,
   IconBall,
   IconCompass,
 } from "../components/icons";
+import Breadcrumb from "../components/breadcrumb";
 
 type PositionFilter = "all" | "defender" | "midfielder" | "forward";
 
@@ -138,9 +139,6 @@ export default function PlayersPage() {
               </span>
             </Link>
             <nav className="hidden items-center gap-6 text-xs font-medium text-slate-300 md:flex">
-              <Link href="/" className="flex items-center gap-1.5 transition-colors hover:text-emerald-300">
-                <IconHome /> Ana Sayfa
-              </Link>
               <Link href="/listeler" className="flex items-center gap-1.5 transition-colors hover:text-emerald-300">
                 <IconList /> Listeler
               </Link>
@@ -149,6 +147,9 @@ export default function PlayersPage() {
               </Link>
               <Link href="/oyuncular" className="flex items-center gap-1.5 text-emerald-300">
                 <IconUsers /> Oyuncular
+              </Link>
+              <Link href="/taktik-lab" className="flex items-center gap-1.5 transition-colors hover:text-emerald-300">
+                <IconTaktik /> Taktik Lab
               </Link>
               <Link href="/turnuva" className="flex items-center gap-1.5 transition-colors hover:text-emerald-300">
                 <IconBracket /> Turnuva
@@ -167,6 +168,9 @@ export default function PlayersPage() {
 
         <div className="flex-1">
           <div className="mx-auto max-w-6xl px-4 py-8 lg:py-12">
+            <div className="mb-6">
+              <Breadcrumb items={[{ label: "Oyuncular" }]} />
+            </div>
             <section className="mb-8">
               <div className="flex items-center gap-2">
                 <IconUsers className="text-emerald-300" />

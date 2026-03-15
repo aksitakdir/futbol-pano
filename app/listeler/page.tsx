@@ -1,19 +1,29 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import {
-  IconHome,
   IconList,
   IconRadar,
   IconUsers,
   IconBracket,
+  IconTaktik,
   IconShield,
   IconTrendUp,
   IconStar,
   IconTrophy,
   IconBall,
   IconCompass,
+  IconArrowRight,
 } from "../components/icons";
+import { supabase } from "@/lib/supabase";
+
+type SupabaseContent = {
+  id: string;
+  title: string;
+  slug: string;
+  created_at: string;
+};
 
 const lists = [
   {
@@ -61,21 +71,36 @@ const lists = [
 ];
 
 export default function ListsPage() {
+  const [dbLists, setDbLists] = useState<SupabaseContent[]>([]);
+
+  useEffect(() => {
+    async function fetchLists() {
+      const { data } = await supabase
+        .from("contents")
+        .select("id, title, slug, created_at")
+        .eq("status", "yayinda")
+        .eq("category", "listeler")
+        .order("created_at", { ascending: false });
+
+      if (data && data.length > 0) {
+        setDbLists(data);
+      }
+    }
+    fetchLists();
+  }, []);
+
   return (
     <main className="min-h-screen bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950 text-slate-100">
       <div className="flex min-h-screen flex-col">
         <header className="border-b border-slate-800/80 bg-slate-950/80 backdrop-blur">
           <div className="mx-auto flex max-w-6xl items-center justify-between px-4 py-4">
-            <div className="flex items-center gap-2">
+            <Link href="/" className="flex items-center gap-2">
               <div className="h-8 w-8 rounded-xl bg-gradient-to-tr from-emerald-400 to-cyan-500 shadow-[0_0_40px_rgba(16,185,129,0.7)]" />
               <span className="bg-gradient-to-r from-emerald-400 via-cyan-400 to-sky-500 bg-clip-text text-sm font-semibold tracking-[0.22em] text-transparent">
                 SCOUT INTELLIGENCE
               </span>
-            </div>
+            </Link>
             <nav className="hidden items-center gap-6 text-xs font-medium text-slate-300 md:flex">
-              <Link href="/" className="flex items-center gap-1.5 transition-colors hover:text-emerald-300">
-                <IconHome /> Ana Sayfa
-              </Link>
               <Link href="/listeler" className="flex items-center gap-1.5 text-emerald-300">
                 <IconList /> Listeler
               </Link>
@@ -84,6 +109,9 @@ export default function ListsPage() {
               </Link>
               <Link href="/oyuncular" className="flex items-center gap-1.5 transition-colors hover:text-emerald-300">
                 <IconUsers /> Oyuncular
+              </Link>
+              <Link href="/taktik-lab" className="flex items-center gap-1.5 transition-colors hover:text-emerald-300">
+                <IconTaktik /> Taktik Lab
               </Link>
               <Link href="/turnuva" className="flex items-center gap-1.5 transition-colors hover:text-emerald-300">
                 <IconBracket /> Turnuva
@@ -115,6 +143,42 @@ export default function ListsPage() {
                 oyuncuları daha iyi konumlandırmana yardımcı olur.
               </p>
             </section>
+
+            {dbLists.length > 0 && (
+              <section className="mb-6 grid gap-5 md:grid-cols-2 lg:grid-cols-3">
+                {dbLists.map((item) => (
+                  <Link
+                    key={item.id}
+                    href={`/listeler/${item.slug}`}
+                    className="group flex flex-col justify-between rounded-2xl border border-emerald-500/30 bg-slate-950/70 px-4 py-4 text-left shadow-[0_18px_60px_rgba(15,23,42,0.9)] transition hover:-translate-y-1 hover:border-emerald-500/70 hover:bg-slate-900/80"
+                  >
+                    <div>
+                      <span className="mb-2 flex items-center gap-2">
+                        <IconList className="text-emerald-300" />
+                        <span className="inline-flex rounded-full bg-emerald-500/10 px-2 py-0.5 text-[10px] font-semibold text-emerald-300">
+                          Yeni
+                        </span>
+                        <span className="text-[10px] text-slate-500">
+                          {new Date(item.created_at).toLocaleDateString("tr-TR", {
+                            day: "numeric",
+                            month: "long",
+                          })}
+                        </span>
+                      </span>
+                      <h2 className="text-sm font-semibold text-slate-50">
+                        {item.title}
+                      </h2>
+                    </div>
+                    <div className="mt-4 inline-flex items-center text-xs font-semibold text-emerald-300">
+                      Listeyi Gör
+                      <span className="ml-1 transition-transform group-hover:translate-x-0.5">
+                        →
+                      </span>
+                    </div>
+                  </Link>
+                ))}
+              </section>
+            )}
 
             <section className="grid gap-5 md:grid-cols-2 lg:grid-cols-3">
               {lists.map((list) => (
