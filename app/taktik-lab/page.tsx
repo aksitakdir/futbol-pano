@@ -161,8 +161,9 @@ export default function TaktikLabPage() {
         {dbContents.length > 0 && (
           <div className="mb-8 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
             {dbContents.map((item) => (
-              <div
+              <Link
                 key={item.id}
+                href={`/taktik-lab/${item.slug}`}
                 className="group flex flex-col rounded-2xl border border-emerald-500/30 bg-slate-950/60 p-5 shadow-[0_16px_50px_rgba(15,23,42,0.8)] transition hover:-translate-y-1 hover:border-emerald-500/50 hover:bg-slate-900/80"
               >
                 <div className="mb-3 flex items-center gap-2">
@@ -187,7 +188,7 @@ export default function TaktikLabPage() {
                   Detayları Gör
                   <span className="ml-1 transition-transform group-hover:translate-x-0.5">→</span>
                 </span>
-              </div>
+              </Link>
             ))}
           </div>
         )}

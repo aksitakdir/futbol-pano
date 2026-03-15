@@ -20,6 +20,8 @@ export default function DuzenlePage() {
   const [slug, setSlug] = useState("");
   const [category, setCategory] = useState("listeler");
   const [content, setContent] = useState("");
+  const [youtubeId, setYoutubeId] = useState("");
+  const [coverImage, setCoverImage] = useState("");
 
   const [loadingData, setLoadingData] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -43,6 +45,8 @@ export default function DuzenlePage() {
       setSlug(data.slug ?? "");
       setCategory(data.category ?? "listeler");
       setContent(data.content ?? "");
+      setYoutubeId(data.youtube_id ?? "");
+      setCoverImage(data.cover_image ?? "");
       setLoadingData(false);
     }
 
@@ -62,6 +66,8 @@ export default function DuzenlePage() {
       slug: slug.trim(),
       category,
       content: content.trim(),
+      youtube_id: youtubeId.trim(),
+      cover_image: coverImage.trim(),
     };
     if (publish) {
       updateData.status = "yayinda";
@@ -165,6 +171,33 @@ export default function DuzenlePage() {
                   {cat.label}
                 </button>
               ))}
+            </div>
+          </div>
+
+          <div className="grid gap-5 sm:grid-cols-2">
+            <div>
+              <label className="mb-1.5 block text-xs font-semibold text-slate-300">
+                YouTube Video ID
+              </label>
+              <input
+                type="text"
+                value={youtubeId}
+                onChange={(e) => setYoutubeId(e.target.value)}
+                placeholder="örn: dQw4w9WgXcQ (URL'deki v= sonrası)"
+                className="w-full rounded-lg border border-slate-700/80 bg-slate-900/70 px-4 py-2.5 text-sm text-slate-100 placeholder-slate-500 outline-none transition focus:border-emerald-500/60 focus:ring-1 focus:ring-emerald-500/40"
+              />
+            </div>
+            <div>
+              <label className="mb-1.5 block text-xs font-semibold text-slate-300">
+                Kapak Görseli URL
+              </label>
+              <input
+                type="text"
+                value={coverImage}
+                onChange={(e) => setCoverImage(e.target.value)}
+                placeholder="İsteğe bağlı, boş bırakılabilir"
+                className="w-full rounded-lg border border-slate-700/80 bg-slate-900/70 px-4 py-2.5 text-sm text-slate-100 placeholder-slate-500 outline-none transition focus:border-emerald-500/60 focus:ring-1 focus:ring-emerald-500/40"
+              />
             </div>
           </div>
 

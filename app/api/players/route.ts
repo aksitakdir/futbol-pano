@@ -57,6 +57,7 @@ export async function GET() {
         name: player.name,
         age: player.age,
         nationality: player.nationality,
+        photo: player.photo,
         position: games.position,
         team: team.name,
         league: league.name,

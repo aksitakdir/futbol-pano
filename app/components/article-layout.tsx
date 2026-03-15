@@ -59,9 +59,11 @@ type Props = {
   category: string;
   date: string;
   slug: string;
-  activeNav: "listeler" | "radar";
+  activeNav: "listeler" | "radar" | "taktik-lab";
   backHref: string;
   backLabel: string;
+  youtubeId?: string;
+  coverImage?: string;
   children?: React.ReactNode;
 };
 
@@ -74,6 +76,8 @@ export default function ArticleLayout({
   activeNav,
   backHref,
   backLabel,
+  youtubeId,
+  coverImage,
   children,
 }: Props) {
   const [similar, setSimilar] = useState<SidebarItem[]>([]);
@@ -149,7 +153,7 @@ export default function ArticleLayout({
               <Link href="/oyuncular" className="flex items-center gap-1.5 transition-colors hover:text-emerald-300">
                 <IconUsers /> Oyuncular
               </Link>
-              <Link href="/taktik-lab" className="flex items-center gap-1.5 transition-colors hover:text-emerald-300">
+              <Link href="/taktik-lab" className={`flex items-center gap-1.5 transition-colors ${activeNav === "taktik-lab" ? "text-emerald-300" : "hover:text-emerald-300"}`}>
                 <IconTaktik /> Taktik Lab
               </Link>
               <Link href="/turnuva" className="flex items-center gap-1.5 transition-colors hover:text-emerald-300">
@@ -190,6 +194,25 @@ export default function ArticleLayout({
                 <h1 className="mb-6 bg-gradient-to-r from-emerald-400 via-cyan-400 to-sky-500 bg-clip-text text-2xl font-extrabold tracking-tight text-transparent md:text-3xl">
                   {title}
                 </h1>
+
+                {/* Cover image or YouTube embed */}
+                {coverImage ? (
+                  <div className="mb-6 overflow-hidden rounded-2xl border border-slate-800/80">
+                    <img src={coverImage} alt={title} className="h-auto w-full object-cover" />
+                  </div>
+                ) : youtubeId ? (
+                  <div className="mb-6 overflow-hidden rounded-2xl border border-slate-800/80">
+                    <iframe
+                      width="100%"
+                      height="400"
+                      src={`https://www.youtube.com/embed/${youtubeId}`}
+                      frameBorder="0"
+                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                      allowFullScreen
+                      className="block"
+                    />
+                  </div>
+                ) : null}
 
                 {/* Markdown content */}
                 <article className="prose-custom mb-8 rounded-2xl border border-slate-800/80 bg-slate-950/70 p-6 shadow-[0_18px_60px_rgba(15,23,42,0.9)]">

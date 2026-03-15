@@ -51,6 +51,7 @@ export default function Home() {
     name: string;
     age: number;
     nationality?: string;
+    photo?: string;
     position?: string;
     team?: string;
     league?: string;
@@ -534,7 +535,22 @@ export default function Home() {
                               </span>
                             </td>
                             <td className="border-b border-slate-800/80 px-3 py-3 text-sm font-medium text-slate-100">
-                              {player.name}
+                              <div className="flex items-center gap-2.5">
+                                {player.photo ? (
+                                  <img
+                                    src={player.photo}
+                                    alt={player.name}
+                                    width={32}
+                                    height={32}
+                                    className="h-8 w-8 shrink-0 rounded-full object-cover ring-1 ring-slate-700/80"
+                                  />
+                                ) : (
+                                  <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-slate-800 text-[10px] font-bold text-slate-400 ring-1 ring-slate-700/80">
+                                    {player.name?.charAt(0) ?? "?"}
+                                  </span>
+                                )}
+                                {player.name}
+                              </div>
                             </td>
                             <td className="border-b border-slate-800/80 px-3 py-3 text-xs font-medium text-emerald-300">
                               {player.position ?? "—"}

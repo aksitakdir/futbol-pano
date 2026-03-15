@@ -13,6 +13,8 @@ type SupabaseRow = {
   category: string;
   content: string;
   created_at: string;
+  youtube_id?: string;
+  cover_image?: string;
 };
 
 type Player = {
@@ -189,6 +191,8 @@ export default function ListDetailPage() {
         activeNav="listeler"
         backHref="/listeler"
         backLabel="Listelere Dön"
+        youtubeId={dbContent.youtube_id}
+        coverImage={dbContent.cover_image}
       />
     );
   }
