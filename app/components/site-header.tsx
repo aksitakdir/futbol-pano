@@ -90,7 +90,7 @@ export default function SiteHeader({ activeNav, maxWidth = "max-w-6xl" }: Props)
 
       {/* Mobile fullscreen overlay */}
       {open && (
-        <div className="fixed inset-0 z-[100] flex flex-col bg-slate-950/98 backdrop-blur-sm md:hidden">
+        <div className="fixed inset-0 z-[100] flex flex-col bg-[#0a1628] md:hidden">
           {/* Close button */}
           <div className="flex items-center justify-between px-4 py-4">
             <Link href="/" onClick={() => setOpen(false)} className="flex items-center gap-2">

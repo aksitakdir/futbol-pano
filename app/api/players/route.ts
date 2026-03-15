@@ -1,5 +1,7 @@
 import { NextResponse } from "next/server";
 
+export const revalidate = 3600;
+
 const API_BASE_URL = "https://v3.football.api-sports.io";
 
 export async function GET() {
@@ -21,8 +23,7 @@ export async function GET() {
       headers: {
         "x-apisports-key": apiKey,
       },
-        // Ensure we don't cache at the edge while testing
-      cache: "no-store",
+      next: { revalidate: 3600 },
     });
 
     if (!res.ok) {
