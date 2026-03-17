@@ -15,6 +15,8 @@ type SupabaseRow = {
   created_at: string;
   youtube_id?: string;
   cover_image?: string;
+  youtube_query_1?: string;
+  youtube_query_2?: string;
 };
 
 type Player = {
@@ -193,6 +195,9 @@ export default function ListDetailPage() {
         backLabel="Listelere Dön"
         youtubeId={dbContent.youtube_id}
         coverImage={dbContent.cover_image}
+        youtubeQuery1={dbContent.youtube_query_1}
+        youtubeQuery2={dbContent.youtube_query_2}
+        showNewsSection={false}
       />
     );
   }
@@ -209,6 +214,7 @@ export default function ListDetailPage() {
         activeNav="listeler"
         backHref="/listeler"
         backLabel="Listelere Dön"
+        showNewsSection={false}
       >
         <PlayerCards players={staticConfig.players} />
       </ArticleLayout>

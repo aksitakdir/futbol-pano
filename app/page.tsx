@@ -11,6 +11,7 @@ import {
 } from "./components/icons";
 import SiteHeader from "./components/site-header";
 import { supabase } from "@/lib/supabase";
+import { stripHtml } from "@/lib/utils";
 
 type SlideContent = {
   id: string;
@@ -226,7 +227,7 @@ export default function Home() {
                     {slide.title}
                   </h2>
                   <p className="mb-4 hidden max-w-2xl text-sm leading-relaxed text-slate-300 sm:block md:mb-6">
-                    {slide.content.replace(/[#*_\n]/g, " ").trim().slice(0, 120)}…
+                    {stripHtml(slide.content).replace(/[#*_\n]/g, " ").trim().slice(0, 150)}…
                   </p>
                   <Link
                     href={`${categoryPath(slide.category)}/${slide.slug}`}

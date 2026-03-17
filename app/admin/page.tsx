@@ -43,10 +43,20 @@ const STATUS_CONFIG: Record<string, { label: string; cls: string }> = {
   reddedildi: { label: "Reddedildi", cls: "bg-rose-500/15 text-rose-300 border-rose-500/40" },
 };
 
+const STORAGE_KEY = "adminAuth";
+
 export default function AdminPage() {
   const [authed, setAuthed] = useState(false);
   const [pw, setPw] = useState("");
   const [pwError, setPwError] = useState("");
+  const [checkedStorage, setCheckedStorage] = useState(false);
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const stored = localStorage.getItem(STORAGE_KEY);
+    setAuthed(stored === "true");
+    setCheckedStorage(true);
+  }, []);
 
   const [allContents, setAllContents] = useState<ContentRow[]>([]);
   const [loading, setLoading] = useState(false);
@@ -60,11 +70,19 @@ export default function AdminPage() {
   function handleLogin(e: React.FormEvent) {
     e.preventDefault();
     if (pw === ADMIN_PASSWORD) {
+      if (typeof window !== "undefined") localStorage.setItem(STORAGE_KEY, "true");
       setAuthed(true);
       setPwError("");
     } else {
       setPwError("Şifre yanlış");
     }
+  }
+
+  function handleLogout() {
+    if (typeof window !== "undefined") localStorage.removeItem(STORAGE_KEY);
+    setAuthed(false);
+    setPw("");
+    setPwError("");
   }
 
   const fetchAll = useCallback(async () => {
@@ -190,6 +208,18 @@ export default function AdminPage() {
 
   const allChecked = filtered.length > 0 && selected.size === filtered.length;
 
+  // Wait for localStorage check to avoid flash of login form
+  if (!checkedStorage) {
+    return (
+      <main className="flex min-h-screen items-center justify-center bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950 text-slate-100">
+        <div className="flex items-center gap-2 text-sm text-slate-400">
+          <span className="h-5 w-5 animate-spin rounded-full border-2 border-emerald-400 border-t-transparent" />
+          Yükleniyor...
+        </div>
+      </main>
+    );
+  }
+
   // Login
   if (!authed) {
     return (
@@ -253,12 +283,21 @@ export default function AdminPage() {
             />
           </div>
 
-          <Link
-            href="/admin/yeni"
-            className="shrink-0 rounded-lg bg-emerald-500 px-4 py-2 text-xs font-semibold text-slate-950 transition hover:bg-emerald-400"
-          >
-            + Yeni İçerik
-          </Link>
+          <div className="flex shrink-0 items-center gap-2">
+            <Link
+              href="/admin/yeni"
+              className="rounded-lg bg-emerald-500 px-4 py-2 text-xs font-semibold text-slate-950 transition hover:bg-emerald-400"
+            >
+              + Yeni İçerik
+            </Link>
+            <button
+              type="button"
+              onClick={handleLogout}
+              className="rounded-lg border border-slate-600/80 px-4 py-2 text-xs font-medium text-slate-400 transition hover:border-slate-500 hover:text-slate-200"
+            >
+              Çıkış
+            </button>
+          </div>
         </div>
       </header>
 

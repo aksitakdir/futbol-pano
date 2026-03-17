@@ -8,9 +8,18 @@ import {
   IconClock,
   IconArrowRight,
 } from "./icons";
+
+const ARTICLE_BODY_CLASS =
+  "article-body text-[15px] leading-[1.7] [&_h1]:mb-4 [&_h1]:mt-6 [&_h1]:text-xl [&_h1]:font-extrabold [&_h1]:text-slate-50 [&_h1]:first:mt-0 [&_h2]:mb-3 [&_h2]:mt-5 [&_h2]:text-lg [&_h2]:font-bold [&_h2]:text-slate-50 [&_h3]:mb-2 [&_h3]:mt-4 [&_h3]:text-base [&_h3]:font-semibold [&_h3]:text-slate-100 [&_p]:mb-5 [&_p]:text-slate-200 [&_ul]:mb-5 [&_ul]:list-disc [&_ul]:pl-5 [&_ul]:text-slate-200 [&_ol]:mb-5 [&_ol]:list-decimal [&_ol]:pl-5 [&_ol]:text-slate-200 [&_li]:mb-2 [&_li]:leading-[1.7] [&_strong]:font-semibold [&_strong]:text-slate-50 [&_em]:text-slate-300 [&_blockquote]:my-5 [&_blockquote]:border-l-2 [&_blockquote]:border-emerald-500/60 [&_blockquote]:pl-4 [&_blockquote]:italic [&_blockquote]:text-slate-300 [&_a]:text-emerald-300 [&_a]:underline [&_a]:decoration-emerald-500/30 hover:[&_a]:text-emerald-200 [&_hr]:my-6 [&_hr]:border-slate-800/60 [&_code]:rounded [&_code]:bg-slate-800 [&_code]:px-1.5 [&_code]:py-0.5 [&_code]:text-xs [&_code]:text-emerald-300";
+
+function isHtmlContent(str: string): boolean {
+  const trimmed = str?.trim() ?? "";
+  return trimmed.length > 0 && trimmed.includes("<") && trimmed.includes(">");
+}
 import SiteHeader from "./site-header";
 import Breadcrumb from "./breadcrumb";
 import { supabase } from "@/lib/supabase";
+import { stripHtml } from "@/lib/utils";
 
 type SidebarItem = {
   id: string;
@@ -50,6 +59,29 @@ function categoryPath(category: string): string {
   return "/";
 }
 
+export type YouTubeSearchItem = {
+  title: string;
+  thumbnail: string;
+  videoId: string;
+  channelTitle: string;
+};
+
+export type NewsItem = {
+  title: string;
+  link: string;
+  source: string;
+  date: string;
+};
+
+function getNewsQueryFromTitle(title: string): string {
+  const t = title?.trim() ?? "";
+  if (!t) return "";
+  const parenMatch = t.match(/^(.+?)\s*\([^)]+\)\s*$/);
+  if (parenMatch) return parenMatch[1].trim();
+  const words = t.split(/\s+/).filter(Boolean);
+  return words.slice(0, 2).join(" ") || t;
+}
+
 type Props = {
   title: string;
   content: string;
@@ -61,6 +93,10 @@ type Props = {
   backLabel: string;
   youtubeId?: string;
   coverImage?: string;
+  youtubeQuery1?: string;
+  youtubeQuery2?: string;
+  newsQuery?: string;
+  showNewsSection?: boolean;
   children?: React.ReactNode;
 };
 
@@ -75,10 +111,19 @@ export default function ArticleLayout({
   backLabel,
   youtubeId,
   coverImage,
+  youtubeQuery1,
+  youtubeQuery2,
+  newsQuery,
+  showNewsSection = true,
   children,
 }: Props) {
   const [similar, setSimilar] = useState<SidebarItem[]>([]);
   const [discover, setDiscover] = useState<SidebarItem[]>([]);
+  const [youtubeVideos1, setYoutubeVideos1] = useState<YouTubeSearchItem[] | null>(null);
+  const [youtubeVideos2, setYoutubeVideos2] = useState<YouTubeSearchItem[] | null>(null);
+  const [newsItems, setNewsItems] = useState<NewsItem[] | null>(null);
+
+  const effectiveNewsQuery = showNewsSection ? (newsQuery?.trim() || getNewsQueryFromTitle(title)) : "";
 
   useEffect(() => {
     async function fetchSidebar() {
@@ -106,16 +151,79 @@ export default function ArticleLayout({
     fetchSidebar();
   }, [category, slug]);
 
+  useEffect(() => {
+    const q1 = youtubeQuery1?.trim();
+    if (!q1) {
+      setYoutubeVideos1(null);
+      return;
+    }
+    let cancelled = false;
+    fetch(`/api/youtube?query=${encodeURIComponent(q1)}`)
+      .then((r) => (r.ok ? r.json() : []))
+      .then((arr: YouTubeSearchItem[]) => {
+        if (!cancelled) setYoutubeVideos1(Array.isArray(arr) ? arr : []);
+      })
+      .catch(() => {
+        if (!cancelled) setYoutubeVideos1([]);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [youtubeQuery1]);
+
+  useEffect(() => {
+    const q2 = youtubeQuery2?.trim();
+    if (!q2) {
+      setYoutubeVideos2(null);
+      return;
+    }
+    let cancelled = false;
+    fetch(`/api/youtube?query=${encodeURIComponent(q2)}`)
+      .then((r) => (r.ok ? r.json() : []))
+      .then((arr: YouTubeSearchItem[]) => {
+        if (!cancelled) setYoutubeVideos2(Array.isArray(arr) ? arr : []);
+      })
+      .catch(() => {
+        if (!cancelled) setYoutubeVideos2([]);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [youtubeQuery2]);
+
+  useEffect(() => {
+    const q = effectiveNewsQuery?.trim();
+    if (!q) {
+      setNewsItems(null);
+      return;
+    }
+    let cancelled = false;
+    fetch(`/api/news?query=${encodeURIComponent(q)}`)
+      .then((r) => (r.ok ? r.json() : []))
+      .then((arr: NewsItem[]) => {
+        if (!cancelled) setNewsItems(Array.isArray(arr) && arr.length > 0 ? arr : null);
+      })
+      .catch(() => {
+        if (!cancelled) setNewsItems(null);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [effectiveNewsQuery]);
+
   const formattedDate = new Date(date).toLocaleDateString("tr-TR", {
     day: "numeric",
     month: "long",
     year: "numeric",
   });
-  const minutes = readTime(content);
+  const contentForReadTime = isHtmlContent(content)
+    ? content.replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").trim()
+    : content;
+  const minutes = readTime(contentForReadTime);
   const catLabel = CATEGORY_LABEL[category] ?? category;
   const catColor = CATEGORY_COLOR[category] ?? "bg-slate-500/15 text-slate-300 border-slate-500/40";
   const tags = CATEGORY_TAGS[category] ?? ["Analiz", "Scout"];
-  const description = content.replace(/[#*_\n]/g, " ").trim().slice(0, 160);
+  const description = stripHtml(content).replace(/[#*_\n]/g, " ").trim().slice(0, 160);
 
   const shareUrl = typeof window !== "undefined" ? window.location.href : "";
   const twitterUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(title + " | Scout Intelligence")}&url=${encodeURIComponent(shareUrl)}`;
@@ -180,31 +288,167 @@ export default function ArticleLayout({
                   </div>
                 ) : null}
 
-                {/* Markdown content */}
-                <article className="prose-custom mb-8 rounded-2xl border border-slate-800/80 bg-slate-950/70 p-6 shadow-[0_18px_60px_rgba(15,23,42,0.9)]">
-                  <ReactMarkdown
-                    components={{
-                      h1: ({ children: c }) => <h1 className="mb-4 mt-6 text-xl font-extrabold text-slate-50 first:mt-0">{c}</h1>,
-                      h2: ({ children: c }) => <h2 className="mb-3 mt-5 text-lg font-bold text-slate-50">{c}</h2>,
-                      h3: ({ children: c }) => <h3 className="mb-2 mt-4 text-base font-semibold text-slate-100">{c}</h3>,
-                      p: ({ children: c }) => <p className="mb-3 text-sm leading-relaxed text-slate-200">{c}</p>,
-                      ul: ({ children: c }) => <ul className="mb-3 list-disc pl-5 text-sm text-slate-200">{c}</ul>,
-                      ol: ({ children: c }) => <ol className="mb-3 list-decimal pl-5 text-sm text-slate-200">{c}</ol>,
-                      li: ({ children: c }) => <li className="mb-1 leading-relaxed">{c}</li>,
-                      strong: ({ children: c }) => <strong className="font-semibold text-slate-50">{c}</strong>,
-                      em: ({ children: c }) => <em className="text-slate-300">{c}</em>,
-                      blockquote: ({ children: c }) => <blockquote className="my-4 border-l-2 border-emerald-500/60 pl-4 text-sm italic text-slate-300">{c}</blockquote>,
-                      hr: () => <hr className="my-5 border-slate-800/60" />,
-                      a: ({ href, children: c }) => <a href={href} className="text-emerald-300 underline decoration-emerald-500/30 transition hover:text-emerald-200" target="_blank" rel="noopener noreferrer">{c}</a>,
-                      code: ({ children: c }) => <code className="rounded bg-slate-800 px-1.5 py-0.5 text-xs text-emerald-300">{c}</code>,
-                    }}
-                  >
-                    {content}
-                  </ReactMarkdown>
+                {/* Article content — HTML from editor or legacy Markdown */}
+                <article className={`prose-custom mb-8 rounded-2xl border border-slate-800/80 bg-slate-950/70 p-6 shadow-[0_18px_60px_rgba(15,23,42,0.9)] ${ARTICLE_BODY_CLASS}`}>
+                  {isHtmlContent(content) ? (
+                    <div dangerouslySetInnerHTML={{ __html: content }} />
+                  ) : (
+                    <ReactMarkdown
+                      components={{
+                        h1: ({ children: c }) => <h1 className="mb-4 mt-6 text-xl font-extrabold text-slate-50 first:mt-0">{c}</h1>,
+                        h2: ({ children: c }) => <h2 className="mb-3 mt-5 text-lg font-bold text-slate-50">{c}</h2>,
+                        h3: ({ children: c }) => <h3 className="mb-2 mt-4 text-base font-semibold text-slate-100">{c}</h3>,
+                        p: ({ children: c }) => <p className="mb-5 text-[15px] leading-[1.7] text-slate-200">{c}</p>,
+                      ul: ({ children: c }) => <ul className="mb-5 list-disc pl-5 text-[15px] leading-[1.7] text-slate-200">{c}</ul>,
+                      ol: ({ children: c }) => <ol className="mb-5 list-decimal pl-5 text-[15px] leading-[1.7] text-slate-200">{c}</ol>,
+                      li: ({ children: c }) => <li className="mb-2 leading-[1.7]">{c}</li>,
+                        strong: ({ children: c }) => <strong className="font-semibold text-slate-50">{c}</strong>,
+                        em: ({ children: c }) => <em className="text-slate-300">{c}</em>,
+                        blockquote: ({ children: c }) => <blockquote className="my-5 border-l-2 border-emerald-500/60 pl-4 text-[15px] leading-[1.7] italic text-slate-300">{c}</blockquote>,
+                        hr: () => <hr className="my-6 border-slate-800/60" />,
+                        a: ({ href, children: c }) => <a href={href} className="text-emerald-300 underline decoration-emerald-500/30 transition hover:text-emerald-200" target="_blank" rel="noopener noreferrer">{c}</a>,
+                        code: ({ children: c }) => <code className="rounded bg-slate-800 px-1.5 py-0.5 text-xs text-emerald-300">{c}</code>,
+                      }}
+                    >
+                      {content}
+                    </ReactMarkdown>
+                  )}
                 </article>
 
                 {/* Extra children (player cards for listeler) */}
                 {children}
+
+                {/* YouTube'da İzle — query 1 */}
+                {youtubeQuery1?.trim() && (
+                  <div className="mb-8">
+                    <h2 className="mb-4 text-lg font-bold text-slate-100">
+                      <a
+                        href={`https://www.youtube.com/results?search_query=${encodeURIComponent(youtubeQuery1.trim())}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-slate-100 underline decoration-emerald-500/50 transition hover:text-emerald-300 hover:decoration-emerald-400"
+                      >
+                        {youtubeQuery1.trim()} — YouTube&apos;da İzle
+                      </a>
+                    </h2>
+                    {youtubeVideos1 === null ? (
+                      <div className="flex items-center gap-2 rounded-2xl border border-slate-800/80 bg-slate-950/70 py-8 text-slate-400">
+                        <span className="h-5 w-5 animate-spin rounded-full border-2 border-emerald-400 border-t-transparent" />
+                        <span className="text-sm">Videolar yükleniyor...</span>
+                      </div>
+                    ) : youtubeVideos1.length === 0 ? (
+                      <p className="text-sm text-slate-500">Video bulunamadı.</p>
+                    ) : (
+                      <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
+                        {youtubeVideos1.map((v) => (
+                          <a
+                            key={v.videoId}
+                            href={`https://www.youtube.com/watch?v=${v.videoId}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="group flex flex-col overflow-hidden rounded-xl border border-slate-800/80 bg-slate-950/70 transition hover:border-emerald-500/50"
+                          >
+                            <div className="aspect-video w-full shrink-0 overflow-hidden bg-slate-800">
+                              <img
+                                src={v.thumbnail}
+                                alt=""
+                                className="h-full w-full object-cover transition group-hover:scale-105"
+                              />
+                            </div>
+                            <div className="flex flex-1 flex-col gap-0.5 p-2.5">
+                              <p className="line-clamp-2 text-xs font-medium text-slate-200 group-hover:text-emerald-300">
+                                {v.title}
+                              </p>
+                              <p className="text-[10px] text-slate-500">{v.channelTitle}</p>
+                            </div>
+                          </a>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                )}
+
+                {/* YouTube'da İzle — query 2 */}
+                {youtubeQuery2?.trim() && (
+                  <div className="mb-8">
+                    <h2 className="mb-4 text-lg font-bold text-slate-100">
+                      <a
+                        href={`https://www.youtube.com/results?search_query=${encodeURIComponent(youtubeQuery2.trim())}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-slate-100 underline decoration-emerald-500/50 transition hover:text-emerald-300 hover:decoration-emerald-400"
+                      >
+                        {youtubeQuery2.trim()} — YouTube&apos;da İzle
+                      </a>
+                    </h2>
+                    {youtubeVideos2 === null ? (
+                      <div className="flex items-center gap-2 rounded-2xl border border-slate-800/80 bg-slate-950/70 py-8 text-slate-400">
+                        <span className="h-5 w-5 animate-spin rounded-full border-2 border-emerald-400 border-t-transparent" />
+                        <span className="text-sm">Videolar yükleniyor...</span>
+                      </div>
+                    ) : youtubeVideos2.length === 0 ? (
+                      <p className="text-sm text-slate-500">Video bulunamadı.</p>
+                    ) : (
+                      <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
+                        {youtubeVideos2.map((v) => (
+                          <a
+                            key={v.videoId}
+                            href={`https://www.youtube.com/watch?v=${v.videoId}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="group flex flex-col overflow-hidden rounded-xl border border-slate-800/80 bg-slate-950/70 transition hover:border-emerald-500/50"
+                          >
+                            <div className="aspect-video w-full shrink-0 overflow-hidden bg-slate-800">
+                              <img
+                                src={v.thumbnail}
+                                alt=""
+                                className="h-full w-full object-cover transition group-hover:scale-105"
+                              />
+                            </div>
+                            <div className="flex flex-1 flex-col gap-0.5 p-2.5">
+                              <p className="line-clamp-2 text-xs font-medium text-slate-200 group-hover:text-emerald-300">
+                                {v.title}
+                              </p>
+                              <p className="text-[10px] text-slate-500">{v.channelTitle}</p>
+                            </div>
+                          </a>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                )}
+
+                {/* Güncel Haberler — sadece radar ve taktik-lab */}
+                {showNewsSection && newsItems != null && newsItems.length > 0 && (
+                  <div className="mb-8">
+                    <h2 className="mb-3 text-lg font-bold text-slate-100">
+                      Güncel Haberler
+                    </h2>
+                    <div className="rounded-xl border border-slate-800/80 bg-slate-950/70 px-4 py-1">
+                      {newsItems.map((item, i) => (
+                        <a
+                          key={i}
+                          href={item.link}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className={`flex items-center gap-4 py-3 text-left ${i < newsItems.length - 1 ? "border-b border-slate-800/60" : ""}`}
+                        >
+                          <span className="w-24 shrink-0 text-[10px] font-medium uppercase tracking-wider text-slate-500">
+                            {item.source || "—"}
+                          </span>
+                          <span className="min-w-0 flex-1 text-sm font-medium text-slate-200 line-clamp-2 transition hover:text-cyan-300">
+                            {item.title}
+                          </span>
+                          {item.date && (
+                            <span className="shrink-0 text-[10px] text-slate-500">
+                              {item.date}
+                            </span>
+                          )}
+                        </a>
+                      ))}
+                    </div>
+                  </div>
+                )}
 
                 {/* Tags */}
                 <div className="mb-6">

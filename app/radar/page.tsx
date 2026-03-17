@@ -13,6 +13,7 @@ import {
 } from "../components/icons";
 import SiteHeader from "../components/site-header";
 import { supabase } from "@/lib/supabase";
+import { stripHtml } from "@/lib/utils";
 
 type SupabaseContent = {
   id: string;
@@ -137,7 +138,7 @@ export default function RadarPage() {
                         {article.title}
                       </h2>
                       <p className="mt-2 line-clamp-2 text-xs leading-relaxed text-slate-300">
-                        {article.content.slice(0, 160)}…
+                        {stripHtml(article.content).trim().slice(0, 150)}…
                       </p>
                     </div>
                     <div className="mt-4 inline-flex items-center gap-1 text-xs font-semibold text-emerald-300">

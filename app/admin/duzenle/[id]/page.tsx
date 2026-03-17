@@ -4,6 +4,13 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 import { supabase } from "@/lib/supabase";
+import RichTextEditor from "@/app/components/rich-text-editor";
+
+function isContentEmpty(html: string): boolean {
+  if (!html?.trim()) return true;
+  const text = html.replace(/<[^>]+>/g, "").trim();
+  return text === "";
+}
 
 const CATEGORIES = [
   { value: "listeler", label: "Listeler" },
@@ -22,6 +29,9 @@ export default function DuzenlePage() {
   const [content, setContent] = useState("");
   const [youtubeId, setYoutubeId] = useState("");
   const [coverImage, setCoverImage] = useState("");
+  const [youtubeQuery1, setYoutubeQuery1] = useState("");
+  const [youtubeQuery2, setYoutubeQuery2] = useState("");
+  const [newsQuery, setNewsQuery] = useState("");
 
   const [loadingData, setLoadingData] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -47,6 +57,9 @@ export default function DuzenlePage() {
       setContent(data.content ?? "");
       setYoutubeId(data.youtube_id ?? "");
       setCoverImage(data.cover_image ?? "");
+      setYoutubeQuery1(data.youtube_query_1 ?? "");
+      setYoutubeQuery2(data.youtube_query_2 ?? "");
+      setNewsQuery(data.news_query ?? "");
       setLoadingData(false);
     }
 
@@ -55,7 +68,7 @@ export default function DuzenlePage() {
 
   async function handleSave(publish = false) {
     setError("");
-    if (!title.trim() || !slug.trim() || !content.trim()) {
+    if (!title.trim() || !slug.trim() || isContentEmpty(content)) {
       setError("Tüm alanlar zorunludur");
       return;
     }
@@ -68,6 +81,9 @@ export default function DuzenlePage() {
       content: content.trim(),
       youtube_id: youtubeId.trim(),
       cover_image: coverImage.trim(),
+      youtube_query_1: youtubeQuery1.trim(),
+      youtube_query_2: youtubeQuery2.trim(),
+      news_query: newsQuery.trim(),
     };
     if (publish) {
       updateData.status = "yayinda";
@@ -201,15 +217,54 @@ export default function DuzenlePage() {
             </div>
           </div>
 
+          <div className="grid gap-5 sm:grid-cols-2">
+            <div>
+              <label className="mb-1.5 block text-xs font-semibold text-slate-300">
+                YouTube Arama 1
+              </label>
+              <input
+                type="text"
+                value={youtubeQuery1}
+                onChange={(e) => setYoutubeQuery1(e.target.value)}
+                placeholder="örn: Arda Güler highlights 2025"
+                className="w-full rounded-lg border border-slate-700/80 bg-slate-900/70 px-4 py-2.5 text-sm text-slate-100 placeholder-slate-500 outline-none transition focus:border-emerald-500/60 focus:ring-1 focus:ring-emerald-500/40"
+              />
+            </div>
+            <div>
+              <label className="mb-1.5 block text-xs font-semibold text-slate-300">
+                YouTube Arama 2
+              </label>
+              <input
+                type="text"
+                value={youtubeQuery2}
+                onChange={(e) => setYoutubeQuery2(e.target.value)}
+                placeholder="opsiyonel, ikinci oyuncu için"
+                className="w-full rounded-lg border border-slate-700/80 bg-slate-900/70 px-4 py-2.5 text-sm text-slate-100 placeholder-slate-500 outline-none transition focus:border-emerald-500/60 focus:ring-1 focus:ring-emerald-500/40"
+              />
+            </div>
+          </div>
+
+          <div>
+            <label className="mb-1.5 block text-xs font-semibold text-slate-300">
+              Haber Arama Keyword
+            </label>
+            <input
+              type="text"
+              value={newsQuery}
+              onChange={(e) => setNewsQuery(e.target.value)}
+              placeholder="örn: Arda Güler (boş bırakılırsa başlıktan otomatik çıkarılır)"
+              className="w-full rounded-lg border border-slate-700/80 bg-slate-900/70 px-4 py-2.5 text-sm text-slate-100 placeholder-slate-500 outline-none transition focus:border-emerald-500/60 focus:ring-1 focus:ring-emerald-500/40"
+            />
+          </div>
+
           <div>
             <label className="mb-1.5 block text-xs font-semibold text-slate-300">
               İçerik
             </label>
-            <textarea
+            <RichTextEditor
               value={content}
-              onChange={(e) => setContent(e.target.value)}
-              rows={14}
-              className="w-full resize-y rounded-lg border border-slate-700/80 bg-slate-900/70 px-4 py-3 text-sm leading-relaxed text-slate-100 placeholder-slate-500 outline-none transition focus:border-emerald-500/60 focus:ring-1 focus:ring-emerald-500/40"
+              onChange={setContent}
+              placeholder="İçerik yazın..."
             />
           </div>
 

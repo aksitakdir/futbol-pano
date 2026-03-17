@@ -15,6 +15,9 @@ type ContentRow = {
   created_at: string;
   youtube_id?: string;
   cover_image?: string;
+  youtube_query_1?: string;
+  youtube_query_2?: string;
+  news_query?: string;
 };
 
 export default function RadarDetailPage() {
@@ -84,6 +87,9 @@ export default function RadarDetailPage() {
       backLabel="Radar'a Dön"
       youtubeId={article.youtube_id}
       coverImage={article.cover_image}
+      youtubeQuery1={article.youtube_query_1}
+      youtubeQuery2={article.youtube_query_2}
+      newsQuery={article.news_query}
     />
   );
 }

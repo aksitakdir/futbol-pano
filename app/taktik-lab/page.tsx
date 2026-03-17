@@ -12,6 +12,7 @@ import {
 import SiteHeader from "../components/site-header";
 import Breadcrumb from "../components/breadcrumb";
 import { supabase } from "@/lib/supabase";
+import { stripHtml } from "@/lib/utils";
 
 type SupabaseContent = {
   id: string;
@@ -145,7 +146,7 @@ export default function TaktikLabPage() {
                   {item.title}
                 </h2>
                 <p className="mt-1.5 flex-1 line-clamp-3 text-sm leading-relaxed text-slate-400">
-                  {item.content.slice(0, 140)}…
+                  {stripHtml(item.content).trim().slice(0, 150)}…
                 </p>
                 <span className="mt-4 inline-flex items-center self-start text-xs font-semibold text-emerald-300 transition group-hover:text-emerald-200">
                   Detayları Gör
