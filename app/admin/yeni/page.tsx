@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { supabase } from "@/lib/supabase";
 import RichTextEditor from "@/app/components/rich-text-editor";
+import AdminLayout from "../components/admin-layout";
 
 function isContentEmpty(html: string): boolean {
   if (!html?.trim()) return true;
@@ -63,36 +64,26 @@ export default function YeniIcerikPage() {
       return;
     }
 
-    router.push("/admin");
+    router.push("/admin/icerikler");
   }
 
   return (
-    <main className="min-h-screen bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950 text-slate-100">
-      <header className="border-b border-slate-800/80 bg-slate-950/80 backdrop-blur">
-        <div className="mx-auto flex max-w-3xl items-center justify-between px-4 py-4">
-          <Link href="/admin" className="flex items-center gap-2">
-            <div className="h-8 w-8 rounded-xl bg-gradient-to-tr from-emerald-400 to-cyan-500 shadow-[0_0_40px_rgba(16,185,129,0.7)]" />
-            <span className="bg-gradient-to-r from-emerald-400 via-cyan-400 to-sky-500 bg-clip-text text-sm font-semibold tracking-[0.22em] text-transparent">
-              ADMIN PANEL
-            </span>
-          </Link>
+    <AdminLayout>
+      <div className="mx-auto max-w-3xl">
+        <div className="mb-5 flex items-center justify-between">
+          <div>
+            <h1 className="text-xl font-bold">Yeni İçerik Ekle</h1>
+            <p className="text-xs text-slate-400">
+              İçerik kaydedildiğinde &quot;bekliyor&quot; durumunda admin paneline düşecektir
+            </p>
+          </div>
           <Link
-            href="/admin"
-            className="rounded-lg border border-slate-700/80 bg-slate-900/70 px-4 py-2 text-xs font-medium text-slate-300 transition hover:border-emerald-500/60 hover:text-emerald-300"
+            href="/admin/icerikler"
+            className="rounded-lg border border-slate-700/60 px-3 py-1.5 text-xs font-medium text-slate-400 transition hover:border-slate-600 hover:text-slate-200"
           >
-            ← Panele Dön
+            ← İçeriklere Dön
           </Link>
         </div>
-      </header>
-
-      <div className="mx-auto max-w-3xl px-4 py-8">
-        <h1 className="mb-1 text-xl font-extrabold tracking-tight">
-          Yeni İçerik Ekle
-        </h1>
-        <p className="mb-8 text-xs text-slate-400">
-          İçerik kaydedildiğinde &quot;bekliyor&quot; durumunda admin paneline
-          düşecektir
-        </p>
 
         <form onSubmit={handleSubmit} className="space-y-5">
           <div>
@@ -235,6 +226,6 @@ export default function YeniIcerikPage() {
           </button>
         </form>
       </div>
-    </main>
+    </AdminLayout>
   );
 }
