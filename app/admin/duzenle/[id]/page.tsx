@@ -33,6 +33,7 @@ export default function DuzenlePage() {
   const [youtubeQuery1, setYoutubeQuery1] = useState("");
   const [youtubeQuery2, setYoutubeQuery2] = useState("");
   const [newsQuery, setNewsQuery] = useState("");
+  const [playerName, setPlayerName] = useState("");
 
   const [loadingData, setLoadingData] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -61,6 +62,7 @@ export default function DuzenlePage() {
       setYoutubeQuery1(data.youtube_query_1 ?? "");
       setYoutubeQuery2(data.youtube_query_2 ?? "");
       setNewsQuery(data.news_query ?? "");
+      setPlayerName((data as { player_name?: string }).player_name ?? "");
       setLoadingData(false);
     }
 
@@ -102,7 +104,7 @@ export default function DuzenlePage() {
       return;
     }
 
-    router.push("/admin/icerikler");
+    router.push(category === "radar" ? "/admin/radar" : "/admin/icerikler");
   }
 
   if (loadingData) {
@@ -125,10 +127,10 @@ export default function DuzenlePage() {
             <p className="text-xs text-slate-400">Değişiklikleri kaydet veya doğrudan yayınla</p>
           </div>
           <Link
-            href="/admin/icerikler"
+            href={category === "radar" ? "/admin/radar" : "/admin/icerikler"}
             className="rounded-lg border border-slate-700/60 px-3 py-1.5 text-xs font-medium text-slate-400 transition hover:border-slate-600 hover:text-slate-200"
           >
-            ← İçeriklere Dön
+            {category === "radar" ? "← Radar listesine" : "← İçeriklere dön"}
           </Link>
         </div>
 
@@ -249,6 +251,19 @@ export default function DuzenlePage() {
 
           <div>
             <label className="mb-1.5 block text-xs font-semibold text-slate-300">
+              Odak oyuncu (arama linkleri)
+            </label>
+            <input
+              type="text"
+              value={playerName}
+              onChange={(e) => setPlayerName(e.target.value)}
+              placeholder="İsteğe bağlı; başlık altında Transfermarkt / Google linkleri"
+              className="w-full rounded-lg border border-slate-700/80 bg-slate-900/70 px-4 py-2.5 text-sm text-slate-100 placeholder-slate-500 outline-none transition focus:border-emerald-500/60 focus:ring-1 focus:ring-emerald-500/40"
+            />
+          </div>
+
+          <div>
+            <label className="mb-1.5 block text-xs font-semibold text-slate-300">
               İçerik
             </label>
             <RichTextEditor
@@ -276,7 +291,7 @@ export default function DuzenlePage() {
               {saving ? "Kaydediliyor..." : "Kaydet ve Yayınla"}
             </button>
             <Link
-              href="/admin/icerikler"
+              href={category === "radar" ? "/admin/radar" : "/admin/icerikler"}
               className="rounded-lg border border-slate-700/80 bg-slate-900/70 px-6 py-2.5 text-sm font-medium text-slate-400 transition hover:border-slate-600 hover:text-slate-200"
             >
               İptal

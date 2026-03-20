@@ -3,6 +3,8 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
+import rehypeRaw from "rehype-raw";
 import {
   IconRadar,
   IconClock,
@@ -12,12 +14,9 @@ import {
 const ARTICLE_BODY_CLASS =
   "article-body text-[15px] leading-[1.7] [&_h1]:mb-4 [&_h1]:mt-6 [&_h1]:text-xl [&_h1]:font-extrabold [&_h1]:text-slate-50 [&_h1]:first:mt-0 [&_h2]:mb-3 [&_h2]:mt-5 [&_h2]:text-lg [&_h2]:font-bold [&_h2]:text-slate-50 [&_h3]:mb-2 [&_h3]:mt-4 [&_h3]:text-base [&_h3]:font-semibold [&_h3]:text-slate-100 [&_p]:mb-5 [&_p]:text-slate-200 [&_ul]:mb-5 [&_ul]:list-disc [&_ul]:pl-5 [&_ul]:text-slate-200 [&_ol]:mb-5 [&_ol]:list-decimal [&_ol]:pl-5 [&_ol]:text-slate-200 [&_li]:mb-2 [&_li]:leading-[1.7] [&_strong]:font-semibold [&_strong]:text-slate-50 [&_em]:text-slate-300 [&_blockquote]:my-5 [&_blockquote]:border-l-2 [&_blockquote]:border-emerald-500/60 [&_blockquote]:pl-4 [&_blockquote]:italic [&_blockquote]:text-slate-300 [&_a]:text-emerald-300 [&_a]:underline [&_a]:decoration-emerald-500/30 hover:[&_a]:text-emerald-200 [&_hr]:my-6 [&_hr]:border-slate-800/60 [&_code]:rounded [&_code]:bg-slate-800 [&_code]:px-1.5 [&_code]:py-0.5 [&_code]:text-xs [&_code]:text-emerald-300";
 
-function isHtmlContent(str: string): boolean {
-  const trimmed = str?.trim() ?? "";
-  return trimmed.length > 0 && trimmed.includes("<") && trimmed.includes(">");
-}
 import SiteHeader from "./site-header";
 import Breadcrumb from "./breadcrumb";
+import { PlayerScoutLinks } from "./player-scout-links";
 import { supabase } from "@/lib/supabase";
 import { stripHtml } from "@/lib/utils";
 
@@ -82,6 +81,16 @@ function getNewsQueryFromTitle(title: string): string {
   return words.slice(0, 2).join(" ") || t;
 }
 
+/** "Ad Soyad (Kulüp): ..." veya "Ad (Kulüp):" → parantez öncesi oyuncu adı */
+function extractPlayerNameFromTitle(title: string): string | undefined {
+  const t = title?.trim() ?? "";
+  if (!t) return undefined;
+  const m = t.match(/^(.+?)\s*\(([^)]+)\)/);
+  if (!m) return undefined;
+  const name = m[1].trim();
+  return name || undefined;
+}
+
 type Props = {
   title: string;
   content: string;
@@ -96,6 +105,8 @@ type Props = {
   youtubeQuery1?: string;
   youtubeQuery2?: string;
   newsQuery?: string;
+  /** Başlık altında TM / Google arama ikonları; boşsa "Ad (Kulüp):" biçiminden çıkarılır. */
+  playerName?: string;
   showNewsSection?: boolean;
   children?: React.ReactNode;
 };
@@ -114,6 +125,7 @@ export default function ArticleLayout({
   youtubeQuery1,
   youtubeQuery2,
   newsQuery,
+  playerName,
   showNewsSection = true,
   children,
 }: Props) {
@@ -124,6 +136,8 @@ export default function ArticleLayout({
   const [newsItems, setNewsItems] = useState<NewsItem[] | null>(null);
 
   const effectiveNewsQuery = showNewsSection ? (newsQuery?.trim() || getNewsQueryFromTitle(title)) : "";
+  const effectivePlayerName =
+    playerName?.trim() || extractPlayerNameFromTitle(title) || "";
 
   useEffect(() => {
     async function fetchSidebar() {
@@ -216,9 +230,7 @@ export default function ArticleLayout({
     month: "long",
     year: "numeric",
   });
-  const contentForReadTime = isHtmlContent(content)
-    ? content.replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").trim()
-    : content;
+  const contentForReadTime = content.replace(/<[^>]+>/g, " ").replace(/[#*_`>]/g, " ").replace(/\s+/g, " ").trim();
   const minutes = readTime(contentForReadTime);
   const catLabel = CATEGORY_LABEL[category] ?? category;
   const catColor = CATEGORY_COLOR[category] ?? "bg-slate-500/15 text-slate-300 border-slate-500/40";
@@ -264,10 +276,17 @@ export default function ArticleLayout({
                   </Link>
                 </div>
 
-                {/* Title */}
-                <h1 className="mb-6 bg-gradient-to-r from-emerald-400 via-cyan-400 to-sky-500 bg-clip-text text-2xl font-extrabold tracking-tight text-transparent md:text-3xl">
-                  {title}
-                </h1>
+                {/* Title + opsiyonel oyuncu arama linkleri */}
+                <div className="mb-6">
+                  <h1 className="bg-gradient-to-r from-emerald-400 via-cyan-400 to-sky-500 bg-clip-text text-2xl font-extrabold tracking-tight text-transparent md:text-3xl">
+                    {title}
+                  </h1>
+                  {effectivePlayerName ? (
+                    <div className="mt-2">
+                      <PlayerScoutLinks playerName={effectivePlayerName} />
+                    </div>
+                  ) : null}
+                </div>
 
                 {/* Cover image or YouTube embed */}
                 {coverImage ? (
@@ -288,31 +307,13 @@ export default function ArticleLayout({
                   </div>
                 ) : null}
 
-                {/* Article content — HTML from editor or legacy Markdown */}
-                <article className={`prose-custom mb-8 rounded-2xl border border-slate-800/80 bg-slate-950/70 p-6 shadow-[0_18px_60px_rgba(15,23,42,0.9)] ${ARTICLE_BODY_CLASS}`}>
-                  {isHtmlContent(content) ? (
-                    <div dangerouslySetInnerHTML={{ __html: content }} />
-                  ) : (
-                    <ReactMarkdown
-                      components={{
-                        h1: ({ children: c }) => <h1 className="mb-4 mt-6 text-xl font-extrabold text-slate-50 first:mt-0">{c}</h1>,
-                        h2: ({ children: c }) => <h2 className="mb-3 mt-5 text-lg font-bold text-slate-50">{c}</h2>,
-                        h3: ({ children: c }) => <h3 className="mb-2 mt-4 text-base font-semibold text-slate-100">{c}</h3>,
-                        p: ({ children: c }) => <p className="mb-5 text-[15px] leading-[1.7] text-slate-200">{c}</p>,
-                      ul: ({ children: c }) => <ul className="mb-5 list-disc pl-5 text-[15px] leading-[1.7] text-slate-200">{c}</ul>,
-                      ol: ({ children: c }) => <ol className="mb-5 list-decimal pl-5 text-[15px] leading-[1.7] text-slate-200">{c}</ol>,
-                      li: ({ children: c }) => <li className="mb-2 leading-[1.7]">{c}</li>,
-                        strong: ({ children: c }) => <strong className="font-semibold text-slate-50">{c}</strong>,
-                        em: ({ children: c }) => <em className="text-slate-300">{c}</em>,
-                        blockquote: ({ children: c }) => <blockquote className="my-5 border-l-2 border-emerald-500/60 pl-4 text-[15px] leading-[1.7] italic text-slate-300">{c}</blockquote>,
-                        hr: () => <hr className="my-6 border-slate-800/60" />,
-                        a: ({ href, children: c }) => <a href={href} className="text-emerald-300 underline decoration-emerald-500/30 transition hover:text-emerald-200" target="_blank" rel="noopener noreferrer">{c}</a>,
-                        code: ({ children: c }) => <code className="rounded bg-slate-800 px-1.5 py-0.5 text-xs text-emerald-300">{c}</code>,
-                      }}
-                    >
-                      {content}
-                    </ReactMarkdown>
-                  )}
+                {/* Article content — markdown + embedded HTML (rehype-raw) */}
+                <article
+                  className={`prose-custom mb-8 rounded-2xl border border-slate-800/80 bg-slate-950/70 p-6 shadow-[0_18px_60px_rgba(15,23,42,0.9)] ${ARTICLE_BODY_CLASS} [&_.table-wrapper]:mb-5 [&_.table-wrapper]:overflow-x-auto [&_table]:w-full [&_table]:border-collapse [&_table]:text-[14px] [&_table]:text-slate-200 [&_thead]:border-b [&_thead]:border-slate-700/60 [&_th]:px-3 [&_th]:py-2 [&_th]:text-left [&_th]:text-[11px] [&_th]:font-semibold [&_th]:uppercase [&_th]:tracking-wider [&_th]:text-slate-400 [&_tr]:border-b [&_tr]:border-slate-800/60 [&_td]:px-3 [&_td]:py-2 [&_td]:leading-relaxed [&_td]:text-slate-300`}
+                >
+                  <ReactMarkdown remarkPlugins={[remarkGfm]} rehypePlugins={[rehypeRaw]}>
+                    {content}
+                  </ReactMarkdown>
                 </article>
 
                 {/* Extra children (player cards for listeler) */}

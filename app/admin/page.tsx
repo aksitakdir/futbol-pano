@@ -108,6 +108,13 @@ export default function AdminDashboard() {
                 İçerikleri Yönet
               </Link>
               <Link
+                href="/admin/radar"
+                className="flex items-center gap-2 rounded-xl border border-slate-800/60 bg-slate-900/50 px-4 py-3 text-xs font-medium text-slate-300 transition hover:border-slate-700 hover:text-slate-100"
+              >
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="3" /><path d="M12 3v2M12 19v2M3 12h2M19 12h2" /></svg>
+                Radar yazıları
+              </Link>
+              <Link
                 href="/admin/api-durum"
                 className="flex items-center gap-2 rounded-xl border border-slate-800/60 bg-slate-900/50 px-4 py-3 text-xs font-medium text-slate-300 transition hover:border-slate-700 hover:text-slate-100"
               >

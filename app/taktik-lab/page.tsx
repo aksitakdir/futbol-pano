@@ -24,6 +24,7 @@ type SupabaseContent = {
 
 type Archetype = {
   name: string;
+  slug: string;
   description: string;
   position: "Orta Saha" | "Defans" | "Hücum";
 };
@@ -31,31 +32,37 @@ type Archetype = {
 const ARCHETYPES: Archetype[] = [
   {
     name: "Box-to-Box Engine",
+    slug: "box-to-box-engine",
     description: "Savunmadan hücuma köprü kuran modern orta saha motoru",
     position: "Orta Saha",
   },
   {
     name: "Ball-Playing CB",
+    slug: "ball-playing-cb",
     description: "Oyun kurucu gibi davranan modern stoper",
     position: "Defans",
   },
   {
     name: "Inverted Winger",
+    slug: "inverted-winger",
     description: "İçe kesip gol tehlikesi yaratan kanat oyuncusu",
     position: "Hücum",
   },
   {
     name: "Inverted Full-back",
+    slug: "inverted-fullback",
     description: "Orta sahaya kayarak üstünlük sağlayan modern bek",
     position: "Defans",
   },
   {
     name: "False 9",
+    slug: "false-9",
     description: "Düşerek alan açan ve oyun kuran modern forvet",
     position: "Hücum",
   },
   {
     name: "High Press Striker",
+    slug: "high-press-striker",
     description: "Savunmayı tepeden başlatan pressing forveti",
     position: "Hücum",
   },
@@ -85,6 +92,7 @@ function positionIcon(pos: Archetype["position"]) {
 
 export default function TaktikLabPage() {
   const [dbContents, setDbContents] = useState<SupabaseContent[]>([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     async function fetchTaktik() {
@@ -95,9 +103,8 @@ export default function TaktikLabPage() {
         .eq("category", "taktik-lab")
         .order("created_at", { ascending: false });
 
-      if (data && data.length > 0) {
-        setDbContents(data);
-      }
+      setDbContents(data ?? []);
+      setLoading(false);
     }
     fetchTaktik();
   }, []);
@@ -122,47 +129,62 @@ export default function TaktikLabPage() {
           </p>
         </section>
 
-        {dbContents.length > 0 && (
-          <div className="mb-8 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-            {dbContents.map((item) => (
-              <Link
-                key={item.id}
-                href={`/taktik-lab/${item.slug}`}
-                className="group flex flex-col rounded-2xl border border-emerald-500/30 bg-slate-950/60 p-5 shadow-[0_16px_50px_rgba(15,23,42,0.8)] transition hover:-translate-y-1 hover:border-emerald-500/50 hover:bg-slate-900/80"
-              >
-                <div className="mb-3 flex items-center gap-2">
-                  <IconTaktik className="text-emerald-300" />
-                  <span className="inline-flex rounded-full bg-emerald-500/10 px-2 py-0.5 text-[10px] font-semibold text-emerald-300">
-                    Yeni
-                  </span>
-                  <span className="text-[10px] text-slate-500">
-                    {new Date(item.created_at).toLocaleDateString("tr-TR", {
-                      day: "numeric",
-                      month: "long",
-                    })}
-                  </span>
-                </div>
-                <h2 className="text-lg font-extrabold tracking-tight text-slate-50">
-                  {item.title}
-                </h2>
-                <p className="mt-1.5 flex-1 line-clamp-3 text-sm leading-relaxed text-slate-400">
-                  {stripHtml(item.content).trim().slice(0, 150)}…
-                </p>
-                <span className="mt-4 inline-flex items-center self-start text-xs font-semibold text-emerald-300 transition group-hover:text-emerald-200">
-                  Detayları Gör
-                  <span className="ml-1 transition-transform group-hover:translate-x-0.5">→</span>
-                </span>
-              </Link>
-            ))}
+        {/* DB-driven content — shown above static archetypes */}
+        {loading ? (
+          <div className="mb-10 flex items-center justify-center py-10">
+            <span className="h-7 w-7 animate-spin rounded-full border-2 border-emerald-500 border-t-transparent" />
           </div>
-        )}
+        ) : dbContents.length > 0 ? (
+          <section className="mb-12">
+            <h2 className="mb-4 text-xs font-semibold uppercase tracking-widest text-emerald-400">
+              Güncel Analizler
+            </h2>
+            <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+              {dbContents.map((item) => (
+                <Link
+                  key={item.id}
+                  href={`/taktik-lab/${item.slug}`}
+                  className="group flex flex-col rounded-2xl border border-emerald-500/30 bg-slate-950/60 p-5 shadow-[0_16px_50px_rgba(15,23,42,0.8)] transition hover:-translate-y-1 hover:border-emerald-500/50 hover:bg-slate-900/80"
+                >
+                  <div className="mb-3 flex items-center gap-2">
+                    <IconTaktik className="text-emerald-300" />
+                    <span className="inline-flex rounded-full bg-emerald-500/10 px-2 py-0.5 text-[10px] font-semibold text-emerald-300">
+                      Taktik
+                    </span>
+                    <span className="text-[10px] text-slate-500">
+                      {new Date(item.created_at).toLocaleDateString("tr-TR", {
+                        day: "numeric",
+                        month: "long",
+                      })}
+                    </span>
+                  </div>
+                  <h2 className="text-lg font-extrabold tracking-tight text-slate-50">
+                    {item.title}
+                  </h2>
+                  <p className="mt-1.5 flex-1 line-clamp-3 text-sm leading-relaxed text-slate-400">
+                    {stripHtml(item.content).trim().slice(0, 150)}…
+                  </p>
+                  <span className="mt-4 inline-flex items-center self-start text-xs font-semibold text-emerald-300 transition group-hover:text-emerald-200">
+                    Detayları Gör
+                    <span className="ml-1 transition-transform group-hover:translate-x-0.5">→</span>
+                  </span>
+                </Link>
+              ))}
+            </div>
+          </section>
+        ) : null}
 
-        <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+        {/* Static archetype reference cards */}
+        <section>
+          <h2 className="mb-4 text-xs font-semibold uppercase tracking-widest text-slate-500">
+            Pozisyon Arketipleri
+          </h2>
+          <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
           {ARCHETYPES.map((arch) => {
             const style = positionStyle(arch.position);
             return (
               <div
-                key={arch.name}
+                key={arch.slug}
                 className="group flex flex-col rounded-2xl border border-slate-800/80 bg-slate-950/60 p-5 shadow-[0_16px_50px_rgba(15,23,42,0.8)] transition hover:-translate-y-1 hover:border-emerald-500/50 hover:bg-slate-900/80"
               >
                 <div className="mb-3 flex items-center gap-2">
@@ -181,16 +203,20 @@ export default function TaktikLabPage() {
                   {arch.description}
                 </p>
 
-                <button className="mt-4 inline-flex items-center self-start text-xs font-semibold text-emerald-300 transition group-hover:text-emerald-200">
+                <Link
+                  href={`/taktik-lab/${arch.slug}`}
+                  className="mt-4 inline-flex items-center self-start text-xs font-semibold text-emerald-300 transition group-hover:text-emerald-200"
+                >
                   Detayları Gör
                   <span className="ml-1 transition-transform group-hover:translate-x-0.5">
                     →
                   </span>
-                </button>
+                </Link>
               </div>
             );
           })}
-        </div>
+          </div>
+        </section>
       </div>
 
       <footer className="border-t border-slate-800/80 bg-slate-950/90">

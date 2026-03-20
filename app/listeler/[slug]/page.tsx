@@ -4,7 +4,9 @@ import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import { supabase } from "@/lib/supabase";
+import { translatePosition } from "@/lib/translate-position";
 import ArticleLayout from "../../components/article-layout";
+import { PlayerScoutLinks } from "../../components/player-scout-links";
 
 type SupabaseRow = {
   id: string;
@@ -17,6 +19,7 @@ type SupabaseRow = {
   cover_image?: string;
   youtube_query_1?: string;
   youtube_query_2?: string;
+  player_name?: string;
 };
 
 type Player = {
@@ -197,6 +200,7 @@ export default function ListDetailPage() {
         coverImage={dbContent.cover_image}
         youtubeQuery1={dbContent.youtube_query_1}
         youtubeQuery2={dbContent.youtube_query_2}
+        playerName={dbContent.player_name}
         showNewsSection={false}
       />
     );

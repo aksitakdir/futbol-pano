@@ -10,8 +10,29 @@ import {
   IconArrowRight,
 } from "./components/icons";
 import SiteHeader from "./components/site-header";
+import { PlayerScoutLinks } from "./components/player-scout-links";
 import { supabase } from "@/lib/supabase";
 import { stripHtml } from "@/lib/utils";
+
+function translatePosition(pos: string): string {
+  const map: Record<string, string> = {
+    Forward: "Forvet",
+    Winger: "Kanat",
+    Midfielder: "Orta Saha",
+    "Attacking Midfielder": "Ofansif Orta Saha",
+    "Defensive Midfielder": "Defansif Orta Saha",
+    Defender: "Defans",
+    "Center Back": "Stoper",
+    "Right Back": "Sağ Bek",
+    "Left Back": "Sol Bek",
+    Goalkeeper: "Kaleci",
+    "Right Winger": "Sağ Kanat",
+    "Left Winger": "Sol Kanat",
+    Striker: "Santrafor",
+  };
+  const t = pos.trim();
+  return map[t] ?? pos;
+}
 
 type SlideContent = {
   id: string;
@@ -41,115 +62,208 @@ function categoryPath(cat: string): string {
   return "/";
 }
 
+const SLIDER_COUNT = 4;
+
+function shuffleInPlace<T>(arr: T[]): T[] {
+  const a = [...arr];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+/** Her zaman 4 slide: 7g (max 2) → 30g → tümü random → eksikse tekrarla */
+function buildHeroSlides(all: SlideContent[]): { slide: SlideContent; slideKey: string }[] {
+  if (!all.length) return [];
+
+  const now = Date.now();
+  const ms7 = 7 * 24 * 60 * 60 * 1000;
+  const ms30 = 30 * 24 * 60 * 60 * 1000;
+
+  const byNewest = [...all].sort(
+    (a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime(),
+  );
+
+  const picked: SlideContent[] = [];
+  const used = new Set<string>();
+
+  const in7 = byNewest.filter((c) => new Date(c.created_at).getTime() >= now - ms7);
+  for (let i = 0; i < Math.min(2, in7.length); i++) {
+    picked.push(in7[i]);
+    used.add(in7[i].id);
+  }
+
+  if (picked.length < SLIDER_COUNT) {
+    const in30 = byNewest.filter(
+      (c) =>
+        new Date(c.created_at).getTime() >= now - ms30 && !used.has(c.id),
+    );
+    for (const c of in30) {
+      if (picked.length >= SLIDER_COUNT) break;
+      picked.push(c);
+      used.add(c.id);
+    }
+  }
+
+  if (picked.length < SLIDER_COUNT) {
+    const rest = shuffleInPlace(byNewest.filter((c) => !used.has(c.id)));
+    for (const c of rest) {
+      if (picked.length >= SLIDER_COUNT) break;
+      picked.push(c);
+      used.add(c.id);
+    }
+  }
+
+  const pool = picked.length > 0 ? picked : byNewest;
+  let r = 0;
+  while (picked.length < SLIDER_COUNT && pool.length > 0) {
+    picked.push(pool[r % pool.length]);
+    r++;
+  }
+
+  return picked.map((slide, i) => ({
+    slide,
+    slideKey: `${slide.id}-hero-${i}`,
+  }));
+}
+
 export default function Home() {
-  type FilterKey = "all" | "stoper" | "mid" | "forward";
-
-  type ApiPlayer = {
-    id: number;
-    name: string;
-    age: number;
-    nationality?: string;
-    photo?: string;
-    position?: string;
-    team?: string;
-    league?: string;
-    appearances?: number;
-    minutes?: number;
-    goals?: number;
+  // Form players — from site_settings (Claude weekly scout list)
+  type FormPlayer = {
+    name: string; club: string; league: string;
+    position: string; age: string; goals: string;
   };
-
-  const [players, setPlayers] = useState<ApiPlayer[]>([]);
-  const [activeFilter, setActiveFilter] = useState<FilterKey>("all");
-  const [loading, setLoading] = useState<boolean>(true);
-  const [error, setError] = useState<string | null>(null);
-
-  const filterButtons: { key: FilterKey; label: string }[] = [
-    { key: "all", label: "Tümü" },
-    { key: "stoper", label: "Stoper" },
-    { key: "mid", label: "Orta Saha" },
-    { key: "forward", label: "Forvet" },
-  ];
-
-  const filteredPlayers = players.filter((player) => {
-    const pos = (player.position ?? "").toLowerCase();
-
-    if (activeFilter === "all") return true;
-
-    if (activeFilter === "stoper") {
-      return (
-        pos.includes("defender") ||
-        pos.includes("centre-back") ||
-        pos.includes("center back") ||
-        pos.includes("centre back") ||
-        pos.includes("cb")
-      );
-    }
-
-    if (activeFilter === "mid") {
-      return pos.includes("midfielder") || pos.includes("cm") || pos.includes("dm") || pos.includes("am");
-    }
-
-    if (activeFilter === "forward") {
-      return (
-        pos.includes("attacker") ||
-        pos.includes("forward") ||
-        pos.includes("striker") ||
-        pos.includes("winger")
-      );
-    }
-
-    return true;
-  });
+  const [formPlayers, setFormPlayers] = useState<FormPlayer[]>([]);
+  const [formLoading, setFormLoading] = useState(true);
 
   useEffect(() => {
-    let isMounted = true;
+    async function fetchFormPlayers() {
+      const { data: poolRow } = await supabase
+        .from("site_settings")
+        .select("value")
+        .eq("key", "form_players_pool")
+        .maybeSingle();
 
-    async function loadPlayers() {
-      try {
-        setLoading(true);
-        setError(null);
-
-        const res = await fetch("/api/players", { cache: "no-store" });
-
-        if (!res.ok) {
-          const text = await res.text();
-          if (!isMounted) return;
-          setError(
-            `Oyuncu verileri alınırken bir hata oluştu (status ${res.status}).`
-          );
-          console.error("Failed to fetch /api/players:", text);
-          return;
-        }
-
-        const json = await res.json();
-        const apiPlayers: ApiPlayer[] = Array.isArray(json?.players)
-          ? json.players
-          : [];
-
-        if (!isMounted) return;
-
-        setPlayers(apiPlayers);
-      } catch (err) {
-        console.error("Unexpected error fetching /api/players:", err);
-        if (!isMounted) return;
-        setError("Oyuncu verileri alınırken beklenmeyen bir hata oluştu.");
-      } finally {
-        if (isMounted) {
-          setLoading(false);
+      let list: FormPlayer[] = [];
+      if (poolRow?.value) {
+        try {
+          const parsed = JSON.parse(poolRow.value as string);
+          if (Array.isArray(parsed) && parsed.length > 0) {
+            const shuffled = shuffleInPlace(parsed as FormPlayer[]);
+            list = shuffled.slice(0, 10);
+          }
+        } catch {
+          /* ignore */
         }
       }
+
+      if (list.length === 0) {
+        const { data: legacy } = await supabase
+          .from("site_settings")
+          .select("value")
+          .eq("key", "form_players")
+          .maybeSingle();
+        if (legacy?.value) {
+          try {
+            const parsed = JSON.parse(legacy.value as string);
+            if (Array.isArray(parsed)) {
+              const shuffled = shuffleInPlace(parsed as FormPlayer[]);
+              list = shuffled.slice(0, 10);
+            }
+          } catch {
+            /* ignore */
+          }
+        }
+      }
+
+      setFormPlayers(list);
+      setFormLoading(false);
     }
-
-    loadPlayers();
-
-    return () => {
-      isMounted = false;
-    };
+    fetchFormPlayers();
   }, []);
 
-  const featuredPlayer = players[0] ?? null;
+  // Featured radar player — from site_settings (Claude scout recommendation)
+  type FeaturedPlayerData = {
+    name: string; club: string; position: string; age: string;
+    league: string; goals: string; assists: string;
+    description: string; whyWatch: string;
+  };
+  const [featuredPlayer, setFeaturedPlayer] = useState<FeaturedPlayerData | null>(null);
+  const [featuredLoading, setFeaturedLoading] = useState(true);
 
-  const [slides, setSlides] = useState<SlideContent[]>([]);
+  useEffect(() => {
+    async function fetchRadarPlayer() {
+      type PoolEntry = {
+        name?: string; club?: string; league?: string; position?: string;
+        age?: string; goals?: string; assists?: string;
+        description?: string; why_watch?: string;
+      };
+
+      const { data: poolRow } = await supabase
+        .from("site_settings")
+        .select("value")
+        .eq("key", "featured_player_pool")
+        .maybeSingle();
+
+      if (poolRow?.value) {
+        try {
+          const pool = JSON.parse(poolRow.value as string) as PoolEntry[];
+          if (Array.isArray(pool) && pool.length > 0) {
+            const pick = pool[Math.floor(Math.random() * pool.length)];
+            if (pick?.name) {
+              setFeaturedPlayer({
+                name: pick.name ?? "",
+                club: pick.club ?? "",
+                position: pick.position ?? "",
+                age: String(pick.age ?? ""),
+                league: pick.league ?? "",
+                goals: String(pick.goals ?? ""),
+                assists: String(pick.assists ?? ""),
+                description: pick.description ?? "",
+                whyWatch: pick.why_watch ?? "",
+              });
+              setFeaturedLoading(false);
+              return;
+            }
+          }
+        } catch {
+          /* fall through */
+        }
+      }
+
+      const keys = [
+        "featured_player_name", "featured_player_club", "featured_player_position",
+        "featured_player_age", "featured_player_league", "featured_player_goals",
+        "featured_player_assists", "featured_player_description", "featured_player_why_watch",
+      ];
+      const { data } = await supabase
+        .from("site_settings")
+        .select("key, value")
+        .in("key", keys);
+
+      if (data && data.length > 0) {
+        const s = Object.fromEntries(data.map((r) => [r.key, r.value as string]));
+        if (s.featured_player_name) {
+          setFeaturedPlayer({
+            name:        s.featured_player_name        ?? "",
+            club:        s.featured_player_club        ?? "",
+            position:    s.featured_player_position    ?? "",
+            age:         s.featured_player_age         ?? "",
+            league:      s.featured_player_league      ?? "",
+            goals:       s.featured_player_goals       ?? "",
+            assists:     s.featured_player_assists     ?? "",
+            description: s.featured_player_description ?? "",
+            whyWatch:    s.featured_player_why_watch   ?? "",
+          });
+        }
+      }
+      setFeaturedLoading(false);
+    }
+    fetchRadarPlayer();
+  }, []);
+
+  const [slides, setSlides] = useState<{ slide: SlideContent; slideKey: string }[]>([]);
   const [recentItems, setRecentItems] = useState<SlideContent[]>([]);
   const [activeSlide, setActiveSlide] = useState(0);
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
@@ -162,8 +276,12 @@ export default function Home() {
         .select("id, title, slug, category, content, created_at")
         .eq("status", "yayinda")
         .order("created_at", { ascending: false })
-        .limit(4);
-      if (data && data.length > 0) setSlides(data);
+        .limit(200);
+
+      if (!data || data.length === 0) return;
+
+      const built = buildHeroSlides(data as SlideContent[]);
+      if (built.length > 0) setSlides(built);
     }
     async function fetchRecent() {
       const { data } = await supabase
@@ -178,23 +296,36 @@ export default function Home() {
     fetchRecent();
   }, []);
 
+  const resetTimer = useCallback(() => {
+    if (timerRef.current) clearInterval(timerRef.current);
+    if (slides.length < 2) return;
+    timerRef.current = setInterval(() => {
+      setActiveSlide((p) => (p + 1) % slides.length);
+    }, 5000);
+  }, [slides.length]);
+
   const goToSlide = useCallback((i: number) => {
     setActiveSlide(i);
-  }, []);
+    resetTimer();
+  }, [resetTimer]);
 
   const nextSlide = useCallback(() => {
     setActiveSlide((p) => (p + 1) % Math.max(slides.length, 1));
-  }, [slides.length]);
+    resetTimer();
+  }, [slides.length, resetTimer]);
 
   const prevSlide = useCallback(() => {
     setActiveSlide((p) => (p - 1 + slides.length) % Math.max(slides.length, 1));
-  }, [slides.length]);
+    resetTimer();
+  }, [slides.length, resetTimer]);
 
   useEffect(() => {
     if (slides.length < 2) return;
-    timerRef.current = setInterval(nextSlide, 5000);
+    timerRef.current = setInterval(() => {
+      setActiveSlide((p) => (p + 1) % slides.length);
+    }, 5000);
     return () => { if (timerRef.current) clearInterval(timerRef.current); };
-  }, [slides.length, nextSlide]);
+  }, [slides.length]);
 
   return (
     <main className="min-h-screen bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950 text-slate-100">
@@ -211,9 +342,9 @@ export default function Home() {
             <div className="pointer-events-none absolute -right-10 bottom-10 h-48 w-48 rounded-full bg-cyan-500/15 blur-[80px]" />
 
             {/* Slides */}
-            {slides.map((slide, i) => (
+            {slides.map(({ slide, slideKey }, i) => (
               <div
-                key={slide.id}
+                key={slideKey}
                 className={[
                   "absolute inset-0 flex items-center transition-opacity duration-700",
                   i === activeSlide ? "opacity-100 z-10" : "opacity-0 z-0",
@@ -263,50 +394,40 @@ export default function Home() {
           </section>
         )}
 
-        {/* Öne Çıkan Listeler band */}
-        <section className="border-b border-slate-800/60 bg-slate-950/80 py-6">
-          <div className="mx-auto max-w-6xl px-4">
-            <div className="mb-4 flex items-center justify-between">
-              <h3 className="text-[11px] font-semibold uppercase tracking-[0.22em] text-slate-400">
-                Öne Çıkan Listeler
-              </h3>
-              <span className="text-[11px] text-slate-400">
-                Kürasyonlu içerik listeleri
-              </span>
-            </div>
-            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-              {[
-                { title: "En Değerli 10 Genç Stoper", slug: "en-iyi-10-genc-stoper", icon: <IconShield className="text-emerald-300" />, desc: "Detaylı analiz, performans metrikleri ve scout notları ile birlikte.", href: "/listeler/en-iyi-10-genc-stoper", tag: "Liste", cta: "Listeyi aç" },
-                { title: "Süper Lig'in Gizli İsimleri", slug: "super-lig-gizli-isimler", icon: <IconTrendUp className="text-sky-300" />, desc: "Detaylı analiz, performans metrikleri ve scout notları ile birlikte.", href: "/listeler/super-lig-gizli-isimler", tag: "Liste", cta: "Listeyi aç" },
-                { title: "Bu Sezonun Sürpriz İsimleri", slug: "surpriz-isimler-2025", icon: <IconStar className="text-amber-300" />, desc: "Detaylı analiz, performans metrikleri ve scout notları ile birlikte.", href: "/listeler/surpriz-isimler-2025", tag: "Liste", cta: "Listeyi aç" },
-                { title: "Favori Yeteneğini Seç", slug: "turnuva", icon: <IconBracket className="text-[#00d4aa]" />, desc: "16 genç yetenek, tek şampiyon. Kim kazanır?", href: "/turnuva", tag: "Turnuva", cta: "Oyna" },
-              ].map((item) => (
-                <Link
-                  key={item.slug}
-                  href={item.href}
-                  className="group flex flex-col items-start rounded-2xl border border-slate-800/80 bg-slate-950/60 px-4 py-4 text-left text-sm text-slate-200 shadow-[0_16px_50px_rgba(15,23,42,0.8)] transition hover:-translate-y-1 hover:border-emerald-500/70 hover:bg-slate-900/80"
-                >
-                  <span className="mb-2 flex items-center gap-2">
-                    {item.icon}
-                    <span className="inline-flex rounded-full bg-emerald-500/10 px-2 py-1 text-[10px] font-semibold uppercase tracking-[0.18em] text-emerald-300">
-                      {item.tag}
+        {/* Son Eklenenler — slider sonrası */}
+        {recentItems.length > 0 && (
+          <section className="border-b border-slate-800/60 bg-slate-950/80 py-6">
+            <div className="mx-auto max-w-6xl px-4">
+              <div className="mb-4 flex items-center justify-between">
+                <h3 className="text-[11px] font-semibold uppercase tracking-[0.22em] text-slate-400">
+                  Son Eklenenler
+                </h3>
+                <span className="text-[11px] text-slate-400">
+                  Yayında son içerikler
+                </span>
+              </div>
+              <div className="flex gap-4 overflow-x-auto pb-2 scrollbar-none">
+                {recentItems.map((item) => (
+                  <Link
+                    key={item.id}
+                    href={`${categoryPath(item.category)}/${item.slug}`}
+                    className="group flex w-64 shrink-0 flex-col rounded-xl border border-slate-800/80 bg-slate-950/70 p-4 transition hover:-translate-y-0.5 hover:border-emerald-500/50"
+                  >
+                    <span className={`mb-2 inline-flex w-fit items-center rounded-full border px-2 py-0.5 text-[9px] font-semibold uppercase tracking-[0.14em] ${CATEGORY_COLOR[item.category] ?? "bg-slate-500/15 text-slate-300 border-slate-500/40"}`}>
+                      {CATEGORY_LABEL[item.category] ?? item.category}
                     </span>
-                  </span>
-                  <span className="text-sm font-semibold">{item.title}</span>
-                  <span className="mt-1 text-xs text-slate-400">
-                    {item.desc}
-                  </span>
-                  <span className="mt-3 inline-flex items-center text-xs font-semibold text-emerald-300">
-                    {item.cta}
-                    <span className="ml-1 transition-transform group-hover:translate-x-0.5">
-                      →
+                    <p className="line-clamp-2 text-xs font-semibold text-slate-100 transition group-hover:text-emerald-300">
+                      {item.title}
+                    </p>
+                    <span className="mt-auto pt-2 text-[10px] text-slate-500">
+                      {new Date(item.created_at).toLocaleDateString("tr-TR", { day: "numeric", month: "short" })}
                     </span>
-                  </span>
-                </Link>
-              ))}
+                  </Link>
+                ))}
+              </div>
             </div>
-          </div>
-        </section>
+          </section>
+        )}
 
         {/* İçerik */}
         <div className="flex-1">
@@ -316,67 +437,61 @@ export default function Home() {
               <div className="relative overflow-hidden rounded-2xl border border-slate-800/80 bg-gradient-to-br from-slate-950 via-slate-900 to-emerald-950/40 p-6 shadow-[0_24px_80px_rgba(15,23,42,0.9)]">
                 <div className="pointer-events-none absolute -right-12 -top-16 h-40 w-40 rounded-full bg-emerald-500/30 blur-3xl" />
                 <p className="text-[11px] font-semibold uppercase tracking-[0.28em] text-emerald-300/90">
-                  Bu haftanın öne çıkan oyuncusu
-                </p>
-                <h1 className="mt-3 bg-gradient-to-r from-emerald-400 via-cyan-400 to-sky-500 bg-clip-text text-2xl font-extrabold tracking-tight text-transparent md:text-3xl">
-                  {loading
-                    ? "Yükleniyor..."
-                    : featuredPlayer?.name ?? "Veri bekleniyor"}
-                </h1>
-                <p className="mt-2 text-sm text-slate-300">
-                  {loading && "Premier League gol krallığı verileri yükleniyor."}
-                  {!loading &&
-                    !featuredPlayer &&
-                    "Şu anda öne çıkan oyuncu verisine erişilemiyor. Lütfen daha sonra tekrar deneyin."}
-                  {!loading &&
-                    featuredPlayer &&
-                    `${featuredPlayer.team ?? "Kulüp bilgisi yok"} formasıyla ${
-                      featuredPlayer.position?.toLowerCase() ??
-                      "bilinmeyen pozisyon"
-                    } rolünde bu sezon dikkat çekici bir gol katkısı sergiliyor.`}
+                  Bu Haftanın Radar Oyuncusu
                 </p>
 
-                <div className="mt-6 grid grid-cols-3 gap-4 text-xs">
-                  <div className="rounded-xl bg-slate-900/70 p-3">
-                    <p className="text-[11px] uppercase tracking-[0.18em] text-slate-400">
-                      Lig
-                    </p>
-                    <p className="mt-1 text-sm font-semibold text-slate-50">
-                      {featuredPlayer?.league ?? "Premier League"}
-                    </p>
-                    <p className="mt-0.5 text-[11px] text-slate-400">
-                      Sezon 2024
-                    </p>
+                {featuredLoading ? (
+                  <div className="mt-4 flex items-center gap-2 text-sm text-slate-400">
+                    <span className="h-4 w-4 animate-spin rounded-full border-2 border-emerald-400 border-t-transparent" />
+                    Veri yükleniyor...
                   </div>
-                  <div className="rounded-xl bg-slate-900/70 p-3">
-                    <p className="text-[11px] uppercase tracking-[0.18em] text-slate-400">
-                      Goller
+                ) : featuredPlayer ? (
+                  <>
+                    <div className="mt-3 flex flex-wrap items-center gap-2">
+                      <h1 className="bg-gradient-to-r from-emerald-400 via-cyan-400 to-sky-500 bg-clip-text text-2xl font-extrabold tracking-tight text-transparent md:text-3xl">
+                        {featuredPlayer.name}
+                      </h1>
+                      <PlayerScoutLinks playerName={featuredPlayer.name} />
+                    </div>
+                    {featuredPlayer.description && (
+                      <p className="mt-2 text-sm leading-relaxed text-slate-300">
+                        {featuredPlayer.description}
+                      </p>
+                    )}
+                    <div className="mt-4 grid grid-cols-3 gap-2.5 text-xs">
+                      {[
+                        { label: "Kulüp",    value: featuredPlayer.club,     color: "text-slate-50" },
+                        { label: "Pozisyon", value: translatePosition(featuredPlayer.position), color: "text-slate-50" },
+                        { label: "Yaş",      value: featuredPlayer.age,      color: "text-slate-50" },
+                        { label: "Lig",      value: featuredPlayer.league,   color: "text-slate-50" },
+                        { label: "Goller",   value: featuredPlayer.goals,    color: "text-emerald-300" },
+                        { label: "Asist",    value: featuredPlayer.assists,  color: "text-cyan-300" },
+                      ].map(({ label, value, color }) => (
+                        <div key={label} className="rounded-xl bg-slate-900/70 p-3">
+                          <p className="text-[11px] uppercase tracking-[0.18em] text-slate-400">{label}</p>
+                          <p className={`mt-1 truncate text-sm font-semibold ${color}`}>{value || "—"}</p>
+                        </div>
+                      ))}
+                    </div>
+                    {featuredPlayer.whyWatch && (
+                      <div className="mt-4 rounded-xl border border-emerald-500/20 bg-emerald-500/5 px-4 py-3">
+                        <p className="mb-1 text-[10px] font-semibold uppercase tracking-[0.2em] text-emerald-400">
+                          Scout Notu
+                        </p>
+                        <p className="text-xs leading-relaxed text-slate-300">{featuredPlayer.whyWatch}</p>
+                      </div>
+                    )}
+                  </>
+                ) : (
+                  <>
+                    <h1 className="mt-3 bg-gradient-to-r from-emerald-400 via-cyan-400 to-sky-500 bg-clip-text text-2xl font-extrabold tracking-tight text-transparent md:text-3xl">
+                      Veri bekleniyor
+                    </h1>
+                    <p className="mt-2 text-sm text-slate-400">
+                      Radar oyuncusu henüz belirlenmedi. Cron job çalıştığında otomatik güncellenir.
                     </p>
-                    <p className="mt-1 text-sm font-semibold text-emerald-300">
-                      {featuredPlayer?.goals ?? "—"}
-                    </p>
-                    <p className="mt-0.5 text-[11px] text-slate-400">
-                      Toplam gol sayısı
-                    </p>
-                  </div>
-                  <div className="rounded-xl bg-slate-900/70 p-3">
-                    <p className="text-[11px] uppercase tracking-[0.18em] text-slate-400">
-                      Dakika
-                    </p>
-                    <p className="mt-1 text-sm font-semibold text-slate-50">
-                      {featuredPlayer?.minutes ?? "—"}
-                    </p>
-                    <p className="mt-0.5 text-[11px] text-slate-400">
-                      Sahada kalma süresi
-                    </p>
-                  </div>
-                </div>
-
-                <div className="mt-6">
-                  <button className="inline-flex items-center justify-center rounded-full bg-gradient-to-r from-emerald-400 to-cyan-400 px-5 py-2 text-xs font-semibold text-slate-950 shadow-[0_0_30px_rgba(16,185,129,0.8)] transition hover:brightness-110">
-                    Profili Gör
-                  </button>
-                </div>
+                  </>
+                )}
               </div>
 
               <div className="relative overflow-hidden rounded-2xl border border-slate-800/80 bg-slate-900/80 p-5">
@@ -430,89 +545,44 @@ export default function Home() {
 
             {/* Ana içerik: tablo + listeler + radar */}
             <section className="space-y-10">
-              {/* Oyuncu tablosu */}
+              {/* Form oyuncuları tablosu — Supabase site_settings */}
               <div className="rounded-2xl border border-slate-800/80 bg-slate-900/70 shadow-[0_24px_80px_rgba(15,23,42,0.9)]">
-                <div className="flex flex-col gap-3 border-b border-slate-800/80 px-5 pb-4 pt-4 sm:flex-row sm:items-center sm:justify-between sm:px-6">
-                  <div>
-                    <h2 className="text-sm font-semibold uppercase tracking-[0.2em] text-emerald-300/90">
-                      Bu Haftanın En İyileri
-                    </h2>
-                    <p className="mt-1 text-xs text-slate-300/80">
-                      Premier League 2024 sezonu gol krallığı sıralamasından
-                      ilk 10 oyuncu.
-                    </p>
-                  </div>
-                  <div className="flex flex-wrap gap-2 text-xs">
-                    {filterButtons.map((filter) => {
-                      const isActive = activeFilter === filter.key;
-                      return (
-                        <button
-                          key={filter.key}
-                          type="button"
-                          onClick={() => setActiveFilter(filter.key)}
-                          className={[
-                            "rounded-full border px-3 py-1.5 transition-all duration-150",
-                            "backdrop-blur hover:-translate-y-[1px]",
-                            isActive
-                              ? "border-emerald-500/80 bg-emerald-500/20 text-emerald-100 shadow-[0_0_25px_rgba(16,185,129,0.5)]"
-                              : "border-slate-700/90 bg-slate-900/80 text-slate-300 hover:border-emerald-500/60 hover:text-emerald-100",
-                          ].join(" ")}
-                        >
-                          {filter.label}
-                        </button>
-                      );
-                    })}
-                  </div>
+                <div className="border-b border-slate-800/80 px-5 pb-4 pt-4 sm:px-6">
+                  <h2 className="text-sm font-semibold uppercase tracking-[0.2em] text-emerald-300/90">
+                    Bu Dönem Dikkat Çekenler
+                  </h2>
+                  <p className="mt-1 text-xs text-slate-300/80">
+                    2025-26 sezonunda form grafiği yükselen genç oyuncular — tüm liglerden
+                  </p>
                 </div>
 
                 <div className="relative overflow-x-auto px-2 pb-4 pt-2 sm:px-4">
-                  {loading && (
+                  {formLoading ? (
                     <div className="flex min-h-[220px] items-center justify-center text-sm text-slate-300">
                       <span className="mr-2 h-4 w-4 animate-spin rounded-full border-2 border-emerald-400 border-t-transparent" />
-                      Yükleniyor...
+                      Veriler güncelleniyor...
                     </div>
-                  )}
-
-                  {!loading && error && (
-                    <div className="min-h-[220px] rounded-xl border border-red-500/40 bg-red-500/5 px-4 py-3 text-sm text-red-200">
-                      {error}
+                  ) : formPlayers.length === 0 ? (
+                    <div className="flex min-h-[220px] flex-col items-center justify-center gap-2 text-center">
+                      <p className="text-sm text-slate-400">Veriler güncelleniyor...</p>
+                      <p className="text-xs text-slate-600">Cron job çalıştığında form oyuncuları burada listelenir.</p>
                     </div>
-                  )}
-
-                  {!loading && !error && filteredPlayers.length === 0 && (
-                    <div className="min-h-[220px] rounded-xl border border-slate-700/70 bg-slate-900/70 px-4 py-3 text-sm text-slate-300">
-                      Seçili filtreye uygun oyuncu bulunamadı.
-                    </div>
-                  )}
-
-                  {!loading && !error && filteredPlayers.length > 0 && (
+                  ) : (
                     <table className="min-w-full border-separate border-spacing-0 text-sm">
                       <thead>
                         <tr className="bg-slate-900/80">
-                          <th className="sticky left-0 z-10 border-b border-slate-700/80 bg-slate-900/90 px-3 py-3 text-left text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-400">
-                            #
-                          </th>
-                          <th className="border-b border-slate-700/80 px-3 py-3 text-left text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-400">
-                            Oyuncu
-                          </th>
-                          <th className="border-b border-slate-700/80 px-3 py-3 text-left text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-400">
-                            Pozisyon
-                          </th>
-                          <th className="hidden border-b border-slate-700/80 px-3 py-3 text-left text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-400 md:table-cell">
-                            Yaş
-                          </th>
-                          <th className="hidden border-b border-slate-700/80 px-3 py-3 text-left text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-400 md:table-cell">
-                            Kulüp
-                          </th>
-                          <th className="border-b border-slate-700/80 px-3 py-3 text-right text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-400">
-                            Goller
-                          </th>
+                          <th className="sticky left-0 z-10 border-b border-slate-700/80 bg-slate-900/90 px-3 py-3 text-left text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-400">#</th>
+                          <th className="border-b border-slate-700/80 px-3 py-3 text-left text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-400">Oyuncu</th>
+                          <th className="border-b border-slate-700/80 px-3 py-3 text-left text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-400">Pozisyon</th>
+                          <th className="hidden border-b border-slate-700/80 px-3 py-3 text-left text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-400 md:table-cell">Yaş</th>
+                          <th className="hidden border-b border-slate-700/80 px-3 py-3 text-left text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-400 md:table-cell">Kulüp / Lig</th>
+                          <th className="border-b border-slate-700/80 px-3 py-3 text-right text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-400">Goller</th>
                         </tr>
                       </thead>
                       <tbody>
-                        {filteredPlayers.map((player, index) => (
+                        {formPlayers.map((player, index) => (
                           <tr
-                            key={player.id ?? player.name}
+                            key={`${player.name}-${index}`}
                             className="group transition-all duration-200 hover:bg-slate-800/70 hover:shadow-[0_0_0_1px_rgba(45,212,191,0.4)]"
                           >
                             <td className="sticky left-0 z-10 border-b border-slate-800/80 bg-slate-900/80 px-3 py-3 text-xs font-semibold text-slate-300">
@@ -521,34 +591,28 @@ export default function Home() {
                               </span>
                             </td>
                             <td className="border-b border-slate-800/80 px-3 py-3 text-sm font-medium text-slate-100">
-                              <div className="flex items-center gap-2.5">
-                                {player.photo ? (
-                                  <img
-                                    src={player.photo}
-                                    alt={player.name}
-                                    width={32}
-                                    height={32}
-                                    className="h-8 w-8 shrink-0 rounded-full object-cover ring-1 ring-slate-700/80"
-                                  />
-                                ) : (
-                                  <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-slate-800 text-[10px] font-bold text-slate-400 ring-1 ring-slate-700/80">
-                                    {player.name?.charAt(0) ?? "?"}
-                                  </span>
-                                )}
-                                {player.name}
+                              <div className="flex min-w-0 items-center gap-2.5">
+                                <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-slate-800 text-[10px] font-bold text-slate-400 ring-1 ring-slate-700/80">
+                                  {player.name?.charAt(0) ?? "?"}
+                                </span>
+                                <div className="flex min-w-0 flex-1 items-center gap-1.5">
+                                  <span className="truncate">{player.name}</span>
+                                  <PlayerScoutLinks playerName={player.name} />
+                                </div>
                               </div>
                             </td>
                             <td className="border-b border-slate-800/80 px-3 py-3 text-xs font-medium text-emerald-300">
-                              {player.position ?? "—"}
+                              {player.position ? translatePosition(player.position) : "—"}
                             </td>
                             <td className="hidden border-b border-slate-800/80 px-3 py-3 text-xs text-slate-300 md:table-cell">
-                              {player.age ?? "—"}
+                              {player.age || "—"}
                             </td>
-                            <td className="hidden border-b border-slate-800/80 px-3 py-3 text-xs text-slate-300 md:table-cell">
-                              {player.team ?? "—"}
+                            <td className="hidden border-b border-slate-800/80 px-3 py-3 md:table-cell">
+                              <p className="text-xs text-slate-300">{player.club || "—"}</p>
+                              <p className="text-[11px] text-slate-500">{player.league || ""}</p>
                             </td>
                             <td className="border-b border-slate-800/80 px-3 py-3 text-right text-sm font-semibold text-emerald-300">
-                              {player.goals ?? 0}
+                              {player.goals || "—"}
                             </td>
                           </tr>
                         ))}
@@ -558,33 +622,48 @@ export default function Home() {
                 </div>
               </div>
 
-              {/* Son Eklenenler */}
-              {recentItems.length > 0 && (
-                <div>
-                  <h2 className="mb-4 text-sm font-semibold uppercase tracking-[0.22em] text-slate-400">
-                    Son Eklenenler
+              {/* Öne Çıkan Listeler */}
+              <div>
+                <div className="mb-4 flex items-center justify-between">
+                  <h2 className="text-sm font-semibold uppercase tracking-[0.22em] text-slate-400">
+                    Öne Çıkan Listeler
                   </h2>
-                  <div className="flex gap-4 overflow-x-auto pb-2 scrollbar-none">
-                    {recentItems.map((item) => (
-                      <Link
-                        key={item.id}
-                        href={`${categoryPath(item.category)}/${item.slug}`}
-                        className="group flex w-64 shrink-0 flex-col rounded-xl border border-slate-800/80 bg-slate-950/70 p-4 transition hover:-translate-y-0.5 hover:border-emerald-500/50"
-                      >
-                        <span className={`mb-2 inline-flex w-fit items-center rounded-full border px-2 py-0.5 text-[9px] font-semibold uppercase tracking-[0.14em] ${CATEGORY_COLOR[item.category] ?? "bg-slate-500/15 text-slate-300 border-slate-500/40"}`}>
-                          {CATEGORY_LABEL[item.category] ?? item.category}
-                        </span>
-                        <p className="line-clamp-2 text-xs font-semibold text-slate-100 transition group-hover:text-emerald-300">
-                          {item.title}
-                        </p>
-                        <span className="mt-auto pt-2 text-[10px] text-slate-500">
-                          {new Date(item.created_at).toLocaleDateString("tr-TR", { day: "numeric", month: "short" })}
-                        </span>
-                      </Link>
-                    ))}
-                  </div>
+                  <span className="text-[11px] text-slate-400">
+                    Kürasyonlu içerik listeleri
+                  </span>
                 </div>
-              )}
+                <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+                  {[
+                    { title: "En Değerli 10 Genç Stoper", slug: "en-iyi-10-genc-stoper", icon: <IconShield className="text-emerald-300" />, desc: "Detaylı analiz, performans metrikleri ve scout notları ile birlikte.", href: "/listeler/en-iyi-10-genc-stoper", tag: "Liste", cta: "Listeyi aç" },
+                    { title: "Süper Lig'in Gizli İsimleri", slug: "super-lig-gizli-isimler", icon: <IconTrendUp className="text-sky-300" />, desc: "Detaylı analiz, performans metrikleri ve scout notları ile birlikte.", href: "/listeler/super-lig-gizli-isimler", tag: "Liste", cta: "Listeyi aç" },
+                    { title: "Bu Sezonun Sürpriz İsimleri", slug: "surpriz-isimler-2025", icon: <IconStar className="text-amber-300" />, desc: "Detaylı analiz, performans metrikleri ve scout notları ile birlikte.", href: "/listeler/surpriz-isimler-2025", tag: "Liste", cta: "Listeyi aç" },
+                    { title: "Favori Yeteneğini Seç", slug: "turnuva", icon: <IconBracket className="text-[#00d4aa]" />, desc: "16 genç yetenek, tek şampiyon. Kim kazanır?", href: "/turnuva", tag: "Turnuva", cta: "Oyna" },
+                  ].map((item) => (
+                    <Link
+                      key={item.slug}
+                      href={item.href}
+                      className="group flex flex-col items-start rounded-2xl border border-slate-800/80 bg-slate-950/60 px-4 py-4 text-left text-sm text-slate-200 shadow-[0_16px_50px_rgba(15,23,42,0.8)] transition hover:-translate-y-1 hover:border-emerald-500/70 hover:bg-slate-900/80"
+                    >
+                      <span className="mb-2 flex items-center gap-2">
+                        {item.icon}
+                        <span className="inline-flex rounded-full bg-emerald-500/10 px-2 py-1 text-[10px] font-semibold uppercase tracking-[0.18em] text-emerald-300">
+                          {item.tag}
+                        </span>
+                      </span>
+                      <span className="text-sm font-semibold">{item.title}</span>
+                      <span className="mt-1 text-xs text-slate-400">
+                        {item.desc}
+                      </span>
+                      <span className="mt-3 inline-flex items-center text-xs font-semibold text-emerald-300">
+                        {item.cta}
+                        <span className="ml-1 transition-transform group-hover:translate-x-0.5">
+                          →
+                        </span>
+                      </span>
+                    </Link>
+                  ))}
+                </div>
+              </div>
 
               {/* Haftalık Radar */}
               <div className="rounded-2xl border border-slate-800/80 bg-gradient-to-r from-slate-950 via-slate-900 to-emerald-950/40 px-5 py-5 sm:px-6">

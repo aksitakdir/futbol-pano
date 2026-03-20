@@ -18,6 +18,7 @@ type ContentRow = {
   youtube_query_1?: string;
   youtube_query_2?: string;
   news_query?: string;
+  player_name?: string;
 };
 
 export default function RadarDetailPage() {
@@ -90,6 +91,7 @@ export default function RadarDetailPage() {
       youtubeQuery1={article.youtube_query_1}
       youtubeQuery2={article.youtube_query_2}
       newsQuery={article.news_query}
+      playerName={article.player_name}
     />
   );
 }

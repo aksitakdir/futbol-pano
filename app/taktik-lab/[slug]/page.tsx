@@ -18,6 +18,7 @@ type ContentRow = {
   youtube_query_1?: string;
   youtube_query_2?: string;
   news_query?: string;
+  player_name?: string;
 };
 
 export default function TaktikLabDetailPage() {
@@ -36,13 +37,14 @@ export default function TaktikLabDetailPage() {
         .from("contents")
         .select("*")
         .eq("slug", slug)
+        .eq("category", "taktik-lab")
         .eq("status", "yayinda")
-        .single();
+        .maybeSingle();
 
       if (error || !data) {
         setNotFound(true);
       } else {
-        setArticle(data);
+        setArticle(data as ContentRow);
       }
       setLoading(false);
     }
@@ -64,7 +66,9 @@ export default function TaktikLabDetailPage() {
     return (
       <main className="flex min-h-screen flex-col items-center justify-center bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950 text-slate-100">
         <h1 className="mb-2 text-2xl font-extrabold">404</h1>
-        <p className="mb-6 text-sm text-slate-400">Bu içerik bulunamadı veya henüz yayınlanmadı.</p>
+        <p className="mb-6 text-sm text-slate-400">
+          Bu Taktik Lab içeriği bulunamadı veya henüz yayınlanmadı.
+        </p>
         <Link
           href="/taktik-lab"
           className="inline-flex rounded-full border border-slate-700/80 bg-slate-900/70 px-5 py-2 text-xs font-medium text-slate-200 transition hover:border-emerald-500/70 hover:text-emerald-200"
@@ -78,7 +82,7 @@ export default function TaktikLabDetailPage() {
   return (
     <ArticleLayout
       title={article.title}
-      content={article.content}
+      content={article.content ?? ""}
       category={article.category}
       date={article.created_at}
       slug={article.slug}
@@ -90,6 +94,7 @@ export default function TaktikLabDetailPage() {
       youtubeQuery1={article.youtube_query_1}
       youtubeQuery2={article.youtube_query_2}
       newsQuery={article.news_query}
+      playerName={article.player_name}
     />
   );
 }

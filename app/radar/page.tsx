@@ -13,7 +13,7 @@ import {
 } from "../components/icons";
 import SiteHeader from "../components/site-header";
 import { supabase } from "@/lib/supabase";
-import { stripHtml } from "@/lib/utils";
+import { stripHtml, estimateReadMinutes } from "@/lib/utils";
 
 type SupabaseContent = {
   id: string;
@@ -23,62 +23,35 @@ type SupabaseContent = {
   created_at: string;
 };
 
-const STATIC_ARTICLES = [
-  {
-    title: "Premier Lig'de Gölgede Kalanlar",
-    slug: "premier-lig-golgede-kalanlar",
-    date: "10 Mart 2026",
-    readTime: "7 dk",
-    summary:
-      "Skor tabelasına düzenli yansımayan ancak xG, koşu kalitesi ve baskı altında bitiricilik metrikleriyle scout ekranlarında öne çıkan genç forvetleri inceliyoruz.",
-    icon: <IconBall className="text-rose-300" />,
-  },
-  {
-    title: "Süper Lig Mart Raporu",
-    slug: "super-lig-mart-raporu",
-    date: "7 Mart 2026",
-    readTime: "6 dk",
-    summary:
-      "Süper Lig'de mart ayında form grafiğini yukarı çeken genç oyuncular, pozisyon bazlı istatistikler ve dikkat çeken taktik trendler.",
-    icon: <IconTrendUp className="text-emerald-300" />,
-  },
-  {
-    title: "Transferde İzlenecekler",
-    slug: "transferde-izlenecekler",
-    date: "3 Mart 2026",
-    readTime: "8 dk",
-    summary:
-      "Yaz transfer penceresi öncesinde fiyat/performans oranında en iyi genç oyuncu profilleri ve potansiyel hedef kulüpler.",
-    icon: <IconCompass className="text-cyan-300" />,
-  },
-  {
-    title: "U21 Avrupa'nın En İyileri",
-    slug: "u21-avrupanin-en-iyileri",
-    date: "28 Şubat 2026",
-    readTime: "9 dk",
-    summary:
-      "Avrupa'nın beş büyük liginde 21 yaş altı oyuncuların sezon bazlı performans karşılaştırması, öne çıkan isimler ve gelişim eğrileri.",
-    icon: <IconStar className="text-amber-300" />,
-  },
-];
+const CARD_STYLES = [
+  { Icon: IconBall, ring: "ring-rose-500/40 bg-rose-500/10", iconClass: "text-rose-300" },
+  { Icon: IconTrendUp, ring: "ring-emerald-500/40 bg-emerald-500/10", iconClass: "text-emerald-300" },
+  { Icon: IconCompass, ring: "ring-cyan-500/40 bg-cyan-500/10", iconClass: "text-cyan-300" },
+  { Icon: IconStar, ring: "ring-amber-500/40 bg-amber-500/10", iconClass: "text-amber-300" },
+] as const;
+
+function cardSummary(content: string): string {
+  const t = stripHtml(content).replace(/\s+/g, " ").trim();
+  if (!t) return "";
+  return t.length > 220 ? `${t.slice(0, 220)}…` : t;
+}
 
 export default function RadarPage() {
-  const [dbArticles, setDbArticles] = useState<SupabaseContent[]>([]);
-  const [loaded, setLoaded] = useState(false);
+  const [articles, setArticles] = useState<SupabaseContent[]>([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     async function fetchRadar() {
-      const { data } = await supabase
+      const { data, error } = await supabase
         .from("contents")
         .select("id, title, slug, content, created_at")
         .eq("status", "yayinda")
         .eq("category", "radar")
         .order("created_at", { ascending: false });
 
-      if (data && data.length > 0) {
-        setDbArticles(data);
-      }
-      setLoaded(true);
+      if (error) console.error("Radar fetch:", error);
+      setArticles(data ?? []);
+      setLoading(false);
     }
     fetchRadar();
   }, []);
@@ -101,104 +74,91 @@ export default function RadarPage() {
                 Radar Yazı Arşivi
               </h1>
               <p className="mt-3 max-w-2xl text-sm text-slate-300">
-                Her hafta güncellenen scout radar yazıları. Gölgede kalan
-                yetenekler, taktik trendler, transfer hedefleri ve pozisyon
-                bazlı derinlemesine analizler.
+                Tüm metinler yönetim panelinden yayınlanır; kartlar güncel veritabanı
+                içeriğinizi yansıtır. Düzenlemek için panelde{" "}
+                <strong className="text-slate-200">Radar</strong> bölümünü kullanın.
               </p>
             </section>
 
-            {/* Supabase articles */}
-            {dbArticles.length > 0 && (
-              <section className="mb-8 grid gap-5 md:grid-cols-2">
-                {dbArticles.map((article) => (
-                  <Link
-                    key={article.id}
-                    href={`/radar/${article.slug}`}
-                    className="group flex flex-col justify-between rounded-2xl border border-emerald-500/30 bg-slate-950/70 p-5 shadow-[0_18px_60px_rgba(15,23,42,0.9)] transition hover:-translate-y-1 hover:border-emerald-500/70 hover:bg-slate-900/80"
-                  >
-                    <div>
-                      <div className="mb-3 flex items-center gap-3">
-                        <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-emerald-500/15 ring-1 ring-emerald-500/40">
-                          <IconRadar className="text-emerald-300" />
-                        </span>
-                        <div className="flex items-center gap-3 text-[11px] text-slate-400">
-                          <span>
-                            {new Date(article.created_at).toLocaleDateString("tr-TR", {
-                              day: "numeric",
-                              month: "long",
-                              year: "numeric",
-                            })}
+            {loading ? (
+              <div className="flex justify-center py-20 text-sm text-slate-400">
+                <span className="h-5 w-5 animate-spin rounded-full border-2 border-emerald-400 border-t-transparent" />
+              </div>
+            ) : articles.length === 0 ? (
+              <section className="rounded-2xl border border-dashed border-slate-700/80 bg-slate-950/50 px-6 py-14 text-center">
+                <IconRadar className="mx-auto mb-3 h-10 w-10 text-slate-600" />
+                <p className="text-sm font-medium text-slate-300">
+                  Henüz yayında radar yazısı yok
+                </p>
+                <p className="mt-2 text-xs text-slate-500">
+                  Admin panelinde <span className="text-slate-400">Radar</span> kategorisinde içerik
+                  oluşturup <span className="text-slate-400">Yayınla</span> durumuna alın; kartlar burada
+                  otomatik listelenir.
+                </p>
+              </section>
+            ) : (
+              <section className="grid gap-5 md:grid-cols-2">
+                {articles.map((article, index) => {
+                  const style = CARD_STYLES[index % CARD_STYLES.length];
+                  const Icon = style.Icon;
+                  const readMins = estimateReadMinutes(article.content);
+                  const summary = cardSummary(article.content);
+
+                  return (
+                    <Link
+                      key={article.id}
+                      href={`/radar/${article.slug}`}
+                      className="group flex flex-col justify-between rounded-2xl border border-slate-800/80 bg-slate-950/70 p-5 shadow-[0_18px_60px_rgba(15,23,42,0.9)] transition hover:-translate-y-1 hover:border-emerald-500/50 hover:bg-slate-900/80"
+                    >
+                      <div>
+                        <div className="mb-3 flex items-center gap-3">
+                          <span
+                            className={`flex h-9 w-9 items-center justify-center rounded-xl ring-1 ${style.ring}`}
+                          >
+                            <Icon className={style.iconClass} />
                           </span>
-                          <span className="inline-flex rounded-full bg-emerald-500/10 px-2 py-0.5 text-[10px] font-semibold text-emerald-300">
-                            Yeni
-                          </span>
+                          <div className="flex flex-wrap items-center gap-2 text-[11px] text-slate-400">
+                            <span>
+                              {new Date(article.created_at).toLocaleDateString("tr-TR", {
+                                day: "numeric",
+                                month: "long",
+                                year: "numeric",
+                              })}
+                            </span>
+                            <span className="flex items-center gap-1">
+                              <IconClock />
+                              {readMins} dk
+                            </span>
+                          </div>
                         </div>
+                        <h2 className="line-clamp-2 text-sm font-semibold leading-snug text-slate-50">
+                          {article.title}
+                        </h2>
+                        <p className="mt-2 line-clamp-3 text-xs leading-relaxed text-slate-300">
+                          {summary || "Özet için içeriğe giriş ekleyin."}
+                        </p>
                       </div>
-                      <h2 className="text-sm font-semibold text-slate-50">
-                        {article.title}
-                      </h2>
-                      <p className="mt-2 line-clamp-2 text-xs leading-relaxed text-slate-300">
-                        {stripHtml(article.content).trim().slice(0, 150)}…
-                      </p>
-                    </div>
-                    <div className="mt-4 inline-flex items-center gap-1 text-xs font-semibold text-emerald-300">
-                      Oku
-                      <IconArrowRight className="transition-transform group-hover:translate-x-0.5" />
-                    </div>
-                  </Link>
-                ))}
+                      <div className="mt-4 inline-flex items-center gap-1 text-xs font-semibold text-emerald-300">
+                        Oku
+                        <IconArrowRight className="transition-transform group-hover:translate-x-0.5" />
+                      </div>
+                    </Link>
+                  );
+                })}
               </section>
             )}
-
-            {/* Static fallback articles */}
-            <section className="grid gap-5 md:grid-cols-2">
-              {STATIC_ARTICLES.map((article) => (
-                <div
-                  key={article.title}
-                  className="group flex flex-col justify-between rounded-2xl border border-slate-800/80 bg-slate-950/70 p-5 shadow-[0_18px_60px_rgba(15,23,42,0.9)] transition hover:-translate-y-1 hover:border-emerald-500/70 hover:bg-slate-900/80"
-                >
-                  <div>
-                    <div className="mb-3 flex items-center gap-3">
-                      <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-slate-900/80 ring-1 ring-slate-700/80">
-                        {article.icon}
-                      </span>
-                      <div className="flex items-center gap-3 text-[11px] text-slate-400">
-                        <span>{article.date}</span>
-                        <span className="flex items-center gap-1">
-                          <IconClock /> {article.readTime}
-                        </span>
-                      </div>
-                    </div>
-                    <h2 className="text-sm font-semibold text-slate-50">
-                      {article.title}
-                    </h2>
-                    <p className="mt-2 text-xs leading-relaxed text-slate-300">
-                      {article.summary}
-                    </p>
-                  </div>
-                  <div className="mt-4 inline-flex items-center gap-1 text-xs font-semibold text-emerald-300">
-                    Oku
-                    <IconArrowRight className="transition-transform group-hover:translate-x-0.5" />
-                  </div>
-                </div>
-              ))}
-            </section>
           </div>
         </div>
 
         <footer className="border-t border-slate-800/80 bg-slate-950/90">
           <div className="mx-auto flex max-w-6xl flex-col items-center justify-between gap-3 px-4 py-5 text-xs text-slate-400 sm:flex-row">
-            <span className="font-medium text-slate-300">
-              Scout Intelligence
-            </span>
+            <span className="font-medium text-slate-300">Scout Intelligence</span>
             <div className="flex items-center gap-4">
               <span className="h-6 w-6 rounded-full border border-slate-700/80 bg-slate-900/80" />
               <span className="h-6 w-6 rounded-full border border-slate-700/80 bg-slate-900/80" />
               <span className="h-6 w-6 rounded-full border border-slate-700/80 bg-slate-900/80" />
             </div>
-            <span className="text-[11px] text-slate-500">
-              © 2026 Scout Intelligence
-            </span>
+            <span className="text-[11px] text-slate-500">© 2026 Scout Intelligence</span>
           </div>
         </footer>
       </div>

@@ -1,8 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect, Suspense } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { supabase } from "@/lib/supabase";
 import RichTextEditor from "@/app/components/rich-text-editor";
 import AdminLayout from "../components/admin-layout";
@@ -19,8 +19,9 @@ const CATEGORIES = [
   { value: "taktik-lab", label: "Taktik Lab" },
 ];
 
-export default function YeniIcerikPage() {
+function YeniIcerikForm() {
   const router = useRouter();
+  const searchParams = useSearchParams();
 
   const [title, setTitle] = useState("");
   const [slug, setSlug] = useState("");
@@ -31,8 +32,16 @@ export default function YeniIcerikPage() {
   const [youtubeQuery1, setYoutubeQuery1] = useState("");
   const [youtubeQuery2, setYoutubeQuery2] = useState("");
   const [newsQuery, setNewsQuery] = useState("");
+  const [playerName, setPlayerName] = useState("");
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
+
+  useEffect(() => {
+    const c = searchParams.get("category");
+    if (c === "radar" || c === "listeler" || c === "taktik-lab") {
+      setCategory(c);
+    }
+  }, [searchParams]);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -54,6 +63,7 @@ export default function YeniIcerikPage() {
       youtube_query_1: youtubeQuery1.trim(),
       youtube_query_2: youtubeQuery2.trim(),
       news_query: newsQuery.trim(),
+      player_name: playerName.trim() || null,
       status: "bekliyor",
     });
 
@@ -64,8 +74,11 @@ export default function YeniIcerikPage() {
       return;
     }
 
-    router.push("/admin/icerikler");
+    router.push(category === "radar" ? "/admin/radar" : "/admin/icerikler");
   }
+
+  const backHref = category === "radar" ? "/admin/radar" : "/admin/icerikler";
+  const backLabel = category === "radar" ? "← Radar listesine" : "← İçeriklere dön";
 
   return (
     <AdminLayout>
@@ -78,10 +91,10 @@ export default function YeniIcerikPage() {
             </p>
           </div>
           <Link
-            href="/admin/icerikler"
+            href={backHref}
             className="rounded-lg border border-slate-700/60 px-3 py-1.5 text-xs font-medium text-slate-400 transition hover:border-slate-600 hover:text-slate-200"
           >
-            ← İçeriklere Dön
+            {backLabel}
           </Link>
         </div>
 
@@ -204,6 +217,19 @@ export default function YeniIcerikPage() {
 
           <div>
             <label className="mb-1.5 block text-xs font-semibold text-slate-300">
+              Odak oyuncu (arama linkleri)
+            </label>
+            <input
+              type="text"
+              value={playerName}
+              onChange={(e) => setPlayerName(e.target.value)}
+              placeholder="İsteğe bağlı; başlık altında Transfermarkt / Google linkleri"
+              className="w-full rounded-lg border border-slate-700/80 bg-slate-900/70 px-4 py-2.5 text-sm text-slate-100 placeholder-slate-500 outline-none transition focus:border-emerald-500/60 focus:ring-1 focus:ring-emerald-500/40"
+            />
+          </div>
+
+          <div>
+            <label className="mb-1.5 block text-xs font-semibold text-slate-300">
               İçerik
             </label>
             <RichTextEditor
@@ -227,5 +253,19 @@ export default function YeniIcerikPage() {
         </form>
       </div>
     </AdminLayout>
+  );
+}
+
+export default function YeniIcerikPage() {
+  return (
+    <Suspense
+      fallback={
+        <AdminLayout>
+          <div className="flex justify-center py-20 text-sm text-slate-400">Yükleniyor…</div>
+        </AdminLayout>
+      }
+    >
+      <YeniIcerikForm />
+    </Suspense>
   );
 }
