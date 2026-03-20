@@ -103,10 +103,15 @@ function cleanAndExtractJson(raw: string): string | null {
   return text.substring(jsonStart, jsonEnd + 1);
 }
 
+function isValidCategory(c: string | undefined): c is Category {
+  return typeof c === "string" && (CATEGORIES as readonly string[]).includes(c);
+}
+
 async function generateWithClaude(
   topic: string,
   targetCategory: Category,
   recentTitles: string[],
+  useWebSearch: boolean,
 ): Promise<{
   title: string;
   slug: string;
@@ -119,8 +124,6 @@ async function generateWithClaude(
   const exclusionNote = recentTitles.length > 0
     ? `\n\nBu başlıkları veya konuları KULLANMA (son 24 saatte zaten üretildi):\n${recentTitles.map((t) => `- ${t}`).join("\n")}\n`
     : "";
-
-  const useWebSearch = targetCategory === "radar";
 
   const userMessage =
     `Konu: ${topic}. Güncel futbol dünyasından ele al. ` +
@@ -230,6 +233,10 @@ async function generateWithClaude(
   return { title, slug, category, content };
 }
 
+function isValidSlug(s: string): boolean {
+  return /^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(s.trim());
+}
+
 export async function POST(request: Request) {
   const apiKey = process.env.ANTHROPIC_API_KEY;
   if (!apiKey) {
@@ -260,57 +267,67 @@ export async function POST(request: Request) {
     /* empty */
   }
 
-  // ——— Tekil içerik: başlık + kategori (İçerik Kontrol Merkezi) ———
-  if (
-    typeof parsedBody.title === "string" &&
-    parsedBody.title.trim() &&
-    typeof parsedBody.category === "string" &&
-    (CATEGORIES as readonly string[]).includes(parsedBody.category)
-  ) {
+  const modeRaw = typeof parsedBody.mode === "string" ? parsedBody.mode.trim().toLowerCase() : "";
+  const useWebSearchForMode = modeRaw === "trend";
+
+  async function loadRecentTitles(): Promise<string[]> {
     const since24h = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
     const { data: recentRows } = await supabase
       .from("contents")
       .select("title")
       .gte("created_at", since24h);
-    const recentTitles: string[] = (recentRows ?? []).map((r) => r.title as string).filter(Boolean);
+    return (recentRows ?? []).map((r) => r.title as string).filter(Boolean);
+  }
 
+  // ——— 1) title varsa: bu başlıkla içerik (trend kullanılmaz) ———
+  const bodyTitle = typeof parsedBody.title === "string" ? parsedBody.title.trim() : "";
+  if (bodyTitle) {
+    const recentTitles = await loadRecentTitles();
+    const targetCategory: Category = isValidCategory(parsedBody.category) ? parsedBody.category : nextCategory();
     const kw = typeof parsedBody.keyword === "string" ? parsedBody.keyword.trim() : "";
-    const mode = typeof parsedBody.mode === "string" ? parsedBody.mode : "";
-    const modeHint = SINGLE_MODE_HINT[mode] ?? "";
+    const modeHint = SINGLE_MODE_HINT[modeRaw] ?? "";
 
     let topic =
-      `Makale başlığı tam olarak şu veya çok yakını olsun: "${parsedBody.title.trim()}". `;
-    if (kw) topic += `Anahtar kelime / odak: ${kw}. `;
+      `Makale başlığı TAM olarak şu olmalı (JSON "title" alanında aynen bu metin): "${bodyTitle}". `;
+    if (kw) topic += `Ek anahtar kelime / bağlam: ${kw}. `;
     if (modeHint) topic += `${modeHint} `;
-    topic +=
-      "İçerik bu başlık ve kategoriye sadık kalsın. Slug önerisi varsa URL dostu kalsın.";
-
-    const targetCategory = parsedBody.category as Category;
+    topic += `Kategori "${targetCategory}" olmalı. İçerik bu başlığa ve kategoriye sadık kalsın.`;
 
     try {
-      let generated = await generateWithClaude(topic, targetCategory, recentTitles);
-      const suggestedSlug =
-        typeof parsedBody.slug === "string" && /^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(parsedBody.slug.trim())
-          ? parsedBody.slug.trim()
-          : null;
-      if (suggestedSlug) {
-        generated = { ...generated, slug: suggestedSlug };
-      }
+      let generated = await generateWithClaude(topic, targetCategory, recentTitles, useWebSearchForMode);
 
-      const { error: dbError } = await supabase.from("contents").insert({
-        title: generated.title,
-        slug: generated.slug,
-        category: generated.category,
+      const finalTitle = bodyTitle;
+      const finalCategory = targetCategory;
+      let finalSlug =
+        typeof parsedBody.slug === "string" && isValidSlug(parsedBody.slug) ? parsedBody.slug.trim() : "";
+      if (!finalSlug) finalSlug = generated.slug && isValidSlug(generated.slug) ? generated.slug : slugify(finalTitle);
+      if (!finalSlug) finalSlug = slugify(finalTitle);
+
+      const row = {
+        title: finalTitle,
+        slug: finalSlug,
+        category: finalCategory,
         content: generated.content,
-        status: "bekliyor",
-      });
+        status: "bekliyor" as const,
+      };
+
+      const { error: dbError } = await supabase.from("contents").insert(row);
 
       if (dbError) {
         return NextResponse.json(
           {
             generated: 0,
             total: 1,
-            results: [{ topic: parsedBody.title, category: targetCategory, status: "db_error", error: dbError.message }],
+            results: [
+              {
+                topic: bodyTitle,
+                category: finalCategory,
+                status: "db_error",
+                error: dbError.message,
+                title: finalTitle,
+                slug: finalSlug,
+              },
+            ],
           },
           { status: 500 },
         );
@@ -321,10 +338,11 @@ export async function POST(request: Request) {
         total: 1,
         results: [
           {
-            topic: parsedBody.title,
-            category: generated.category,
+            topic: bodyTitle,
+            category: finalCategory,
             status: "success",
-            title: generated.title,
+            title: finalTitle,
+            slug: finalSlug,
           },
         ],
       });
@@ -334,7 +352,101 @@ export async function POST(request: Request) {
         {
           generated: 0,
           total: 1,
-          results: [{ topic: parsedBody.title, category: targetCategory, status: "failed", error: msg }],
+          results: [
+            {
+              topic: bodyTitle,
+              category: targetCategory,
+              status: "failed",
+              error: msg,
+              title: bodyTitle,
+              slug: slugify(bodyTitle),
+            },
+          ],
+        },
+        { status: 500 },
+      );
+    }
+  }
+
+  // ——— 2) keyword varsa: konu = keyword, trend yok; category parametresi ———
+  const bodyKeyword = typeof parsedBody.keyword === "string" ? parsedBody.keyword.trim() : "";
+  if (bodyKeyword) {
+    const recentTitles = await loadRecentTitles();
+    const targetCategory: Category = isValidCategory(parsedBody.category) ? parsedBody.category : nextCategory();
+    const modeHint = SINGLE_MODE_HINT[modeRaw] ?? "";
+
+    let topic = `Ana konu / keyword: "${bodyKeyword}". Bu konuyu merkeze alarak tam bir makale yaz. `;
+    if (modeHint) topic += `${modeHint} `;
+    topic += `Kategori "${targetCategory}" olmalı.`;
+
+    try {
+      const generated = await generateWithClaude(topic, targetCategory, recentTitles, useWebSearchForMode);
+
+      const finalCategory = targetCategory;
+      const finalTitle =
+        typeof generated.title === "string" && generated.title.trim() ? generated.title.trim() : bodyKeyword;
+      let finalSlug =
+        typeof generated.slug === "string" && isValidSlug(generated.slug) ? generated.slug.trim() : slugify(finalTitle);
+
+      const row = {
+        title: finalTitle,
+        slug: finalSlug,
+        category: finalCategory,
+        content: generated.content,
+        status: "bekliyor" as const,
+      };
+
+      const { error: dbError } = await supabase.from("contents").insert(row);
+
+      if (dbError) {
+        return NextResponse.json(
+          {
+            generated: 0,
+            total: 1,
+            results: [
+              {
+                topic: bodyKeyword,
+                category: finalCategory,
+                status: "db_error",
+                error: dbError.message,
+                title: finalTitle,
+                slug: finalSlug,
+              },
+            ],
+          },
+          { status: 500 },
+        );
+      }
+
+      return NextResponse.json({
+        generated: 1,
+        total: 1,
+        results: [
+          {
+            topic: bodyKeyword,
+            category: finalCategory,
+            status: "success",
+            title: finalTitle,
+            slug: finalSlug,
+          },
+        ],
+      });
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : String(err);
+      return NextResponse.json(
+        {
+          generated: 0,
+          total: 1,
+          results: [
+            {
+              topic: bodyKeyword,
+              category: targetCategory,
+              status: "failed",
+              error: msg,
+              title: bodyKeyword,
+              slug: slugify(bodyKeyword),
+            },
+          ],
         },
         { status: 500 },
       );
@@ -347,12 +459,7 @@ export async function POST(request: Request) {
   const trendTopics = await fetchTrends(origin);
 
   // Fetch recent titles (last 24h) to avoid duplicates and for frequency check
-  const since24h = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
-  const { data: recentRows } = await supabase
-    .from("contents")
-    .select("title")
-    .gte("created_at", since24h);
-  const recentTitles: string[] = (recentRows ?? []).map((r) => r.title as string).filter(Boolean);
+  const recentTitles = await loadRecentTitles();
 
   // For each trend topic, count how many recent items already cover it
   function trendUsageCount(trend: string): number {
@@ -383,13 +490,21 @@ export async function POST(request: Request) {
 
   console.log("[generate-content] İşlenecek çiftler:", pairs.map((p) => `${p.category}::${p.topic}`));
 
-  const results: { topic: string; category: string; status: string; title?: string; error?: string }[] = [];
+  const results: {
+    topic: string;
+    category: string;
+    status: string;
+    title?: string;
+    slug?: string;
+    error?: string;
+  }[] = [];
 
   for (const { topic, category } of pairs) {
     let generated: { title: string; slug: string; category: string; content: string };
 
     try {
-      generated = await generateWithClaude(topic, category, recentTitles);
+      const batchWebSearch = category === "radar";
+      generated = await generateWithClaude(topic, category, recentTitles, batchWebSearch);
     } catch (err) {
       const msg = err instanceof Error ? err.message : String(err);
       console.error("[generate-content] Üretim hatası:", msg);
@@ -407,10 +522,23 @@ export async function POST(request: Request) {
 
     if (dbError) {
       console.error("[generate-content] Supabase insert hatası:", dbError.message, "— başlık:", generated.title);
-      results.push({ topic, category: generated.category, status: "db_error", error: dbError.message, title: generated.title });
+      results.push({
+        topic,
+        category: generated.category,
+        status: "db_error",
+        error: dbError.message,
+        title: generated.title,
+        slug: generated.slug,
+      });
     } else {
       console.log("[generate-content] Supabase'e kaydedildi:", generated.title, "→", generated.category);
-      results.push({ topic, category: generated.category, status: "success", title: generated.title });
+      results.push({
+        topic,
+        category: generated.category,
+        status: "success",
+        title: generated.title,
+        slug: generated.slug,
+      });
     }
   }
 
