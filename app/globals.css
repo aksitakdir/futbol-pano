@@ -24,3 +24,17 @@ body {
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
 }
+
+/* Mobil tam ekran menü — site-header overlay */
+@keyframes mobile-nav-overlay-in {
+  from {
+    transform: translateY(-100%);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+
+.mobile-nav-fullscreen {
+  animation: mobile-nav-overlay-in 0.2s ease-out forwards;
+}

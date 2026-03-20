@@ -1,6 +1,7 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { createPortal } from "react-dom";
 import Link from "next/link";
 import {
   IconHome,
@@ -34,8 +35,81 @@ type Props = {
 
 export default function SiteHeader({ activeNav, maxWidth = "max-w-6xl" }: Props) {
   const [open, setOpen] = useState(false);
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  useEffect(() => {
+    if (!open) return;
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.body.style.overflow = prev;
+    };
+  }, [open]);
+
+  useEffect(() => {
+    if (!open) return;
+    const mq = window.matchMedia("(min-width: 768px)");
+    const closeIfDesktop = () => {
+      if (mq.matches) setOpen(false);
+    };
+    mq.addEventListener("change", closeIfDesktop);
+    closeIfDesktop();
+    return () => mq.removeEventListener("change", closeIfDesktop);
+  }, [open]);
 
   const desktopItems = NAV_ITEMS.filter((n) => n.key !== "home");
+
+  const mobileMenuOverlay =
+    open && mounted ? (
+      <div
+        className="mobile-nav-fullscreen fixed top-0 left-0 z-[9999] flex h-[100vh] w-[100vw] flex-col bg-[#060f1e] opacity-100 md:hidden"
+        style={{ maxHeight: "100vh" }}
+        role="dialog"
+        aria-modal="true"
+        aria-label="Mobil menü"
+      >
+        <button
+          type="button"
+          onClick={() => setOpen(false)}
+          className="absolute right-4 top-4 z-[10000] flex h-11 w-11 items-center justify-center rounded-lg border border-slate-600/80 bg-slate-900/90 text-slate-200 transition hover:border-emerald-500/60 hover:text-emerald-300"
+          aria-label="Menüyü kapat"
+        >
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+            <line x1="18" y1="6" x2="6" y2="18" />
+            <line x1="6" y1="6" x2="18" y2="18" />
+          </svg>
+        </button>
+
+        <nav className="flex flex-1 flex-col items-center justify-center gap-10 px-6 pt-14">
+          {NAV_ITEMS.map((item) => (
+            <Link
+              key={item.key}
+              href={item.href}
+              onClick={() => setOpen(false)}
+              className={`flex items-center gap-3 text-[18px] font-semibold leading-tight transition ${
+                activeNav === item.key ? "text-emerald-300" : "text-slate-100 hover:text-emerald-300"
+              }`}
+            >
+              <span className="opacity-80 [&_svg]:h-5 [&_svg]:w-5">{item.icon}</span>
+              {item.label}
+            </Link>
+          ))}
+
+          <div className="mt-6 flex items-center gap-1 rounded-full border border-slate-700/80 bg-slate-900/70 p-0.5 text-xs">
+            <button type="button" className="rounded-full bg-emerald-500/20 px-4 py-1.5 font-semibold text-emerald-200 shadow-[0_0_18px_rgba(16,185,129,0.5)]">
+              TR
+            </button>
+            <button type="button" className="rounded-full px-4 py-1.5 text-slate-300 hover:text-emerald-200">
+              EN
+            </button>
+          </div>
+        </nav>
+      </div>
+    ) : null;
 
   return (
     <header className="sticky top-0 z-50 border-b border-slate-800/80 bg-slate-950/80 backdrop-blur">
@@ -88,59 +162,7 @@ export default function SiteHeader({ activeNav, maxWidth = "max-w-6xl" }: Props)
         </div>
       </div>
 
-      {/* Mobile fullscreen overlay */}
-      {open && (
-        <div className="fixed inset-0 z-[100] flex flex-col bg-[#0a1628] md:hidden">
-          {/* Close button */}
-          <div className="flex items-center justify-between px-4 py-4">
-            <Link href="/" onClick={() => setOpen(false)} className="flex items-center gap-2">
-              <div className="h-8 w-8 rounded-xl bg-gradient-to-tr from-emerald-400 to-cyan-500 shadow-[0_0_40px_rgba(16,185,129,0.7)]" />
-              <span className="bg-gradient-to-r from-emerald-400 via-cyan-400 to-sky-500 bg-clip-text text-sm font-semibold tracking-[0.22em] text-transparent">
-                SCOUT INTELLIGENCE
-              </span>
-            </Link>
-            <button
-              onClick={() => setOpen(false)}
-              className="flex h-9 w-9 items-center justify-center rounded-lg border border-slate-700/80 bg-slate-900/70 text-slate-300 transition hover:text-emerald-300"
-              aria-label="Menüyü kapat"
-            >
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
-                <line x1="18" y1="6" x2="6" y2="18" />
-                <line x1="6" y1="6" x2="18" y2="18" />
-              </svg>
-            </button>
-          </div>
-
-          {/* Nav links */}
-          <nav className="flex flex-1 flex-col items-center justify-center gap-2 px-6">
-            {NAV_ITEMS.map((item) => (
-              <Link
-                key={item.key}
-                href={item.href}
-                onClick={() => setOpen(false)}
-                className={`flex w-full max-w-xs items-center gap-3 rounded-xl border px-5 py-3.5 text-sm font-semibold transition ${
-                  activeNav === item.key
-                    ? "border-emerald-500/50 bg-emerald-500/10 text-emerald-300"
-                    : "border-slate-800/80 bg-slate-900/50 text-slate-200 hover:border-emerald-500/40 hover:text-emerald-300"
-                }`}
-              >
-                {item.icon}
-                {item.label}
-              </Link>
-            ))}
-
-            {/* Lang toggle in mobile menu */}
-            <div className="mt-4 flex items-center gap-1 rounded-full border border-slate-700/80 bg-slate-900/70 p-0.5 text-xs">
-              <button className="rounded-full bg-emerald-500/20 px-4 py-1.5 font-semibold text-emerald-200 shadow-[0_0_18px_rgba(16,185,129,0.5)]">
-                TR
-              </button>
-              <button className="rounded-full px-4 py-1.5 text-slate-300 hover:text-emerald-200">
-                EN
-              </button>
-            </div>
-          </nav>
-        </div>
-      )}
+      {mobileMenuOverlay ? createPortal(mobileMenuOverlay, document.body) : null}
     </header>
   );
 }
