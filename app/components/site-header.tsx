@@ -7,7 +7,6 @@ import {
   IconHome,
   IconList,
   IconRadar,
-  IconUsers,
   IconSoccerBall,
   IconTaktik,
 } from "./icons";
@@ -23,7 +22,6 @@ const NAV_ITEMS: NavItem[] = [
   { href: "/", label: "Ana Sayfa", icon: <IconHome />, key: "home" },
   { href: "/listeler", label: "Listeler", icon: <IconList />, key: "listeler" },
   { href: "/radar", label: "Radar", icon: <IconRadar />, key: "radar" },
-  { href: "/oyuncular", label: "Oyuncular", icon: <IconUsers />, key: "oyuncular" },
   { href: "/taktik-lab", label: "Taktik Lab", icon: <IconTaktik />, key: "taktik-lab" },
   { href: "/arena", label: "Oyna", icon: <IconSoccerBall />, key: "arena" },
 ];

@@ -426,7 +426,7 @@ export default function Home() {
                         href={item.href}
                         className="inline-flex w-fit items-center gap-1.5 rounded-full bg-gradient-to-r from-amber-400 to-emerald-400 px-5 py-2.5 text-xs font-semibold text-slate-950 shadow-[0_0_30px_rgba(251,191,36,0.45)] transition hover:brightness-110"
                       >
-                        Oyna → <IconArrowRight />
+                        Oyna <IconArrowRight />
                       </Link>
                     </>
                   )}
