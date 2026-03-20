@@ -8,7 +8,7 @@ import {
   IconList,
   IconRadar,
   IconUsers,
-  IconBracket,
+  IconSoccerBall,
   IconTaktik,
 } from "./icons";
 
@@ -25,7 +25,7 @@ const NAV_ITEMS: NavItem[] = [
   { href: "/radar", label: "Radar", icon: <IconRadar />, key: "radar" },
   { href: "/oyuncular", label: "Oyuncular", icon: <IconUsers />, key: "oyuncular" },
   { href: "/taktik-lab", label: "Taktik Lab", icon: <IconTaktik />, key: "taktik-lab" },
-  { href: "/turnuva", label: "Turnuva", icon: <IconBracket />, key: "turnuva" },
+  { href: "/arena", label: "Oyna", icon: <IconSoccerBall />, key: "arena" },
 ];
 
 type Props = {
@@ -98,15 +98,6 @@ export default function SiteHeader({ activeNav, maxWidth = "max-w-6xl" }: Props)
               {item.label}
             </Link>
           ))}
-
-          <div className="mt-6 flex items-center gap-1 rounded-full border border-slate-700/80 bg-slate-900/70 p-0.5 text-xs">
-            <button type="button" className="rounded-full bg-emerald-500/20 px-4 py-1.5 font-semibold text-emerald-200 shadow-[0_0_18px_rgba(16,185,129,0.5)]">
-              TR
-            </button>
-            <button type="button" className="rounded-full px-4 py-1.5 text-slate-300 hover:text-emerald-200">
-              EN
-            </button>
-          </div>
         </nav>
       </div>
     ) : null;
@@ -136,30 +127,19 @@ export default function SiteHeader({ activeNav, maxWidth = "max-w-6xl" }: Props)
           ))}
         </nav>
 
-        <div className="flex items-center gap-3">
-          {/* Lang toggle — hidden on mobile to save space */}
-          <div className="hidden items-center gap-1 rounded-full border border-slate-700/80 bg-slate-900/70 p-0.5 text-xs sm:flex">
-            <button className="rounded-full bg-emerald-500/20 px-3 py-1 font-semibold text-emerald-200 shadow-[0_0_18px_rgba(16,185,129,0.5)]">
-              TR
-            </button>
-            <button className="rounded-full px-3 py-1 text-slate-300 hover:text-emerald-200">
-              EN
-            </button>
-          </div>
-
-          {/* Hamburger — mobile only */}
-          <button
-            onClick={() => setOpen(true)}
-            className="flex h-9 w-9 items-center justify-center rounded-lg border border-slate-700/80 bg-slate-900/70 text-slate-300 transition hover:border-emerald-500/60 hover:text-emerald-300 md:hidden"
-            aria-label="Menüyü aç"
-          >
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
-              <line x1="3" y1="6" x2="21" y2="6" />
-              <line x1="3" y1="12" x2="21" y2="12" />
-              <line x1="3" y1="18" x2="21" y2="18" />
-            </svg>
-          </button>
-        </div>
+        {/* Hamburger — mobile only */}
+        <button
+          type="button"
+          onClick={() => setOpen(true)}
+          className="flex h-9 w-9 items-center justify-center rounded-lg border border-slate-700/80 bg-slate-900/70 text-slate-300 transition hover:border-emerald-500/60 hover:text-emerald-300 md:hidden"
+          aria-label="Menüyü aç"
+        >
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+            <line x1="3" y1="6" x2="21" y2="6" />
+            <line x1="3" y1="12" x2="21" y2="12" />
+            <line x1="3" y1="18" x2="21" y2="18" />
+          </svg>
+        </button>
       </div>
 
       {mobileMenuOverlay ? createPortal(mobileMenuOverlay, document.body) : null}

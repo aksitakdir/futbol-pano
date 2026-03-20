@@ -281,7 +281,7 @@ export async function GET(request: NextRequest) {
     fetch(`${origin}/api/generate-content`, {
       method: "POST",
       headers: { "content-type": "application/json" },
-      body: JSON.stringify({ count: 2 }),
+      body: JSON.stringify({ count: 3 }),
     }).then((r) => r.json()),
     updateFeaturedPlayerPool(supabaseUrl, supabaseKey, apiKey),
     updateFormPlayers(supabaseUrl, supabaseKey, apiKey),

@@ -3,16 +3,18 @@
 import { useEffect, useState, useCallback, useRef } from "react";
 import Link from "next/link";
 import {
-  IconBracket,
+  IconSoccerBall,
   IconShield,
   IconTrendUp,
   IconStar,
   IconArrowRight,
 } from "./components/icons";
 import SiteHeader from "./components/site-header";
+import SiteFooter from "./components/site-footer";
 import { PlayerScoutLinks } from "./components/player-scout-links";
 import { supabase } from "@/lib/supabase";
 import { stripHtml } from "@/lib/utils";
+import { ARENA_BRACKETS, arenaPath } from "@/lib/arena-brackets";
 
 function translatePosition(pos: string): string {
   const map: Record<string, string> = {
@@ -126,6 +128,43 @@ function buildHeroSlides(all: SlideContent[]): { slide: SlideContent; slideKey: 
     slide,
     slideKey: `${slide.id}-hero-${i}`,
   }));
+}
+
+type HeroContentSlide = { kind: "content"; slide: SlideContent; slideKey: string };
+type HeroArenaSlide = {
+  kind: "arena";
+  slideKey: string;
+  title: string;
+  teaser: string;
+  href: string;
+};
+type HeroSlide = HeroContentSlide | HeroArenaSlide;
+
+function pickRandomArenaHeroSlide(): HeroArenaSlide {
+  const b = ARENA_BRACKETS[Math.floor(Math.random() * ARENA_BRACKETS.length)];
+  return {
+    kind: "arena",
+    slideKey: `arena-hero-${b.slug}-${Date.now()}-${Math.random().toString(36).slice(2, 9)}`,
+    title: b.heroTitle,
+    teaser: b.heroTeaser,
+    href: arenaPath(b.slug),
+  };
+}
+
+/** 4 içerik slaydı + rastgele konumda 1 Arena slaydı */
+function mergeContentWithArenaSlot(
+  content: { slide: SlideContent; slideKey: string }[],
+): HeroSlide[] {
+  const arena = pickRandomArenaHeroSlide();
+  const items: HeroSlide[] = content.map(({ slide, slideKey }) => ({
+    kind: "content",
+    slide,
+    slideKey,
+  }));
+  if (items.length === 0) return [arena];
+  const insertAt = Math.floor(Math.random() * (items.length + 1));
+  items.splice(insertAt, 0, arena);
+  return items;
 }
 
 export default function Home() {
@@ -263,7 +302,7 @@ export default function Home() {
     fetchRadarPlayer();
   }, []);
 
-  const [slides, setSlides] = useState<{ slide: SlideContent; slideKey: string }[]>([]);
+  const [slides, setSlides] = useState<HeroSlide[]>([]);
   const [recentItems, setRecentItems] = useState<SlideContent[]>([]);
   const [activeSlide, setActiveSlide] = useState(0);
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
@@ -278,10 +317,13 @@ export default function Home() {
         .order("created_at", { ascending: false })
         .limit(200);
 
-      if (!data || data.length === 0) return;
+      if (!data || data.length === 0) {
+        setSlides([pickRandomArenaHeroSlide()]);
+        return;
+      }
 
       const built = buildHeroSlides(data as SlideContent[]);
-      if (built.length > 0) setSlides(built);
+      setSlides(mergeContentWithArenaSlot(built));
     }
     async function fetchRecent() {
       const { data } = await supabase
@@ -342,30 +384,52 @@ export default function Home() {
             <div className="pointer-events-none absolute -right-10 bottom-10 h-48 w-48 rounded-full bg-cyan-500/15 blur-[80px]" />
 
             {/* Slides */}
-            {slides.map(({ slide, slideKey }, i) => (
+            {slides.map((item, i) => (
               <div
-                key={slideKey}
+                key={item.slideKey}
                 className={[
                   "absolute inset-0 flex items-center transition-opacity duration-700",
                   i === activeSlide ? "opacity-100 z-10" : "opacity-0 z-0",
                 ].join(" ")}
               >
                 <div className="mx-auto flex max-w-6xl flex-col justify-center px-6 lg:px-8">
-                  <span className={`mb-3 inline-flex w-fit items-center rounded-full border px-2.5 py-0.5 text-[10px] font-semibold uppercase tracking-[0.16em] ${CATEGORY_COLOR[slide.category] ?? "bg-slate-500/15 text-slate-300 border-slate-500/40"}`}>
-                    {CATEGORY_LABEL[slide.category] ?? slide.category}
-                  </span>
-                  <h2 className="mb-2 max-w-3xl bg-gradient-to-r from-emerald-400 via-cyan-400 to-sky-500 bg-clip-text text-[22px] font-extrabold leading-tight tracking-tight text-transparent sm:text-3xl md:mb-3 md:text-[48px] md:leading-[1.15]">
-                    {slide.title}
-                  </h2>
-                  <p className="mb-4 hidden max-w-2xl text-sm leading-relaxed text-slate-300 sm:block md:mb-6">
-                    {stripHtml(slide.content).replace(/[#*_\n]/g, " ").trim().slice(0, 150)}…
-                  </p>
-                  <Link
-                    href={`${categoryPath(slide.category)}/${slide.slug}`}
-                    className="inline-flex w-fit items-center gap-1.5 rounded-full bg-gradient-to-r from-emerald-400 to-cyan-400 px-5 py-2.5 text-xs font-semibold text-slate-950 shadow-[0_0_30px_rgba(16,185,129,0.6)] transition hover:brightness-110"
-                  >
-                    Oku <IconArrowRight />
-                  </Link>
+                  {item.kind === "content" ? (
+                    <>
+                      <span className={`mb-3 inline-flex w-fit items-center rounded-full border px-2.5 py-0.5 text-[10px] font-semibold uppercase tracking-[0.16em] ${CATEGORY_COLOR[item.slide.category] ?? "bg-slate-500/15 text-slate-300 border-slate-500/40"}`}>
+                        {CATEGORY_LABEL[item.slide.category] ?? item.slide.category}
+                      </span>
+                      <h2 className="mb-2 max-w-3xl bg-gradient-to-r from-emerald-400 via-cyan-400 to-sky-500 bg-clip-text text-[22px] font-extrabold leading-tight tracking-tight text-transparent sm:text-3xl md:mb-3 md:text-[48px] md:leading-[1.15]">
+                        {item.slide.title}
+                      </h2>
+                      <p className="mb-4 hidden max-w-2xl text-sm leading-relaxed text-slate-300 sm:block md:mb-6">
+                        {stripHtml(item.slide.content).replace(/[#*_\n]/g, " ").trim().slice(0, 150)}…
+                      </p>
+                      <Link
+                        href={`${categoryPath(item.slide.category)}/${item.slide.slug}`}
+                        className="inline-flex w-fit items-center gap-1.5 rounded-full bg-gradient-to-r from-emerald-400 to-cyan-400 px-5 py-2.5 text-xs font-semibold text-slate-950 shadow-[0_0_30px_rgba(16,185,129,0.6)] transition hover:brightness-110"
+                      >
+                        Oku <IconArrowRight />
+                      </Link>
+                    </>
+                  ) : (
+                    <>
+                      <span className="mb-3 inline-flex w-fit items-center rounded-full border border-amber-500/40 bg-amber-500/15 px-2.5 py-0.5 text-[10px] font-semibold uppercase tracking-[0.16em] text-amber-200">
+                        Oyna & Paylaş
+                      </span>
+                      <h2 className="mb-2 max-w-3xl bg-gradient-to-r from-amber-300 via-emerald-400 to-cyan-400 bg-clip-text text-[22px] font-extrabold leading-tight tracking-tight text-transparent sm:text-3xl md:mb-3 md:text-[48px] md:leading-[1.15]">
+                        {item.title}
+                      </h2>
+                      <p className="mb-4 max-w-2xl text-sm leading-relaxed text-slate-300 md:mb-6 md:text-base">
+                        {item.teaser}
+                      </p>
+                      <Link
+                        href={item.href}
+                        className="inline-flex w-fit items-center gap-1.5 rounded-full bg-gradient-to-r from-amber-400 to-emerald-400 px-5 py-2.5 text-xs font-semibold text-slate-950 shadow-[0_0_30px_rgba(251,191,36,0.45)] transition hover:brightness-110"
+                      >
+                        Oyna → <IconArrowRight />
+                      </Link>
+                    </>
+                  )}
                 </div>
               </div>
             ))}
@@ -637,7 +701,7 @@ export default function Home() {
                     { title: "En Değerli 10 Genç Stoper", slug: "en-iyi-10-genc-stoper", icon: <IconShield className="text-emerald-300" />, desc: "Detaylı analiz, performans metrikleri ve scout notları ile birlikte.", href: "/listeler/en-iyi-10-genc-stoper", tag: "Liste", cta: "Listeyi aç" },
                     { title: "Süper Lig'in Gizli İsimleri", slug: "super-lig-gizli-isimler", icon: <IconTrendUp className="text-sky-300" />, desc: "Detaylı analiz, performans metrikleri ve scout notları ile birlikte.", href: "/listeler/super-lig-gizli-isimler", tag: "Liste", cta: "Listeyi aç" },
                     { title: "Bu Sezonun Sürpriz İsimleri", slug: "surpriz-isimler-2025", icon: <IconStar className="text-amber-300" />, desc: "Detaylı analiz, performans metrikleri ve scout notları ile birlikte.", href: "/listeler/surpriz-isimler-2025", tag: "Liste", cta: "Listeyi aç" },
-                    { title: "Favori Yeteneğini Seç", slug: "turnuva", icon: <IconBracket className="text-[#00d4aa]" />, desc: "16 genç yetenek, tek şampiyon. Kim kazanır?", href: "/turnuva", tag: "Turnuva", cta: "Oyna" },
+                    { title: "Oyna", slug: "arena", icon: <IconSoccerBall className="text-[#00d4aa]" />, desc: "Bracket’lar, rastgele eşleşmeler ve şampiyonunu paylaş.", href: "/arena", tag: "Oyna", cta: "Oyna" },
                   ].map((item) => (
                     <Link
                       key={item.slug}
@@ -696,22 +760,7 @@ export default function Home() {
           </div>
         </div>
 
-        {/* Footer */}
-        <footer className="border-t border-slate-800/80 bg-slate-950/90">
-          <div className="mx-auto flex max-w-6xl flex-col items-center justify-between gap-3 px-4 py-5 text-xs text-slate-400 sm:flex-row">
-            <span className="font-medium text-slate-300">
-              Scout Intelligence
-            </span>
-            <div className="flex items-center gap-4">
-              <span className="h-6 w-6 rounded-full border border-slate-700/80 bg-slate-900/80" />
-              <span className="h-6 w-6 rounded-full border border-slate-700/80 bg-slate-900/80" />
-              <span className="h-6 w-6 rounded-full border border-slate-700/80 bg-slate-900/80" />
-            </div>
-            <span className="text-[11px] text-slate-500">
-              © 2026 Scout Intelligence
-            </span>
-          </div>
-        </footer>
+        <SiteFooter maxWidth="max-w-6xl" />
       </div>
     </main>
   );

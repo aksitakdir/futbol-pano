@@ -10,6 +10,7 @@ import {
   IconCompass,
 } from "../components/icons";
 import SiteHeader from "../components/site-header";
+import SiteFooter from "../components/site-footer";
 import Breadcrumb from "../components/breadcrumb";
 
 type PositionFilter = "all" | "defender" | "midfielder" | "forward";
@@ -236,21 +237,7 @@ export default function PlayersPage() {
           </div>
         </div>
 
-        <footer className="border-t border-slate-800/80 bg-slate-950/90">
-          <div className="mx-auto flex max-w-6xl flex-col items-center justify-between gap-3 px-4 py-5 text-xs text-slate-400 sm:flex-row">
-            <span className="font-medium text-slate-300">
-              Scout Intelligence
-            </span>
-            <div className="flex items-center gap-4">
-              <span className="h-6 w-6 rounded-full border border-slate-700/80 bg-slate-900/80" />
-              <span className="h-6 w-6 rounded-full border border-slate-700/80 bg-slate-900/80" />
-              <span className="h-6 w-6 rounded-full border border-slate-700/80 bg-slate-900/80" />
-            </div>
-            <span className="text-[11px] text-slate-500">
-              © 2026 Scout Intelligence
-            </span>
-          </div>
-        </footer>
+        <SiteFooter maxWidth="max-w-6xl" />
       </div>
     </main>
   );

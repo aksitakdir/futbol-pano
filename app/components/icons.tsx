@@ -152,3 +152,51 @@ export function IconBracket({ className = "" }: { className?: string }) {
     </svg>
   );
 }
+
+/** Futbol topu — Arena / Oyna navigasyonu */
+export function IconSoccerBall({ className = "" }: { className?: string }) {
+  return (
+    <svg
+      className={`${cn} ${className}`}
+      width="14"
+      height="14"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth={1.5}
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <circle cx="12" cy="12" r="9" />
+      <path d="M12 3c0 0-2 3-2 6s2 6 2 6" />
+      <path d="M12 3c0 0 2 3 2 6s-2 6-2 6" />
+      <path d="M3 12h18" />
+      <path d="M5 7.5c2 1 4 1.5 7 1.5s5-.5 7-1.5" />
+      <path d="M5 16.5c2-1 4-1.5 7-1.5s5 .5 7 1.5" />
+    </svg>
+  );
+}
+
+/** Kupa + paylaş — ana sayfa vb. */
+export function IconGamepad({ className = "" }: { className?: string }) {
+  return (
+    <svg
+      className={`${cn} ${className}`}
+      width="14"
+      height="14"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth={1.5}
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <path d="M6 3h12l-1.5 7.5a4.5 4.5 0 0 1-9 0L6 3z" />
+      <path d="M10 14.5v2.5" />
+      <path d="M14 14.5v2.5" />
+      <path d="M8 17h8" />
+      <path d="M17 3l2-2" />
+      <path d="M17 1h2v2" />
+    </svg>
+  );
+}

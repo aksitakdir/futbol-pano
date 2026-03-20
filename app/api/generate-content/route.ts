@@ -31,6 +31,15 @@ const FALLBACK_TOPICS: Record<Category, string[]> = {
   ],
 };
 
+/** Tekil üretim isteğinde mod bağlamı (web araması yok) */
+const SINGLE_MODE_HINT: Record<string, string> = {
+  trend: "İçerik güncel ve trend odaklı olsun; taraftarın bugün merak ettiği tonda yaz.",
+  general: "2025-26 sezon gündemi ve güncel futbol dünyasıyla uyumlu olsun.",
+  historical: "Evergreen, futbol tarihi ve kalıcı değer odaklı; zamanla eskimeyen bir metin olsun.",
+  chronological:
+    "Kronolojik yapı kullan: bölümler oyuncu veya kulübün kariyer/tarih evrelerine göre ilerlesin (zaman çizelgesi hissi).",
+};
+
 const SYSTEM_PROMPT = `Sen bir futbol içerik yazarısın. Kısa, dikkat çekici, SEO odaklı başlıklar kullan. Başlıkta günlük konuşma dilindeki futbol terimlerini ve popüler arama kelimelerini tercih et. Teknik jargonu minimumda tut. Güncel futbol dünyasından yaz. Başlıkta tarih, yıl veya sezon ibaresi kullanma. Örnek başlık formatları: "X Takımın Yeni Yıldızı: Y Kimdir?", "Z Transferi Neden Önemli?", "Sürpriz İsim: W". HTML formatında içerik yaz, markdown kullanma.
 
 Yanıtını SADECE şu JSON formatında ver, başka hiçbir şey yazma:
@@ -235,11 +244,104 @@ export async function POST(request: Request) {
 
   const supabase = createClient(supabaseUrl, supabaseKey);
 
-  let count = 1;
+  type PostBody = {
+    count?: number;
+    title?: string;
+    category?: string;
+    slug?: string;
+    keyword?: string;
+    mode?: string;
+  };
+
+  let parsedBody: PostBody = {};
   try {
-    const body = await request.json() as { count?: number };
-    count = Math.min(Math.max(body.count ?? 1, 1), 5);
-  } catch { /* default */ }
+    parsedBody = (await request.json()) as PostBody;
+  } catch {
+    /* empty */
+  }
+
+  // ——— Tekil içerik: başlık + kategori (İçerik Kontrol Merkezi) ———
+  if (
+    typeof parsedBody.title === "string" &&
+    parsedBody.title.trim() &&
+    typeof parsedBody.category === "string" &&
+    (CATEGORIES as readonly string[]).includes(parsedBody.category)
+  ) {
+    const since24h = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
+    const { data: recentRows } = await supabase
+      .from("contents")
+      .select("title")
+      .gte("created_at", since24h);
+    const recentTitles: string[] = (recentRows ?? []).map((r) => r.title as string).filter(Boolean);
+
+    const kw = typeof parsedBody.keyword === "string" ? parsedBody.keyword.trim() : "";
+    const mode = typeof parsedBody.mode === "string" ? parsedBody.mode : "";
+    const modeHint = SINGLE_MODE_HINT[mode] ?? "";
+
+    let topic =
+      `Makale başlığı tam olarak şu veya çok yakını olsun: "${parsedBody.title.trim()}". `;
+    if (kw) topic += `Anahtar kelime / odak: ${kw}. `;
+    if (modeHint) topic += `${modeHint} `;
+    topic +=
+      "İçerik bu başlık ve kategoriye sadık kalsın. Slug önerisi varsa URL dostu kalsın.";
+
+    const targetCategory = parsedBody.category as Category;
+
+    try {
+      let generated = await generateWithClaude(topic, targetCategory, recentTitles);
+      const suggestedSlug =
+        typeof parsedBody.slug === "string" && /^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(parsedBody.slug.trim())
+          ? parsedBody.slug.trim()
+          : null;
+      if (suggestedSlug) {
+        generated = { ...generated, slug: suggestedSlug };
+      }
+
+      const { error: dbError } = await supabase.from("contents").insert({
+        title: generated.title,
+        slug: generated.slug,
+        category: generated.category,
+        content: generated.content,
+        status: "bekliyor",
+      });
+
+      if (dbError) {
+        return NextResponse.json(
+          {
+            generated: 0,
+            total: 1,
+            results: [{ topic: parsedBody.title, category: targetCategory, status: "db_error", error: dbError.message }],
+          },
+          { status: 500 },
+        );
+      }
+
+      return NextResponse.json({
+        generated: 1,
+        total: 1,
+        results: [
+          {
+            topic: parsedBody.title,
+            category: generated.category,
+            status: "success",
+            title: generated.title,
+          },
+        ],
+      });
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : String(err);
+      return NextResponse.json(
+        {
+          generated: 0,
+          total: 1,
+          results: [{ topic: parsedBody.title, category: targetCategory, status: "failed", error: msg }],
+        },
+        { status: 500 },
+      );
+    }
+  }
+
+  const count = Math.min(Math.max(parsedBody.count ?? 1, 1), 5);
 
   const origin = new URL(request.url).origin;
   const trendTopics = await fetchTrends(origin);

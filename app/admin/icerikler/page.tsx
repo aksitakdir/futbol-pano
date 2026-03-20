@@ -51,6 +51,28 @@ const STATUS_CONFIG: Record<string, { label: string; cls: string }> = {
 
 type TrendItem = { title: string; traffic: string };
 
+type TitleSuggestion = {
+  title: string;
+  category: string;
+  seo_value: string;
+  slug: string;
+};
+
+type CcMode = "trend" | "general" | "historical" | "chronological";
+
+const CC_MODES: { key: CcMode; label: string }[] = [
+  { key: "trend", label: "Güncel & Trend" },
+  { key: "general", label: "Genel Güncel" },
+  { key: "historical", label: "Tarihsel" },
+  { key: "chronological", label: "Kronolojik" },
+];
+
+const SEO_VALUE_STYLE: Record<string, string> = {
+  Yüksek: "bg-emerald-500/20 text-emerald-200 border-emerald-500/40",
+  Orta: "bg-amber-500/20 text-amber-200 border-amber-500/40",
+  Düşük: "bg-slate-500/20 text-slate-300 border-slate-500/40",
+};
+
 export default function IceriklerPage() {
   const [allContents, setAllContents] = useState<ContentRow[]>([]);
   const [loading, setLoading] = useState(false);
@@ -60,35 +82,110 @@ export default function IceriklerPage() {
   const [expandedId, setExpandedId] = useState<string | null>(null);
   const [selected, setSelected] = useState<Set<string>>(new Set());
 
-  const [aiGenerating, setAiGenerating] = useState(false);
-  const [aiMessage, setAiMessage] = useState("");
+  const [ccKeyword, setCcKeyword] = useState("");
+  const [ccMode, setCcMode] = useState<CcMode>("trend");
+  const [suggestions, setSuggestions] = useState<TitleSuggestion[]>([]);
+  const [suggestLoading, setSuggestLoading] = useState(false);
+  const [suggestError, setSuggestError] = useState("");
+  const [selectedSuggestIdx, setSelectedSuggestIdx] = useState<number | null>(null);
+  const [contentGenerating, setContentGenerating] = useState(false);
+  const [hubNotice, setHubNotice] = useState("");
+  const [hubNoticeOk, setHubNoticeOk] = useState(true);
+
   const [trendsOpen, setTrendsOpen] = useState(false);
   const [trendsLoading, setTrendsLoading] = useState(false);
   const [trends, setTrends] = useState<TrendItem[]>([]);
   const [trendsSample, setTrendsSample] = useState<string[]>([]);
 
-  async function handleAiGenerate() {
-    setAiGenerating(true);
-    setAiMessage("");
+  const fetchAll = useCallback(async () => {
+    setLoading(true);
+    const { data, error } = await supabase
+      .from("contents")
+      .select("*")
+      .order("created_at", { ascending: false });
+    if (error) console.error("Supabase fetch error:", error);
+    setAllContents(data ?? []);
+    setLoading(false);
+  }, []);
+
+  async function handleSuggestTitles() {
+    const kw = ccKeyword.trim();
+    if (!kw) {
+      setSuggestError("Önce bir konu veya keyword girin.");
+      return;
+    }
+    setSuggestLoading(true);
+    setSuggestError("");
+    setSuggestions([]);
+    setSelectedSuggestIdx(null);
+    try {
+      const res = await fetch("/api/suggest-titles", {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({ keyword: kw, mode: ccMode }),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        setSuggestError(data.error || "Başlık önerisi alınamadı.");
+        return;
+      }
+      const list = (data.suggestions ?? []) as TitleSuggestion[];
+      setSuggestions(list.slice(0, 8));
+    } catch {
+      setSuggestError("Ağ hatası — sunucuya ulaşılamadı.");
+    }
+    setSuggestLoading(false);
+  }
+
+  async function generateFromSuggestion(s: TitleSuggestion) {
+    if (!["radar", "taktik-lab", "listeler"].includes(s.category)) {
+      setHubNoticeOk(false);
+      setHubNotice("Geçersiz kategori — başlığı yeniden önerin.");
+      setTimeout(() => setHubNotice(""), 8000);
+      return;
+    }
+    setContentGenerating(true);
+    setHubNotice("");
     try {
       const res = await fetch("/api/generate-content", {
         method: "POST",
         headers: { "content-type": "application/json" },
-        body: JSON.stringify({ count: 1 }),
+        body: JSON.stringify({
+          title: s.title,
+          category: s.category,
+          slug: s.slug,
+          keyword: ccKeyword.trim(),
+          mode: ccMode,
+        }),
       });
       const data = await res.json();
       if (res.ok && data.generated > 0) {
-        setAiMessage(`${data.generated} içerik oluşturuldu ve beklemeye alındı.`);
-        fetchAll();
+        setHubNoticeOk(true);
+        setHubNotice("İçerik oluşturuldu; Bekleyenler sekmesine geçildi.");
+        setTab("bekliyor");
+        setSelected(new Set());
+        await fetchAll();
       } else {
         const err = data.results?.[0]?.error || data.error || "Bilinmeyen hata";
-        setAiMessage(`Hata: ${err}`);
+        setHubNoticeOk(false);
+        setHubNotice(`Hata: ${err}`);
       }
     } catch {
-      setAiMessage("Ağ hatası — sunucuya ulaşılamadı.");
+      setHubNoticeOk(false);
+      setHubNotice("Ağ hatası — sunucuya ulaşılamadı.");
     }
-    setAiGenerating(false);
-    setTimeout(() => setAiMessage(""), 12000);
+    setContentGenerating(false);
+    setTimeout(() => setHubNotice(""), 12000);
+  }
+
+  function handleProduceSelected() {
+    if (selectedSuggestIdx === null || !suggestions[selectedSuggestIdx]) {
+      setHubNoticeOk(false);
+      setHubNotice("Önce başlık önerin; bir kart seçin veya başlığa tıklayın.");
+      setTimeout(() => setHubNotice(""), 8000);
+      return;
+    }
+    void generateFromSuggestion(suggestions[selectedSuggestIdx]);
   }
 
   async function handleFetchTrends() {
@@ -106,17 +203,6 @@ export default function IceriklerPage() {
     }
     setTrendsLoading(false);
   }
-
-  const fetchAll = useCallback(async () => {
-    setLoading(true);
-    const { data, error } = await supabase
-      .from("contents")
-      .select("*")
-      .order("created_at", { ascending: false });
-    if (error) console.error("Supabase fetch error:", error);
-    setAllContents(data ?? []);
-    setLoading(false);
-  }, []);
 
   useEffect(() => {
     fetchAll();
@@ -227,24 +313,11 @@ export default function IceriklerPage() {
               />
             </div>
             <button
+              type="button"
               onClick={handleFetchTrends}
               className="rounded-lg border border-sky-500/40 bg-sky-500/10 px-3 py-2 text-xs font-semibold text-sky-300 transition hover:bg-sky-500/20"
             >
               Güncel Trendler
-            </button>
-            <button
-              onClick={handleAiGenerate}
-              disabled={aiGenerating}
-              className="rounded-lg border border-violet-500/40 bg-violet-500/10 px-3 py-2 text-xs font-semibold text-violet-300 transition hover:bg-violet-500/20 disabled:opacity-50"
-            >
-              {aiGenerating ? (
-                <span className="flex items-center gap-1.5">
-                  <span className="h-3 w-3 animate-spin rounded-full border-2 border-violet-400 border-t-transparent" />
-                  Üretiliyor...
-                </span>
-              ) : (
-                "AI Taslağı Üret"
-              )}
             </button>
             <Link
               href="/admin/yeni"
@@ -256,10 +329,161 @@ export default function IceriklerPage() {
           </div>
         </div>
 
-        {/* AI message */}
-        {aiMessage && (
-          <div className={`mb-4 rounded-lg border px-4 py-2.5 text-xs font-medium ${aiMessage.startsWith("Hata") || aiMessage.startsWith("Ağ") ? "border-rose-500/30 bg-rose-500/5 text-rose-300" : "border-emerald-500/30 bg-emerald-500/5 text-emerald-300"}`}>
-            {aiMessage}
+        {/* İçerik Kontrol Merkezi */}
+        <div className="mb-6 rounded-2xl border border-slate-800/70 bg-slate-900/40 p-4 shadow-lg sm:p-6">
+          <div className="mb-4 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+            <div>
+              <h2 className="text-sm font-bold text-slate-100">İçerik Kontrol Merkezi</h2>
+              <p className="text-[11px] text-slate-500">Başlık keşfi, trendler ve hedefli içerik üretimi</p>
+            </div>
+            {contentGenerating && (
+              <span className="inline-flex items-center gap-2 rounded-lg border border-violet-500/30 bg-violet-500/10 px-3 py-1.5 text-[11px] font-semibold text-violet-200">
+                <span className="h-3.5 w-3.5 animate-spin rounded-full border-2 border-violet-400 border-t-transparent" />
+                İçerik üretiliyor…
+              </span>
+            )}
+          </div>
+
+          {/* Başlık Keşfet */}
+          <div className="mb-6 rounded-xl border border-slate-800/60 bg-slate-950/50 p-4">
+            <h3 className="mb-3 text-xs font-bold uppercase tracking-wider text-emerald-400/90">Başlık Keşfet</h3>
+            <input
+              type="text"
+              value={ccKeyword}
+              onChange={(e) => setCcKeyword(e.target.value)}
+              placeholder="Konu veya keyword gir..."
+              disabled={contentGenerating}
+              className="mb-3 w-full rounded-lg border border-slate-700/80 bg-slate-900/80 px-3 py-2.5 text-sm text-slate-100 placeholder-slate-500 outline-none transition focus:border-emerald-500/50 disabled:opacity-50"
+            />
+            <div className="mb-3 flex flex-wrap gap-2">
+              {CC_MODES.map((m) => (
+                <button
+                  key={m.key}
+                  type="button"
+                  disabled={contentGenerating}
+                  onClick={() => setCcMode(m.key)}
+                  className={[
+                    "rounded-lg border px-2.5 py-1.5 text-[11px] font-semibold transition disabled:opacity-50",
+                    ccMode === m.key
+                      ? "border-emerald-500/50 bg-emerald-500/15 text-emerald-200"
+                      : "border-slate-700/80 bg-slate-900/60 text-slate-400 hover:border-slate-600 hover:text-slate-200",
+                  ].join(" ")}
+                >
+                  {m.label}
+                </button>
+              ))}
+            </div>
+            <button
+              type="button"
+              disabled={contentGenerating || suggestLoading}
+              onClick={() => void handleSuggestTitles()}
+              className="rounded-lg bg-emerald-600 px-4 py-2 text-xs font-bold text-slate-950 transition hover:bg-emerald-500 disabled:opacity-50"
+            >
+              {suggestLoading ? (
+                <span className="inline-flex items-center gap-2">
+                  <span className="h-3 w-3 animate-spin rounded-full border-2 border-slate-900 border-t-transparent" />
+                  Öneriliyor…
+                </span>
+              ) : (
+                "Başlık Öner"
+              )}
+            </button>
+            {suggestError && <p className="mt-2 text-xs text-rose-400">{suggestError}</p>}
+          </div>
+
+          {/* Önerilen başlıklar */}
+          {suggestions.length > 0 && (
+            <div className="mb-6">
+              <p className="mb-2 text-[10px] font-semibold uppercase tracking-widest text-slate-500">Önerilen başlıklar</p>
+              <div className="grid gap-3 sm:grid-cols-2">
+                {suggestions.map((s, i) => (
+                  <div
+                    key={`${s.slug}-${i}`}
+                    role="button"
+                    tabIndex={0}
+                    onClick={() => setSelectedSuggestIdx(i)}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter" || e.key === " ") {
+                        e.preventDefault();
+                        setSelectedSuggestIdx(i);
+                      }
+                    }}
+                    className={[
+                      "flex flex-col rounded-xl border bg-slate-950/60 p-3 text-left transition cursor-pointer",
+                      selectedSuggestIdx === i
+                        ? "border-emerald-500/50 ring-1 ring-emerald-500/30"
+                        : "border-slate-800/70 hover:border-slate-700",
+                    ].join(" ")}
+                  >
+                    <button
+                      type="button"
+                      disabled={contentGenerating}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        void generateFromSuggestion(s);
+                      }}
+                      className="mb-2 text-left text-sm font-semibold text-slate-100 transition hover:text-emerald-300 disabled:opacity-50"
+                    >
+                      {s.title}
+                    </button>
+                    <div className="mb-2 flex flex-wrap items-center gap-2">
+                      <span
+                        className={`inline-flex rounded-full border px-2 py-0.5 text-[10px] font-semibold ${CATEGORY_COLOR[s.category] ?? "bg-slate-500/15 text-slate-300 border-slate-500/40"}`}
+                      >
+                        {CATEGORY_LABEL[s.category] ?? s.category}
+                      </span>
+                      <span
+                        className={`inline-flex rounded-full border px-2 py-0.5 text-[10px] font-semibold ${SEO_VALUE_STYLE[s.seo_value] ?? SEO_VALUE_STYLE.Orta}`}
+                      >
+                        SEO: {s.seo_value}
+                      </span>
+                    </div>
+                    <button
+                      type="button"
+                      disabled={contentGenerating}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        void generateFromSuggestion(s);
+                      }}
+                      className="mt-auto inline-flex w-fit items-center gap-1 text-[11px] font-bold text-violet-300 transition hover:text-violet-200 disabled:opacity-50"
+                    >
+                      Bu Başlıkla Üret →
+                    </button>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* İçerik Üret */}
+          <div className="rounded-xl border border-slate-800/60 bg-slate-950/40 p-4">
+            <h3 className="mb-2 text-xs font-bold uppercase tracking-wider text-violet-400/90">İçerik Üret</h3>
+            <p className="mb-3 text-[11px] text-slate-500">
+              Bir kartı seçip <strong className="text-slate-400">Üret</strong> ile onaylayın; veya başlığa / &quot;Bu Başlıkla Üret&quot;e tıklayarak doğrudan başlatın.
+            </p>
+            <button
+              type="button"
+              disabled={contentGenerating || suggestLoading}
+              onClick={() => handleProduceSelected()}
+              className="rounded-lg border border-violet-500/40 bg-violet-500/15 px-4 py-2 text-xs font-bold text-violet-200 transition hover:bg-violet-500/25 disabled:opacity-50"
+            >
+              {contentGenerating ? (
+                <span className="inline-flex items-center gap-2">
+                  <span className="h-3 w-3 animate-spin rounded-full border-2 border-violet-300 border-t-transparent" />
+                  Üretiliyor…
+                </span>
+              ) : (
+                "Üret"
+              )}
+            </button>
+          </div>
+        </div>
+
+        {hubNotice && (
+          <div
+            className={`mb-4 rounded-lg border px-4 py-2.5 text-xs font-medium ${hubNoticeOk ? "border-emerald-500/30 bg-emerald-500/5 text-emerald-300" : "border-rose-500/30 bg-rose-500/5 text-rose-300"}`}
+          >
+            {hubNotice}
           </div>
         )}
 
@@ -285,10 +509,18 @@ export default function IceriklerPage() {
                       <p className="mb-2 text-[10px] font-semibold uppercase tracking-widest text-emerald-400">Futbol / Spor Trendleri</p>
                       <div className="space-y-1.5">
                         {trends.map((t, i) => (
-                          <div key={i} className="flex items-center justify-between rounded-lg border border-slate-800/60 bg-slate-900/40 px-3 py-2">
+                          <button
+                            key={i}
+                            type="button"
+                            onClick={() => {
+                              setCcKeyword(t.title);
+                              setTrendsOpen(false);
+                            }}
+                            className="flex w-full items-center justify-between rounded-lg border border-slate-800/60 bg-slate-900/40 px-3 py-2 text-left transition hover:border-sky-500/40 hover:bg-slate-900/70"
+                          >
                             <span className="text-xs font-medium text-slate-200">{t.title}</span>
                             {t.traffic && <span className="shrink-0 text-[10px] text-slate-500">{t.traffic}</span>}
-                          </div>
+                          </button>
                         ))}
                       </div>
                     </div>
@@ -300,7 +532,17 @@ export default function IceriklerPage() {
                       <p className="mb-2 text-[10px] font-semibold uppercase tracking-widest text-slate-500">Tüm Trendler (İlk 10)</p>
                       <div className="flex flex-wrap gap-1.5">
                         {trendsSample.map((t, i) => (
-                          <span key={i} className="rounded-full border border-slate-800/60 bg-slate-900/40 px-2.5 py-1 text-[11px] text-slate-400">{t}</span>
+                          <button
+                            key={i}
+                            type="button"
+                            onClick={() => {
+                              setCcKeyword(t);
+                              setTrendsOpen(false);
+                            }}
+                            className="rounded-full border border-slate-800/60 bg-slate-900/40 px-2.5 py-1 text-[11px] text-slate-400 transition hover:border-sky-500/40 hover:text-sky-200"
+                          >
+                            {t}
+                          </button>
                         ))}
                       </div>
                     </div>

@@ -15,6 +15,7 @@ const ARTICLE_BODY_CLASS =
   "article-body text-[15px] leading-[1.7] [&_h1]:mb-4 [&_h1]:mt-6 [&_h1]:text-xl [&_h1]:font-extrabold [&_h1]:text-slate-50 [&_h1]:first:mt-0 [&_h2]:mb-3 [&_h2]:mt-5 [&_h2]:text-lg [&_h2]:font-bold [&_h2]:text-slate-50 [&_h3]:mb-2 [&_h3]:mt-4 [&_h3]:text-base [&_h3]:font-semibold [&_h3]:text-slate-100 [&_p]:mb-5 [&_p]:text-slate-200 [&_ul]:mb-5 [&_ul]:list-disc [&_ul]:pl-5 [&_ul]:text-slate-200 [&_ol]:mb-5 [&_ol]:list-decimal [&_ol]:pl-5 [&_ol]:text-slate-200 [&_li]:mb-2 [&_li]:leading-[1.7] [&_strong]:font-semibold [&_strong]:text-slate-50 [&_em]:text-slate-300 [&_blockquote]:my-5 [&_blockquote]:border-l-2 [&_blockquote]:border-emerald-500/60 [&_blockquote]:pl-4 [&_blockquote]:italic [&_blockquote]:text-slate-300 [&_a]:text-emerald-300 [&_a]:underline [&_a]:decoration-emerald-500/30 hover:[&_a]:text-emerald-200 [&_hr]:my-6 [&_hr]:border-slate-800/60 [&_code]:rounded [&_code]:bg-slate-800 [&_code]:px-1.5 [&_code]:py-0.5 [&_code]:text-xs [&_code]:text-emerald-300";
 
 import SiteHeader from "./site-header";
+import SiteFooter from "./site-footer";
 import Breadcrumb from "./breadcrumb";
 import { PlayerScoutLinks } from "./player-scout-links";
 import { supabase } from "@/lib/supabase";
@@ -577,18 +578,7 @@ export default function ArticleLayout({
           </div>
         </div>
 
-        {/* Footer */}
-        <footer className="border-t border-slate-800/80 bg-slate-950/90">
-          <div className="mx-auto flex max-w-7xl flex-col items-center justify-between gap-3 px-4 py-5 text-xs text-slate-400 sm:flex-row">
-            <span className="font-medium text-slate-300">Scout Intelligence</span>
-            <div className="flex items-center gap-4">
-              <span className="h-6 w-6 rounded-full border border-slate-700/80 bg-slate-900/80" />
-              <span className="h-6 w-6 rounded-full border border-slate-700/80 bg-slate-900/80" />
-              <span className="h-6 w-6 rounded-full border border-slate-700/80 bg-slate-900/80" />
-            </div>
-            <span className="text-[11px] text-slate-500">© 2026 Scout Intelligence</span>
-          </div>
-        </footer>
+        <SiteFooter maxWidth="max-w-7xl" />
       </div>
     </main>
   );
