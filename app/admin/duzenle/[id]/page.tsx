@@ -19,6 +19,14 @@ const CATEGORIES = [
   { value: "taktik-lab", label: "Taktik Lab" },
 ];
 
+function categoryPublicPath(cat: string): string {
+  if (cat === "radar") return "/radar";
+  if (cat === "taktik-lab") return "/taktik-lab";
+  return "/listeler";
+}
+
+const SLUG_PATTERN = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
+
 export default function DuzenlePage() {
   const params = useParams();
   const router = useRouter();
@@ -71,15 +79,22 @@ export default function DuzenlePage() {
 
   async function handleSave(publish = false) {
     setError("");
-    if (!title.trim() || !slug.trim() || isContentEmpty(content)) {
+    const slugTrim = slug.trim();
+    if (!title.trim() || !slugTrim || isContentEmpty(content)) {
       setError("Tüm alanlar zorunludur");
+      return;
+    }
+    if (!SLUG_PATTERN.test(slugTrim)) {
+      setError(
+        "Slug yalnızca küçük harf, rakam ve tire içerebilir (örn: galatasaray-mac-ozeti). Boşluk veya Türkçe karakter kullanmayın.",
+      );
       return;
     }
 
     setSaving(true);
     const updateData: Record<string, string> = {
       title: title.trim(),
-      slug: slug.trim(),
+      slug: slugTrim,
       category,
       content: content.trim(),
       youtube_id: youtubeId.trim(),
@@ -149,14 +164,23 @@ export default function DuzenlePage() {
 
           <div>
             <label className="mb-1.5 block text-xs font-semibold text-slate-300">
-              Slug
+              Slug (URL)
             </label>
             <input
               type="text"
               value={slug}
               onChange={(e) => setSlug(e.target.value)}
-              className="w-full rounded-lg border border-slate-700/80 bg-slate-900/70 px-4 py-2.5 text-sm text-slate-100 placeholder-slate-500 outline-none transition focus:border-emerald-500/60 focus:ring-1 focus:ring-emerald-500/40"
+              placeholder="ornek-makale-url-yolu"
+              autoComplete="off"
+              spellCheck={false}
+              className="w-full rounded-lg border border-slate-700/80 bg-slate-900/70 px-4 py-2.5 font-mono text-sm text-slate-100 placeholder-slate-500 outline-none transition focus:border-emerald-500/60 focus:ring-1 focus:ring-emerald-500/40"
             />
+            <p className="mt-1.5 text-[11px] leading-relaxed text-slate-500">
+              Yayında sayfa adresi:{" "}
+              <span className="font-mono text-slate-400">
+                {categoryPublicPath(category)}/{slug.trim() || "…"}
+              </span>
+            </p>
           </div>
 
           <div>

@@ -7,10 +7,6 @@ import {
   IconShield,
   IconTrendUp,
   IconStar,
-  IconTrophy,
-  IconBall,
-  IconCompass,
-  IconArrowRight,
 } from "../components/icons";
 import SiteHeader from "../components/site-header";
 import SiteFooter from "../components/site-footer";
@@ -44,27 +40,6 @@ const lists = [
     description:
       "2025 sezonunda beklentilerin üzerine çıkan, istatistiksel olarak sıçrama yapan oyuncular.",
     icon: <IconStar className="text-amber-300" />,
-  },
-  {
-    slug: "en-degerli-u20-oyuncular",
-    title: "En Değerli U20 Oyuncular",
-    description:
-      "Piyasa değeri, potansiyel ve gelişim eğrisi ile dikkat çeken U20 yıldız adayları.",
-    icon: <IconTrophy className="text-amber-300" />,
-  },
-  {
-    slug: "bundesliga-gelecek-yildizlari",
-    title: "Bundesliga'nın Gelecek Yıldızları",
-    description:
-      "Almanya'da top koşturan ve önümüzdeki 3 yıl içinde patlama beklenen gençler.",
-    icon: <IconBall className="text-rose-300" />,
-  },
-  {
-    slug: "premier-lig-genc-yetenekler",
-    title: "Premier Lig Genç Yetenekler",
-    description:
-      "İngiltere'nin en üst seviyesinde süre almaya başlayan genç ve dinamik profil oyuncular.",
-    icon: <IconCompass className="text-cyan-300" />,
   },
 ];
 
