@@ -2,6 +2,7 @@
 
 import { useEffect, useState, useCallback, useRef } from "react";
 import Link from "next/link";
+import { motion } from "framer-motion";
 import {
   IconSoccerBall,
   IconShield,
@@ -15,6 +16,41 @@ import { PlayerScoutLinks } from "./components/player-scout-links";
 import { supabase } from "@/lib/supabase";
 import { stripHtml } from "@/lib/utils";
 import { ARENA_BRACKETS, arenaPath } from "@/lib/arena-brackets";
+
+// ─── Animasyon varyantları ───────────────────────────────────────────────────
+
+// Tek element: aşağıdan yukarı süzülme
+const fadeUp = {
+  hidden: { opacity: 0, y: 32 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: { duration: 0.7, ease: [0.22, 1, 0.36, 1] },
+  },
+};
+
+// Container: child'ları sırayla tetikler (stagger)
+const staggerContainer = {
+  hidden: {},
+  visible: {
+    transition: {
+      staggerChildren: 0.1,
+      delayChildren: 0.05,
+    },
+  },
+};
+
+// Stagger için child varyantı
+const staggerChild = {
+  hidden: { opacity: 0, y: 24 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: { duration: 0.65, ease: [0.22, 1, 0.36, 1] },
+  },
+};
+
+// ────────────────────────────────────────────────────────────────────────────
 
 function translatePosition(pos: string): string {
   const map: Record<string, string> = {
@@ -75,7 +111,6 @@ function shuffleInPlace<T>(arr: T[]): T[] {
   return a;
 }
 
-/** Her zaman 4 slide: 7g (max 2) → 30g → tümü random → eksikse tekrarla */
 function buildHeroSlides(all: SlideContent[]): { slide: SlideContent; slideKey: string }[] {
   if (!all.length) return [];
 
@@ -98,8 +133,7 @@ function buildHeroSlides(all: SlideContent[]): { slide: SlideContent; slideKey: 
 
   if (picked.length < SLIDER_COUNT) {
     const in30 = byNewest.filter(
-      (c) =>
-        new Date(c.created_at).getTime() >= now - ms30 && !used.has(c.id),
+      (c) => new Date(c.created_at).getTime() >= now - ms30 && !used.has(c.id),
     );
     for (const c of in30) {
       if (picked.length >= SLIDER_COUNT) break;
@@ -151,7 +185,6 @@ function pickRandomArenaHeroSlide(): HeroArenaSlide {
   };
 }
 
-/** 4 içerik slaydı + rastgele konumda 1 Arena slaydı */
 function mergeContentWithArenaSlot(
   content: { slide: SlideContent; slideKey: string }[],
 ): HeroSlide[] {
@@ -168,7 +201,6 @@ function mergeContentWithArenaSlot(
 }
 
 export default function Home() {
-  // Form players — from site_settings (Claude weekly scout list)
   type FormPlayer = {
     name: string; club: string; league: string;
     position: string; age: string; goals: string;
@@ -192,9 +224,7 @@ export default function Home() {
             const shuffled = shuffleInPlace(parsed as FormPlayer[]);
             list = shuffled.slice(0, 10);
           }
-        } catch {
-          /* ignore */
-        }
+        } catch { /* ignore */ }
       }
 
       if (list.length === 0) {
@@ -210,9 +240,7 @@ export default function Home() {
               const shuffled = shuffleInPlace(parsed as FormPlayer[]);
               list = shuffled.slice(0, 10);
             }
-          } catch {
-            /* ignore */
-          }
+          } catch { /* ignore */ }
         }
       }
 
@@ -222,7 +250,6 @@ export default function Home() {
     fetchFormPlayers();
   }, []);
 
-  // Featured radar player — from site_settings (Claude scout recommendation)
   type FeaturedPlayerData = {
     name: string; club: string; position: string; age: string;
     league: string; goals: string; assists: string;
@@ -266,9 +293,7 @@ export default function Home() {
               return;
             }
           }
-        } catch {
-          /* fall through */
-        }
+        } catch { /* fall through */ }
       }
 
       const keys = [
@@ -306,7 +331,6 @@ export default function Home() {
   const [recentItems, setRecentItems] = useState<SlideContent[]>([]);
   const [activeSlide, setActiveSlide] = useState(0);
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
-
 
   useEffect(() => {
     async function fetchSlider() {
@@ -374,16 +398,14 @@ export default function Home() {
       <div className="flex min-h-screen flex-col">
         <SiteHeader />
 
-        {/* Hero slider */}
+        {/* ── Hero slider ─────────────────────────────────────────────────── */}
         {slides.length > 0 && (
           <section className="relative h-[280px] w-full overflow-hidden md:h-[420px]">
-            {/* Noise/geometric background */}
             <div className="absolute inset-0 bg-gradient-to-br from-slate-950 via-slate-900 to-emerald-950/40" />
             <div className="absolute inset-0 opacity-[0.04]" style={{ backgroundImage: "url(\"data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='1'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E\")" }} />
             <div className="pointer-events-none absolute -left-20 top-10 h-64 w-64 rounded-full bg-emerald-500/20 blur-[100px]" />
             <div className="pointer-events-none absolute -right-10 bottom-10 h-48 w-48 rounded-full bg-cyan-500/15 blur-[80px]" />
 
-            {/* Slides */}
             {slides.map((item, i) => (
               <div
                 key={item.slideKey}
@@ -434,7 +456,6 @@ export default function Home() {
               </div>
             ))}
 
-            {/* Arrows */}
             <button onClick={prevSlide} className="absolute left-2 top-1/2 z-20 flex h-7 w-7 -translate-y-1/2 items-center justify-center rounded-full border border-slate-700/60 bg-slate-900/80 text-slate-300 backdrop-blur transition hover:border-emerald-500/60 hover:text-emerald-300 md:left-4 md:h-9 md:w-9">
               <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" className="md:h-[14px] md:w-[14px]"><path d="M15 19l-7-7 7-7" /></svg>
             </button>
@@ -442,7 +463,6 @@ export default function Home() {
               <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" className="md:h-[14px] md:w-[14px]"><path d="M9 5l7 7-7 7" /></svg>
             </button>
 
-            {/* Dots */}
             <div className="absolute bottom-5 left-1/2 z-20 flex -translate-x-1/2 gap-2">
               {slides.map((_, i) => (
                 <button
@@ -458,7 +478,7 @@ export default function Home() {
           </section>
         )}
 
-        {/* Son Eklenenler — slider sonrası */}
+        {/* ── Son Eklenenler ───────────────────────────────────────────────── */}
         {recentItems.length > 0 && (
           <section className="border-b border-slate-800/60 bg-slate-950/80 py-6">
             <div className="mx-auto max-w-6xl px-4">
@@ -466,39 +486,55 @@ export default function Home() {
                 <h3 className="text-[11px] font-semibold uppercase tracking-[0.22em] text-slate-400">
                   Son Eklenenler
                 </h3>
-                <span className="text-[11px] text-slate-400">
-                  Yayında son içerikler
-                </span>
+                <span className="text-[11px] text-slate-400">Yayında son içerikler</span>
               </div>
-              <div className="flex gap-4 overflow-x-auto pb-2 scrollbar-none">
+
+              {/* Stagger container: kartlar sırayla belirir */}
+              <motion.div
+                className="flex gap-4 overflow-x-auto pb-2 scrollbar-none"
+                variants={staggerContainer}
+                initial="hidden"
+                animate="visible"
+              >
                 {recentItems.map((item) => (
-                  <Link
-                    key={item.id}
-                    href={`${categoryPath(item.category)}/${item.slug}`}
-                    className="group flex w-64 shrink-0 flex-col rounded-xl border border-slate-800/80 bg-slate-950/70 p-4 transition hover:-translate-y-0.5 hover:border-emerald-500/50"
-                  >
-                    <span className={`mb-2 inline-flex w-fit items-center rounded-full border px-2 py-0.5 text-[9px] font-semibold uppercase tracking-[0.14em] ${CATEGORY_COLOR[item.category] ?? "bg-slate-500/15 text-slate-300 border-slate-500/40"}`}>
-                      {CATEGORY_LABEL[item.category] ?? item.category}
-                    </span>
-                    <p className="line-clamp-2 text-xs font-semibold text-slate-100 transition group-hover:text-emerald-300">
-                      {item.title}
-                    </p>
-                    <span className="mt-auto pt-2 text-[10px] text-slate-500">
-                      {new Date(item.created_at).toLocaleDateString("tr-TR", { day: "numeric", month: "short" })}
-                    </span>
-                  </Link>
+                  <motion.div key={item.id} variants={staggerChild}>
+                    <Link
+                      href={`${categoryPath(item.category)}/${item.slug}`}
+                      className="group flex w-64 shrink-0 flex-col rounded-xl border border-slate-800/80 bg-slate-950/70 p-4 transition hover:-translate-y-0.5 hover:border-emerald-500/50"
+                    >
+                      <span className={`mb-2 inline-flex w-fit items-center rounded-full border px-2 py-0.5 text-[9px] font-semibold uppercase tracking-[0.14em] ${CATEGORY_COLOR[item.category] ?? "bg-slate-500/15 text-slate-300 border-slate-500/40"}`}>
+                        {CATEGORY_LABEL[item.category] ?? item.category}
+                      </span>
+                      <p className="line-clamp-2 text-xs font-semibold text-slate-100 transition group-hover:text-emerald-300">
+                        {item.title}
+                      </p>
+                      <span className="mt-auto pt-2 text-[10px] text-slate-500">
+                        {new Date(item.created_at).toLocaleDateString("tr-TR", { day: "numeric", month: "short" })}
+                      </span>
+                    </Link>
+                  </motion.div>
                 ))}
-              </div>
+              </motion.div>
             </div>
           </section>
         )}
 
-        {/* İçerik */}
+        {/* ── Ana içerik ───────────────────────────────────────────────────── */}
         <div className="flex-1">
           <div className="mx-auto max-w-6xl px-4 py-8 lg:py-12">
-            {/* Hero: Bu haftanın öne çıkan oyuncusu */}
-            <section className="mb-10 grid gap-6 md:grid-cols-[minmax(0,1.7fr)_minmax(0,1.3fr)]">
-              <div className="relative overflow-hidden rounded-2xl border border-slate-800/80 bg-gradient-to-br from-slate-950 via-slate-900 to-emerald-950/40 p-6 shadow-[0_24px_80px_rgba(15,23,42,0.9)]">
+
+            {/* Radar oyuncusu + platform özeti */}
+            <motion.section
+              className="mb-10 grid gap-6 md:grid-cols-[minmax(0,1.7fr)_minmax(0,1.3fr)]"
+              variants={staggerContainer}
+              initial="hidden"
+              animate="visible"
+            >
+              {/* Radar oyuncusu kartı */}
+              <motion.div
+                variants={staggerChild}
+                className="relative overflow-hidden rounded-2xl border border-slate-800/80 bg-gradient-to-br from-slate-950 via-slate-900 to-emerald-950/40 p-6 shadow-[0_24px_80px_rgba(15,23,42,0.9)]"
+              >
                 <div className="pointer-events-none absolute -right-12 -top-16 h-40 w-40 rounded-full bg-emerald-500/30 blur-3xl" />
                 <p className="text-[11px] font-semibold uppercase tracking-[0.28em] text-emerald-300/90">
                   Bu Haftanın Radar Oyuncusu
@@ -556,10 +592,13 @@ export default function Home() {
                     </p>
                   </>
                 )}
-              </div>
+              </motion.div>
 
-              <div className="relative overflow-hidden rounded-2xl border border-slate-800/80 bg-slate-900/80 p-5">
-                {/* Decorative elements */}
+              {/* Platform özeti kartı */}
+              <motion.div
+                variants={staggerChild}
+                className="relative overflow-hidden rounded-2xl border border-slate-800/80 bg-slate-900/80 p-5"
+              >
                 <div className="pointer-events-none absolute -right-8 -top-8 h-32 w-32 rounded-full bg-emerald-500/10 blur-[60px]" />
                 <div className="pointer-events-none absolute -bottom-6 -left-6 h-24 w-24 rounded-full bg-cyan-500/10 blur-[50px]" />
                 <div className="pointer-events-none absolute inset-0 opacity-[0.03]" style={{ backgroundImage: "url(\"data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='1'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E\")" }} />
@@ -575,42 +614,52 @@ export default function Home() {
                   </p>
 
                   <div className="mt-4 space-y-3">
-                    <div className="flex items-start gap-3 rounded-xl border border-slate-700/50 bg-slate-950/40 p-3">
-                      <span className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-lg bg-emerald-500/15 text-emerald-300">
-                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" /></svg>
-                      </span>
-                      <div>
-                        <p className="text-xs font-semibold text-slate-100">Kürasyonlu Listeler</p>
-                        <p className="mt-0.5 text-[11px] leading-relaxed text-slate-400">Pozisyona ve profile göre hazırlanmış genç yetenek listeleri ve scout notları</p>
+                    {[
+                      {
+                        icon: <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" /></svg>,
+                        iconBg: "bg-emerald-500/15 text-emerald-300",
+                        title: "Kürasyonlu Listeler",
+                        desc: "Pozisyona ve profile göre hazırlanmış genç yetenek listeleri ve scout notları",
+                      },
+                      {
+                        icon: <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="10" /><path d="M12 6v6l4 2" /></svg>,
+                        iconBg: "bg-sky-500/15 text-sky-300",
+                        title: "Haftalık Radar",
+                        desc: "Her hafta güncellenen derinlemesine oyuncu analizleri ve performans raporları",
+                      },
+                      {
+                        icon: <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" /></svg>,
+                        iconBg: "bg-violet-500/15 text-violet-300",
+                        title: "Taktik Lab",
+                        desc: "Modern futbolun pozisyon arketiplerini keşfet: False 9, Inverted Winger ve daha fazlası",
+                      },
+                    ].map((item) => (
+                      <div key={item.title} className="flex items-start gap-3 rounded-xl border border-slate-700/50 bg-slate-950/40 p-3">
+                        <span className={`mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-lg ${item.iconBg}`}>
+                          {item.icon}
+                        </span>
+                        <div>
+                          <p className="text-xs font-semibold text-slate-100">{item.title}</p>
+                          <p className="mt-0.5 text-[11px] leading-relaxed text-slate-400">{item.desc}</p>
+                        </div>
                       </div>
-                    </div>
-                    <div className="flex items-start gap-3 rounded-xl border border-slate-700/50 bg-slate-950/40 p-3">
-                      <span className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-lg bg-sky-500/15 text-sky-300">
-                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="10" /><path d="M12 6v6l4 2" /></svg>
-                      </span>
-                      <div>
-                        <p className="text-xs font-semibold text-slate-100">Haftalık Radar</p>
-                        <p className="mt-0.5 text-[11px] leading-relaxed text-slate-400">Her hafta güncellenen derinlemesine oyuncu analizleri ve performans raporları</p>
-                      </div>
-                    </div>
-                    <div className="flex items-start gap-3 rounded-xl border border-slate-700/50 bg-slate-950/40 p-3">
-                      <span className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-lg bg-violet-500/15 text-violet-300">
-                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" /></svg>
-                      </span>
-                      <div>
-                        <p className="text-xs font-semibold text-slate-100">Taktik Lab</p>
-                        <p className="mt-0.5 text-[11px] leading-relaxed text-slate-400">Modern futbolun pozisyon arketiplerini keşfet: False 9, Inverted Winger ve daha fazlası</p>
-                      </div>
-                    </div>
+                    ))}
                   </div>
                 </div>
-              </div>
-            </section>
+              </motion.div>
+            </motion.section>
 
-            {/* Ana içerik: tablo + listeler + radar */}
+            {/* ── Alt içerik bölümleri ─────────────────────────────────────── */}
             <section className="space-y-10">
-              {/* Form oyuncuları tablosu — Supabase site_settings */}
-              <div className="rounded-2xl border border-slate-800/80 bg-slate-900/70 shadow-[0_24px_80px_rgba(15,23,42,0.9)]">
+
+              {/* Form oyuncuları tablosu */}
+              <motion.div
+                variants={fadeUp}
+                initial="hidden"
+                whileInView="visible"
+                viewport={{ once: true, margin: "-60px" }}
+                className="rounded-2xl border border-slate-800/80 bg-slate-900/70 shadow-[0_24px_80px_rgba(15,23,42,0.9)]"
+              >
                 <div className="border-b border-slate-800/80 px-5 pb-4 pt-4 sm:px-6">
                   <h2 className="text-sm font-semibold uppercase tracking-[0.2em] text-emerald-300/90">
                     Bu Dönem Dikkat Çekenler
@@ -684,7 +733,7 @@ export default function Home() {
                     </table>
                   )}
                 </div>
-              </div>
+              </motion.div>
 
               {/* Öne Çıkan Listeler */}
               <div>
@@ -692,45 +741,54 @@ export default function Home() {
                   <h2 className="text-sm font-semibold uppercase tracking-[0.22em] text-slate-400">
                     Öne Çıkan Listeler
                   </h2>
-                  <span className="text-[11px] text-slate-400">
-                    Kürasyonlu içerik listeleri
-                  </span>
+                  <span className="text-[11px] text-slate-400">Kürasyonlu içerik listeleri</span>
                 </div>
-                <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+
+                {/* Kartlar stagger ile belirir */}
+                <motion.div
+                  className="grid gap-4 md:grid-cols-2 lg:grid-cols-4"
+                  variants={staggerContainer}
+                  initial="hidden"
+                  whileInView="visible"
+                  viewport={{ once: true, margin: "-60px" }}
+                >
                   {[
                     { title: "En Değerli 10 Genç Stoper", slug: "en-iyi-10-genc-stoper", icon: <IconShield className="text-emerald-300" />, desc: "Detaylı analiz, performans metrikleri ve scout notları ile birlikte.", href: "/listeler/en-iyi-10-genc-stoper", tag: "Liste", cta: "Listeyi aç" },
                     { title: "Süper Lig'in Gizli İsimleri", slug: "super-lig-gizli-isimler", icon: <IconTrendUp className="text-sky-300" />, desc: "Detaylı analiz, performans metrikleri ve scout notları ile birlikte.", href: "/listeler/super-lig-gizli-isimler", tag: "Liste", cta: "Listeyi aç" },
                     { title: "Bu Sezonun Sürpriz İsimleri", slug: "surpriz-isimler-2025", icon: <IconStar className="text-amber-300" />, desc: "Detaylı analiz, performans metrikleri ve scout notları ile birlikte.", href: "/listeler/surpriz-isimler-2025", tag: "Liste", cta: "Listeyi aç" },
-                    { title: "Oyna", slug: "arena", icon: <IconSoccerBall className="text-[#00d4aa]" />, desc: "Bracket’lar, rastgele eşleşmeler ve şampiyonunu paylaş.", href: "/arena", tag: "Oyna", cta: "Oyna" },
+                    { title: "Oyna", slug: "arena", icon: <IconSoccerBall className="text-[#00d4aa]" />, desc: "Bracket'lar, rastgele eşleşmeler ve şampiyonunu paylaş.", href: "/arena", tag: "Oyna", cta: "Oyna" },
                   ].map((item) => (
-                    <Link
-                      key={item.slug}
-                      href={item.href}
-                      className="group flex flex-col items-start rounded-2xl border border-slate-800/80 bg-slate-950/60 px-4 py-4 text-left text-sm text-slate-200 shadow-[0_16px_50px_rgba(15,23,42,0.8)] transition hover:-translate-y-1 hover:border-emerald-500/70 hover:bg-slate-900/80"
-                    >
-                      <span className="mb-2 flex items-center gap-2">
-                        {item.icon}
-                        <span className="inline-flex rounded-full bg-emerald-500/10 px-2 py-1 text-[10px] font-semibold uppercase tracking-[0.18em] text-emerald-300">
-                          {item.tag}
+                    <motion.div key={item.slug} variants={staggerChild}>
+                      <Link
+                        href={item.href}
+                        className="group flex h-full flex-col items-start rounded-2xl border border-slate-800/80 bg-slate-950/60 px-4 py-4 text-left text-sm text-slate-200 shadow-[0_16px_50px_rgba(15,23,42,0.8)] transition hover:-translate-y-1 hover:border-emerald-500/70 hover:bg-slate-900/80"
+                      >
+                        <span className="mb-2 flex items-center gap-2">
+                          {item.icon}
+                          <span className="inline-flex rounded-full bg-emerald-500/10 px-2 py-1 text-[10px] font-semibold uppercase tracking-[0.18em] text-emerald-300">
+                            {item.tag}
+                          </span>
                         </span>
-                      </span>
-                      <span className="text-sm font-semibold">{item.title}</span>
-                      <span className="mt-1 text-xs text-slate-400">
-                        {item.desc}
-                      </span>
-                      <span className="mt-3 inline-flex items-center text-xs font-semibold text-emerald-300">
-                        {item.cta}
-                        <span className="ml-1 transition-transform group-hover:translate-x-0.5">
-                          →
+                        <span className="text-sm font-semibold">{item.title}</span>
+                        <span className="mt-1 text-xs text-slate-400">{item.desc}</span>
+                        <span className="mt-3 inline-flex items-center text-xs font-semibold text-emerald-300">
+                          {item.cta}
+                          <span className="ml-1 transition-transform group-hover:translate-x-0.5">→</span>
                         </span>
-                      </span>
-                    </Link>
+                      </Link>
+                    </motion.div>
                   ))}
-                </div>
+                </motion.div>
               </div>
 
-              {/* Haftalık Radar */}
-              <div className="rounded-2xl border border-slate-800/80 bg-gradient-to-r from-slate-950 via-slate-900 to-emerald-950/40 px-5 py-5 sm:px-6">
+              {/* Haftalık Radar banner */}
+              <motion.div
+                variants={fadeUp}
+                initial="hidden"
+                whileInView="visible"
+                viewport={{ once: true, margin: "-60px" }}
+                className="rounded-2xl border border-slate-800/80 bg-gradient-to-r from-slate-950 via-slate-900 to-emerald-950/40 px-5 py-5 sm:px-6"
+              >
                 <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                   <div className="max-w-2xl">
                     <p className="text-[11px] font-semibold uppercase tracking-[0.24em] text-emerald-300/90">
@@ -755,7 +813,8 @@ export default function Home() {
                     </Link>
                   </div>
                 </div>
-              </div>
+              </motion.div>
+
             </section>
           </div>
         </div>
