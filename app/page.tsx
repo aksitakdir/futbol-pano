@@ -19,17 +19,15 @@ import { ARENA_BRACKETS, arenaPath } from "@/lib/arena-brackets";
 
 // ─── Animasyon varyantları ───────────────────────────────────────────────────
 
-// Tek element: aşağıdan yukarı süzülme
 const fadeUp = {
   hidden: { opacity: 0, y: 32 },
   visible: {
     opacity: 1,
     y: 0,
-    transition: { duration: 0.7, ease: [0.22, 1, 0.36, 1] },
+    transition: { duration: 0.7, ease: [0.22, 1, 0.36, 1] as [number, number, number, number] },
   },
 };
 
-// Container: child'ları sırayla tetikler (stagger)
 const staggerContainer = {
   hidden: {},
   visible: {
@@ -40,13 +38,12 @@ const staggerContainer = {
   },
 };
 
-// Stagger için child varyantı
 const staggerChild = {
   hidden: { opacity: 0, y: 24 },
   visible: {
     opacity: 1,
     y: 0,
-    transition: { duration: 0.65, ease: [0.22, 1, 0.36, 1] },
+    transition: { duration: 0.65, ease: [0.22, 1, 0.36, 1] as [number, number, number, number] },
   },
 };
 
@@ -489,7 +486,6 @@ export default function Home() {
                 <span className="text-[11px] text-slate-400">Yayında son içerikler</span>
               </div>
 
-              {/* Stagger container: kartlar sırayla belirir */}
               <motion.div
                 className="flex gap-4 overflow-x-auto pb-2 scrollbar-none"
                 variants={staggerContainer}
@@ -744,7 +740,6 @@ export default function Home() {
                   <span className="text-[11px] text-slate-400">Kürasyonlu içerik listeleri</span>
                 </div>
 
-                {/* Kartlar stagger ile belirir */}
                 <motion.div
                   className="grid gap-4 md:grid-cols-2 lg:grid-cols-4"
                   variants={staggerContainer}
