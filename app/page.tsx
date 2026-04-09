@@ -404,12 +404,19 @@ export default function Home() {
             <div className="pointer-events-none absolute -right-10 bottom-10 h-48 w-48 rounded-full bg-cyan-500/15 blur-[80px]" />
 
             {slides.map((item, i) => (
-              <div
+              <motion.div
                 key={item.slideKey}
-                className={[
-                  "absolute inset-0 flex items-center transition-opacity duration-700",
-                  i === activeSlide ? "opacity-100 z-10" : "opacity-0 z-0",
-                ].join(" ")}
+                className="absolute inset-0 flex items-center"
+                initial={false}
+                animate={{
+                  opacity: i === activeSlide ? 1 : 0,
+                  scale: i === activeSlide ? 1 : 1.04,
+                  zIndex: i === activeSlide ? 10 : 0,
+                }}
+                transition={{
+                  opacity: { duration: 0.8, ease: [0.22, 1, 0.36, 1] as [number, number, number, number] },
+                  scale: { duration: 1.1, ease: [0.22, 1, 0.36, 1] as [number, number, number, number] },
+                }}
               >
                 <div className="mx-auto flex max-w-6xl flex-col justify-center px-6 lg:px-8">
                   {item.kind === "content" ? (
@@ -450,7 +457,7 @@ export default function Home() {
                     </>
                   )}
                 </div>
-              </div>
+              </motion.div>
             ))}
 
             <button onClick={prevSlide} className="absolute left-2 top-1/2 z-20 flex h-7 w-7 -translate-y-1/2 items-center justify-center rounded-full border border-slate-700/60 bg-slate-900/80 text-slate-300 backdrop-blur transition hover:border-emerald-500/60 hover:text-emerald-300 md:left-4 md:h-9 md:w-9">
@@ -479,15 +486,12 @@ export default function Home() {
         {recentItems.length > 0 && (
           <section className="border-b border-slate-800/60 bg-slate-950/80 py-6">
             <div className="mx-auto max-w-6xl px-4">
-              <div className="mb-4 flex items-center justify-between">
-                <h3 className="text-[11px] font-semibold uppercase tracking-[0.22em] text-slate-400">
-                  Son Eklenenler
-                </h3>
-                <span className="text-[11px] text-slate-400">Yayında son içerikler</span>
-              </div>
+              <h3 className="mb-4 text-[11px] font-semibold uppercase tracking-[0.22em] text-slate-400">
+                Son Eklenenler
+              </h3>
 
               <motion.div
-                className="flex gap-4 overflow-x-auto pb-2 scrollbar-none"
+                className="flex gap-4 pb-2 scrollbar-none"
                 variants={staggerContainer}
                 initial="hidden"
                 animate="visible"
@@ -496,7 +500,7 @@ export default function Home() {
                   <motion.div key={item.id} variants={staggerChild}>
                     <Link
                       href={`${categoryPath(item.category)}/${item.slug}`}
-                      className="group flex w-64 shrink-0 flex-col rounded-xl border border-slate-800/80 bg-slate-950/70 p-4 transition hover:-translate-y-0.5 hover:border-emerald-500/50"
+                      className="group flex w-64 shrink-0 flex-col rounded-xl border border-slate-800/80 bg-slate-950/70 p-4 transition hover:border-emerald-500/50"
                     >
                       <span className={`mb-2 inline-flex w-fit items-center rounded-full border px-2 py-0.5 text-[9px] font-semibold uppercase tracking-[0.14em] ${CATEGORY_COLOR[item.category] ?? "bg-slate-500/15 text-slate-300 border-slate-500/40"}`}>
                         {CATEGORY_LABEL[item.category] ?? item.category}
@@ -692,10 +696,10 @@ export default function Home() {
                         {formPlayers.map((player, index) => (
                           <tr
                             key={`${player.name}-${index}`}
-                            className="group transition-all duration-200 hover:bg-slate-800/70 hover:shadow-[0_0_0_1px_rgba(45,212,191,0.4)]"
+                            className="group transition-colors duration-200 hover:bg-slate-800/70 hover:shadow-[0_0_0_1px_rgba(45,212,191,0.4)]"
                           >
-                            <td className="sticky left-0 z-10 border-b border-slate-800/80 bg-slate-900/80 px-3 py-3 text-xs font-semibold text-slate-300">
-                              <span className="inline-flex h-6 w-6 items-center justify-center rounded-full bg-slate-800/80 text-[11px] text-emerald-300 ring-1 ring-emerald-500/40">
+                            <td className="sticky left-0 z-10 border-b border-slate-800/80 bg-slate-900/80 px-3 py-3 text-xs font-semibold text-slate-300 transition-colors duration-200 group-hover:bg-slate-800/70">
+                              <span className="inline-flex h-6 w-6 items-center justify-center rounded-full bg-slate-800/80 text-[11px] text-emerald-300 ring-1 ring-emerald-500/40 transition-all duration-200 group-hover:bg-emerald-500/15 group-hover:ring-emerald-400/70 group-hover:text-emerald-200 group-hover:shadow-[0_0_12px_rgba(16,185,129,0.25)]">
                                 {index + 1}
                               </span>
                             </td>

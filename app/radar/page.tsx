@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import { motion } from "framer-motion";
 import {
   IconRadar,
   IconClock,
@@ -22,6 +23,21 @@ type SupabaseContent = {
   slug: string;
   content: string;
   created_at: string;
+};
+
+const easeOut = [0.22, 1, 0.36, 1] as [number, number, number, number];
+
+const staggerContainer = {
+  hidden: {},
+  visible: { transition: { staggerChildren: 0.08, delayChildren: 0.1 } },
+};
+const staggerChild = {
+  hidden: { opacity: 0, y: 20 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: { duration: 0.5, ease: easeOut },
+  },
 };
 
 const CARD_STYLES = [
@@ -63,7 +79,12 @@ export default function RadarPage() {
         <SiteHeader activeNav="radar" />
 
         <div className="flex-1">
-          <div className="mx-auto max-w-6xl px-4 py-8 lg:py-12">
+          <motion.div
+            className="mx-auto max-w-6xl px-4 py-8 lg:py-12"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, ease: easeOut }}
+          >
             <section className="mb-8">
               <div className="flex items-center gap-2">
                 <IconRadar className="text-emerald-300" />
@@ -98,7 +119,12 @@ export default function RadarPage() {
                 </p>
               </section>
             ) : (
-              <section className="grid gap-5 md:grid-cols-2">
+              <motion.section
+                className="grid gap-5 md:grid-cols-2"
+                variants={staggerContainer}
+                initial="hidden"
+                animate="visible"
+              >
                 {articles.map((article, index) => {
                   const style = CARD_STYLES[index % CARD_STYLES.length];
                   const Icon = style.Icon;
@@ -106,49 +132,50 @@ export default function RadarPage() {
                   const summary = cardSummary(article.content);
 
                   return (
-                    <Link
-                      key={article.id}
-                      href={`/radar/${article.slug}`}
-                      className="group flex flex-col justify-between rounded-2xl border border-slate-800/80 bg-slate-950/70 p-5 shadow-[0_18px_60px_rgba(15,23,42,0.9)] transition hover:-translate-y-1 hover:border-emerald-500/50 hover:bg-slate-900/80"
-                    >
-                      <div>
-                        <div className="mb-3 flex items-center gap-3">
-                          <span
-                            className={`flex h-9 w-9 items-center justify-center rounded-xl ring-1 ${style.ring}`}
-                          >
-                            <Icon className={style.iconClass} />
-                          </span>
-                          <div className="flex flex-wrap items-center gap-2 text-[11px] text-slate-400">
-                            <span>
-                              {new Date(article.created_at).toLocaleDateString("tr-TR", {
-                                day: "numeric",
-                                month: "long",
-                                year: "numeric",
-                              })}
+                    <motion.div key={article.id} variants={staggerChild} className="min-h-0">
+                      <Link
+                        href={`/radar/${article.slug}`}
+                        className="group flex h-full flex-col justify-between rounded-2xl border border-slate-800/80 bg-slate-950/70 p-5 shadow-[0_18px_60px_rgba(15,23,42,0.9)] transition hover:-translate-y-1 hover:border-emerald-500/50 hover:bg-slate-900/80"
+                      >
+                        <div>
+                          <div className="mb-3 flex items-center gap-3">
+                            <span
+                              className={`flex h-9 w-9 items-center justify-center rounded-xl ring-1 ${style.ring}`}
+                            >
+                              <Icon className={style.iconClass} />
                             </span>
-                            <span className="flex items-center gap-1">
-                              <IconClock />
-                              {readMins} dk
-                            </span>
+                            <div className="flex flex-wrap items-center gap-2 text-[11px] text-slate-400">
+                              <span>
+                                {new Date(article.created_at).toLocaleDateString("tr-TR", {
+                                  day: "numeric",
+                                  month: "long",
+                                  year: "numeric",
+                                })}
+                              </span>
+                              <span className="flex items-center gap-1">
+                                <IconClock />
+                                {readMins} dk
+                              </span>
+                            </div>
                           </div>
+                          <h2 className="line-clamp-2 text-sm font-semibold leading-snug text-slate-50">
+                            {article.title}
+                          </h2>
+                          <p className="mt-2 line-clamp-3 text-xs leading-relaxed text-slate-300">
+                            {summary || "Özet için içeriğe giriş ekleyin."}
+                          </p>
                         </div>
-                        <h2 className="line-clamp-2 text-sm font-semibold leading-snug text-slate-50">
-                          {article.title}
-                        </h2>
-                        <p className="mt-2 line-clamp-3 text-xs leading-relaxed text-slate-300">
-                          {summary || "Özet için içeriğe giriş ekleyin."}
-                        </p>
-                      </div>
-                      <div className="mt-4 inline-flex items-center gap-1 text-xs font-semibold text-emerald-300">
-                        Oku
-                        <IconArrowRight className="transition-transform group-hover:translate-x-0.5" />
-                      </div>
-                    </Link>
+                        <div className="mt-4 inline-flex items-center gap-1 text-xs font-semibold text-emerald-300">
+                          Oku
+                          <IconArrowRight className="transition-transform group-hover:translate-x-0.5" />
+                        </div>
+                      </Link>
+                    </motion.div>
                   );
                 })}
-              </section>
+              </motion.section>
             )}
-          </div>
+          </motion.div>
         </div>
 
         <SiteFooter maxWidth="max-w-6xl" />

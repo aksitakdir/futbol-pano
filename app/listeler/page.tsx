@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import { motion } from "framer-motion";
 import {
   IconList,
   IconShield,
@@ -17,6 +18,21 @@ type SupabaseContent = {
   title: string;
   slug: string;
   created_at: string;
+};
+
+const easeOut = [0.22, 1, 0.36, 1] as [number, number, number, number];
+
+const staggerContainer = {
+  hidden: {},
+  visible: { transition: { staggerChildren: 0.08, delayChildren: 0.1 } },
+};
+const staggerChild = {
+  hidden: { opacity: 0, y: 20 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: { duration: 0.5, ease: easeOut },
+  },
 };
 
 const lists = [
@@ -68,7 +84,12 @@ export default function ListsPage() {
         <SiteHeader activeNav="listeler" />
 
         <div className="flex-1">
-          <div className="mx-auto max-w-6xl px-4 py-8 lg:py-12">
+          <motion.div
+            className="mx-auto max-w-6xl px-4 py-8 lg:py-12"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, ease: easeOut }}
+          >
             <section className="mb-8">
               <p className="text-[11px] font-semibold uppercase tracking-[0.26em] text-emerald-300/90">
                 Kürasyonlu Listeler
@@ -84,29 +105,72 @@ export default function ListsPage() {
             </section>
 
             {dbLists.length > 0 && (
-              <section className="mb-6 grid gap-5 md:grid-cols-2 lg:grid-cols-3">
+              <motion.section
+                className="mb-6 grid gap-5 md:grid-cols-2 lg:grid-cols-3"
+                variants={staggerContainer}
+                initial="hidden"
+                animate="visible"
+              >
                 {dbLists.map((item) => (
+                  <motion.div key={item.id} variants={staggerChild} className="min-h-0">
+                    <Link
+                      href={`/listeler/${item.slug}`}
+                      className="group flex h-full flex-col justify-between rounded-2xl border border-emerald-500/30 bg-slate-950/70 px-4 py-4 text-left shadow-[0_18px_60px_rgba(15,23,42,0.9)] transition hover:-translate-y-1 hover:border-emerald-500/70 hover:bg-slate-900/80"
+                    >
+                      <div>
+                        <span className="mb-2 flex items-center gap-2">
+                          <IconList className="text-emerald-300" />
+                          <span className="inline-flex rounded-full bg-emerald-500/10 px-2 py-0.5 text-[10px] font-semibold text-emerald-300">
+                            Yeni
+                          </span>
+                          <span className="text-[10px] text-slate-500">
+                            {new Date(item.created_at).toLocaleDateString("tr-TR", {
+                              day: "numeric",
+                              month: "long",
+                            })}
+                          </span>
+                        </span>
+                        <h2 className="text-sm font-semibold text-slate-50">
+                          {item.title}
+                        </h2>
+                      </div>
+                      <div className="mt-4 inline-flex items-center text-xs font-semibold text-emerald-300">
+                        Listeyi Gör
+                        <span className="ml-1 transition-transform group-hover:translate-x-0.5">
+                          →
+                        </span>
+                      </div>
+                    </Link>
+                  </motion.div>
+                ))}
+              </motion.section>
+            )}
+
+            <motion.section
+              className="grid gap-5 md:grid-cols-2 lg:grid-cols-3"
+              variants={staggerContainer}
+              initial="hidden"
+              animate="visible"
+            >
+              {lists.map((list) => (
+                <motion.div key={list.slug} variants={staggerChild} className="min-h-0">
                   <Link
-                    key={item.id}
-                    href={`/listeler/${item.slug}`}
-                    className="group flex flex-col justify-between rounded-2xl border border-emerald-500/30 bg-slate-950/70 px-4 py-4 text-left shadow-[0_18px_60px_rgba(15,23,42,0.9)] transition hover:-translate-y-1 hover:border-emerald-500/70 hover:bg-slate-900/80"
+                    href={`/listeler/${list.slug}`}
+                    className="group flex h-full flex-col justify-between rounded-2xl border border-slate-800/80 bg-slate-950/70 px-4 py-4 text-left shadow-[0_18px_60px_rgba(15,23,42,0.9)] transition hover:-translate-y-1 hover:border-emerald-500/70 hover:bg-slate-900/80"
                   >
                     <div>
                       <span className="mb-2 flex items-center gap-2">
-                        <IconList className="text-emerald-300" />
-                        <span className="inline-flex rounded-full bg-emerald-500/10 px-2 py-0.5 text-[10px] font-semibold text-emerald-300">
-                          Yeni
-                        </span>
-                        <span className="text-[10px] text-slate-500">
-                          {new Date(item.created_at).toLocaleDateString("tr-TR", {
-                            day: "numeric",
-                            month: "long",
-                          })}
+                        {list.icon}
+                        <span className="inline-flex rounded-full bg-emerald-500/10 px-2 py-1 text-[10px] font-semibold uppercase tracking-[0.18em] text-emerald-300">
+                          Liste
                         </span>
                       </span>
                       <h2 className="text-sm font-semibold text-slate-50">
-                        {item.title}
+                        {list.title}
                       </h2>
+                      <p className="mt-2 text-xs text-slate-300">
+                        {list.description}
+                      </p>
                     </div>
                     <div className="mt-4 inline-flex items-center text-xs font-semibold text-emerald-300">
                       Listeyi Gör
@@ -115,41 +179,10 @@ export default function ListsPage() {
                       </span>
                     </div>
                   </Link>
-                ))}
-              </section>
-            )}
-
-            <section className="grid gap-5 md:grid-cols-2 lg:grid-cols-3">
-              {lists.map((list) => (
-                <Link
-                  key={list.slug}
-                  href={`/listeler/${list.slug}`}
-                  className="group flex flex-col justify-between rounded-2xl border border-slate-800/80 bg-slate-950/70 px-4 py-4 text-left shadow-[0_18px_60px_rgba(15,23,42,0.9)] transition hover:-translate-y-1 hover:border-emerald-500/70 hover:bg-slate-900/80"
-                >
-                  <div>
-                    <span className="mb-2 flex items-center gap-2">
-                      {list.icon}
-                      <span className="inline-flex rounded-full bg-emerald-500/10 px-2 py-1 text-[10px] font-semibold uppercase tracking-[0.18em] text-emerald-300">
-                        Liste
-                      </span>
-                    </span>
-                    <h2 className="text-sm font-semibold text-slate-50">
-                      {list.title}
-                    </h2>
-                    <p className="mt-2 text-xs text-slate-300">
-                      {list.description}
-                    </p>
-                  </div>
-                  <div className="mt-4 inline-flex items-center text-xs font-semibold text-emerald-300">
-                    Listeyi Gör
-                    <span className="ml-1 transition-transform group-hover:translate-x-0.5">
-                      →
-                    </span>
-                  </div>
-                </Link>
+                </motion.div>
               ))}
-            </section>
-          </div>
+            </motion.section>
+          </motion.div>
         </div>
 
         <SiteFooter maxWidth="max-w-6xl" />

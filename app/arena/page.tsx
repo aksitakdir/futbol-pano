@@ -1,8 +1,21 @@
+"use client";
+
 import Link from "next/link";
+import { motion } from "framer-motion";
 import SiteHeader from "../components/site-header";
 import SiteFooter from "../components/site-footer";
 import Breadcrumb from "../components/breadcrumb";
 import { ARENA_BRACKETS, arenaPath } from "@/lib/arena-brackets";
+
+const easeOut = [0.22, 1, 0.36, 1] as [number, number, number, number];
+const staggerContainer = {
+  hidden: {},
+  visible: { transition: { staggerChildren: 0.1, delayChildren: 0.15 } },
+};
+const staggerChild = {
+  hidden: { opacity: 0, y: 28, scale: 0.97 },
+  visible: { opacity: 1, y: 0, scale: 1, transition: { duration: 0.55, ease: easeOut } },
+};
 
 const ACCENTS = [
   "from-emerald-500/20 to-cyan-500/10 border-emerald-500/40 hover:border-emerald-400/70 hover:shadow-[0_20px_50px_rgba(16,185,129,0.2)]",
@@ -24,7 +37,12 @@ export default function ArenaHomePage() {
       </div>
 
       <div className="mx-auto w-full max-w-6xl flex-1 px-4 pb-12">
-        <div className="mb-10 text-center">
+        <motion.div
+          className="mb-10 text-center"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, ease: easeOut }}
+        >
           <h1 className="bg-gradient-to-r from-emerald-400 via-cyan-400 to-sky-400 bg-clip-text text-2xl font-extrabold tracking-tight text-transparent md:text-3xl">
             Oyna & Paylaş
           </h1>
@@ -32,32 +50,38 @@ export default function ArenaHomePage() {
             Bir bracket seç, kazananları işaretle, şampiyonunu paylaş. Şampiyonlar Ligi dışındaki formatlarda
             eşleşmeler her açılışta yeniden karışır.
           </p>
-        </div>
+        </motion.div>
 
-        <div className="grid gap-6 sm:grid-cols-2 xl:grid-cols-3">
+        <motion.div
+          className="grid gap-6 sm:grid-cols-2 xl:grid-cols-3"
+          variants={staggerContainer}
+          initial="hidden"
+          animate="visible"
+        >
           {ARENA_BRACKETS.map((b, i) => (
-            <Link
-              key={b.slug}
-              href={arenaPath(b.slug)}
-              className={[
-                "group flex flex-col rounded-2xl border bg-gradient-to-br p-6 shadow-[0_12px_40px_rgba(15,23,42,0.85)] transition-all duration-300",
-                "hover:-translate-y-1",
-                ACCENTS[i % ACCENTS.length],
-              ].join(" ")}
-            >
-              <span className="mb-3 text-3xl" aria-hidden>
-                {ICONS[i % ICONS.length]}
-              </span>
-              <h2 className="text-lg font-bold text-slate-50 transition group-hover:text-emerald-200 md:text-xl">
-                {b.cardTitle}
-              </h2>
-              <p className="mt-3 flex-1 text-sm leading-relaxed text-slate-400">{b.cardDescription}</p>
-              <span className="mt-6 inline-flex w-full items-center justify-center rounded-xl bg-emerald-500/90 py-3 text-sm font-bold text-slate-950 shadow-lg shadow-emerald-500/25 transition group-hover:bg-emerald-400">
-                Oyna
-              </span>
-            </Link>
+            <motion.div key={b.slug} variants={staggerChild}>
+              <Link
+                href={arenaPath(b.slug)}
+                className={[
+                  "group flex h-full flex-col rounded-2xl border bg-gradient-to-br p-6 shadow-[0_12px_40px_rgba(15,23,42,0.85)] transition-all duration-300",
+                  "hover:-translate-y-1",
+                  ACCENTS[i % ACCENTS.length],
+                ].join(" ")}
+              >
+                <span className="mb-3 text-3xl" aria-hidden>
+                  {ICONS[i % ICONS.length]}
+                </span>
+                <h2 className="text-lg font-bold text-slate-50 transition group-hover:text-emerald-200 md:text-xl">
+                  {b.cardTitle}
+                </h2>
+                <p className="mt-3 flex-1 text-sm leading-relaxed text-slate-400">{b.cardDescription}</p>
+                <span className="mt-6 inline-flex w-full items-center justify-center rounded-xl bg-emerald-500/90 py-3 text-sm font-bold text-slate-950 shadow-lg shadow-emerald-500/25 transition group-hover:bg-emerald-400">
+                  Oyna
+                </span>
+              </Link>
+            </motion.div>
           ))}
-        </div>
+        </motion.div>
       </div>
 
       <SiteFooter maxWidth="max-w-7xl" />

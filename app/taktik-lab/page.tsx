@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import { motion } from "framer-motion";
 import {
   IconTaktik,
   IconShield,
@@ -28,6 +29,21 @@ type Archetype = {
   slug: string;
   description: string;
   position: "Orta Saha" | "Defans" | "Hücum";
+};
+
+const easeOut = [0.22, 1, 0.36, 1] as [number, number, number, number];
+
+const staggerContainer = {
+  hidden: {},
+  visible: { transition: { staggerChildren: 0.08, delayChildren: 0.1 } },
+};
+const staggerChild = {
+  hidden: { opacity: 0, y: 20 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: { duration: 0.5, ease: easeOut },
+  },
 };
 
 const ARCHETYPES: Archetype[] = [
@@ -114,7 +130,12 @@ export default function TaktikLabPage() {
     <main className="min-h-screen bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950 text-slate-100">
       <SiteHeader activeNav="taktik-lab" maxWidth="max-w-7xl" />
 
-      <div className="mx-auto max-w-7xl px-4 py-10 lg:py-14">
+      <motion.div
+        className="mx-auto max-w-7xl px-4 py-10 lg:py-14"
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.6, ease: easeOut }}
+      >
         <div className="mb-6">
           <Breadcrumb items={[{ label: "Taktik Lab" }]} />
         </div>
@@ -140,38 +161,44 @@ export default function TaktikLabPage() {
             <h2 className="mb-4 text-xs font-semibold uppercase tracking-widest text-emerald-400">
               Güncel Analizler
             </h2>
-            <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+            <motion.div
+              className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3"
+              variants={staggerContainer}
+              initial="hidden"
+              animate="visible"
+            >
               {dbContents.map((item) => (
-                <Link
-                  key={item.id}
-                  href={`/taktik-lab/${item.slug}`}
-                  className="group flex flex-col rounded-2xl border border-emerald-500/30 bg-slate-950/60 p-5 shadow-[0_16px_50px_rgba(15,23,42,0.8)] transition hover:-translate-y-1 hover:border-emerald-500/50 hover:bg-slate-900/80"
-                >
-                  <div className="mb-3 flex items-center gap-2">
-                    <IconTaktik className="text-emerald-300" />
-                    <span className="inline-flex rounded-full bg-emerald-500/10 px-2 py-0.5 text-[10px] font-semibold text-emerald-300">
-                      Taktik
+                <motion.div key={item.id} variants={staggerChild} className="min-h-0">
+                  <Link
+                    href={`/taktik-lab/${item.slug}`}
+                    className="group flex h-full flex-col rounded-2xl border border-emerald-500/30 bg-slate-950/60 p-5 shadow-[0_16px_50px_rgba(15,23,42,0.8)] transition hover:-translate-y-1 hover:border-emerald-500/50 hover:bg-slate-900/80"
+                  >
+                    <div className="mb-3 flex items-center gap-2">
+                      <IconTaktik className="text-emerald-300" />
+                      <span className="inline-flex rounded-full bg-emerald-500/10 px-2 py-0.5 text-[10px] font-semibold text-emerald-300">
+                        Taktik
+                      </span>
+                      <span className="text-[10px] text-slate-500">
+                        {new Date(item.created_at).toLocaleDateString("tr-TR", {
+                          day: "numeric",
+                          month: "long",
+                        })}
+                      </span>
+                    </div>
+                    <h2 className="text-lg font-extrabold tracking-tight text-slate-50">
+                      {item.title}
+                    </h2>
+                    <p className="mt-1.5 flex-1 line-clamp-3 text-sm leading-relaxed text-slate-400">
+                      {stripHtml(item.content).trim().slice(0, 150)}…
+                    </p>
+                    <span className="mt-4 inline-flex items-center self-start text-xs font-semibold text-emerald-300 transition group-hover:text-emerald-200">
+                      Detayları Gör
+                      <span className="ml-1 transition-transform group-hover:translate-x-0.5">→</span>
                     </span>
-                    <span className="text-[10px] text-slate-500">
-                      {new Date(item.created_at).toLocaleDateString("tr-TR", {
-                        day: "numeric",
-                        month: "long",
-                      })}
-                    </span>
-                  </div>
-                  <h2 className="text-lg font-extrabold tracking-tight text-slate-50">
-                    {item.title}
-                  </h2>
-                  <p className="mt-1.5 flex-1 line-clamp-3 text-sm leading-relaxed text-slate-400">
-                    {stripHtml(item.content).trim().slice(0, 150)}…
-                  </p>
-                  <span className="mt-4 inline-flex items-center self-start text-xs font-semibold text-emerald-300 transition group-hover:text-emerald-200">
-                    Detayları Gör
-                    <span className="ml-1 transition-transform group-hover:translate-x-0.5">→</span>
-                  </span>
-                </Link>
+                  </Link>
+                </motion.div>
               ))}
-            </div>
+            </motion.div>
           </section>
         ) : null}
 
@@ -180,45 +207,51 @@ export default function TaktikLabPage() {
           <h2 className="mb-4 text-xs font-semibold uppercase tracking-widest text-slate-500">
             Pozisyon Arketipleri
           </h2>
-          <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-          {ARCHETYPES.map((arch) => {
-            const style = positionStyle(arch.position);
-            return (
-              <div
-                key={arch.slug}
-                className="group flex flex-col rounded-2xl border border-slate-800/80 bg-slate-950/60 p-5 shadow-[0_16px_50px_rgba(15,23,42,0.8)] transition hover:-translate-y-1 hover:border-emerald-500/50 hover:bg-slate-900/80"
-              >
-                <div className="mb-3 flex items-center gap-2">
-                  {positionIcon(arch.position)}
-                  <span
-                    className={`inline-flex items-center rounded-full border px-2.5 py-0.5 text-[10px] font-semibold uppercase tracking-[0.16em] ${style.bg} ${style.text} ${style.border}`}
-                  >
-                    {arch.position}
-                  </span>
-                </div>
-
-                <h2 className="text-lg font-extrabold tracking-tight text-slate-50">
-                  {arch.name}
-                </h2>
-                <p className="mt-1.5 flex-1 text-sm leading-relaxed text-slate-400">
-                  {arch.description}
-                </p>
-
-                <Link
-                  href={`/taktik-lab/${arch.slug}`}
-                  className="mt-4 inline-flex items-center self-start text-xs font-semibold text-emerald-300 transition group-hover:text-emerald-200"
+          <motion.div
+            className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3"
+            variants={staggerContainer}
+            initial="hidden"
+            animate="visible"
+          >
+            {ARCHETYPES.map((arch) => {
+              const style = positionStyle(arch.position);
+              return (
+                <motion.article
+                  key={arch.slug}
+                  variants={staggerChild}
+                  className="group flex flex-col rounded-2xl border border-slate-800/80 bg-slate-950/60 p-5 shadow-[0_16px_50px_rgba(15,23,42,0.8)] transition hover:-translate-y-1 hover:border-emerald-500/50 hover:bg-slate-900/80"
                 >
-                  Detayları Gör
-                  <span className="ml-1 transition-transform group-hover:translate-x-0.5">
-                    →
-                  </span>
-                </Link>
-              </div>
-            );
-          })}
-          </div>
+                  <div className="mb-3 flex items-center gap-2">
+                    {positionIcon(arch.position)}
+                    <span
+                      className={`inline-flex items-center rounded-full border px-2.5 py-0.5 text-[10px] font-semibold uppercase tracking-[0.16em] ${style.bg} ${style.text} ${style.border}`}
+                    >
+                      {arch.position}
+                    </span>
+                  </div>
+
+                  <h2 className="text-lg font-extrabold tracking-tight text-slate-50">
+                    {arch.name}
+                  </h2>
+                  <p className="mt-1.5 flex-1 text-sm leading-relaxed text-slate-400">
+                    {arch.description}
+                  </p>
+
+                  <Link
+                    href={`/taktik-lab/${arch.slug}`}
+                    className="mt-4 inline-flex items-center self-start text-xs font-semibold text-emerald-300 transition group-hover:text-emerald-200"
+                  >
+                    Detayları Gör
+                    <span className="ml-1 transition-transform group-hover:translate-x-0.5">
+                      →
+                    </span>
+                  </Link>
+                </motion.article>
+              );
+            })}
+          </motion.div>
         </section>
-      </div>
+      </motion.div>
 
       <SiteFooter maxWidth="max-w-7xl" />
     </main>
