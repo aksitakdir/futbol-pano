@@ -33,24 +33,19 @@ const staggerContainer = {
 };
 const staggerChild = {
   hidden: { opacity: 0, y: 20 },
-  visible: {
-    opacity: 1,
-    y: 0,
-    transition: { duration: 0.5, ease: easeOut },
-  },
+  visible: { opacity: 1, y: 0, transition: { duration: 0.5, ease: easeOut } },
 };
 
-const CARD_STYLES = [
-  { Icon: IconBall, ring: "ring-rose-500/40 bg-rose-500/10", iconClass: "text-rose-300" },
-  { Icon: IconTrendUp, ring: "ring-emerald-500/40 bg-emerald-500/10", iconClass: "text-emerald-300" },
-  { Icon: IconCompass, ring: "ring-cyan-500/40 bg-cyan-500/10", iconClass: "text-cyan-300" },
-  { Icon: IconStar, ring: "ring-amber-500/40 bg-amber-500/10", iconClass: "text-amber-300" },
+const CARD_ACCENTS = [
+  { accent: "#00d4aa", iconBg: "bg-emerald-500/10 ring-emerald-500/30", Icon: IconBall, iconClass: "text-emerald-300" },
+  { accent: "#22d3ee", iconBg: "bg-cyan-500/10 ring-cyan-500/30", Icon: IconTrendUp, iconClass: "text-cyan-300" },
+  { accent: "#a78bfa", iconBg: "bg-violet-500/10 ring-violet-500/30", Icon: IconCompass, iconClass: "text-violet-300" },
+  { accent: "#f59e0b", iconBg: "bg-amber-500/10 ring-amber-500/30", Icon: IconStar, iconClass: "text-amber-300" },
 ] as const;
 
 function cardSummary(content: string): string {
   const t = stripHtml(content).replace(/\s+/g, " ").trim();
-  if (!t) return "";
-  return t.length > 220 ? `${t.slice(0, 220)}…` : t;
+  return t.length > 180 ? `${t.slice(0, 180)}…` : t;
 }
 
 export default function RadarPage() {
@@ -65,7 +60,6 @@ export default function RadarPage() {
         .eq("status", "yayinda")
         .eq("category", "radar")
         .order("created_at", { ascending: false });
-
       if (error) console.error("Radar fetch:", error);
       setArticles(data ?? []);
       setLoading(false);
@@ -85,89 +79,87 @@ export default function RadarPage() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, ease: easeOut }}
           >
-            <section className="mb-8">
-              <div className="flex items-center gap-2">
-                <IconRadar className="text-emerald-300" />
-                <p className="text-[11px] font-semibold uppercase tracking-[0.26em] text-emerald-300/90">
-                  Haftalık Radar
+            {/* Sayfa başlığı */}
+            <section className="mb-10">
+              <div className="mb-2 flex items-center gap-2">
+                <div className="h-1 w-8 rounded-full bg-gradient-to-r from-emerald-400 to-cyan-400" />
+                <p className="text-[11px] font-bold uppercase tracking-[0.26em] text-emerald-400/80">
+                  Scout Gamer
                 </p>
               </div>
-              <h1 className="mt-3 bg-gradient-to-r from-emerald-400 via-cyan-400 to-sky-500 bg-clip-text text-2xl font-extrabold tracking-tight text-transparent md:text-3xl">
-                Radar Yazı Arşivi
-              </h1>
-              <p className="mt-3 max-w-2xl text-sm text-slate-300">
-                Tüm metinler yönetim panelinden yayınlanır; kartlar güncel veritabanı
-                içeriğinizi yansıtır. Düzenlemek için panelde{" "}
-                <strong className="text-slate-200">Radar</strong> bölümünü kullanın.
+              <div className="flex items-center gap-3">
+                <IconRadar className="text-emerald-300 h-7 w-7" />
+                <h1 className="bg-gradient-to-r from-emerald-400 via-cyan-400 to-sky-500 bg-clip-text text-2xl font-extrabold tracking-tight text-transparent md:text-3xl">
+                  Radar Arşivi
+                </h1>
+              </div>
+              <p className="mt-3 max-w-2xl text-sm text-slate-400">
+                Haftalık oyuncu analizleri, keşfedilmemiş yetenekler ve scout perspektifinden derinlemesine incelemeler.
               </p>
             </section>
 
             {loading ? (
-              <div className="flex justify-center py-20 text-sm text-slate-400">
+              <div className="flex justify-center py-20">
                 <span className="h-5 w-5 animate-spin rounded-full border-2 border-emerald-400 border-t-transparent" />
               </div>
             ) : articles.length === 0 ? (
-              <section className="rounded-2xl border border-dashed border-slate-700/80 bg-slate-950/50 px-6 py-14 text-center">
+              <section className="rounded-2xl border border-dashed border-slate-700/60 bg-slate-950/50 px-6 py-14 text-center">
                 <IconRadar className="mx-auto mb-3 h-10 w-10 text-slate-600" />
-                <p className="text-sm font-medium text-slate-300">
-                  Henüz yayında radar yazısı yok
-                </p>
-                <p className="mt-2 text-xs text-slate-500">
-                  Admin panelinde <span className="text-slate-400">Radar</span> kategorisinde içerik
-                  oluşturup <span className="text-slate-400">Yayınla</span> durumuna alın; kartlar burada
-                  otomatik listelenir.
-                </p>
+                <p className="text-sm text-slate-400">Henüz yayında radar yazısı yok.</p>
               </section>
             ) : (
               <motion.section
-                className="grid gap-5 md:grid-cols-2"
+                className="grid gap-4 md:grid-cols-2"
                 variants={staggerContainer}
                 initial="hidden"
                 animate="visible"
               >
                 {articles.map((article, index) => {
-                  const style = CARD_STYLES[index % CARD_STYLES.length];
+                  const style = CARD_ACCENTS[index % CARD_ACCENTS.length];
                   const Icon = style.Icon;
                   const readMins = estimateReadMinutes(article.content);
                   const summary = cardSummary(article.content);
 
                   return (
-                    <motion.div key={article.id} variants={staggerChild} className="min-h-0">
+                    <motion.div key={article.id} variants={staggerChild}>
                       <Link
                         href={`/radar/${article.slug}`}
-                        className="group flex h-full flex-col justify-between rounded-2xl border border-slate-800/80 bg-slate-950/70 p-5 shadow-[0_18px_60px_rgba(15,23,42,0.9)] transition hover:-translate-y-1 hover:border-emerald-500/50 hover:bg-slate-900/80"
+                        className="group relative flex h-full flex-col overflow-hidden rounded-2xl border border-slate-800/80 bg-slate-950/70 transition hover:-translate-y-1 hover:border-slate-700/60 hover:shadow-[0_0_30px_rgba(15,23,42,0.9)]"
                       >
-                        <div>
-                          <div className="mb-3 flex items-center gap-3">
-                            <span
-                              className={`flex h-9 w-9 items-center justify-center rounded-xl ring-1 ${style.ring}`}
-                            >
+                        {/* Accent çizgisi */}
+                        <div className="h-0.5 w-full" style={{ background: `linear-gradient(90deg, ${style.accent}, transparent)` }} />
+
+                        <div className="flex flex-1 flex-col p-5">
+                          {/* Üst meta */}
+                          <div className="mb-4 flex items-center gap-3">
+                            <span className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-xl ring-1 ${style.iconBg}`}>
                               <Icon className={style.iconClass} />
                             </span>
-                            <div className="flex flex-wrap items-center gap-2 text-[11px] text-slate-400">
+                            <div className="flex flex-wrap items-center gap-2 text-[11px] text-slate-500">
                               <span>
-                                {new Date(article.created_at).toLocaleDateString("tr-TR", {
-                                  day: "numeric",
-                                  month: "long",
-                                  year: "numeric",
-                                })}
+                                {new Date(article.created_at).toLocaleDateString("tr-TR", { day: "numeric", month: "long", year: "numeric" })}
                               </span>
                               <span className="flex items-center gap-1">
-                                <IconClock />
-                                {readMins} dk
+                                <IconClock /> {readMins} dk
                               </span>
                             </div>
+                            {/* Radar badge */}
+                            <span className="ml-auto rounded-full border border-emerald-500/20 bg-emerald-500/8 px-2 py-0.5 text-[9px] font-bold uppercase tracking-[0.18em] text-emerald-400">
+                              Radar
+                            </span>
                           </div>
-                          <h2 className="line-clamp-2 text-sm font-semibold leading-snug text-slate-50">
+
+                          <h2 className="line-clamp-2 text-sm font-bold leading-snug text-slate-50 transition group-hover:text-emerald-300">
                             {article.title}
                           </h2>
-                          <p className="mt-2 line-clamp-3 text-xs leading-relaxed text-slate-300">
-                            {summary || "Özet için içeriğe giriş ekleyin."}
+                          <p className="mt-2 line-clamp-3 text-[12px] leading-relaxed text-slate-400">
+                            {summary || "İçeriği görüntülemek için tıklayın."}
                           </p>
-                        </div>
-                        <div className="mt-4 inline-flex items-center gap-1 text-xs font-semibold text-emerald-300">
-                          Oku
-                          <IconArrowRight className="transition-transform group-hover:translate-x-0.5" />
+
+                          <div className="mt-auto pt-4 inline-flex items-center gap-1 text-[11px] font-semibold text-emerald-400">
+                            Oku
+                            <IconArrowRight className="transition-transform group-hover:translate-x-0.5" />
+                          </div>
                         </div>
                       </Link>
                     </motion.div>
