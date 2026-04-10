@@ -178,7 +178,7 @@ export default function Home() {
             const pick = pool[Math.floor(Math.random() * pool.length)];
             if (pick?.name) {
               setFeaturedPlayer({ name: pick.name ?? "", club: pick.club ?? "", position: pick.position ?? "", age: String(pick.age ?? ""), league: pick.league ?? "", goals: String(pick.goals ?? ""), assists: String(pick.assists ?? ""), description: pick.description ?? "", whyWatch: pick.why_watch ?? "" });
-              const { data: statsData } = await supabase.from("fc_players").select("overall,pace,shooting,passing,dribbling,defending,physical,photo_url").ilike("name", pick.name).limit(1).maybeSingle();
+              const { data: statsData } = await supabase.from("fc_players").select("overall,pace,shooting,passing,dribbling,defending,physical,photo_url").ilike("name", `%${pick.name.split(" ")[0]}%`).limit(1).maybeSingle();
               if (statsData) setFeaturedPlayerStats(statsData as Partial<PlayerCardData>);
               setFeaturedLoading(false);
               return;
