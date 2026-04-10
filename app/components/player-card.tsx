@@ -1,7 +1,6 @@
 "use client";
 
 import { motion } from "framer-motion";
-import Image from "next/image";
 
 export type PlayerCardData = {
   name: string;
@@ -76,13 +75,13 @@ function PlayerPhoto({ url, name, size }: { url?: string; name: string; size: "f
       overflow: "hidden", flexShrink: 0,
       background: "#0a1628",
     }}>
-      <Image
+      <img
         src={url}
         alt={name}
         width={dim}
         height={dim}
-        style={{ objectFit: "cover", objectPosition: "top" }}
-        unoptimized
+        style={{ objectFit: "cover", objectPosition: "top center", width: dim, height: dim }}
+        onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }}
       />
     </div>
   );
