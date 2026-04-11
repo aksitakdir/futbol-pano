@@ -345,6 +345,16 @@
 </script>
 
 <div id="app">
+<div id="rotateModal" style="display:none; position:fixed; inset:0; z-index:9999; background:rgba(6,15,30,0.85); backdrop-filter:blur(8px); align-items:center; justify-content:center; padding:24px;">
+  <div style="background:#0a1628; border:1px solid rgba(249,189,34,0.4); border-top:3px solid #f9bd22; padding:28px 24px; max-width:300px; width:100%; text-align:center;">
+    <div style="font-size:36px; margin-bottom:12px;">📱↻</div>
+    <p style="font-size:12px; font-weight:700; letter-spacing:1.5px; text-transform:uppercase; color:#f9bd22; font-family:'Space Grotesk',sans-serif; margin-bottom:8px;">Yatay Modu Öneriyoruz</p>
+    <p style="font-size:11px; color:#4a7a9a; margin-bottom:20px; line-height:1.6;">Bracket'ı daha rahat görmek için cihazını yatay çevir.</p>
+    <button onclick="document.getElementById('rotateModal').style.display='none'" style="background:transparent; border:1px solid rgba(74,122,154,0.4); color:#4a7a9a; font-family:'Space Grotesk',sans-serif; font-size:10px; font-weight:700; letter-spacing:1.5px; text-transform:uppercase; padding:10px 20px; cursor:pointer; width:100%;">
+      Devam Et
+    </button>
+  </div>
+</div>
   <h1 id="pageTitle">Oyna & Paylaş</h1>
   <div class="subtitle" id="pageSubtitle"></div>
 
@@ -697,6 +707,21 @@
 
   render();
   checkComplete();
+})();
+
+(function() {
+  var modal = document.getElementById('rotateModal');
+  if (!modal) return;
+  if (window.innerWidth < 768 && window.innerHeight > window.innerWidth) {
+    modal.style.display = 'flex';
+  }
+  window.addEventListener('orientationchange', function() {
+    setTimeout(function() {
+      if (window.innerWidth >= window.innerHeight) {
+        modal.style.display = 'none';
+      }
+    }, 300);
+  });
 })();
 </script>
 </body>
