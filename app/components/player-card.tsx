@@ -76,7 +76,7 @@ function PlayerPhoto({ url, name, size }: { url?: string; name: string; size: "f
       background: "#0a1628",
     }}>
       <img
-        src={url}
+        src={`/api/player-image?url=${encodeURIComponent(url)}`}
         alt={name}
         width={dim}
         height={dim}
