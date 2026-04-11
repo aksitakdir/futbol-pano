@@ -173,46 +173,58 @@ export default function Home() {
         await supabase.from("site_settings").select("value").eq("key", "featured_player_pool").maybeSingle()
       ).data;
 
-      const featuredPoolEmpty = () => {
-        if (!poolRow?.value) return true;
+      // featured_player_pool boşsa form_players_pool'dan çek
+      let pool: Array<{
+        name?: string;
+        club?: string;
+        league?: string;
+        position?: string;
+        age?: string;
+        goals?: string;
+        assists?: string;
+        description?: string;
+        why_watch?: string;
+      }> = [];
+      if (poolRow?.value) {
         try {
-          const arr = JSON.parse(poolRow.value as string);
-          return !Array.isArray(arr) || arr.length === 0;
+          const parsed = JSON.parse(poolRow.value as string);
+          if (Array.isArray(parsed)) pool = parsed;
         } catch {
-          return true;
+          /* ignore */
         }
-      };
-
-      if (featuredPoolEmpty()) {
-        const { data: formPool } = await supabase
+      }
+      if (!pool.length) {
+        const { data: formRow } = await supabase
           .from("site_settings")
           .select("value")
           .eq("key", "form_players_pool")
           .maybeSingle();
-        if (formPool?.value) {
+        if (formRow?.value) {
           try {
-            const fp = JSON.parse(formPool.value as string);
-            if (Array.isArray(fp) && fp.length > 0) {
-              poolRow = { value: JSON.stringify([fp[Math.floor(Math.random() * fp.length)]]) };
-            }
+            const fp = JSON.parse(formRow.value as string);
+            if (Array.isArray(fp) && fp.length > 0) pool = fp;
           } catch {
             /* ignore */
           }
         }
       }
-
-      if (poolRow?.value) {
-        try {
-          const pool = JSON.parse(poolRow.value as string);
-          if (Array.isArray(pool) && pool.length > 0) {
-            const pick = pool[Math.floor(Math.random() * pool.length)];
-            if (pick?.name) {
-              setFeaturedPlayer({ name: pick.name, club: pick.club ?? "", position: pick.position ?? "", age: String(pick.age ?? ""), league: pick.league ?? "", goals: String(pick.goals ?? ""), assists: String(pick.assists ?? ""), description: pick.description ?? "", whyWatch: pick.why_watch ?? "" });
-              const stats = await fetchFcPlayer(pick.name, pick.club);
-              if (stats?.overall) setFeaturedStats(stats as Partial<PlayerCardData>);
-            }
-          }
-        } catch { /* ignore */ }
+      if (pool.length > 0) {
+        const pick = pool[Math.floor(Math.random() * pool.length)];
+        if (pick?.name) {
+          setFeaturedPlayer({
+            name: pick.name,
+            club: pick.club ?? "",
+            position: pick.position ?? "",
+            age: String(pick.age ?? ""),
+            league: pick.league ?? "",
+            goals: String(pick.goals ?? ""),
+            assists: String(pick.assists ?? ""),
+            description: pick.description ?? "",
+            whyWatch: pick.why_watch ?? "",
+          });
+          const stats = await fetchFcPlayer(pick.name, pick.club);
+          if (stats?.overall) setFeaturedStats(stats as Partial<PlayerCardData>);
+        }
       }
       setFeaturedLoading(false);
     }
