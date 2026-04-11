@@ -290,25 +290,59 @@
       color: var(--sg-primary);
     }
 
-    @media (max-width: 600px) {
-      .team-slot {
-        font-size: 9px;
-        padding: 4px 5px;
-        min-height: 28px;
+    @media (max-width: 768px) {
+      body {
+        padding: 12px 0 24px;
       }
-      .team-slot.team-only { min-height: 28px; }
+
+      #app {
+        border-radius: 0;
+        border-left: none;
+        border-top: 3px solid var(--sg-amber);
+        padding: 16px 0 16px;
+        overflow-x: auto;
+      }
+
+      h1 { font-size: 14px; letter-spacing: 1px; padding: 0 12px; }
+      .subtitle { padding: 0 12px; font-size: 9px; }
+      #championDisplay { margin: 8px 12px; }
+      .btn-row { padding: 0 12px; }
+
       .bracket-container {
         grid-template-columns:
-          minmax(0, 1fr) minmax(0, 1fr) minmax(0, 1fr)
-          60px
-          minmax(0, 1fr) minmax(0, 1fr) minmax(0, 1fr);
+          100px 90px 80px
+          64px
+          80px 90px 100px;
+        min-width: 644px;
+        padding: 0 12px;
       }
-      .trophy { font-size: 20px; }
-      h1 { font-size: 16px; letter-spacing: 2px; }
+
+      .team-slot {
+        font-size: 8px;
+        padding: 3px 4px;
+        min-height: 26px;
+      }
+      .team-slot.team-only { min-height: 26px; }
+      .player-club { display: none; }
+      .round-label { font-size: 7px; letter-spacing: 0.8px; }
+      .trophy { font-size: 18px; }
+      .final-label { font-size: 7px; }
     }
   </style>
 </head>
 <body>
+
+<script>
+(function () {
+  function reportBracketWidth() {
+    var el = document.getElementById("bracket");
+    if (!el || window.parent === window) return;
+    window.parent.postMessage({ type: "ucl-bracket-width", width: el.offsetWidth }, "*");
+  }
+  window.addEventListener("load", reportBracketWidth);
+  window.addEventListener("resize", reportBracketWidth);
+})();
+</script>
 
 <div id="app">
   <h1 id="pageTitle">Oyna & Paylaş</h1>
