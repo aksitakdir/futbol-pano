@@ -15,6 +15,7 @@ import SiteFooter from "./site-footer";
 import Breadcrumb from "./breadcrumb";
 import { PlayerScoutLinks } from "./player-scout-links";
 import { supabase } from "@/lib/supabase";
+import { getCategoryImage } from "@/lib/category-images";
 import { stripHtml } from "@/lib/utils";
 
 type SidebarItem = { id: string; title: string; slug: string; category: string; created_at: string; };
@@ -158,12 +159,12 @@ export default function ArticleLayout({
       <section className="relative overflow-hidden pt-[72px]" style={{ minHeight: "380px" }}>
         {/* Arka plan görsel */}
         <div className="absolute inset-0 z-0">
-          {coverImage ? (
-            <img src={coverImage} alt="" className="w-full h-full object-cover" style={{ filter: "brightness(0.3) saturate(0.7)" }} />
-          ) : (
-            <img src="https://images.unsplash.com/photo-1574629810360-7efbbe195018?w=1400&q=70" alt=""
-              className="w-full h-full object-cover" style={{ filter: "brightness(0.2) saturate(0.6)" }} />
-          )}
+          <img
+            src={coverImage || getCategoryImage(category, slug)}
+            alt=""
+            className="w-full h-full object-cover"
+            style={{ filter: "brightness(0.3) saturate(0.7)" }}
+          />
           <div className="absolute inset-0" style={{ background: "linear-gradient(to top, var(--sg-bg) 30%, rgba(6,15,30,0.6) 70%, transparent 100%)" }} />
           <div className="absolute inset-0" style={{ background: "linear-gradient(to right, var(--sg-bg) 0%, transparent 60%)" }} />
         </div>
