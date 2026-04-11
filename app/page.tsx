@@ -9,7 +9,6 @@ import { PlayerScoutLinks } from "./components/player-scout-links";
 import PlayerCard, { type PlayerCardData } from "./components/player-card";
 import { supabase } from "@/lib/supabase";
 import { getCategoryImage } from "@/lib/category-images";
-import { stripHtml } from "@/lib/utils";
 import { ARENA_BRACKETS, arenaPath } from "@/lib/arena-brackets";
 
 // ─── Tipler ──────────────────────────────────────────────────────────────────
@@ -348,14 +347,23 @@ export default function Home() {
                         boxDecorationBreak: "clone",
                         WebkitBoxDecorationBreak: "clone",
                       }}>
-                      {item.slide.title.length > 65 ? item.slide.title.slice(0, 65) + "…" : item.slide.title}
+                      {item.slide.title.length > 80 ? item.slide.title.slice(0, 80) + "…" : item.slide.title}
                     </h1>
                     <p className="text-base md:text-lg max-w-2xl mb-8 hidden sm:block"
                       style={{ color: "var(--sg-text-secondary)", fontFamily: "var(--font-body)" }}>
                       {(() => {
-                        const clean = stripHtml(item.slide.content).replace(/[#*_\n]/g, " ").replace(/\s+/g, " ").trim();
-                        const firstSentence = clean.match(/^[^.!?]{20,}[.!?]/)?.[0];
-                        return firstSentence ? firstSentence.trim() : clean.slice(0, 160) + "…";
+                        const clean = item.slide.content
+                          .replace(/<[^>]+>/g, " ")
+                          .replace(/[#*_\n]/g, " ")
+                          .replace(/\s+/g, " ")
+                          .trim();
+                        const titleNorm = item.slide.title.replace(/\s+/g, " ").trim().toLowerCase();
+                        const cleanLower = clean.toLowerCase();
+                        const cleanStart = cleanLower.startsWith(titleNorm)
+                          ? clean.slice(item.slide.title.length).trim()
+                          : clean;
+                        const firstSentence = cleanStart.match(/^[^.!?]{20,}[.!?]/)?.[0];
+                        return firstSentence ? firstSentence.trim() : cleanStart.slice(0, 160) + "…";
                       })()}
                     </p>
                     <Link href={`${categoryPath(item.slide.category)}/${item.slide.slug}`}
