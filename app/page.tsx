@@ -179,12 +179,7 @@ export default function Home() {
   // Radar oyuncusu
   useEffect(() => {
     async function load() {
-      let poolRow = (
-        await supabase.from("site_settings").select("value").eq("key", "featured_player_pool").maybeSingle()
-      ).data;
-
-      // featured_player_pool boşsa form_players_pool'dan çek
-      let pool: Array<{
+      type FeaturedPoolEntry = {
         name?: string;
         club?: string;
         league?: string;
@@ -194,25 +189,27 @@ export default function Home() {
         assists?: string;
         description?: string;
         why_watch?: string;
-      }> = [];
+      };
+      let { data: poolRow } = await supabase
+        .from("site_settings")
+        .select("value")
+        .eq("key", "featured_player_pool")
+        .maybeSingle();
+
+      let pool: FeaturedPoolEntry[] = [];
       if (poolRow?.value) {
         try {
-          const parsed = JSON.parse(poolRow.value as string);
-          if (Array.isArray(parsed)) pool = parsed;
+          pool = JSON.parse(poolRow.value as string) as FeaturedPoolEntry[];
         } catch {
           /* ignore */
         }
       }
       if (!pool.length) {
-        const { data: formRow } = await supabase
-          .from("site_settings")
-          .select("value")
-          .eq("key", "form_players_pool")
-          .maybeSingle();
+        const { data: formRow } = await supabase.from("site_settings").select("value").eq("key", "form_players_pool").maybeSingle();
         if (formRow?.value) {
           try {
             const fp = JSON.parse(formRow.value as string);
-            if (Array.isArray(fp) && fp.length > 0) pool = fp;
+            if (Array.isArray(fp) && fp.length > 0) pool = fp as FeaturedPoolEntry[];
           } catch {
             /* ignore */
           }
@@ -222,7 +219,7 @@ export default function Home() {
         const pick = pool[Math.floor(Math.random() * pool.length)];
         if (pick?.name) {
           setFeaturedPlayer({
-            name: pick.name,
+            name: pick.name ?? "",
             club: pick.club ?? "",
             position: pick.position ?? "",
             age: String(pick.age ?? ""),
@@ -249,19 +246,15 @@ export default function Home() {
       if (poolRow?.value) {
         try {
           const p = JSON.parse(poolRow.value as string);
-          if (Array.isArray(p) && p.length) {
-            const pool = shuffleInPlace(p as FormPlayer[]).slice(0, 20);
-            list = shuffleInPlace(pool).slice(0, 10);
-          }
+          if (Array.isArray(p) && p.length) list = shuffleInPlace(p as FormPlayer[]).slice(0, 20);
         } catch { /* ignore */ }
       }
       if (!list.length) {
         const { data: leg } = await supabase.from("site_settings").select("value").eq("key", "form_players").maybeSingle();
         if (leg?.value) {
           try {
-            const parsed = JSON.parse(leg.value as string) as FormPlayer[];
-            const pool = shuffleInPlace(parsed).slice(0, 20);
-            list = shuffleInPlace(pool).slice(0, 10);
+            const parsed = JSON.parse(leg.value as string);
+            if (Array.isArray(parsed)) list = shuffleInPlace(parsed as FormPlayer[]).slice(0, 20);
           } catch { /* ignore */ }
         }
       }
@@ -275,7 +268,7 @@ export default function Home() {
             : p;
         });
         const statPlayers = withStats.filter((p) => ((p as FormPlayerWithStats).overall ?? 0) > 0);
-        setFormPlayers(statPlayers as FormPlayerWithStats[]);
+        setFormPlayers(shuffleInPlace(statPlayers).slice(0, 10) as FormPlayerWithStats[]);
       }
       setFormLoading(false);
     }
