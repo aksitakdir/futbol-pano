@@ -416,7 +416,7 @@ export default function Home() {
 
       {/* ── Son Eklenenler ────────────────────────────────────────────────── */}
       {recentItems.length > 0 && (
-        <section className="py-16 px-8 max-w-7xl mx-auto">
+        <section className="py-10 px-8 max-w-7xl mx-auto">
           <div className="flex items-end justify-between mb-8">
             <div>
               <p className="text-[10px] font-bold uppercase tracking-[0.25em] mb-1"
@@ -432,7 +432,7 @@ export default function Home() {
                 <Link key={item.id} href={`${categoryPath(item.category)}/${item.slug}`}
                   className="group flex flex-col transition hover:-translate-y-0.5"
                   style={{ background: "var(--sg-surface)" }}>
-                  <div className="relative h-44 overflow-hidden" style={{ background: "var(--sg-surface-low)" }}>
+                  <div className="relative h-32 overflow-hidden" style={{ background: "var(--sg-surface-low)" }}>
                     <img
                       src={getCategoryImage(item.category, item.slug)}
                       alt=""
@@ -582,7 +582,7 @@ export default function Home() {
 
       {/* ── Gündemden 3 İçerik ─────────────────────────────────── */}
       {gundemItems.length > 0 && (
-        <section className="py-16 px-8 max-w-7xl mx-auto">
+        <section className="py-8 px-8 max-w-7xl mx-auto">
           <motion.div variants={fadeUp} initial="hidden" whileInView="visible" viewport={{ once: true, margin: "-60px" }}>
             <div className="mb-6 flex items-end justify-between">
               <div>
@@ -599,7 +599,7 @@ export default function Home() {
                   <Link key={`${item.id}-gundem`} href={`${categoryPath(item.category)}/${item.slug}`}
                     className="group flex flex-col transition hover:-translate-y-0.5"
                     style={{ background: "var(--sg-surface)", borderLeft: `3px solid ${accentColor}` }}>
-                    <div className="relative h-36 overflow-hidden" style={{ background: "var(--sg-surface-low)" }}>
+                    <div className="relative h-28 overflow-hidden" style={{ background: "var(--sg-surface-low)" }}>
                       <img
                         src={getCategoryImage(item.category, `${item.slug}-alt`)}
                         alt=""
