@@ -244,6 +244,17 @@ export default function IceriklerPage() {
     setActionLoading((prev) => { const next = new Set(prev); next.delete(id); return next; });
   }
 
+  async function deleteItem(id: string) {
+    if (!confirm("Bu içerik kalıcı olarak silinecek. Emin misin?")) return;
+    setActionLoading((prev) => new Set(prev).add(id));
+    const { error } = await supabase.from("contents").delete().eq("id", id);
+    if (!error) {
+      setAllContents((prev) => prev.filter((c) => c.id !== id));
+      setSelected((prev) => { const next = new Set(prev); next.delete(id); return next; });
+    }
+    setActionLoading((prev) => { const next = new Set(prev); next.delete(id); return next; });
+  }
+
   async function bulkUpdateStatus(newStatus: string) {
     const ids = Array.from(selected);
     if (ids.length === 0) return;
@@ -673,7 +684,17 @@ export default function IceriklerPage() {
                           <button type="button" onClick={() => updateStatus(item.id, "bekliyor")} disabled={isActioning} className="rounded-md bg-rose-500/15 px-2 py-1.5 text-[11px] font-semibold text-rose-300 transition hover:bg-rose-500/25 disabled:opacity-50">Kaldır</button>
                         )}
                         {item.status === "reddedildi" && (
-                          <button type="button" onClick={() => updateStatus(item.id, "bekliyor")} disabled={isActioning} className="rounded-md bg-amber-500/15 px-2 py-1.5 text-[11px] font-semibold text-amber-300 transition hover:bg-amber-500/25 disabled:opacity-50">Geri Al</button>
+                          <>
+                            <button type="button" onClick={() => updateStatus(item.id, "bekliyor")} disabled={isActioning} className="rounded-md bg-amber-500/15 px-2 py-1.5 text-[11px] font-semibold text-amber-300 transition hover:bg-amber-500/25 disabled:opacity-50">Geri Al</button>
+                            <button
+                              type="button"
+                              onClick={() => deleteItem(item.id)}
+                              disabled={isActioning}
+                              className="rounded-md bg-rose-900/30 px-2 py-1.5 text-[11px] font-semibold text-rose-400 transition hover:bg-rose-500/25 disabled:opacity-50"
+                            >
+                              Sil
+                            </button>
+                          </>
                         )}
                       </div>
                     </div>
@@ -710,7 +731,17 @@ export default function IceriklerPage() {
                         <button onClick={() => updateStatus(item.id, "bekliyor")} disabled={isActioning} className="rounded-md bg-rose-500/15 px-2.5 py-1.5 text-[11px] font-semibold text-rose-300 disabled:opacity-50">Kaldır</button>
                       )}
                       {item.status === "reddedildi" && (
-                        <button onClick={() => updateStatus(item.id, "bekliyor")} disabled={isActioning} className="rounded-md bg-amber-500/15 px-2.5 py-1.5 text-[11px] font-semibold text-amber-300 disabled:opacity-50">Geri Al</button>
+                        <>
+                          <button onClick={() => updateStatus(item.id, "bekliyor")} disabled={isActioning} className="rounded-md bg-amber-500/15 px-2.5 py-1.5 text-[11px] font-semibold text-amber-300 disabled:opacity-50">Geri Al</button>
+                          <button
+                            type="button"
+                            onClick={() => deleteItem(item.id)}
+                            disabled={isActioning}
+                            className="rounded-md bg-rose-900/30 px-2.5 py-1.5 text-[11px] font-semibold text-rose-400 transition hover:bg-rose-500/25 disabled:opacity-50"
+                          >
+                            Sil
+                          </button>
+                        </>
                       )}
                     </div>
                   </div>
