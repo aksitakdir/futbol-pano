@@ -8,6 +8,7 @@ import SiteFooter from "./components/site-footer";
 import { PlayerScoutLinks } from "./components/player-scout-links";
 import PlayerCard, { type PlayerCardData } from "./components/player-card";
 import { supabase } from "@/lib/supabase";
+import { getCategoryImage } from "@/lib/category-images";
 import { stripHtml } from "@/lib/utils";
 import { ARENA_BRACKETS, arenaPath } from "@/lib/arena-brackets";
 
@@ -428,14 +429,15 @@ export default function Home() {
                 <Link key={item.id} href={`${categoryPath(item.category)}/${item.slug}`}
                   className="group flex-shrink-0 snap-start flex flex-col transition hover:-translate-y-0.5"
                   style={{ width: "260px", background: "var(--sg-surface)" }}>
-                  {/* Üst görsel alan — degrade arka plan */}
-                  <div className="relative h-32 overflow-hidden flex items-center justify-center"
-                    style={{ background: `linear-gradient(135deg, color-mix(in srgb, ${accentColor} 15%, transparent) 0%, var(--sg-surface-low) 100%)` }}>
-                    <span className="text-[80px] font-black opacity-[0.06] select-none leading-none"
-                      style={{ fontFamily: "var(--font-headline)", color: accentColor }}>
-                      {catLabel.toUpperCase().slice(0, 1)}
-                    </span>
-                    {/* Kategori badge */}
+                  {/* Üst görsel alan */}
+                  <div className="relative h-32 overflow-hidden" style={{ background: "var(--sg-surface-low)" }}>
+                    <img
+                      src={getCategoryImage(item.category, item.slug)}
+                      alt=""
+                      className="w-full h-full object-cover transition group-hover:scale-105 duration-500"
+                      style={{ filter: "brightness(0.4) saturate(0.6)" }}
+                    />
+                    <div className="absolute inset-0" style={{ background: "linear-gradient(to bottom, transparent 30%, var(--sg-surface) 100%)" }} />
                     <span className="absolute top-3 left-3 px-2 py-0.5 text-[9px] font-bold uppercase tracking-[0.18em]"
                       style={{
                         background: `color-mix(in srgb, ${accentColor} 20%, transparent)`,
