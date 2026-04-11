@@ -424,23 +424,22 @@ export default function Home() {
               <h2 className="text-3xl md:text-4xl font-bold" style={{ fontFamily: "var(--font-headline)" }}>Son Eklenenler</h2>
             </div>
           </div>
-          <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
-            {recentItems.slice(0, 6).map((item) => {
+          <div className="grid grid-cols-1 gap-4 lg:grid-cols-12">
+            {/* Sol — büyük featured kart */}
+            {recentItems[0] && (() => {
+              const item = recentItems[0];
               const accentColor = CAT_COLOR[item.category] ?? "var(--sg-primary)";
               const catLabel = CAT_LABEL[item.category] ?? item.category;
               return (
-                <Link key={item.id} href={`${categoryPath(item.category)}/${item.slug}`}
-                  className="group flex flex-col transition hover:-translate-y-0.5"
+                <Link href={`${categoryPath(item.category)}/${item.slug}`}
+                  className="group lg:col-span-6 flex flex-col transition hover:-translate-y-0.5"
                   style={{ background: "var(--sg-surface)" }}>
-                  <div className="relative h-32 overflow-hidden" style={{ background: "var(--sg-surface-low)" }}>
-                    <img
-                      src={getCategoryImage(item.category, item.slug)}
-                      alt=""
+                  <div className="relative h-64 lg:h-80 overflow-hidden" style={{ background: "var(--sg-surface-low)" }}>
+                    <img src={getCategoryImage(item.category, item.slug)} alt=""
                       className="w-full h-full object-cover transition group-hover:scale-105 duration-500"
                       style={{ filter: "brightness(0.4) saturate(0.6)" }}
-                      onError={(e) => { (e.target as HTMLImageElement).style.opacity = "0"; }}
-                    />
-                    <div className="absolute inset-0" style={{ background: "linear-gradient(to bottom, transparent 40%, var(--sg-surface) 100%)" }} />
+                      onError={(e) => { (e.target as HTMLImageElement).style.opacity = "0"; }} />
+                    <div className="absolute inset-0" style={{ background: "linear-gradient(to bottom, transparent 30%, var(--sg-surface) 100%)" }} />
                     <span className="absolute top-3 left-3 px-2 py-0.5 text-[9px] font-bold uppercase tracking-[0.18em]"
                       style={{
                         background: `color-mix(in srgb, ${accentColor} 20%, transparent)`,
@@ -454,20 +453,64 @@ export default function Home() {
                       {new Date(item.created_at).toLocaleDateString("tr-TR", { day: "numeric", month: "short" })}
                     </span>
                   </div>
-                  <div className="h-[2px]" style={{ background: accentColor }} />
-                  <div className="p-4 flex flex-col flex-1">
-                    <h3 className="text-sm font-bold leading-snug line-clamp-2 mb-3"
+                  <div className="h-[3px]" style={{ background: accentColor }} />
+                  <div className="p-5 flex flex-col flex-1">
+                    <h3 className="text-lg font-bold leading-snug line-clamp-2 mb-3"
                       style={{ fontFamily: "var(--font-headline)", color: "var(--sg-text-primary)" }}>
                       {item.title}
                     </h3>
-                    <div className="mt-auto inline-flex items-center gap-1 text-[10px] font-bold"
+                    <p className="text-sm line-clamp-2 mb-4" style={{ color: "var(--sg-text-secondary)" }}>
+                      {item.content ? item.content.replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").trim().slice(0, 120) + "…" : ""}
+                    </p>
+                    <div className="mt-auto inline-flex items-center gap-1 text-[11px] font-bold"
                       style={{ color: accentColor, fontFamily: "var(--font-headline)" }}>
                       Oku <span className="transition-transform group-hover:translate-x-0.5">→</span>
                     </div>
                   </div>
                 </Link>
               );
-            })}
+            })()}
+
+            {/* Sağ — küçük kartlar */}
+            <div className="lg:col-span-6 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-2">
+              {recentItems.slice(1, 5).map((item) => {
+                const accentColor = CAT_COLOR[item.category] ?? "var(--sg-primary)";
+                const catLabel = CAT_LABEL[item.category] ?? item.category;
+                return (
+                  <Link key={item.id} href={`${categoryPath(item.category)}/${item.slug}`}
+                    className="group flex flex-col transition hover:-translate-y-0.5"
+                    style={{ background: "var(--sg-surface)" }}>
+                    <div className="relative h-28 overflow-hidden" style={{ background: "var(--sg-surface-low)" }}>
+                      <img src={getCategoryImage(item.category, item.slug)} alt=""
+                        className="w-full h-full object-cover transition group-hover:scale-105 duration-500"
+                        style={{ filter: "brightness(0.4) saturate(0.6)" }}
+                        onError={(e) => { (e.target as HTMLImageElement).style.opacity = "0"; }} />
+                      <div className="absolute inset-0" style={{ background: "linear-gradient(to bottom, transparent 20%, var(--sg-surface) 100%)" }} />
+                      <span className="absolute top-2 left-2 px-1.5 py-0.5 text-[8px] font-bold uppercase tracking-[0.15em]"
+                        style={{
+                          background: `color-mix(in srgb, ${accentColor} 20%, transparent)`,
+                          color: accentColor,
+                          fontFamily: "var(--font-headline)",
+                          border: `1px solid color-mix(in srgb, ${accentColor} 30%, transparent)`,
+                        }}>
+                        {catLabel}
+                      </span>
+                    </div>
+                    <div className="h-[2px]" style={{ background: accentColor }} />
+                    <div className="p-3 flex flex-col flex-1">
+                      <h3 className="text-xs font-bold leading-snug line-clamp-2 mb-2"
+                        style={{ fontFamily: "var(--font-headline)", color: "var(--sg-text-primary)" }}>
+                        {item.title}
+                      </h3>
+                      <div className="mt-auto inline-flex items-center gap-1 text-[10px] font-bold"
+                        style={{ color: accentColor, fontFamily: "var(--font-headline)" }}>
+                        Oku <span className="transition-transform group-hover:translate-x-0.5">→</span>
+                      </div>
+                    </div>
+                  </Link>
+                );
+              })}
+            </div>
           </div>
         </section>
       )}
