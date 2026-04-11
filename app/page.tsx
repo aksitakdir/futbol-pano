@@ -428,7 +428,7 @@ export default function Home() {
         </div>
         <div className="max-w-7xl mx-auto px-8">
           <div className="mb-10">
-            <p className="text-[10px] font-bold uppercase tracking-[0.25em] mb-1" style={{ color: "var(--sg-primary)", fontFamily: "var(--font-headline)" }}>Featured Profile</p>
+            <p className="text-[10px] font-bold uppercase tracking-[0.25em] mb-1" style={{ color: "var(--sg-primary)", fontFamily: "var(--font-headline)" }}>Öne Çıkan Profil</p>
             <h2 className="text-3xl md:text-4xl font-bold" style={{ fontFamily: "var(--font-headline)" }}>Bu Haftanın Radar Oyuncusu</h2>
           </div>
 
