@@ -1,40 +1,81 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #0a1323;
+  --foreground: #dae2fd;
+
+  /* Scout Gamer — Kinetic Obsidian renk sistemi */
+  --sg-bg:           #0a1323;
+  --sg-surface-low:  #131c2b;
+  --sg-surface:      #17202f;
+  --sg-surface-high: #1e2a3a;
+  --sg-surface-top:  #2c3546;
+  --sg-border:       rgba(186, 202, 194, 0.08);
+
+  --sg-primary:      #46f1c5;
+  --sg-primary-dim:  #28dfb5;
+  --sg-primary-dark: #00d4aa;
+  --sg-secondary:    #5de6ff;
+  --sg-tertiary:     #a78bfa;
+  --sg-amber:        #f9bd22;
+  --sg-rose:         #fb7185;
+
+  --sg-text-primary:   #dae2fd;
+  --sg-text-secondary: #bacac2;
+  --sg-text-muted:     #6b7a8d;
+
+  --font-headline: var(--font-space-grotesk), 'Trebuchet MS', sans-serif;
+  --font-body:     var(--font-inter), ui-sans-serif, system-ui, sans-serif;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+  --font-sans: var(--font-space-grotesk);
+  --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background: var(--sg-bg);
+  color: var(--sg-text-primary);
+  font-family: var(--font-body);
 }
 
-/* Mobil tam ekran menü — site-header overlay */
+/* Başlıklar Space Grotesk ile */
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-headline);
+}
+
+/* Neon glow yardımcı class */
+.sg-glow-primary {
+  text-shadow: 0 0 12px rgba(70, 241, 197, 0.5);
+}
+.sg-glow-secondary {
+  text-shadow: 0 0 12px rgba(93, 230, 255, 0.5);
+}
+
+/* Ghost border — sınır yerine ton farkı kullan, zorunlu durum için */
+.sg-ghost-border {
+  border: 1px solid rgba(186, 202, 194, 0.08);
+}
+
+/* Glassmorphism panel */
+.sg-glass {
+  background: rgba(23, 32, 47, 0.6);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+}
+
+/* Mobil tam ekran menü */
 @keyframes mobile-nav-overlay-in {
-  from {
-    transform: translateY(-100%);
-  }
-  to {
-    transform: translateY(0);
-  }
+  from { transform: translateY(-100%); }
+  to   { transform: translateY(0); }
 }
 
 .mobile-nav-fullscreen {
   animation: mobile-nav-overlay-in 0.2s ease-out forwards;
 }
+
+/* Scrollbar gizle */
+.scrollbar-none::-webkit-scrollbar { display: none; }
+.scrollbar-none { -ms-overflow-style: none; scrollbar-width: none; }

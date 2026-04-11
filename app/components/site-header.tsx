@@ -3,51 +3,48 @@
 import { useState, useEffect } from "react";
 import { createPortal } from "react-dom";
 import Link from "next/link";
-import {
-  IconHome,
-  IconList,
-  IconRadar,
-  IconSoccerBall,
-  IconTaktik,
-} from "./icons";
+import { usePathname } from "next/navigation";
 
-type NavItem = {
-  href: string;
-  label: string;
-  icon: React.ReactNode;
-  key: string;
-};
-
-const NAV_ITEMS: NavItem[] = [
-  { href: "/", label: "Ana Sayfa", icon: <IconHome />, key: "home" },
-  { href: "/listeler", label: "Listeler", icon: <IconList />, key: "listeler" },
-  { href: "/radar", label: "Radar", icon: <IconRadar />, key: "radar" },
-  { href: "/taktik-lab", label: "Taktik Lab", icon: <IconTaktik />, key: "taktik-lab" },
-  { href: "/arena", label: "Oyna", icon: <IconSoccerBall />, key: "arena" },
+const NAV_ITEMS = [
+  { href: "/", label: "Ana Sayfa", key: "home" },
+  { href: "/listeler", label: "Listeler", key: "listeler" },
+  { href: "/radar", label: "Radar", key: "radar" },
+  { href: "/taktik-lab", label: "Taktik Lab", key: "taktik-lab" },
+  { href: "/arena", label: "Arena", key: "arena" },
 ];
 
-type Props = {
-  activeNav?: string;
-  maxWidth?: string;
-};
+type Props = { activeNav?: string; maxWidth?: string; };
 
-function ScoutGamerLogo() {
+function Wordmark() {
   return (
-    <svg width="34" height="34" viewBox="0 0 34 34" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <rect width="34" height="34" rx="9" fill="#060f1e" />
-      <rect width="34" height="34" rx="9" fill="#00d4aa" fillOpacity="0.08" />
-      <path d="M17 4.5L28 10.5V23.5L17 29.5L6 23.5V10.5Z" stroke="#00d4aa" strokeWidth="1.2" fill="none" strokeOpacity="0.5" />
-      <path d="M17 9L24.5 13.5V22.5L17 27L9.5 22.5V13.5Z" fill="#00d4aa" fillOpacity="0.06" />
-      <text x="17" y="21" textAnchor="middle" fill="#00d4aa" fontSize="10.5" fontWeight="800" fontFamily="'Trebuchet MS', sans-serif" letterSpacing="0.8">SG</text>
-    </svg>
+    <Link href="/" className="flex flex-col items-start leading-none">
+      <span style={{ fontFamily: "var(--font-headline)", color: "var(--sg-primary)", fontSize: "20px", fontWeight: 700, letterSpacing: "-0.03em", textShadow: "0 0 20px rgba(70,241,197,0.3)" }}>
+        SCOUT GAMER
+      </span>
+      <span style={{ fontFamily: "var(--font-headline)", color: "var(--sg-text-muted)", fontSize: "9px", fontWeight: 700, letterSpacing: "0.22em", textTransform: "uppercase", marginTop: "2px" }}>
+        Futbol × Oyun Kültürü
+      </span>
+    </Link>
   );
 }
 
-export default function SiteHeader({ activeNav, maxWidth = "max-w-6xl" }: Props) {
+export default function SiteHeader({ activeNav, maxWidth = "max-w-7xl" }: Props) {
+  const pathname = usePathname();
   const [open, setOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
+
+  const currentKey = activeNav ?? NAV_ITEMS.find(n =>
+    n.key === "home" ? pathname === "/" : pathname.startsWith("/" + n.key)
+  )?.key ?? "";
 
   useEffect(() => { setMounted(true); }, []);
+
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 20);
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
 
   useEffect(() => {
     if (!open) return;
@@ -59,133 +56,100 @@ export default function SiteHeader({ activeNav, maxWidth = "max-w-6xl" }: Props)
   useEffect(() => {
     if (!open) return;
     const mq = window.matchMedia("(min-width: 768px)");
-    const closeIfDesktop = () => { if (mq.matches) setOpen(false); };
-    mq.addEventListener("change", closeIfDesktop);
-    closeIfDesktop();
-    return () => mq.removeEventListener("change", closeIfDesktop);
+    const close = () => { if (mq.matches) setOpen(false); };
+    mq.addEventListener("change", close);
+    close();
+    return () => mq.removeEventListener("change", close);
   }, [open]);
 
-  const desktopItems = NAV_ITEMS.filter((n) => n.key !== "home");
+  const desktopItems = NAV_ITEMS.filter(n => n.key !== "home");
 
-  const mobileMenuOverlay =
-    open && mounted ? (
-      <div
-        className="mobile-nav-fullscreen fixed top-0 left-0 z-[9999] flex h-[100vh] w-[100vw] flex-col bg-[#060f1e] md:hidden"
-        role="dialog"
-        aria-modal="true"
-        aria-label="Mobil menü"
-      >
-        <div className="pointer-events-none absolute inset-0 overflow-hidden">
-          <div className="absolute -left-20 top-20 h-64 w-64 rounded-full bg-emerald-500/10 blur-[80px]" />
-          <div className="absolute -right-10 bottom-20 h-48 w-48 rounded-full bg-cyan-500/10 blur-[60px]" />
-        </div>
-
-        <button
-          type="button"
-          onClick={() => setOpen(false)}
-          className="absolute right-4 top-4 z-[10000] flex h-11 w-11 items-center justify-center rounded-lg border border-slate-700/60 bg-slate-900/90 text-slate-300 transition hover:border-emerald-500/60 hover:text-emerald-300"
-          aria-label="Menüyü kapat"
-        >
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
-            <line x1="18" y1="6" x2="6" y2="18" />
-            <line x1="6" y1="6" x2="18" y2="18" />
+  const mobileOverlay = open && mounted ? (
+    <div className="mobile-nav-fullscreen fixed inset-0 z-[9999] flex flex-col md:hidden"
+      style={{ background: "var(--sg-bg)" }} role="dialog" aria-modal="true">
+      <div className="pointer-events-none absolute inset-0 overflow-hidden">
+        <div className="absolute -left-32 top-0 h-96 w-96 rounded-full opacity-20"
+          style={{ background: "radial-gradient(circle, var(--sg-primary) 0%, transparent 70%)", filter: "blur(80px)" }} />
+      </div>
+      <div className="relative flex items-center justify-between px-6 pt-6 pb-5"
+        style={{ borderBottom: "1px solid rgba(26,58,92,0.5)" }}>
+        <Wordmark />
+        <button type="button" onClick={() => setOpen(false)}
+          className="flex h-10 w-10 items-center justify-center rounded-lg"
+          style={{ background: "var(--sg-surface)", color: "var(--sg-text-secondary)" }}>
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
+            <line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" />
           </svg>
         </button>
-
-        {/* Logo */}
-        <div className="relative flex items-center gap-3 px-8 pt-8 pb-6 border-b border-slate-800/60">
-          <ScoutGamerLogo />
-          <div>
-            <span className="block bg-gradient-to-r from-emerald-400 to-cyan-400 bg-clip-text text-base font-black tracking-[0.15em] text-transparent">
-              SCOUT GAMER
-            </span>
-            <span className="text-[10px] text-slate-500 tracking-[0.18em] uppercase">Futbol × Oyun Kültürü</span>
-          </div>
-        </div>
-
-        <nav className="relative flex flex-1 flex-col gap-1 px-5 pt-4">
-          {NAV_ITEMS.map((item) => (
-            <Link
-              key={item.key}
-              href={item.href}
-              onClick={() => setOpen(false)}
-              className={[
-                "flex items-center gap-4 rounded-xl px-4 py-3.5 text-[15px] font-semibold transition border",
-                activeNav === item.key
-                  ? "bg-emerald-500/10 text-emerald-300 border-emerald-500/20"
-                  : "text-slate-300 hover:bg-slate-800/50 hover:text-white border-transparent",
-              ].join(" ")}
-            >
-              <span className="[&_svg]:h-5 [&_svg]:w-5 opacity-60">{item.icon}</span>
-              {item.label}
-              {activeNav === item.key && (
-                <span className="ml-auto h-1.5 w-1.5 rounded-full bg-emerald-400" />
-              )}
+      </div>
+      <nav className="relative flex flex-1 flex-col gap-1 px-4 pt-4">
+        {NAV_ITEMS.map((item) => {
+          const isActive = item.key === currentKey;
+          return (
+            <Link key={item.key} href={item.href} onClick={() => setOpen(false)}
+              className="flex items-center justify-between rounded-lg px-4 py-4 transition-all"
+              style={{ background: isActive ? "rgba(70,241,197,0.08)" : "transparent", color: isActive ? "var(--sg-primary)" : "var(--sg-text-secondary)", fontFamily: "var(--font-headline)", fontWeight: 600, fontSize: "15px" }}>
+              <span>{item.label}</span>
+              {isActive && <span className="h-1.5 w-1.5 rounded-full" style={{ background: "var(--sg-primary)" }} />}
             </Link>
-          ))}
-        </nav>
-
-        <div className="relative px-5 pb-8 pt-4">
-          <div className="rounded-xl border border-slate-800/60 bg-slate-900/40 px-4 py-3">
-            <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-emerald-400/60">Scout Gamer Beta</p>
-            <p className="mt-0.5 text-[11px] text-slate-500">Futbol keşif & oyun kültürü platformu</p>
-          </div>
+          );
+        })}
+      </nav>
+      <div className="relative px-4 pb-8 pt-4">
+        <div className="rounded-lg px-4 py-3" style={{ background: "var(--sg-surface-low)" }}>
+          <p className="text-[10px] font-bold uppercase tracking-[0.22em]"
+            style={{ color: "var(--sg-primary)", fontFamily: "var(--font-headline)", opacity: 0.7 }}>Scout Gamer Beta</p>
+          <p className="mt-0.5 text-[11px]" style={{ color: "var(--sg-text-muted)" }}>Futbol keşif & oyun kültürü platformu</p>
         </div>
       </div>
-    ) : null;
+    </div>
+  ) : null;
 
   return (
-    <header className="sticky top-0 z-50 border-b border-slate-800/60 bg-slate-950/90 backdrop-blur-md">
-      <div className={`mx-auto flex ${maxWidth} items-center justify-between px-4 py-3`}>
-
-        {/* Logo */}
-        <Link href="/" className="flex items-center gap-2.5">
-          <ScoutGamerLogo />
-          <div className="flex flex-col leading-none">
-            <span className="bg-gradient-to-r from-emerald-400 via-cyan-400 to-sky-400 bg-clip-text text-sm font-black tracking-[0.16em] text-transparent">
-              SCOUT GAMER
-            </span>
-            <span className="mt-0.5 text-[9px] uppercase tracking-[0.2em] text-slate-600">
-              Futbol × Oyun Kültürü
-            </span>
-          </div>
-        </Link>
-
-        {/* Desktop nav */}
-        <nav className="hidden items-center gap-1 md:flex">
-          {desktopItems.map((item) => (
-            <Link
-              key={item.key}
-              href={item.href}
-              className={[
-                "flex items-center gap-1.5 rounded-lg px-3 py-2 text-[11px] font-semibold tracking-wide transition-all border",
-                activeNav === item.key
-                  ? "bg-emerald-500/10 text-emerald-300 border-emerald-500/20"
-                  : "text-slate-400 hover:bg-slate-800/50 hover:text-slate-200 border-transparent",
-              ].join(" ")}
-            >
-              <span className="[&_svg]:h-3.5 [&_svg]:w-3.5 opacity-60">{item.icon}</span>
-              {item.label}
-            </Link>
-          ))}
-        </nav>
-
-        {/* Hamburger */}
-        <button
-          type="button"
-          onClick={() => setOpen(true)}
-          className="flex h-9 w-9 items-center justify-center rounded-lg border border-slate-700/80 bg-slate-900/70 text-slate-300 transition hover:border-emerald-500/60 hover:text-emerald-300 md:hidden"
-          aria-label="Menüyü aç"
-        >
+    <header className="fixed top-0 w-full z-50 transition-all duration-300"
+      style={{ background: scrolled ? "rgba(6,15,30,0.95)" : "rgba(6,15,30,0.7)", backdropFilter: "blur(20px)", WebkitBackdropFilter: "blur(20px)", borderBottom: "1px solid rgba(26,58,92,0.5)" }}>
+      <nav className={`mx-auto flex ${maxWidth} items-center justify-between px-6`} style={{ height: "72px" }}>
+        <Wordmark />
+        <div className="hidden md:flex items-center gap-1">
+          {desktopItems.map((item) => {
+            const isActive = item.key === currentKey;
+            return (
+              <Link key={item.key} href={item.href}
+                className="relative px-4 py-2 transition-all duration-200"
+                style={{ fontFamily: "var(--font-headline)", fontSize: "11px", fontWeight: 700, letterSpacing: "0.12em", textTransform: "uppercase", color: isActive ? "var(--sg-primary)" : "var(--sg-text-muted)" }}>
+                {item.label}
+                {isActive && (
+                  <span className="absolute bottom-0 left-1/2 -translate-x-1/2 h-0.5 w-4 rounded-full"
+                    style={{ background: "var(--sg-primary)" }} />
+                )}
+              </Link>
+            );
+          })}
+        </div>
+        <div className="hidden md:flex items-center gap-3">
+          <button className="flex h-9 w-9 items-center justify-center transition-all hover:opacity-80"
+            style={{ color: "var(--sg-text-muted)" }}>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+              <circle cx="12" cy="12" r="10" />
+              <path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" />
+            </svg>
+          </button>
+          <button className="flex h-9 w-9 items-center justify-center transition-all hover:opacity-80"
+            style={{ color: "var(--sg-text-muted)" }}>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+              <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" /><circle cx="12" cy="7" r="4" />
+            </svg>
+          </button>
+        </div>
+        <button type="button" onClick={() => setOpen(true)}
+          className="flex h-9 w-9 items-center justify-center rounded-lg transition md:hidden"
+          style={{ background: "var(--sg-surface)", color: "var(--sg-text-secondary)" }}>
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
-            <line x1="3" y1="6" x2="21" y2="6" />
-            <line x1="3" y1="12" x2="21" y2="12" />
-            <line x1="3" y1="18" x2="21" y2="18" />
+            <line x1="3" y1="6" x2="21" y2="6" /><line x1="3" y1="12" x2="21" y2="12" /><line x1="3" y1="18" x2="21" y2="18" />
           </svg>
         </button>
-      </div>
-
-      {mobileMenuOverlay ? createPortal(mobileMenuOverlay, document.body) : null}
+      </nav>
+      {mobileOverlay ? createPortal(mobileOverlay, document.body) : null}
     </header>
   );
 }
