@@ -1,5 +1,68 @@
 import { NextResponse } from "next/server";
-import { createClient } from "@supabase/supabase-js";
+import { createClient, type SupabaseClient } from "@supabase/supabase-js";
+
+type FcPlayerRow = {
+  name: string;
+  overall: number;
+  position: string;
+  club: string;
+  photo_url?: string | null;
+};
+
+async function buildPlayersJson(
+  supabaseClient: SupabaseClient,
+  playerNames: string[],
+): Promise<string | null> {
+  if (!playerNames.length) return null;
+  const results: Array<{
+    name: string;
+    overall: number;
+    position: string;
+    club: string;
+    photo_url?: string;
+    scout_note: string;
+  }> = [];
+  for (const name of playerNames) {
+    const { data: exactRaw } = await supabaseClient
+      .from("fc_players")
+      .select("name,overall,position,club,photo_url")
+      .ilike("name", name)
+      .limit(1)
+      .maybeSingle();
+    const exact = exactRaw as FcPlayerRow | null;
+    if (exact?.overall) {
+      results.push({
+        name: exact.name,
+        overall: exact.overall,
+        position: exact.position,
+        club: exact.club,
+        photo_url: exact.photo_url ?? undefined,
+        scout_note: "",
+      });
+      continue;
+    }
+    const twoWords = name.split(" ").slice(0, 2).join(" ");
+    const { data: twoRaw } = await supabaseClient
+      .from("fc_players")
+      .select("name,overall,position,club,photo_url")
+      .ilike("name", `%${twoWords}%`)
+      .order("overall", { ascending: false })
+      .limit(1)
+      .maybeSingle();
+    const two = twoRaw as FcPlayerRow | null;
+    if (two?.overall) {
+      results.push({
+        name: two.name,
+        overall: two.overall,
+        position: two.position,
+        club: two.club,
+        photo_url: two.photo_url ?? undefined,
+        scout_note: "",
+      });
+    }
+  }
+  return results.length > 0 ? JSON.stringify(results) : null;
+}
 
 const CATEGORIES = ["radar", "taktik-lab", "listeler"] as const;
 type Category = (typeof CATEGORIES)[number];
@@ -53,7 +116,10 @@ Yanıtını SADECE şu JSON formatında ver, başka hiçbir şey yazma:
 Kategori rehberi:
 - radar: güncel oyuncu analizi, transfer söylentisi, haftalık performans değerlendirmesi
 - taktik-lab: modern pozisyon arketipleri, taktiksel analiz, oyun modeli incelemesi
-- listeler: sıralama ve karşılaştırma listeleri, en iyi/en kötü/en umut verici gibi formatlar`;
+- listeler: sıralama ve karşılaştırma listeleri, en iyi/en kötü/en umut verici gibi formatlar
+
+Eğer kategori "listeler" ise, JSON'a ek olarak "players" alanı ekle:
+"players": ["Oyuncu Adı 1", "Oyuncu Adı 2", ...] — içerikte geçen oyuncuların tam adlarını liste olarak ver, maksimum 10 oyuncu.`;
 
 function slugify(text: string): string {
   return text
@@ -117,6 +183,7 @@ async function generateWithClaude(
   slug: string;
   category: string;
   content: string;
+  players?: string[];
 }> {
   const apiKey = process.env.ANTHROPIC_API_KEY;
   if (!apiKey) throw new Error("ANTHROPIC_API_KEY ortam değişkeni tanımlı değil");
@@ -207,7 +274,7 @@ async function generateWithClaude(
     throw new Error("Yanıtta geçerli JSON nesnesi bulunamadı");
   }
 
-  let parsed: { title?: string; slug?: string; category?: string; content?: string };
+  let parsed: { title?: string; slug?: string; category?: string; content?: string; players?: unknown };
   try {
     parsed = JSON.parse(jsonStr);
   } catch (parseErr) {
@@ -221,6 +288,10 @@ async function generateWithClaude(
     throw new Error('"content" alanı boş');
   }
 
+  const players: string[] = Array.isArray(parsed.players)
+    ? (parsed.players as unknown[]).filter((p): p is string => typeof p === "string").slice(0, 10)
+    : [];
+
   const title = typeof parsed.title === "string" && parsed.title.trim() ? parsed.title.trim() : topic;
   const slug  = typeof parsed.slug  === "string" && parsed.slug.trim()  ? parsed.slug.trim()  : slugify(title);
 
@@ -230,7 +301,7 @@ async function generateWithClaude(
     : targetCategory;
 
   console.log(`[generate-content] Başarıyla üretildi — başlık: "${title}", kategori: ${category}`);
-  return { title, slug, category, content };
+  return { title, slug, category, content, players };
 }
 
 function isValidSlug(s: string): boolean {
@@ -309,6 +380,10 @@ export async function POST(request: Request) {
         category: finalCategory,
         content: generated.content,
         status: "bekliyor" as const,
+        players_json:
+          generated.category === "listeler" && generated.players?.length
+            ? await buildPlayersJson(supabase, generated.players)
+            : null,
       };
 
       const { error: dbError } = await supabase.from("contents").insert(row);
@@ -394,6 +469,10 @@ export async function POST(request: Request) {
         category: finalCategory,
         content: generated.content,
         status: "bekliyor" as const,
+        players_json:
+          generated.category === "listeler" && generated.players?.length
+            ? await buildPlayersJson(supabase, generated.players)
+            : null,
       };
 
       const { error: dbError } = await supabase.from("contents").insert(row);
@@ -500,7 +579,7 @@ export async function POST(request: Request) {
   }[] = [];
 
   for (const { topic, category } of pairs) {
-    let generated: { title: string; slug: string; category: string; content: string };
+    let generated: { title: string; slug: string; category: string; content: string; players?: string[] };
 
     try {
       const batchWebSearch = category === "radar";
@@ -518,6 +597,10 @@ export async function POST(request: Request) {
       category: generated.category,
       content: generated.content,
       status: "bekliyor",
+      players_json:
+        generated.category === "listeler" && generated.players?.length
+          ? await buildPlayersJson(supabase, generated.players)
+          : null,
     });
 
     if (dbError) {
