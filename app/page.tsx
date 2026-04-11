@@ -100,6 +100,7 @@ function translatePosition(pos: string): string {
 }
 
 async function fetchFcPlayer(name: string, club?: string) {
+  // 1. Tam isim
   const { data: exact } = await supabase
     .from("fc_players")
     .select("overall,pace,shooting,passing,dribbling,defending,physical,photo_url,position,club,league,age")
@@ -108,18 +109,23 @@ async function fetchFcPlayer(name: string, club?: string) {
     .maybeSingle();
   if (exact?.overall) return exact;
 
-  const two = name.split(" ").slice(0, 2).join(" ");
-  const { data: twoMatch } = await supabase
-    .from("fc_players")
-    .select("overall,pace,shooting,passing,dribbling,defending,physical,photo_url,position,club,league,age")
-    .ilike("name", `%${two}%`)
-    .order("overall", { ascending: false })
-    .limit(1)
-    .maybeSingle();
-  if (twoMatch?.overall) return twoMatch;
+  // 2. İlk iki kelime
+  const words = name.split(" ");
+  if (words.length >= 2) {
+    const two = words.slice(0, 2).join(" ");
+    const { data: twoMatch } = await supabase
+      .from("fc_players")
+      .select("overall,pace,shooting,passing,dribbling,defending,physical,photo_url,position,club,league,age")
+      .ilike("name", `%${two}%`)
+      .order("overall", { ascending: false })
+      .limit(1)
+      .maybeSingle();
+    if (twoMatch?.overall) return twoMatch;
+  }
 
+  // 3. İlk kelime + kulüp filtresi (kulüp yoksa null dön)
   if (club) {
-    const one = name.split(" ")[0];
+    const one = words[0];
     const { data: clubMatch } = await supabase
       .from("fc_players")
       .select("overall,pace,shooting,passing,dribbling,defending,physical,photo_url,position,club,league,age")
@@ -131,15 +137,7 @@ async function fetchFcPlayer(name: string, club?: string) {
     if (clubMatch?.overall) return clubMatch;
   }
 
-  const oneWord = name.split(" ")[0];
-  const { data: oneMatch } = await supabase
-    .from("fc_players")
-    .select("overall,pace,shooting,passing,dribbling,defending,physical,photo_url,position,club,league,age")
-    .ilike("name", `%${oneWord}%`)
-    .order("overall", { ascending: false })
-    .limit(1)
-    .maybeSingle();
-  return oneMatch?.overall ? oneMatch : null;
+  return null;
 }
 
 // ─── Ana bileşen ──────────────────────────────────────────────────────────
@@ -176,61 +174,33 @@ export default function Home() {
       .then(({ data }) => { if (data?.length) setRecentItems(data); });
   }, []);
 
-  // Radar oyuncusu
+  // Radar oyuncusu (form_players_pool)
   useEffect(() => {
     async function load() {
-      type FeaturedPoolEntry = {
-        name?: string;
-        club?: string;
-        league?: string;
-        position?: string;
-        age?: string;
-        goals?: string;
-        assists?: string;
-        description?: string;
-        why_watch?: string;
-      };
-      let { data: poolRow } = await supabase
-        .from("site_settings")
-        .select("value")
-        .eq("key", "featured_player_pool")
-        .maybeSingle();
-
-      let pool: FeaturedPoolEntry[] = [];
+      const { data: poolRow } = await supabase.from("site_settings").select("value").eq("key", "form_players_pool").maybeSingle();
       if (poolRow?.value) {
         try {
-          pool = JSON.parse(poolRow.value as string) as FeaturedPoolEntry[];
+          const pool = JSON.parse(poolRow.value as string);
+          if (Array.isArray(pool) && pool.length > 0) {
+            const pick = pool[Math.floor(Math.random() * pool.length)];
+            if (pick?.name) {
+              setFeaturedPlayer({
+                name: pick.name ?? "",
+                club: pick.club ?? "",
+                position: pick.position ?? "",
+                age: String(pick.age ?? ""),
+                league: pick.league ?? "",
+                goals: String(pick.goals ?? ""),
+                assists: String(pick.assists ?? ""),
+                description: pick.description ?? "",
+                whyWatch: pick.why_watch ?? "",
+              });
+              const stats = await fetchFcPlayer(pick.name, pick.club);
+              if (stats?.overall) setFeaturedStats(stats as Partial<PlayerCardData>);
+            }
+          }
         } catch {
           /* ignore */
-        }
-      }
-      if (!pool.length) {
-        const { data: formRow } = await supabase.from("site_settings").select("value").eq("key", "form_players_pool").maybeSingle();
-        if (formRow?.value) {
-          try {
-            const fp = JSON.parse(formRow.value as string);
-            if (Array.isArray(fp) && fp.length > 0) pool = fp as FeaturedPoolEntry[];
-          } catch {
-            /* ignore */
-          }
-        }
-      }
-      if (pool.length > 0) {
-        const pick = pool[Math.floor(Math.random() * pool.length)];
-        if (pick?.name) {
-          setFeaturedPlayer({
-            name: pick.name ?? "",
-            club: pick.club ?? "",
-            position: pick.position ?? "",
-            age: String(pick.age ?? ""),
-            league: pick.league ?? "",
-            goals: String(pick.goals ?? ""),
-            assists: String(pick.assists ?? ""),
-            description: pick.description ?? "",
-            whyWatch: pick.why_watch ?? "",
-          });
-          const stats = await fetchFcPlayer(pick.name, pick.club);
-          if (stats?.overall) setFeaturedStats(stats as Partial<PlayerCardData>);
         }
       }
       setFeaturedLoading(false);
