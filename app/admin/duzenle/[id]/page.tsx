@@ -76,6 +76,7 @@ export default function DuzenlePage() {
   const [content, setContent] = useState("");
   const [youtubeId, setYoutubeId] = useState("");
   const [coverImage, setCoverImage] = useState("");
+  const [imageUploading, setImageUploading] = useState(false);
   const [youtubeQuery1, setYoutubeQuery1] = useState("");
   const [youtubeQuery2, setYoutubeQuery2] = useState("");
   const [newsQuery, setNewsQuery] = useState("");
@@ -367,13 +368,41 @@ export default function DuzenlePage() {
               />
             </div>
             <div>
-              <label className="mb-1.5 block text-xs font-semibold text-slate-300">Kapak Görseli URL</label>
-              <input
-                type="text" value={coverImage}
-                onChange={(e) => setCoverImage(e.target.value)}
-                placeholder="İsteğe bağlı"
-                className="w-full rounded-lg border border-slate-700/80 bg-slate-900/70 px-4 py-2.5 text-sm text-slate-100 placeholder-slate-500 outline-none transition focus:border-emerald-500/60 focus:ring-1 focus:ring-emerald-500/40"
-              />
+              <label className="mb-1.5 block text-xs font-semibold text-slate-300">Kapak Görseli</label>
+              <div className="space-y-2">
+                <input
+                  type="text" value={coverImage}
+                  onChange={(e) => setCoverImage(e.target.value)}
+                  placeholder="URL yapıştır ya da aşağıdan yükle"
+                  className="w-full rounded-lg border border-slate-700/80 bg-slate-900/70 px-4 py-2.5 text-sm text-slate-100 placeholder-slate-500 outline-none transition focus:border-emerald-500/60"
+                />
+                <div className="flex items-center gap-2">
+                  <label className="cursor-pointer rounded-lg border border-slate-700/60 bg-slate-800/60 px-3 py-2 text-xs font-semibold text-slate-300 transition hover:border-emerald-500/40 hover:text-emerald-300">
+                    {imageUploading ? "Yükleniyor..." : "📁 Görsel Yükle"}
+                    <input type="file" accept="image/*" className="hidden"
+                      onChange={async (e) => {
+                        const file = e.target.files?.[0];
+                        if (!file) return;
+                        setImageUploading(true);
+                        try {
+                          const ext = file.name.split(".").pop();
+                          const fileName = `${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
+                          const { data, error } = await supabase.storage.from("content-images").upload(fileName, file, { upsert: true });
+                          if (error) throw error;
+                          const { data: urlData } = supabase.storage.from("content-images").getPublicUrl(data.path);
+                          setCoverImage(urlData.publicUrl);
+                        } catch (err) {
+                          console.error("Görsel yükleme hatası:", err);
+                        }
+                        setImageUploading(false);
+                      }}
+                    />
+                  </label>
+                  {coverImage && (
+                    <img src={coverImage} alt="" className="h-10 w-16 rounded object-cover border border-slate-700/60" />
+                  )}
+                </div>
+              </div>
             </div>
           </div>
 
