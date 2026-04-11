@@ -173,7 +173,7 @@ function FullCard({ player, showScoutNote, tmLink, gLink, animated }: Omit<Playe
   );
 }
 
-function MiniCard({ player, animated }: Omit<PlayerCardProps, "size">) {
+function MiniCard({ player, animated, tmLink, gLink }: Omit<PlayerCardProps, "size">) {
   const card = (
     <div style={{
       width: "100%",
@@ -211,6 +211,12 @@ function MiniCard({ player, animated }: Omit<PlayerCardProps, "size">) {
           );
         })}
       </div>
+      {(tmLink || gLink) && (
+        <div style={{ padding: "5px 10px 7px", display: "flex", justifyContent: "flex-end", gap: "4px", borderTop: "1px solid #0f2035" }}>
+          {tmLink && <a href={tmLink} target="_blank" rel="noopener noreferrer" style={{ fontSize: "8px", fontWeight: 700, color: "#2a5a7a", background: "#0a1a2e", border: "1px solid #1a3050", borderRadius: "3px", padding: "2px 5px", textDecoration: "none" }}>TM</a>}
+          {gLink && <a href={gLink} target="_blank" rel="noopener noreferrer" style={{ fontSize: "8px", fontWeight: 700, color: "#2a5a7a", background: "#0a1a2e", border: "1px solid #1a3050", borderRadius: "3px", padding: "2px 5px", textDecoration: "none" }}>G</a>}
+        </div>
+      )}
     </div>
   );
 

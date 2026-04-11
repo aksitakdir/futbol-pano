@@ -413,39 +413,24 @@ export default function Home() {
                   <motion.div className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5" variants={staggerContainer} initial="hidden" whileInView="visible" viewport={{ once: true, margin: "-40px" }}>
                     {formPlayersWithStats.map((player, index) => {
                       const hasStats = (player.overall ?? 0) > 0;
+                      if (!hasStats) return null;
                       return (
                         <motion.div key={`${player.name}-${index}`} variants={staggerChild}>
-                          {hasStats ? (
-                            <PlayerCard
-                              player={{
-                                name: player.name, club: player.club, league: player.league,
-                                position: player.position || "", age: player.age,
-                                overall: player.overall!, pace: player.pace ?? 0,
-                                shooting: player.shooting ?? 0, passing: player.passing ?? 0,
-                                dribbling: player.dribbling ?? 0, defending: player.defending ?? 0,
-                                physical: player.physical ?? 0,
-                                photo_url: player.photo_url as string | undefined,
-                              }}
-                              size="mini"
-                              animated={false}
-                            />
-                          ) : (
-                            <div className="rounded-xl border border-slate-800/80 bg-slate-900/70 p-3">
-                              <div className="flex items-center gap-2">
-                                <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-slate-800 text-[10px] font-bold text-slate-400 ring-1 ring-slate-700/80">
-                                  {player.name?.charAt(0) ?? "?"}
-                                </span>
-                                <div className="min-w-0">
-                                  <p className="truncate text-xs font-semibold text-slate-100">{player.name}</p>
-                                  <p className="text-[10px] text-slate-500">{player.club}</p>
-                                </div>
-                              </div>
-                              <div className="mt-2 flex items-center justify-between">
-                                <span className="text-[10px] text-emerald-300">{translatePosition(player.position)}</span>
-                                <PlayerScoutLinks playerName={player.name} />
-                              </div>
-                            </div>
-                          )}
+                          <PlayerCard
+                            player={{
+                              name: player.name, club: player.club, league: player.league,
+                              position: player.position || "", age: player.age,
+                              overall: player.overall!, pace: player.pace ?? 0,
+                              shooting: player.shooting ?? 0, passing: player.passing ?? 0,
+                              dribbling: player.dribbling ?? 0, defending: player.defending ?? 0,
+                              physical: player.physical ?? 0,
+                              photo_url: player.photo_url as string | undefined,
+                            }}
+                            size="mini"
+                            animated={false}
+                            tmLink={`https://www.transfermarkt.com.tr/schnellsuche/ergebnis/schnellsuche?query=${encodeURIComponent(player.name)}`}
+                            gLink={`https://www.google.com/search?q=${encodeURIComponent(`${player.name} footballer`)}`}
+                          />
                         </motion.div>
                       );
                     })}
