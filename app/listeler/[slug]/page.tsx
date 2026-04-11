@@ -4,9 +4,8 @@ import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import { supabase } from "@/lib/supabase";
-import { translatePosition } from "@/lib/translate-position";
 import ArticleLayout from "../../components/article-layout";
-import { PlayerScoutLinks } from "../../components/player-scout-links";
+import PlayerCard, { type PlayerCardData } from "../../components/player-card";
 
 type SupabaseRow = {
   id: string;
@@ -100,17 +99,6 @@ const CONTENT_BY_SLUG: Record<string, PageConfig> = {
   },
 };
 
-function positionColor(position: string): string {
-  const p = position.toLowerCase();
-  if (p.includes("stoper") || p.includes("defans") || p.includes("bek"))
-    return "bg-emerald-500/15 text-emerald-300 border-emerald-500/40";
-  if (p.includes("orta") || p.includes("merkez") || p.includes("box"))
-    return "bg-sky-500/15 text-sky-300 border-sky-500/40";
-  if (p.includes("kanat") || p.includes("forvet") || p.includes("numara"))
-    return "bg-rose-500/15 text-rose-300 border-rose-500/40";
-  return "bg-slate-500/15 text-slate-200 border-slate-500/40";
-}
-
 function staticToMarkdown(config: PageConfig): string {
   let md = config.intro + "\n\n";
   for (const s of config.sections) {
@@ -120,28 +108,75 @@ function staticToMarkdown(config: PageConfig): string {
   return md;
 }
 
+function PlayerCardItem({ player }: { player: Player }) {
+  const [cardData, setCardData] = useState<PlayerCardData | null>(null);
+
+  useEffect(() => {
+    async function fetchStats() {
+      const { data } = await supabase
+        .from("fc_players")
+        .select("overall,pace,shooting,passing,dribbling,defending,physical,photo_url,position,club,league,age")
+        .ilike("name", `%${player.name.split(" ")[0]}%`)
+        .order("overall", { ascending: false })
+        .limit(1)
+        .maybeSingle();
+      if (data && data.overall) {
+        setCardData({
+          name: player.name,
+          club: data.club ?? player.club,
+          league: data.league ?? "",
+          position: data.position ?? player.position,
+          age: data.age ?? player.age,
+          overall: data.overall,
+          pace: data.pace ?? 0,
+          shooting: data.shooting ?? 0,
+          passing: data.passing ?? 0,
+          dribbling: data.dribbling ?? 0,
+          defending: data.defending ?? 0,
+          physical: data.physical ?? 0,
+          photo_url: data.photo_url ?? undefined,
+          whyWatch: player.strengths,
+        });
+      }
+    }
+    fetchStats();
+  }, [player]);
+
+  if (!cardData) {
+    return (
+      <div className="rounded-2xl border border-slate-800/80 bg-slate-950/80 p-4">
+        <p className="text-sm font-semibold text-slate-50">{player.name}</p>
+        <p className="mt-1 text-xs text-slate-400">
+          {player.club} · {player.age} yaş
+        </p>
+        <p className="mt-2 text-xs text-slate-300">{player.strengths}</p>
+      </div>
+    );
+  }
+
+  return (
+    <PlayerCard
+      player={cardData}
+      size="full"
+      showScoutNote
+      animated={false}
+      tmLink={`https://www.transfermarkt.com.tr/schnellsuche/ergebnis/schnellsuche?query=${encodeURIComponent(player.name)}`}
+      gLink={`https://www.google.com/search?q=${encodeURIComponent(`${player.name} footballer`)}`}
+    />
+  );
+}
+
 function PlayerCards({ players }: { players: Player[] }) {
   if (players.length === 0) return null;
   return (
-    <section className="mb-8 space-y-4">
-      <div className="flex items-center justify-between">
-        <h2 className="text-sm font-semibold uppercase tracking-[0.22em] text-slate-400">Oyuncu Kartları</h2>
-        <span className="text-[11px] text-slate-500">Toplam {players.length} oyuncu</span>
+    <section className="mb-8">
+      <div className="mb-4 flex items-center justify-between">
+        <h2 className="text-[11px] font-bold uppercase tracking-[0.22em] text-emerald-400/80">Oyuncu Kartları</h2>
+        <span className="text-[11px] text-slate-500">{players.length} oyuncu</span>
       </div>
-      <div className="grid gap-4 md:grid-cols-2">
-        {players.map((player) => (
-          <div key={player.name} className="flex flex-col justify-between rounded-2xl border border-slate-800/80 bg-slate-950/80 p-4 shadow-[0_16px_50px_rgba(15,23,42,0.9)]">
-            <div className="flex items-start justify-between gap-3">
-              <div>
-                <h3 className="text-sm font-semibold text-slate-50">{player.name}</h3>
-                <p className="mt-1 text-[11px] text-slate-400">{player.club} • {player.age} yaş</p>
-              </div>
-              <span className={["inline-flex items-center rounded-full border px-2 py-1 text-[10px] font-semibold uppercase tracking-[0.16em]", positionColor(player.position)].join(" ")}>
-                {player.position}
-              </span>
-            </div>
-            <p className="mt-3 text-xs leading-relaxed text-slate-200">{player.strengths}</p>
-          </div>
+      <div className="grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-4">
+        {players.map((p) => (
+          <PlayerCardItem key={p.name} player={p} />
         ))}
       </div>
     </section>

@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useParams } from "next/navigation";
 import { supabase } from "@/lib/supabase";
 import ArticleLayout from "../../components/article-layout";
+import PlayerCard, { type PlayerCardData } from "../../components/player-card";
 
 type ContentRow = {
   id: string;
@@ -26,6 +27,7 @@ export default function RadarDetailPage() {
   const slug = params?.slug;
 
   const [article, setArticle] = useState<ContentRow | null>(null);
+  const [playerCardData, setPlayerCardData] = useState<PlayerCardData | null>(null);
   const [loading, setLoading] = useState(true);
   const [notFound, setNotFound] = useState(false);
 
@@ -42,8 +44,36 @@ export default function RadarDetailPage() {
 
       if (error || !data) {
         setNotFound(true);
+        setPlayerCardData(null);
       } else {
         setArticle(data);
+        setPlayerCardData(null);
+        if (data.player_name) {
+          const { data: stats } = await supabase
+            .from("fc_players")
+            .select("overall,pace,shooting,passing,dribbling,defending,physical,photo_url,position,club,league,age")
+            .ilike("name", `%${data.player_name.split(" ")[0]}%`)
+            .order("overall", { ascending: false })
+            .limit(1)
+            .maybeSingle();
+          if (stats && stats.overall) {
+            setPlayerCardData({
+              name: data.player_name,
+              club: stats.club ?? "",
+              league: stats.league ?? "",
+              position: stats.position ?? "",
+              age: stats.age ?? "",
+              overall: stats.overall,
+              pace: stats.pace ?? 0,
+              shooting: stats.shooting ?? 0,
+              passing: stats.passing ?? 0,
+              dribbling: stats.dribbling ?? 0,
+              defending: stats.defending ?? 0,
+              physical: stats.physical ?? 0,
+              photo_url: stats.photo_url ?? undefined,
+            });
+          }
+        }
       }
       setLoading(false);
     }
@@ -92,6 +122,21 @@ export default function RadarDetailPage() {
       youtubeQuery2={article.youtube_query_2}
       newsQuery={article.news_query}
       playerName={article.player_name}
+      children={
+        playerCardData ? (
+          <div className="mb-8">
+            <p className="mb-3 text-[11px] font-bold uppercase tracking-[0.2em] text-emerald-400/80">Oyuncu Kartı</p>
+            <PlayerCard
+              player={playerCardData}
+              size="full"
+              showScoutNote={false}
+              animated
+              tmLink={`https://www.transfermarkt.com.tr/schnellsuche/ergebnis/schnellsuche?query=${encodeURIComponent(playerCardData.name)}`}
+              gLink={`https://www.google.com/search?q=${encodeURIComponent(`${playerCardData.name} footballer`)}`}
+            />
+          </div>
+        ) : null
+      }
     />
   );
 }
