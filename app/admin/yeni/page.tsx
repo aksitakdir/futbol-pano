@@ -24,15 +24,16 @@ type FcPlayer = {
   overall: number;
   position: string;
   club: string;
-  league: string;
-  nationality: string;
-  age: number;
+  league?: string;
+  nationality?: string;
+  age?: number;
   pace: number;
   shooting: number;
   passing: number;
   dribbling: number;
   defending: number;
   physical: number;
+  photo_url?: string;
 };
 
 function StatInput({
@@ -89,6 +90,14 @@ function YeniIcerikForm() {
   const [playerMatched, setPlayerMatched] = useState<FcPlayer | null>(null);
   const searchTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
 
+  const [playersList, setPlayersList] = useState<
+    Array<{ name: string; overall: number; position: string; club: string; photo_url?: string; scout_note: string }>
+  >([]);
+  const [playersListSearch, setPlayersListSearch] = useState("");
+  const [playersListResults, setPlayersListResults] = useState<FcPlayer[]>([]);
+  const [playersListSearching, setPlayersListSearching] = useState(false);
+  const playersListTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
+
   useEffect(() => {
     const c = searchParams.get("category");
     if (c === "radar" || c === "listeler" || c === "taktik-lab") {
@@ -115,6 +124,25 @@ function YeniIcerikForm() {
       setPlayerSearching(false);
     }, 350);
   }, [playerSearch]);
+
+  useEffect(() => {
+    if (!playersListSearch.trim() || playersListSearch.length < 2) {
+      setPlayersListResults([]);
+      return;
+    }
+    if (playersListTimeout.current) clearTimeout(playersListTimeout.current);
+    playersListTimeout.current = setTimeout(async () => {
+      setPlayersListSearching(true);
+      const { data } = await supabase
+        .from("fc_players")
+        .select("name,overall,position,club,pace,shooting,passing,dribbling,defending,physical,photo_url")
+        .ilike("name", `%${playersListSearch.trim()}%`)
+        .order("overall", { ascending: false })
+        .limit(8);
+      setPlayersListResults((data as FcPlayer[]) ?? []);
+      setPlayersListSearching(false);
+    }, 350);
+  }, [playersListSearch]);
 
   function applyPlayer(p: FcPlayer) {
     setPlayerMatched(p);
@@ -167,6 +195,7 @@ function YeniIcerikForm() {
       stat_defending: statDefending || null,
       stat_physical: statPhysical || null,
       stat_overall: statOverall || null,
+      players_json: playersList.length > 0 ? JSON.stringify(playersList) : null,
       status: "bekliyor",
     });
 
@@ -301,6 +330,97 @@ function YeniIcerikForm() {
             />
           </div>
 
+          {category === "listeler" && (
+            <div className="rounded-xl border border-slate-700/60 bg-slate-900/40 p-5">
+              <div className="mb-4">
+                <p className="text-xs font-semibold uppercase tracking-[0.18em] text-sky-300/80">Oyuncu Listesi</p>
+                <p className="mt-0.5 text-[11px] text-slate-500">Liste içeriği için birden fazla oyuncu ekle</p>
+              </div>
+              <div className="relative mb-4">
+                <input
+                  type="text"
+                  value={playersListSearch}
+                  onChange={(e) => setPlayersListSearch(e.target.value)}
+                  placeholder="Oyuncu adı yaz, seç ve listeye ekle..."
+                  className="w-full rounded-lg border border-slate-700/80 bg-slate-900/70 px-4 py-2.5 text-sm text-slate-100 placeholder-slate-500 outline-none transition focus:border-sky-500/60"
+                />
+                {playersListSearching && (
+                  <div className="absolute right-3 top-3 h-4 w-4 animate-spin rounded-full border-2 border-sky-400 border-t-transparent" />
+                )}
+                {playersListResults.length > 0 && (
+                  <div className="absolute z-20 mt-1 w-full overflow-hidden rounded-xl border border-slate-700 bg-slate-900 shadow-xl">
+                    {playersListResults.map((p) => (
+                      <button
+                        key={p.name + p.club}
+                        type="button"
+                        onClick={() => {
+                          if (!playersList.find((pl) => pl.name === p.name)) {
+                            setPlayersList((prev) => [
+                              ...prev,
+                              {
+                                name: p.name,
+                                overall: p.overall,
+                                position: p.position,
+                                club: p.club,
+                                photo_url: p.photo_url,
+                                scout_note: "",
+                              },
+                            ]);
+                          }
+                          setPlayersListSearch("");
+                          setPlayersListResults([]);
+                        }}
+                        className="flex w-full items-center justify-between px-4 py-2.5 text-left text-sm transition hover:bg-slate-800/80"
+                      >
+                        <div>
+                          <span className="font-semibold text-slate-100">{p.name}</span>
+                          <span className="ml-2 text-[11px] text-slate-400">
+                            {p.club} · {p.position}
+                          </span>
+                        </div>
+                        <span className="text-sm font-bold text-emerald-400">{p.overall}</span>
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
+              {playersList.length > 0 && (
+                <div className="space-y-2">
+                  {playersList.map((p, i) => (
+                    <div key={`${p.name}-${i}`} className="flex items-center gap-3 rounded-lg border border-slate-700/60 bg-slate-800/40 px-3 py-2">
+                      <span className="w-6 text-center text-sm font-bold text-emerald-400">{p.overall}</span>
+                      <div className="min-w-0 flex-1">
+                        <p className="text-xs font-semibold text-slate-100">{p.name}</p>
+                        <p className="text-[10px] text-slate-400">
+                          {p.club} · {p.position}
+                        </p>
+                      </div>
+                      <input
+                        type="text"
+                        value={p.scout_note}
+                        onChange={(e) =>
+                          setPlayersList((prev) =>
+                            prev.map((pl, j) => (j === i ? { ...pl, scout_note: e.target.value } : pl)),
+                          )
+                        }
+                        placeholder="Scout notu..."
+                        className="flex-1 rounded-md border border-slate-700/60 bg-slate-900/60 px-2 py-1 text-[11px] text-slate-100 placeholder-slate-500 outline-none focus:border-sky-500/40"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => setPlayersList((prev) => prev.filter((_, j) => j !== i))}
+                        className="text-[11px] text-rose-400 hover:text-rose-300"
+                      >
+                        ✕
+                      </button>
+                    </div>
+                  ))}
+                  <p className="text-[11px] text-slate-500">{playersList.length} oyuncu eklendi</p>
+                </div>
+              )}
+            </div>
+          )}
+
           {/* ─── Oyuncu Kartı Bölümü ─────────────────────────────────────────── */}
           <div className="rounded-xl border border-slate-700/60 bg-slate-900/40 p-5">
             <div className="mb-4 flex items-center justify-between">
@@ -364,7 +484,9 @@ function YeniIcerikForm() {
               <div className="mb-4 flex items-center gap-3 rounded-lg border border-emerald-500/20 bg-emerald-500/5 px-4 py-2.5">
                 <div className="flex-1 min-w-0">
                   <p className="text-sm font-bold text-emerald-300">{playerMatched.name}</p>
-                  <p className="text-[11px] text-slate-400">{playerMatched.club} · {playerMatched.league} · {playerMatched.age} yaş</p>
+                  <p className="text-[11px] text-slate-400">
+                    {playerMatched.club} · {playerMatched.league ?? "—"} · {playerMatched.age != null ? `${playerMatched.age} yaş` : "—"}
+                  </p>
                 </div>
                 <span className="text-2xl font-black text-emerald-400">{playerMatched.overall}</span>
               </div>
