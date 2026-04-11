@@ -94,6 +94,49 @@ function translatePosition(pos: string): string {
   return map[pos?.trim()] ?? pos;
 }
 
+async function fetchFcPlayer(name: string, club?: string) {
+  const { data: exact } = await supabase
+    .from("fc_players")
+    .select("overall,pace,shooting,passing,dribbling,defending,physical,photo_url,position,club,league,age")
+    .ilike("name", name)
+    .limit(1)
+    .maybeSingle();
+  if (exact?.overall) return exact;
+
+  const two = name.split(" ").slice(0, 2).join(" ");
+  const { data: twoMatch } = await supabase
+    .from("fc_players")
+    .select("overall,pace,shooting,passing,dribbling,defending,physical,photo_url,position,club,league,age")
+    .ilike("name", `%${two}%`)
+    .order("overall", { ascending: false })
+    .limit(1)
+    .maybeSingle();
+  if (twoMatch?.overall) return twoMatch;
+
+  if (club) {
+    const one = name.split(" ")[0];
+    const { data: clubMatch } = await supabase
+      .from("fc_players")
+      .select("overall,pace,shooting,passing,dribbling,defending,physical,photo_url,position,club,league,age")
+      .ilike("name", `%${one}%`)
+      .ilike("club", `%${club}%`)
+      .order("overall", { ascending: false })
+      .limit(1)
+      .maybeSingle();
+    if (clubMatch?.overall) return clubMatch;
+  }
+
+  const oneWord = name.split(" ")[0];
+  const { data: oneMatch } = await supabase
+    .from("fc_players")
+    .select("overall,pace,shooting,passing,dribbling,defending,physical,photo_url,position,club,league,age")
+    .ilike("name", `%${oneWord}%`)
+    .order("overall", { ascending: false })
+    .limit(1)
+    .maybeSingle();
+  return oneMatch?.overall ? oneMatch : null;
+}
+
 // ─── Ana bileşen ──────────────────────────────────────────────────────────
 export default function Home() {
   const [slides, setSlides] = useState<HeroSlide[]>([]);
@@ -134,11 +177,8 @@ export default function Home() {
             const pick = pool[Math.floor(Math.random() * pool.length)];
             if (pick?.name) {
               setFeaturedPlayer({ name: pick.name, club: pick.club ?? "", position: pick.position ?? "", age: String(pick.age ?? ""), league: pick.league ?? "", goals: String(pick.goals ?? ""), assists: String(pick.assists ?? ""), description: pick.description ?? "", whyWatch: pick.why_watch ?? "" });
-              const { data: exact } = await supabase.from("fc_players").select("overall,pace,shooting,passing,dribbling,defending,physical,photo_url,position,club,league,age").ilike("name", pick.name).limit(1).maybeSingle();
-              if (exact?.overall) { setFeaturedStats(exact as Partial<PlayerCardData>); setFeaturedLoading(false); return; }
-              const two = pick.name.split(" ").slice(0, 2).join(" ");
-              const { data: fuzzy } = await supabase.from("fc_players").select("overall,pace,shooting,passing,dribbling,defending,physical,photo_url,position,club,league,age").ilike("name", `%${two}%`).order("overall", { ascending: false }).limit(1).maybeSingle();
-              if (fuzzy?.overall) setFeaturedStats(fuzzy as Partial<PlayerCardData>);
+              const stats = await fetchFcPlayer(pick.name, pick.club);
+              if (stats?.overall) setFeaturedStats(stats as Partial<PlayerCardData>);
             }
           }
         } catch { /* ignore */ }
