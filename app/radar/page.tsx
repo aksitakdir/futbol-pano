@@ -3,49 +3,21 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { motion } from "framer-motion";
-import {
-  IconRadar,
-  IconClock,
-  IconArrowRight,
-  IconBall,
-  IconTrendUp,
-  IconCompass,
-  IconStar,
-} from "../components/icons";
+import { IconClock } from "../components/icons";
 import SiteHeader from "../components/site-header";
 import SiteFooter from "../components/site-footer";
 import { supabase } from "@/lib/supabase";
 import { stripHtml, estimateReadMinutes } from "@/lib/utils";
 
-type SupabaseContent = {
-  id: string;
-  title: string;
-  slug: string;
-  content: string;
-  created_at: string;
-};
+type SupabaseContent = { id: string; title: string; slug: string; content: string; created_at: string; };
 
 const easeOut = [0.22, 1, 0.36, 1] as [number, number, number, number];
+const stagger = { hidden: {}, visible: { transition: { staggerChildren: 0.08, delayChildren: 0.1 } } };
+const fadeUp = { hidden: { opacity: 0, y: 20 }, visible: { opacity: 1, y: 0, transition: { duration: 0.5, ease: easeOut } } };
 
-const staggerContainer = {
-  hidden: {},
-  visible: { transition: { staggerChildren: 0.08, delayChildren: 0.1 } },
-};
-const staggerChild = {
-  hidden: { opacity: 0, y: 20 },
-  visible: { opacity: 1, y: 0, transition: { duration: 0.5, ease: easeOut } },
-};
-
-const CARD_ACCENTS = [
-  { accent: "#00d4aa", iconBg: "bg-emerald-500/10 ring-emerald-500/30", Icon: IconBall, iconClass: "text-emerald-300" },
-  { accent: "#22d3ee", iconBg: "bg-cyan-500/10 ring-cyan-500/30", Icon: IconTrendUp, iconClass: "text-cyan-300" },
-  { accent: "#a78bfa", iconBg: "bg-violet-500/10 ring-violet-500/30", Icon: IconCompass, iconClass: "text-violet-300" },
-  { accent: "#f59e0b", iconBg: "bg-amber-500/10 ring-amber-500/30", Icon: IconStar, iconClass: "text-amber-300" },
-] as const;
-
-function cardSummary(content: string): string {
+function summary(content: string, max = 160): string {
   const t = stripHtml(content).replace(/\s+/g, " ").trim();
-  return t.length > 180 ? `${t.slice(0, 180)}…` : t;
+  return t.length > max ? `${t.slice(0, max)}…` : t;
 }
 
 export default function RadarPage() {
@@ -53,125 +25,95 @@ export default function RadarPage() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    async function fetchRadar() {
-      const { data, error } = await supabase
-        .from("contents")
-        .select("id, title, slug, content, created_at")
-        .eq("status", "yayinda")
-        .eq("category", "radar")
-        .order("created_at", { ascending: false });
-      if (error) console.error("Radar fetch:", error);
-      setArticles(data ?? []);
-      setLoading(false);
-    }
-    fetchRadar();
+    supabase.from("contents").select("id,title,slug,content,created_at")
+      .eq("status", "yayinda").eq("category", "radar").order("created_at", { ascending: false })
+      .then(({ data }) => { setArticles(data ?? []); setLoading(false); });
   }, []);
 
   return (
-    <main className="min-h-screen bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950 text-slate-100">
-      <div className="flex min-h-screen flex-col">
-        <SiteHeader activeNav="radar" />
+    <main style={{ background: "var(--sg-bg)", color: "var(--sg-text-primary)", minHeight: "100vh" }}>
+      <SiteHeader activeNav="radar" />
 
-        <div className="flex-1">
-          <motion.div
-            className="mx-auto max-w-6xl px-4 py-8 lg:py-12"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, ease: easeOut }}
-          >
-            {/* Sayfa başlığı */}
-            <section className="mb-10">
-              <div className="mb-2 flex items-center gap-2">
-                <div className="h-1 w-8 rounded-full bg-gradient-to-r from-emerald-400 to-cyan-400" />
-                <p className="text-[11px] font-bold uppercase tracking-[0.26em] text-emerald-400/80">
-                  Scout Gamer
-                </p>
-              </div>
-              <div className="flex items-center gap-3">
-                <IconRadar className="text-emerald-300 h-7 w-7" />
-                <h1 className="bg-gradient-to-r from-emerald-400 via-cyan-400 to-sky-500 bg-clip-text text-2xl font-extrabold tracking-tight text-transparent md:text-3xl">
-                  Radar Arşivi
-                </h1>
-              </div>
-              <p className="mt-3 max-w-2xl text-sm text-slate-400">
-                Haftalık oyuncu analizleri, keşfedilmemiş yetenekler ve scout perspektifinden derinlemesine incelemeler.
-              </p>
-            </section>
+      <motion.div className="pt-[72px]" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, ease: easeOut }}>
 
-            {loading ? (
-              <div className="flex justify-center py-20">
-                <span className="h-5 w-5 animate-spin rounded-full border-2 border-emerald-400 border-t-transparent" />
-              </div>
-            ) : articles.length === 0 ? (
-              <section className="rounded-2xl border border-dashed border-slate-700/60 bg-slate-950/50 px-6 py-14 text-center">
-                <IconRadar className="mx-auto mb-3 h-10 w-10 text-slate-600" />
-                <p className="text-sm text-slate-400">Henüz yayında radar yazısı yok.</p>
-              </section>
-            ) : (
-              <motion.section
-                className="grid gap-4 md:grid-cols-2"
-                variants={staggerContainer}
-                initial="hidden"
-                animate="visible"
-              >
-                {articles.map((article, index) => {
-                  const style = CARD_ACCENTS[index % CARD_ACCENTS.length];
-                  const Icon = style.Icon;
-                  const readMins = estimateReadMinutes(article.content);
-                  const summary = cardSummary(article.content);
-
-                  return (
-                    <motion.div key={article.id} variants={staggerChild}>
-                      <Link
-                        href={`/radar/${article.slug}`}
-                        className="group relative flex h-full flex-col overflow-hidden rounded-2xl border border-slate-800/80 bg-slate-950/70 transition hover:-translate-y-1 hover:border-slate-700/60 hover:shadow-[0_0_30px_rgba(15,23,42,0.9)]"
-                      >
-                        {/* Accent çizgisi */}
-                        <div className="h-0.5 w-full" style={{ background: `linear-gradient(90deg, ${style.accent}, transparent)` }} />
-
-                        <div className="flex flex-1 flex-col p-5">
-                          {/* Üst meta */}
-                          <div className="mb-4 flex items-center gap-3">
-                            <span className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-xl ring-1 ${style.iconBg}`}>
-                              <Icon className={style.iconClass} />
-                            </span>
-                            <div className="flex flex-wrap items-center gap-2 text-[11px] text-slate-500">
-                              <span>
-                                {new Date(article.created_at).toLocaleDateString("tr-TR", { day: "numeric", month: "long", year: "numeric" })}
-                              </span>
-                              <span className="flex items-center gap-1">
-                                <IconClock /> {readMins} dk
-                              </span>
-                            </div>
-                            {/* Radar badge */}
-                            <span className="ml-auto rounded-full border border-emerald-500/20 bg-emerald-500/8 px-2 py-0.5 text-[9px] font-bold uppercase tracking-[0.18em] text-emerald-400">
-                              Radar
-                            </span>
-                          </div>
-
-                          <h2 className="line-clamp-2 text-sm font-bold leading-snug text-slate-50 transition group-hover:text-emerald-300">
-                            {article.title}
-                          </h2>
-                          <p className="mt-2 line-clamp-3 text-[12px] leading-relaxed text-slate-400">
-                            {summary || "İçeriği görüntülemek için tıklayın."}
-                          </p>
-
-                          <div className="mt-auto pt-4 inline-flex items-center gap-1 text-[11px] font-semibold text-emerald-400">
-                            Oku
-                            <IconArrowRight className="transition-transform group-hover:translate-x-0.5" />
-                          </div>
-                        </div>
-                      </Link>
-                    </motion.div>
-                  );
-                })}
-              </motion.section>
-            )}
-          </motion.div>
+        {/* Hero header */}
+        <div className="relative overflow-hidden px-8 py-20 max-w-7xl mx-auto">
+          <div className="pointer-events-none absolute -right-40 -top-20 h-96 w-96 rounded-full opacity-10"
+            style={{ background: "radial-gradient(circle, var(--sg-primary) 0%, transparent 70%)", filter: "blur(80px)" }} />
+          <div className="relative max-w-3xl">
+            <div className="flex items-center gap-3 mb-5">
+              <div className="h-[2px] w-12" style={{ background: "var(--sg-primary)" }} />
+              <span className="text-[10px] font-bold uppercase tracking-[0.3em]"
+                style={{ color: "var(--sg-primary)", fontFamily: "var(--font-headline)" }}>Haftalık Radar</span>
+            </div>
+            <h1 className="font-bold tracking-tighter leading-none mb-5"
+              style={{ fontFamily: "var(--font-headline)", fontSize: "clamp(2.5rem, 6vw, 4.5rem)" }}>
+              Radar <span style={{ color: "var(--sg-primary)" }}>Arşivi</span>
+            </h1>
+            <p className="text-base leading-relaxed max-w-2xl" style={{ color: "var(--sg-text-secondary)" }}>
+              Haftalık oyuncu analizleri, keşfedilmemiş yetenekler ve scout perspektifinden derinlemesine incelemeler.
+            </p>
+          </div>
         </div>
 
-        <SiteFooter maxWidth="max-w-6xl" />
-      </div>
+        <div className="max-w-7xl mx-auto px-8 pb-20">
+          {loading ? (
+            <div className="flex justify-center py-20">
+              <span className="h-5 w-5 animate-spin rounded-full border-2 border-t-transparent"
+                style={{ borderColor: "var(--sg-primary)", borderTopColor: "transparent" }} />
+            </div>
+          ) : articles.length === 0 ? (
+            <div className="py-20 text-center" style={{ color: "var(--sg-text-muted)" }}>
+              <p className="text-sm">Henüz yayında radar yazısı yok.</p>
+            </div>
+          ) : (
+            <motion.div className="grid gap-4 md:grid-cols-2" variants={stagger} initial="hidden" animate="visible">
+              {articles.map((article, index) => {
+                const readMins = estimateReadMinutes(article.content);
+                const sum = summary(article.content);
+                // Dört renk rotasyonu
+                const accents = ["var(--sg-primary)", "var(--sg-secondary)", "var(--sg-tertiary)", "var(--sg-amber)"];
+                const accent = accents[index % accents.length];
+
+                return (
+                  <motion.div key={article.id} variants={fadeUp}>
+                    <Link href={`/radar/${article.slug}`}
+                      className="group flex flex-col h-full transition hover:-translate-y-0.5"
+                      style={{ background: "var(--sg-surface)", borderLeft: `3px solid ${accent}` }}>
+                      <div className="flex flex-1 flex-col p-5">
+                        {/* Meta */}
+                        <div className="flex items-center justify-between mb-4">
+                          <span className="text-[9px] font-bold uppercase tracking-[0.2em]"
+                            style={{ color: accent, fontFamily: "var(--font-headline)" }}>Radar</span>
+                          <div className="flex items-center gap-3 text-[10px]" style={{ color: "var(--sg-text-muted)" }}>
+                            <span>{new Date(article.created_at).toLocaleDateString("tr-TR", { day: "numeric", month: "long" })}</span>
+                            <span className="flex items-center gap-1"><IconClock /> {readMins} dk</span>
+                          </div>
+                        </div>
+
+                        <h2 className="text-sm font-bold leading-snug mb-3 transition line-clamp-2"
+                          style={{ fontFamily: "var(--font-headline)", color: "var(--sg-text-primary)" }}>
+                          {article.title}
+                        </h2>
+                        <p className="text-xs leading-relaxed line-clamp-3 mb-4" style={{ color: "var(--sg-text-secondary)" }}>
+                          {sum || "İçeriği görüntülemek için tıklayın."}
+                        </p>
+
+                        <div className="mt-auto inline-flex items-center gap-1 text-[11px] font-bold"
+                          style={{ color: accent, fontFamily: "var(--font-headline)" }}>
+                          Oku <span className="transition-transform group-hover:translate-x-0.5">→</span>
+                        </div>
+                      </div>
+                    </Link>
+                  </motion.div>
+                );
+              })}
+            </motion.div>
+          )}
+        </div>
+      </motion.div>
+
+      <SiteFooter maxWidth="max-w-7xl" />
     </main>
   );
 }
