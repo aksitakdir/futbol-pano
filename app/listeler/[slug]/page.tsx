@@ -19,6 +19,7 @@ type SupabaseRow = {
   youtube_query_1?: string;
   youtube_query_2?: string;
   player_name?: string;
+  players_json?: string | null;
 };
 
 type Player = {
@@ -255,6 +256,45 @@ export default function ListDetailPage() {
         youtubeQuery2={dbContent.youtube_query_2}
         playerName={dbContent.player_name}
         showNewsSection={false}
+        children={(() => {
+          if (!dbContent.players_json) return null;
+          let players: Array<{
+            name: string;
+            overall: number;
+            position: string;
+            club: string;
+            photo_url?: string;
+            scout_note: string;
+          }> = [];
+          try {
+            players = JSON.parse(dbContent.players_json);
+          } catch {
+            return null;
+          }
+          if (!players.length) return null;
+          return (
+            <section className="mb-8">
+              <div className="mb-4 flex items-center justify-between">
+                <p className="text-[11px] font-bold uppercase tracking-[0.2em] text-sky-400/80">Oyuncu Listesi</p>
+                <span className="text-[11px] text-slate-500">{players.length} oyuncu</span>
+              </div>
+              <div className="grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-4">
+                {players.map((p) => (
+                  <PlayerCardItem
+                    key={p.name}
+                    player={{
+                      name: p.name,
+                      club: p.club,
+                      age: 0,
+                      position: p.position,
+                      strengths: p.scout_note ?? "",
+                    }}
+                  />
+                ))}
+              </div>
+            </section>
+          );
+        })()}
       />
     );
   }
