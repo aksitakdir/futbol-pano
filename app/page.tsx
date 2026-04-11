@@ -364,42 +364,53 @@ export default function Home() {
         <section className="py-16 px-8 max-w-7xl mx-auto">
           <div className="flex items-end justify-between mb-8">
             <div>
-              <p className="text-[10px] font-bold uppercase tracking-[0.25em] mb-1" style={{ color: "var(--sg-primary)", fontFamily: "var(--font-headline)" }}>Keşfet</p>
+              <p className="text-[10px] font-bold uppercase tracking-[0.25em] mb-1"
+                style={{ color: "var(--sg-primary)", fontFamily: "var(--font-headline)" }}>Keşfet</p>
               <h2 className="text-3xl md:text-4xl font-bold" style={{ fontFamily: "var(--font-headline)" }}>Son Eklenenler</h2>
             </div>
           </div>
-          <div className="flex gap-5 overflow-x-auto pb-3 scrollbar-none">
+          {/* Scroll container — touch-friendly */}
+          <div className="flex gap-4 overflow-x-auto pb-4 -mx-8 px-8 snap-x snap-mandatory scrollbar-none">
             {recentItems.map((item) => {
               const accentColor = CAT_COLOR[item.category] ?? "var(--sg-primary)";
+              const catLabel = CAT_LABEL[item.category] ?? item.category;
               return (
                 <Link key={item.id} href={`${categoryPath(item.category)}/${item.slug}`}
-                  className="group min-w-[300px] flex-shrink-0 flex flex-col transition-all duration-300 hover:-translate-y-1"
-                  style={{ background: "var(--sg-surface)" }}>
-                  {/* Thumbnail area — grayscale → renkli hover */}
-                  <div className="h-40 overflow-hidden relative" style={{ background: "var(--sg-surface-low)" }}>
-                    <div className="absolute inset-0 flex items-center justify-center opacity-10"
-                      style={{ background: `radial-gradient(circle, ${accentColor} 0%, transparent 70%)` }} />
-                    <div className="absolute inset-0 flex items-center justify-center">
-                      <span className="text-6xl font-black opacity-5" style={{ fontFamily: "var(--font-headline)", color: accentColor }}>
-                        {(CAT_LABEL[item.category] ?? "S")[0]}
-                      </span>
-                    </div>
+                  className="group flex-shrink-0 snap-start flex flex-col transition hover:-translate-y-0.5"
+                  style={{ width: "260px", background: "var(--sg-surface)" }}>
+                  {/* Üst görsel alan — degrade arka plan */}
+                  <div className="relative h-32 overflow-hidden flex items-center justify-center"
+                    style={{ background: `linear-gradient(135deg, color-mix(in srgb, ${accentColor} 15%, transparent) 0%, var(--sg-surface-low) 100%)` }}>
+                    <span className="text-[80px] font-black opacity-[0.06] select-none leading-none"
+                      style={{ fontFamily: "var(--font-headline)", color: accentColor }}>
+                      {catLabel.toUpperCase().slice(0, 1)}
+                    </span>
+                    {/* Kategori badge */}
+                    <span className="absolute top-3 left-3 px-2 py-0.5 text-[9px] font-bold uppercase tracking-[0.18em]"
+                      style={{
+                        background: `color-mix(in srgb, ${accentColor} 20%, transparent)`,
+                        color: accentColor,
+                        fontFamily: "var(--font-headline)",
+                        border: `1px solid color-mix(in srgb, ${accentColor} 30%, transparent)`,
+                      }}>
+                      {catLabel}
+                    </span>
+                    <span className="absolute top-3 right-3 text-[10px]" style={{ color: "var(--sg-text-muted)" }}>
+                      {new Date(item.created_at).toLocaleDateString("tr-TR", { day: "numeric", month: "short" })}
+                    </span>
                   </div>
                   {/* Accent çizgisi */}
-                  <div className="h-[3px] w-full" style={{ background: accentColor }} />
-                  <div className="p-5 flex flex-col flex-1">
-                    <div className="flex items-center justify-between mb-2">
-                      <span className="text-[10px] font-bold uppercase tracking-[0.2em]" style={{ color: accentColor, fontFamily: "var(--font-headline)" }}>
-                        {CAT_LABEL[item.category] ?? item.category}
-                      </span>
-                      <span className="text-[10px]" style={{ color: "var(--sg-text-muted)" }}>
-                        {new Date(item.created_at).toLocaleDateString("tr-TR", { day: "numeric", month: "short" })}
-                      </span>
-                    </div>
-                    <h3 className="text-sm font-bold leading-snug line-clamp-2 transition-colors duration-200"
+                  <div className="h-[2px]" style={{ background: accentColor }} />
+                  {/* İçerik */}
+                  <div className="p-4 flex flex-col flex-1">
+                    <h3 className="text-sm font-bold leading-snug line-clamp-3 transition group-hover:opacity-80"
                       style={{ fontFamily: "var(--font-headline)", color: "var(--sg-text-primary)" }}>
                       {item.title}
                     </h3>
+                    <div className="mt-3 inline-flex items-center gap-1 text-[10px] font-bold"
+                      style={{ color: accentColor, fontFamily: "var(--font-headline)" }}>
+                      Oku <span className="transition-transform group-hover:translate-x-0.5">→</span>
+                    </div>
                   </div>
                 </Link>
               );
