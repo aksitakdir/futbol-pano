@@ -113,13 +113,12 @@ Yanıtını SADECE şu JSON formatında ver, başka hiçbir şey yazma:
   "content": "HTML formatında içerik. <h2>, <h3>, <p>, <ul>, <li>, <strong> taglarını kullan. Markdown kullanma. En az 400 kelime yaz."
 }
 
-Kategori rehberi:
-- radar: güncel oyuncu analizi, transfer söylentisi, haftalık performans değerlendirmesi
-- taktik-lab: modern pozisyon arketipleri, taktiksel analiz, oyun modeli incelemesi
-- listeler: sıralama ve karşılaştırma listeleri, en iyi/en kötü/en umut verici gibi formatlar
+Kategori rehberi — bu kurallara KESİNLİKLE uy:
+- radar: güncel oyuncu analizi, transfer söylentisi, haftalık performans değerlendirmesi. "players" alanı: içerikte öne çıkan 1 oyuncunun adı.
+- taktik-lab: modern pozisyon arketipleri, taktiksel analiz, oyun modeli incelemesi. "players" alanı: örnek olarak gösterilen oyuncular (max 3).
+- listeler: sıralama ve karşılaştırma listeleri, en iyi/en kötü/en umut verici gibi formatlar. "players" alanı: listede geçen TÜM oyuncuların tam adları (max 10). Kategori isteği "listeler" ise JSON'daki "category" alanı MUTLAKA "listeler" olmalı.
 
-Eğer kategori "listeler" ise, JSON'a ek olarak "players" alanı ekle:
-"players": ["Oyuncu Adı 1", "Oyuncu Adı 2", ...] — içerikte geçen oyuncuların tam adlarını liste olarak ver, maksimum 10 oyuncu.`;
+"players" alanı her yanıtta ZORUNLUDUR. Boş bırakma.`;
 
 function slugify(text: string): string {
   return text
