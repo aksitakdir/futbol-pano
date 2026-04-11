@@ -6,6 +6,7 @@ import { motion } from "framer-motion";
 import { IconShield, IconTrendUp, IconStar } from "../components/icons";
 import SiteHeader from "../components/site-header";
 import SiteFooter from "../components/site-footer";
+import CategoryHero from "../components/category-hero";
 import { supabase } from "@/lib/supabase";
 
 type SupabaseContent = { id: string; title: string; slug: string; created_at: string; };
@@ -34,11 +35,8 @@ export default function ListsPage() {
 
       <motion.div className="pt-[72px]" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, ease: easeOut }}>
 
-        {/* Hero header */}
-        <div className="relative overflow-hidden px-8 py-20 max-w-7xl mx-auto">
-          <div className="pointer-events-none absolute -right-40 -top-20 h-96 w-96 rounded-full opacity-10"
-            style={{ background: "radial-gradient(circle, var(--sg-secondary) 0%, transparent 70%)", filter: "blur(80px)" }} />
-          <div className="relative max-w-3xl">
+        <CategoryHero accent="var(--sg-secondary)">
+          <div className="max-w-3xl">
             <div className="flex items-center gap-3 mb-5">
               <div className="h-[2px] w-12" style={{ background: "var(--sg-secondary)" }} />
               <span className="text-[10px] font-bold uppercase tracking-[0.3em]"
@@ -52,43 +50,55 @@ export default function ListsPage() {
               Liglere, pozisyonlara ve yaş gruplarına göre kürasyonlu listeler. Veri ve scout gözlemlerini bir araya getirir.
             </p>
           </div>
-        </div>
+        </CategoryHero>
 
-        <div className="max-w-7xl mx-auto px-8 pb-20">
-          {/* DB içerikleri */}
+        <div className="max-w-7xl mx-auto px-8 pt-16 pb-20">
           {dbLists.length > 0 && (
-            <motion.section className="mb-12 grid gap-4 md:grid-cols-2 lg:grid-cols-3" variants={stagger} initial="hidden" animate="visible">
-              {dbLists.map(item => (
-                <motion.div key={item.id} variants={fadeUp}>
-                  <Link href={`/listeler/${item.slug}`}
-                    className="group flex flex-col h-full transition hover:-translate-y-0.5"
-                    style={{ background: "var(--sg-surface)" }}>
-                    <div className="h-[3px]" style={{ background: "var(--sg-secondary)" }} />
-                    <div className="flex flex-1 flex-col p-5">
-                      <div className="flex items-center justify-between mb-3">
-                        <span className="text-[9px] font-bold uppercase tracking-[0.2em]"
-                          style={{ color: "var(--sg-secondary)", fontFamily: "var(--font-headline)" }}>Yeni</span>
-                        <span className="text-[10px]" style={{ color: "var(--sg-text-muted)" }}>
-                          {new Date(item.created_at).toLocaleDateString("tr-TR", { day: "numeric", month: "short" })}
-                        </span>
+            <motion.section className="mb-16">
+              <div className="flex items-center gap-3 mb-6">
+                <div className="h-px flex-1" style={{ background: "rgba(26,58,92,0.5)" }} />
+                <p className="text-[10px] font-bold uppercase tracking-[0.25em]"
+                  style={{ color: "var(--sg-secondary)", fontFamily: "var(--font-headline)" }}>Güncel Listeler</p>
+                <div className="h-px flex-1" style={{ background: "rgba(26,58,92,0.5)" }} />
+              </div>
+              <motion.div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3" variants={stagger} initial="hidden" animate="visible">
+                {dbLists.map(item => (
+                  <motion.div key={item.id} variants={fadeUp}>
+                    <Link href={`/listeler/${item.slug}`}
+                      className="group flex flex-col h-full transition hover:-translate-y-0.5"
+                      style={{ background: "var(--sg-surface)", borderLeft: "3px solid var(--sg-secondary)" }}>
+                      <div className="flex flex-1 flex-col p-5">
+                        <div className="flex items-center justify-between mb-3">
+                          <span className="text-[9px] font-bold uppercase tracking-[0.2em]"
+                            style={{ color: "var(--sg-secondary)", fontFamily: "var(--font-headline)" }}>Listeler</span>
+                          <span className="text-[10px]" style={{ color: "var(--sg-text-muted)" }}>
+                            {new Date(item.created_at).toLocaleDateString("tr-TR", { day: "numeric", month: "short" })}
+                          </span>
+                        </div>
+                        <h2 className="text-sm font-bold leading-snug mb-4 line-clamp-2 transition"
+                          style={{ fontFamily: "var(--font-headline)", color: "var(--sg-text-primary)" }}>
+                          {item.title}
+                        </h2>
+                        <div className="mt-auto inline-flex items-center gap-1 text-[11px] font-bold"
+                          style={{ color: "var(--sg-secondary)", fontFamily: "var(--font-headline)" }}>
+                          Detayları Gör <span className="transition-transform group-hover:translate-x-0.5">→</span>
+                        </div>
                       </div>
-                      <h2 className="text-sm font-bold leading-snug mb-4 transition"
-                        style={{ fontFamily: "var(--font-headline)", color: "var(--sg-text-primary)" }}>
-                        {item.title}
-                      </h2>
-                      <div className="mt-auto inline-flex items-center gap-1 text-[11px] font-bold"
-                        style={{ color: "var(--sg-secondary)", fontFamily: "var(--font-headline)" }}>
-                        Listeyi Gör <span className="transition-transform group-hover:translate-x-0.5">→</span>
-                      </div>
-                    </div>
-                  </Link>
-                </motion.div>
-              ))}
+                    </Link>
+                  </motion.div>
+                ))}
+              </motion.div>
             </motion.section>
           )}
 
-          {/* Statik listeler */}
-          <motion.section className="grid gap-4 md:grid-cols-2 lg:grid-cols-3" variants={stagger} initial="hidden" animate="visible">
+          <motion.section>
+            <div className="flex items-center gap-3 mb-6">
+              <div className="h-px flex-1" style={{ background: "rgba(26,58,92,0.5)" }} />
+              <p className="text-[10px] font-bold uppercase tracking-[0.25em]"
+                style={{ color: "var(--sg-secondary)", fontFamily: "var(--font-headline)" }}>Öne Çıkan Listeler</p>
+              <div className="h-px flex-1" style={{ background: "rgba(26,58,92,0.5)" }} />
+            </div>
+            <motion.div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3" variants={stagger} initial="hidden" animate="visible">
             {STATIC_LISTS.map(list => (
               <motion.div key={list.slug} variants={fadeUp}>
                 <Link href={`/listeler/${list.slug}`}
@@ -108,12 +118,13 @@ export default function ListsPage() {
                     </p>
                     <div className="mt-auto inline-flex items-center gap-1 text-[11px] font-bold transition"
                       style={{ color: list.color, fontFamily: "var(--font-headline)" }}>
-                      Listeyi Gör <span className="transition-transform group-hover:translate-x-0.5">→</span>
+                      Detayları Gör <span className="transition-transform group-hover:translate-x-0.5">→</span>
                     </div>
                   </div>
                 </Link>
               </motion.div>
             ))}
+            </motion.div>
           </motion.section>
         </div>
       </motion.div>

@@ -328,21 +328,25 @@ export default function Home() {
                   <>
                     <span className="inline-block px-3 py-1 text-[10px] font-bold tracking-[0.2em] uppercase mb-5 w-fit"
                       style={{
-                        background: CAT_COLOR[item.slide.category] ? `${CAT_COLOR[item.slide.category]}20` : "rgba(70,241,197,0.15)",
+                        background: `color-mix(in srgb, ${CAT_COLOR[item.slide.category] ?? "var(--sg-primary)"} 22%, transparent)`,
                         color: CAT_COLOR[item.slide.category] ?? "var(--sg-primary)",
-                        border: `1px solid ${CAT_COLOR[item.slide.category] ?? "var(--sg-primary)"}40`,
+                        border: `1px solid color-mix(in srgb, ${CAT_COLOR[item.slide.category] ?? "var(--sg-primary)"} 38%, transparent)`,
                         fontFamily: "var(--font-headline)",
                       }}>
                       {CAT_LABEL[item.slide.category] ?? item.slide.category}
                     </span>
-                    <h1 className="font-bold leading-none tracking-tighter mb-5 max-w-4xl"
+                    <h1 className="font-bold tracking-tighter mb-5 max-w-4xl"
                       style={{
                         fontFamily: "var(--font-headline)",
                         fontSize: "clamp(2.5rem, 7vw, 5.5rem)",
+                        lineHeight: 1.18,
+                        paddingBottom: "0.12em",
                         background: "linear-gradient(135deg, var(--sg-primary), var(--sg-secondary))",
                         WebkitBackgroundClip: "text",
                         WebkitTextFillColor: "transparent",
                         backgroundClip: "text",
+                        boxDecorationBreak: "clone",
+                        WebkitBoxDecorationBreak: "clone",
                       }}>
                       {item.slide.title}
                     </h1>
@@ -366,12 +370,18 @@ export default function Home() {
                       style={{ background: "rgba(249,189,34,0.15)", color: "var(--sg-amber)", border: "1px solid rgba(249,189,34,0.3)", fontFamily: "var(--font-headline)" }}>
                       Arena
                     </span>
-                    <h1 className="font-bold leading-none tracking-tighter mb-5 max-w-4xl"
+                    <h1 className="font-bold tracking-tighter mb-5 max-w-4xl"
                       style={{
                         fontFamily: "var(--font-headline)",
                         fontSize: "clamp(2.5rem, 7vw, 5.5rem)",
+                        lineHeight: 1.18,
+                        paddingBottom: "0.12em",
                         background: "linear-gradient(135deg, var(--sg-amber), var(--sg-primary))",
-                        WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", backgroundClip: "text",
+                        WebkitBackgroundClip: "text",
+                        WebkitTextFillColor: "transparent",
+                        backgroundClip: "text",
+                        boxDecorationBreak: "clone",
+                        WebkitBoxDecorationBreak: "clone",
                       }}>
                       {item.title}
                     </h1>

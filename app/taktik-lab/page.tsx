@@ -5,6 +5,7 @@ import Link from "next/link";
 import { motion } from "framer-motion";
 import SiteHeader from "../components/site-header";
 import SiteFooter from "../components/site-footer";
+import CategoryHero from "../components/category-hero";
 import { supabase } from "@/lib/supabase";
 import { stripHtml } from "@/lib/utils";
 
@@ -47,11 +48,8 @@ export default function TaktikLabPage() {
 
       <motion.div className="pt-[72px]" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, ease: easeOut }}>
 
-        {/* Hero header — mockup'taki "Anlaşılabilir Sofistikasyon" */}
-        <div className="relative overflow-hidden px-8 py-20" style={{ background: "var(--sg-surface-low)" }}>
-          <div className="pointer-events-none absolute -right-20 -top-20 h-96 w-96 rounded-full opacity-15"
-            style={{ background: "radial-gradient(circle, var(--sg-tertiary) 0%, transparent 70%)", filter: "blur(100px)" }} />
-          <div className="relative max-w-7xl mx-auto max-w-3xl">
+        <CategoryHero accent="var(--sg-tertiary)" variant="surface-low">
+          <div className="max-w-3xl">
             <div className="flex items-center gap-3 mb-5">
               <div className="h-[2px] w-12" style={{ background: "var(--sg-tertiary)" }} />
               <span className="text-[10px] font-bold uppercase tracking-[0.3em]"
@@ -65,7 +63,7 @@ export default function TaktikLabPage() {
               Taktik Lab, ham veriyi sahadaki gerçekliğe dönüştürür. Oyuncu profillerini sadece sayılarla değil, oyunun DNA&apos;sını oluşturan pozisyonel arketip modelleriyle tanımlıyoruz. Her oyuncu bir rol değil, bir fonksiyondur.
             </p>
           </div>
-        </div>
+        </CategoryHero>
 
         <div className="max-w-7xl mx-auto px-8 py-16">
 

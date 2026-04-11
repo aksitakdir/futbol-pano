@@ -6,6 +6,7 @@ import { motion } from "framer-motion";
 import { IconClock } from "../components/icons";
 import SiteHeader from "../components/site-header";
 import SiteFooter from "../components/site-footer";
+import CategoryHero from "../components/category-hero";
 import { supabase } from "@/lib/supabase";
 import { stripHtml, estimateReadMinutes } from "@/lib/utils";
 
@@ -36,11 +37,8 @@ export default function RadarPage() {
 
       <motion.div className="pt-[72px]" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, ease: easeOut }}>
 
-        {/* Hero header */}
-        <div className="relative overflow-hidden px-8 py-20 max-w-7xl mx-auto">
-          <div className="pointer-events-none absolute -right-40 -top-20 h-96 w-96 rounded-full opacity-10"
-            style={{ background: "radial-gradient(circle, var(--sg-primary) 0%, transparent 70%)", filter: "blur(80px)" }} />
-          <div className="relative max-w-3xl">
+        <CategoryHero accent="var(--sg-primary)">
+          <div className="max-w-3xl">
             <div className="flex items-center gap-3 mb-5">
               <div className="h-[2px] w-12" style={{ background: "var(--sg-primary)" }} />
               <span className="text-[10px] font-bold uppercase tracking-[0.3em]"
@@ -54,9 +52,9 @@ export default function RadarPage() {
               Haftalık oyuncu analizleri, keşfedilmemiş yetenekler ve scout perspektifinden derinlemesine incelemeler.
             </p>
           </div>
-        </div>
+        </CategoryHero>
 
-        <div className="max-w-7xl mx-auto px-8 pb-20">
+        <div className="max-w-7xl mx-auto px-8 pt-16 pb-20">
           {loading ? (
             <div className="flex justify-center py-20">
               <span className="h-5 w-5 animate-spin rounded-full border-2 border-t-transparent"
@@ -67,6 +65,13 @@ export default function RadarPage() {
               <p className="text-sm">Henüz yayında radar yazısı yok.</p>
             </div>
           ) : (
+            <>
+              <div className="flex items-center gap-3 mb-6">
+                <div className="h-px flex-1" style={{ background: "rgba(26,58,92,0.5)" }} />
+                <p className="text-[10px] font-bold uppercase tracking-[0.25em]"
+                  style={{ color: "var(--sg-primary)", fontFamily: "var(--font-headline)" }}>Güncel Radarlar</p>
+                <div className="h-px flex-1" style={{ background: "rgba(26,58,92,0.5)" }} />
+              </div>
             <motion.div className="grid gap-4 md:grid-cols-2" variants={stagger} initial="hidden" animate="visible">
               {articles.map((article, index) => {
                 const readMins = estimateReadMinutes(article.content);
@@ -101,7 +106,7 @@ export default function RadarPage() {
 
                         <div className="mt-auto inline-flex items-center gap-1 text-[11px] font-bold"
                           style={{ color: accent, fontFamily: "var(--font-headline)" }}>
-                          Oku <span className="transition-transform group-hover:translate-x-0.5">→</span>
+                          Detayları Gör <span className="transition-transform group-hover:translate-x-0.5">→</span>
                         </div>
                       </div>
                     </Link>
@@ -109,6 +114,7 @@ export default function RadarPage() {
                 );
               })}
             </motion.div>
+            </>
           )}
         </div>
       </motion.div>
