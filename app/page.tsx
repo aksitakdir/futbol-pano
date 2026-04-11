@@ -272,7 +272,7 @@ export default function Home() {
               transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
               style={{ pointerEvents: i === activeSlide ? "auto" : "none" }}
             >
-              <div className="w-full max-w-7xl mx-auto px-8 md:px-12">
+              <div className="w-full max-w-7xl mx-auto px-8 md:px-12 pb-16">
                 {item.kind === "content" ? (
                   <>
                     <span className="inline-block px-3 py-1 text-[10px] font-bold tracking-[0.2em] uppercase mb-5 w-fit"
