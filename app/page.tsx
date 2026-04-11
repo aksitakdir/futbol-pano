@@ -169,7 +169,38 @@ export default function Home() {
   // Radar oyuncusu
   useEffect(() => {
     async function load() {
-      const { data: poolRow } = await supabase.from("site_settings").select("value").eq("key", "featured_player_pool").maybeSingle();
+      let poolRow = (
+        await supabase.from("site_settings").select("value").eq("key", "featured_player_pool").maybeSingle()
+      ).data;
+
+      const featuredPoolEmpty = () => {
+        if (!poolRow?.value) return true;
+        try {
+          const arr = JSON.parse(poolRow.value as string);
+          return !Array.isArray(arr) || arr.length === 0;
+        } catch {
+          return true;
+        }
+      };
+
+      if (featuredPoolEmpty()) {
+        const { data: formPool } = await supabase
+          .from("site_settings")
+          .select("value")
+          .eq("key", "form_players_pool")
+          .maybeSingle();
+        if (formPool?.value) {
+          try {
+            const fp = JSON.parse(formPool.value as string);
+            if (Array.isArray(fp) && fp.length > 0) {
+              poolRow = { value: JSON.stringify([fp[Math.floor(Math.random() * fp.length)]]) };
+            }
+          } catch {
+            /* ignore */
+          }
+        }
+      }
+
       if (poolRow?.value) {
         try {
           const pool = JSON.parse(poolRow.value as string);
@@ -196,17 +227,24 @@ export default function Home() {
       if (poolRow?.value) {
         try {
           const p = JSON.parse(poolRow.value as string);
-          if (Array.isArray(p) && p.length) list = shuffleInPlace(p as FormPlayer[]).slice(0, 10);
+          if (Array.isArray(p) && p.length) list = shuffleInPlace(p as FormPlayer[]).slice(0, 20);
         } catch { /* ignore */ }
       }
       if (!list.length) {
         const { data: leg } = await supabase.from("site_settings").select("value").eq("key", "form_players").maybeSingle();
-        if (leg?.value) try { list = shuffleInPlace(JSON.parse(leg.value as string) as FormPlayer[]).slice(0, 10); } catch { /* ignore */ }
+        if (leg?.value) try { list = shuffleInPlace(JSON.parse(leg.value as string) as FormPlayer[]).slice(0, 20); } catch { /* ignore */ }
       }
       if (list.length) {
         const { data: stats } = await supabase.from("fc_players").select("name,overall,position,pace,shooting,passing,dribbling,defending,physical,photo_url").in("name", list.map(p => p.name));
         const sm = new Map(((stats ?? []) as { name: string }[]).map(s => [s.name.toLowerCase(), s]));
-        setFormPlayers(list.map(p => { const s = sm.get(p.name.toLowerCase()); return s ? { ...p, ...(s as Partial<PlayerCardData>), age: String((s as { age?: unknown }).age ?? p.age) } : p; }).filter(p => ((p as FormPlayerWithStats).overall ?? 0) > 0) as FormPlayerWithStats[]);
+        const withStats = list.map((p) => {
+          const s = sm.get(p.name.toLowerCase());
+          return s
+            ? { ...p, ...(s as Partial<PlayerCardData>), age: String((s as { age?: unknown }).age ?? p.age) }
+            : p;
+        });
+        const statPlayers = withStats.filter((p) => ((p as FormPlayerWithStats).overall ?? 0) > 0);
+        setFormPlayers(statPlayers as FormPlayerWithStats[]);
       }
       setFormLoading(false);
     }
@@ -489,7 +527,7 @@ export default function Home() {
       {/* ── Bu Dönem Dikkat Çekenler ──────────────────────────────────────── */}
       <section className="py-20 px-8 max-w-7xl mx-auto">
         <div className="mb-8">
-          <p className="text-[10px] font-bold uppercase tracking-[0.25em] mb-1" style={{ color: "var(--sg-secondary)", fontFamily: "var(--font-headline)" }}>Rising Stars</p>
+          <p className="text-[10px] font-bold uppercase tracking-[0.25em] mb-1" style={{ color: "var(--sg-secondary)", fontFamily: "var(--font-headline)" }}>Bu Dönem</p>
           <h2 className="text-3xl md:text-4xl font-bold" style={{ fontFamily: "var(--font-headline)" }}>Bu Dönem Dikkat Çekenler</h2>
         </div>
 
