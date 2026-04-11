@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useCallback, useRef } from "react";
+import { useEffect, useState, useCallback, useRef, useMemo } from "react";
 import Link from "next/link";
 import { motion } from "framer-motion";
 import SiteHeader from "./components/site-header";
@@ -39,6 +39,11 @@ function shuffleInPlace<T>(arr: T[]): T[] {
   }
   return a;
 }
+
+const fadeUp = {
+  hidden: { opacity: 0, y: 24 },
+  visible: { opacity: 1, y: 0, transition: { duration: 0.5 } },
+};
 
 function buildHeroSlides(all: SlideContent[]): { slide: SlideContent; slideKey: string }[] {
   if (!all.length) return [];
@@ -150,6 +155,11 @@ export default function Home() {
   const [formPlayers, setFormPlayers] = useState<FormPlayerWithStats[]>([]);
   const [formLoading, setFormLoading] = useState(true);
 
+  const gundemItems = useMemo(
+    () => (recentItems.length ? shuffleInPlace([...recentItems]).slice(0, 3) : []),
+    [recentItems],
+  );
+
   // Slider verisi
   useEffect(() => {
     async function load() {
@@ -239,12 +249,21 @@ export default function Home() {
       if (poolRow?.value) {
         try {
           const p = JSON.parse(poolRow.value as string);
-          if (Array.isArray(p) && p.length) list = shuffleInPlace(p as FormPlayer[]).slice(0, 20);
+          if (Array.isArray(p) && p.length) {
+            const pool = shuffleInPlace(p as FormPlayer[]).slice(0, 20);
+            list = shuffleInPlace(pool).slice(0, 10);
+          }
         } catch { /* ignore */ }
       }
       if (!list.length) {
         const { data: leg } = await supabase.from("site_settings").select("value").eq("key", "form_players").maybeSingle();
-        if (leg?.value) try { list = shuffleInPlace(JSON.parse(leg.value as string) as FormPlayer[]).slice(0, 20); } catch { /* ignore */ }
+        if (leg?.value) {
+          try {
+            const parsed = JSON.parse(leg.value as string) as FormPlayer[];
+            const pool = shuffleInPlace(parsed).slice(0, 20);
+            list = shuffleInPlace(pool).slice(0, 10);
+          } catch { /* ignore */ }
+        }
       }
       if (list.length) {
         const { data: stats } = await supabase.from("fc_players").select("name,overall,position,pace,shooting,passing,dribbling,defending,physical,photo_url").in("name", list.map(p => p.name));
@@ -442,24 +461,23 @@ export default function Home() {
               <h2 className="text-3xl md:text-4xl font-bold" style={{ fontFamily: "var(--font-headline)" }}>Son Eklenenler</h2>
             </div>
           </div>
-          {/* Scroll container — touch-friendly */}
-          <div className="flex gap-4 overflow-x-auto pb-4 -mx-8 px-8 snap-x snap-mandatory scrollbar-none">
-            {recentItems.map((item) => {
+          <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
+            {recentItems.slice(0, 6).map((item) => {
               const accentColor = CAT_COLOR[item.category] ?? "var(--sg-primary)";
               const catLabel = CAT_LABEL[item.category] ?? item.category;
               return (
                 <Link key={item.id} href={`${categoryPath(item.category)}/${item.slug}`}
-                  className="group flex-shrink-0 snap-start flex flex-col transition hover:-translate-y-0.5"
-                  style={{ width: "260px", background: "var(--sg-surface)" }}>
-                  {/* Üst görsel alan */}
-                  <div className="relative h-32 overflow-hidden" style={{ background: "var(--sg-surface-low)" }}>
+                  className="group flex flex-col transition hover:-translate-y-0.5"
+                  style={{ background: "var(--sg-surface)" }}>
+                  <div className="relative h-44 overflow-hidden" style={{ background: "var(--sg-surface-low)" }}>
                     <img
                       src={getCategoryImage(item.category, item.slug)}
                       alt=""
                       className="w-full h-full object-cover transition group-hover:scale-105 duration-500"
                       style={{ filter: "brightness(0.4) saturate(0.6)" }}
+                      onError={(e) => { (e.target as HTMLImageElement).style.opacity = "0"; }}
                     />
-                    <div className="absolute inset-0" style={{ background: "linear-gradient(to bottom, transparent 30%, var(--sg-surface) 100%)" }} />
+                    <div className="absolute inset-0" style={{ background: "linear-gradient(to bottom, transparent 40%, var(--sg-surface) 100%)" }} />
                     <span className="absolute top-3 left-3 px-2 py-0.5 text-[9px] font-bold uppercase tracking-[0.18em]"
                       style={{
                         background: `color-mix(in srgb, ${accentColor} 20%, transparent)`,
@@ -473,15 +491,13 @@ export default function Home() {
                       {new Date(item.created_at).toLocaleDateString("tr-TR", { day: "numeric", month: "short" })}
                     </span>
                   </div>
-                  {/* Accent çizgisi */}
                   <div className="h-[2px]" style={{ background: accentColor }} />
-                  {/* İçerik */}
                   <div className="p-4 flex flex-col flex-1">
-                    <h3 className="text-sm font-bold leading-snug line-clamp-3 transition group-hover:opacity-80"
+                    <h3 className="text-sm font-bold leading-snug line-clamp-2 mb-3"
                       style={{ fontFamily: "var(--font-headline)", color: "var(--sg-text-primary)" }}>
                       {item.title}
                     </h3>
-                    <div className="mt-3 inline-flex items-center gap-1 text-[10px] font-bold"
+                    <div className="mt-auto inline-flex items-center gap-1 text-[10px] font-bold"
                       style={{ color: accentColor, fontFamily: "var(--font-headline)" }}>
                       Oku <span className="transition-transform group-hover:translate-x-0.5">→</span>
                     </div>
@@ -563,7 +579,7 @@ export default function Home() {
       {/* ── Bu Dönem Dikkat Çekenler ──────────────────────────────────────── */}
       <section className="py-20 px-8 max-w-7xl mx-auto">
         <div className="mb-8">
-          <p className="text-[10px] font-bold uppercase tracking-[0.25em] mb-1" style={{ color: "var(--sg-secondary)", fontFamily: "var(--font-headline)" }}>Bu Dönem</p>
+          <p className="text-[10px] font-bold uppercase tracking-[0.25em] mb-1" style={{ color: "var(--sg-secondary)", fontFamily: "var(--font-headline)" }}>Radarımızda</p>
           <h2 className="text-3xl md:text-4xl font-bold" style={{ fontFamily: "var(--font-headline)" }}>Bu Dönem Dikkat Çekenler</h2>
         </div>
 
@@ -600,6 +616,55 @@ export default function Home() {
           </motion.div>
         )}
       </section>
+
+      {/* ── Gündemden 3 İçerik ─────────────────────────────────── */}
+      {gundemItems.length > 0 && (
+        <section className="py-16 px-8 max-w-7xl mx-auto">
+          <motion.div variants={fadeUp} initial="hidden" whileInView="visible" viewport={{ once: true, margin: "-60px" }}>
+            <div className="mb-6 flex items-end justify-between">
+              <div>
+                <p className="text-[10px] font-bold uppercase tracking-[0.25em] mb-1"
+                  style={{ color: "var(--sg-tertiary)", fontFamily: "var(--font-headline)" }}>Gündemden</p>
+                <h2 className="text-2xl md:text-3xl font-bold" style={{ fontFamily: "var(--font-headline)" }}>Öne Çıkan İçerikler</h2>
+              </div>
+            </div>
+            <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
+              {gundemItems.map((item) => {
+                const accentColor = CAT_COLOR[item.category] ?? "var(--sg-primary)";
+                const catLabel = CAT_LABEL[item.category] ?? item.category;
+                return (
+                  <Link key={`${item.id}-gundem`} href={`${categoryPath(item.category)}/${item.slug}`}
+                    className="group flex flex-col transition hover:-translate-y-0.5"
+                    style={{ background: "var(--sg-surface)", borderLeft: `3px solid ${accentColor}` }}>
+                    <div className="relative h-36 overflow-hidden" style={{ background: "var(--sg-surface-low)" }}>
+                      <img
+                        src={getCategoryImage(item.category, `${item.slug}-alt`)}
+                        alt=""
+                        className="w-full h-full object-cover transition group-hover:scale-105 duration-500"
+                        style={{ filter: "brightness(0.35) saturate(0.6)" }}
+                        onError={(e) => { (e.target as HTMLImageElement).style.opacity = "0"; }}
+                      />
+                      <div className="absolute inset-0" style={{ background: "linear-gradient(to bottom, transparent 30%, var(--sg-surface) 100%)" }} />
+                    </div>
+                    <div className="p-4 flex flex-col flex-1">
+                      <span className="text-[9px] font-bold uppercase tracking-[0.18em] mb-2 block"
+                        style={{ color: accentColor, fontFamily: "var(--font-headline)" }}>{catLabel}</span>
+                      <h3 className="text-sm font-bold leading-snug line-clamp-2 mb-3"
+                        style={{ fontFamily: "var(--font-headline)", color: "var(--sg-text-primary)" }}>
+                        {item.title}
+                      </h3>
+                      <div className="mt-auto inline-flex items-center gap-1 text-[10px] font-bold"
+                        style={{ color: accentColor, fontFamily: "var(--font-headline)" }}>
+                        Oku <span className="transition-transform group-hover:translate-x-0.5">→</span>
+                      </div>
+                    </div>
+                  </Link>
+                );
+              })}
+            </div>
+          </motion.div>
+        </section>
+      )}
 
       {/* ── Laboratuvara Katıl (newsletter CTA) ─────────────────────────── */}
       <section className="mx-8 mb-16 max-w-7xl lg:mx-auto p-10 md:p-16 relative overflow-hidden"
