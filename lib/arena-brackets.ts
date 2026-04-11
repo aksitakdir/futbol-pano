@@ -35,10 +35,10 @@ export const ARENA_BRACKETS: ArenaBracketConfig[] = [
   {
     slug: "sampiyonlar-ligi",
     queryT: "ucl",
-    cardTitle: "Şampiyonlar Ligi 2024-25",
+    cardTitle: "Şampiyonlar Ligi 25-26",
     cardDescription:
-      "Resmi son 16 kura eşleşmeleriyle sabit bracket — kupayı hangi takıma veriyorsun?",
-    heroTitle: "Şampiyonlar Ligi Tahmini",
+      "25-26 sezonu son 16 eşleşmeleriyle sabit bracket — kupayı hangi takıma veriyorsun?",
+    heroTitle: "Şampiyonlar Ligi 25-26",
     heroTeaser: "Kupayı kime veriyorsun?",
   },
   {
