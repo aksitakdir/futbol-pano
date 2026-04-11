@@ -22,6 +22,30 @@ type ContentRow = {
   player_name?: string;
 };
 
+async function fetchPlayerStats(name: string) {
+  // 1. Tam isim eşleştirmesi
+  const { data: exact } = await supabase
+    .from("fc_players")
+    .select("overall,pace,shooting,passing,dribbling,defending,physical,photo_url,position,club,league,age")
+    .ilike("name", name)
+    .limit(1)
+    .maybeSingle();
+  if (exact?.overall) return exact;
+
+  // 2. İlk iki kelime
+  const twoWords = name.split(" ").slice(0, 2).join(" ");
+  const { data: two } = await supabase
+    .from("fc_players")
+    .select("overall,pace,shooting,passing,dribbling,defending,physical,photo_url,position,club,league,age")
+    .ilike("name", `%${twoWords}%`)
+    .order("overall", { ascending: false })
+    .limit(1)
+    .maybeSingle();
+  if (two?.overall) return two;
+
+  return null;
+}
+
 export default function RadarDetailPage() {
   const params = useParams<{ slug: string }>();
   const slug = params?.slug;
@@ -49,13 +73,7 @@ export default function RadarDetailPage() {
         setArticle(data);
         setPlayerCardData(null);
         if (data.player_name) {
-          const { data: stats } = await supabase
-            .from("fc_players")
-            .select("overall,pace,shooting,passing,dribbling,defending,physical,photo_url,position,club,league,age")
-            .ilike("name", `%${data.player_name.split(" ")[0]}%`)
-            .order("overall", { ascending: false })
-            .limit(1)
-            .maybeSingle();
+          const stats = await fetchPlayerStats(data.player_name);
           if (stats && stats.overall) {
             setPlayerCardData({
               name: data.player_name,

@@ -36,6 +36,30 @@ type PageConfig = {
   players: Player[];
 };
 
+async function fetchPlayerStats(name: string) {
+  // 1. Tam isim eşleştirmesi
+  const { data: exact } = await supabase
+    .from("fc_players")
+    .select("overall,pace,shooting,passing,dribbling,defending,physical,photo_url,position,club,league,age")
+    .ilike("name", name)
+    .limit(1)
+    .maybeSingle();
+  if (exact?.overall) return exact;
+
+  // 2. İlk iki kelime
+  const twoWords = name.split(" ").slice(0, 2).join(" ");
+  const { data: two } = await supabase
+    .from("fc_players")
+    .select("overall,pace,shooting,passing,dribbling,defending,physical,photo_url,position,club,league,age")
+    .ilike("name", `%${twoWords}%`)
+    .order("overall", { ascending: false })
+    .limit(1)
+    .maybeSingle();
+  if (two?.overall) return two;
+
+  return null;
+}
+
 const CONTENT_BY_SLUG: Record<string, PageConfig> = {
   "en-iyi-10-genc-stoper": {
     title: "2025-26 Avrupa'nın En İyi 10 Genç Stoperi",
@@ -113,13 +137,7 @@ function PlayerCardItem({ player }: { player: Player }) {
 
   useEffect(() => {
     async function fetchStats() {
-      const { data } = await supabase
-        .from("fc_players")
-        .select("overall,pace,shooting,passing,dribbling,defending,physical,photo_url,position,club,league,age")
-        .ilike("name", `%${player.name.split(" ")[0]}%`)
-        .order("overall", { ascending: false })
-        .limit(1)
-        .maybeSingle();
+      const data = await fetchPlayerStats(player.name);
       if (data && data.overall) {
         setCardData({
           name: player.name,
