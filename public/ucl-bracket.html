@@ -240,8 +240,8 @@
     #shareBtn {
       display: none;
       margin: 10px auto 0;
-      background: #1da1f2;
-      border: none;
+      background: #000;
+      border: 1px solid #333;
       color: #fff;
       font-family: 'Space Grotesk', sans-serif;
       font-size: 11px;
@@ -252,7 +252,7 @@
       transition: background 0.2s;
     }
 
-    #shareBtn:hover { background: #0d8fd8; }
+    #shareBtn:hover { background: #111; }
 
     .btn-row {
       display: flex;
@@ -578,12 +578,12 @@
     const text = isEn
       ? 'My champion at Scout Gamer Arena: ' + who + '! Who would you pick? 🏆 scoutgamer.com/arena #ScoutGamer #Football'
       : 'Scout Gamer Arena\'da benim şampiyonum: ' + who + '! Sen kimi seçerdin? 🏆 scoutgamer.com/arena #ScoutGamer #Futbol';
-    window.open('https://twitter.com/intent/tweet?text=' + encodeURIComponent(text), '_blank');
+    window.open('https://x.com/intent/tweet?text=' + encodeURIComponent(text), '_blank');
   }
 
   document.getElementById('shareBtn').addEventListener('click', shareFavorite);
   document.getElementById('resetBtn').textContent = isEn ? 'RESET' : 'SIFIRLA';
-  document.getElementById('shareBtn').textContent = isEn ? 'SHARE ON TWITTER' : "TWITTER'DA PAYLAŞ";
+  document.getElementById('shareBtn').textContent = isEn ? 'SHARE ON X' : "X'TE PAYLAŞ";
 
   function resetBracket() {
     state = {
