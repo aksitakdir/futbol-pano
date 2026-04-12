@@ -81,8 +81,18 @@ export async function GET(request: NextRequest) {
   }
 
   const xml = await res.text();
-  const raw = parseRssItems(xml, 4);
-  const items: NewsItem[] = raw.map((r) => ({
+  const raw = parseRssItems(xml, 10);
+
+  // Son 30 gün filtresi
+  const thirtyDaysAgo = Date.now() - 30 * 24 * 60 * 60 * 1000;
+  const filtered = raw.filter((r) => {
+    if (!r.date) return false;
+    const d = new Date(r.date);
+    if (Number.isNaN(d.getTime())) return false;
+    return d.getTime() >= thirtyDaysAgo;
+  });
+
+  const items: NewsItem[] = filtered.slice(0, 4).map((r) => ({
     ...r,
     date: formatDate(r.date),
   }));
