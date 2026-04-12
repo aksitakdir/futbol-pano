@@ -68,9 +68,9 @@ export default function SiteHeader({ activeNav, maxWidth = "max-w-7xl" }: Props)
       ]
     : [
         { href: "/", label: "ANA SAYFA", key: "home" },
-        { href: "/listeler", label: "LISTELER", key: "listeler" },
+        { href: "/listeler", label: "LİSTELER", key: "listeler" },
         { href: "/radar", label: "RADAR", key: "radar" },
-        { href: "/taktik-lab", label: "TAKTIK LAB", key: "taktik-lab" },
+        { href: "/taktik-lab", label: "TAKTİK LAB", key: "taktik-lab" },
         { href: "/arena", label: "ARENA", key: "arena" },
       ];
 
