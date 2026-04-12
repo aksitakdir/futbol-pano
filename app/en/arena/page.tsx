@@ -69,7 +69,7 @@ export default function EnArenaHomePage() {
             return (
               <motion.div key={b.slug} variants={fadeUp}>
                 <Link
-                  href={arenaPath(b.slug)}
+                  href={arenaPath(b.slug) + "?lang=en"}
                   className="group flex h-full flex-col transition hover:-translate-y-0.5"
                   style={{ background: "var(--sg-surface)", borderLeft: `3px solid ${accent}` }}
                 >

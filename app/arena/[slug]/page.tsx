@@ -2,7 +2,7 @@
 
 import { useMemo, useState, useCallback } from "react";
 import Link from "next/link";
-import { useParams } from "next/navigation";
+import { useParams, useSearchParams } from "next/navigation";
 import SiteHeader from "../../components/site-header";
 import SiteFooter from "../../components/site-footer";
 import Breadcrumb from "../../components/breadcrumb";
@@ -10,8 +10,10 @@ import { getArenaBracketBySlug } from "@/lib/arena-brackets";
 
 export default function ArenaBracketPage() {
   const params = useParams<{ slug: string }>();
+  const searchParams = useSearchParams();
   const slug = params?.slug ?? "";
   const bracket = getArenaBracketBySlug(slug);
+  const lang = searchParams.get("lang") || "tr";
 
   const [iframeKey, setIframeKey] = useState(0);
   const remountIframe = useCallback(() => setIframeKey((k) => k + 1), []);
@@ -22,8 +24,8 @@ export default function ArenaBracketPage() {
 
   const iframeSrc = useMemo(() => {
     if (!bracket) return "";
-    return `/ucl-bracket.html?t=${bracket.queryT}`;
-  }, [bracket]);
+    return `/ucl-bracket.html?t=${bracket.queryT}&lang=${lang}`;
+  }, [bracket, lang]);
 
   if (!valid) {
     return (

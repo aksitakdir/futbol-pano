@@ -364,13 +364,15 @@
   <button type="button" id="shareBtn">Twitter'da Paylaş</button>
 
   <div class="btn-row">
-    <button type="button" class="btn btn-reset" onclick="resetBracket()">Sıfırla</button>
+    <button type="button" class="btn btn-reset" onclick="resetBracket()" id="resetBtn">Sıfırla</button>
   </div>
 </div>
 
 <script>
 (function () {
   const PARAM = new URLSearchParams(location.search).get('t') || 'stars';
+  const LANG = new URLSearchParams(location.search).get('lang') || 'tr';
+  const isEn = LANG === 'en';
   const VALID_MODES = ['stars', 'ucl', 'managers', 'legends', 'foreigners'];
   const MODE = VALID_MODES.includes(PARAM) ? PARAM : 'stars';
 
@@ -455,32 +457,32 @@
 
   var TOURNAMENTS = {
     stars: {
-      h1: 'Gelecek Yıldızlar',
-      subtitle: 'Her açılışta rastgele eşleşmeler — sen kimin şampiyon olacağını seç',
+      h1: isEn ? 'Rising Stars' : 'Gelecek Yıldızlar',
+      subtitle: isEn ? 'Random matchups every time — you decide who becomes champion' : 'Her açılışta rastgele eşleşmeler — sen kimin şampiyon olacağını seç',
       teamOnly: false,
       buildMatches: function () { return pairsFromPlayers(STARS_POOL); },
     },
     ucl: {
-      h1: 'Şampiyonlar Ligi 25-26',
-      subtitle: 'Resmi son 16 kura eşleşmeleri (2025-26 sezonu)',
+      h1: isEn ? 'Champions League 2025-26' : 'Şampiyonlar Ligi 2025-26',
+      subtitle: isEn ? 'Official Round of 16 fixtures (2025-26 season)' : 'Resmi son 16 kura eşleşmeleri (2025-26 sezonu)',
       teamOnly: true,
       buildMatches: function () { return UCL_FIXED.slice(); },
     },
     managers: {
-      h1: 'Teknik Direktör Arenası',
-      subtitle: 'Her açılışta rastgele eşleşmeler — hangi hoca kupayı kaldırır?',
+      h1: isEn ? 'Manager Arena' : 'Teknik Direktör Arenası',
+      subtitle: isEn ? 'Random matchups every time — which manager lifts the trophy?' : 'Her açılışta rastgele eşleşmeler — hangi hoca kupayı kaldırır?',
       teamOnly: true,
       buildMatches: function () { return pairsFromNames(MANAGERS_POOL); },
     },
     legends: {
-      h1: 'Süper Lig Efsaneleri',
-      subtitle: 'Her açılışta rastgele eşleşmeler — efsanelerden tek şampiyon',
+      h1: isEn ? 'Süper Lig Legends' : 'Süper Lig Efsaneleri',
+      subtitle: isEn ? 'Random matchups every time — one legend takes it all' : 'Her açılışta rastgele eşleşmeler — efsanelerden tek şampiyon',
       teamOnly: true,
       buildMatches: function () { return pairsFromNames(LEGENDS_POOL); },
     },
     foreigners: {
-      h1: "Türkiye'de Oynamış En İyi Yabancılar",
-      subtitle: 'Her açılışta rastgele eşleşmeler — unutulmaz yabancılardan birini taçlandır',
+      h1: isEn ? 'Best Foreigners in Turkish Football' : "Türkiye'de Oynamış En İyi Yabancılar",
+      subtitle: isEn ? 'Random matchups every time — crown an unforgettable foreigner' : 'Her açılışta rastgele eşleşmeler — unutulmaz yabancılardan birini taçlandır',
       teamOnly: true,
       buildMatches: function () { return pairsFromNames(FOREIGNERS_POOL); },
     },
@@ -492,7 +494,7 @@
 
   document.getElementById('pageTitle').textContent = cfg.h1;
   document.getElementById('pageSubtitle').textContent = cfg.subtitle;
-  document.title = cfg.h1 + ' | Scout Gamer Arena';
+  document.title = cfg.h1 + (isEn ? ' | Scout Gamer Arena' : ' | Scout Gamer Arena');
 
   let state = {
     r16: Array(8).fill(null),
@@ -572,20 +574,22 @@
     if (ok) {
       const label = championShareLabel();
       cd.innerHTML = teamOnly
-        ? '🏆 Şampiyon: <span style="color:#fff">' + label + '</span>'
-        : '⭐ Şampiyonun: <span style="color:#fff">' + label + '</span>';
+        ? (isEn ? '🏆 Champion: ' : '🏆 Şampiyon: ') + '<span style="color:#fff">' + label + '</span>'
+        : (isEn ? '⭐ Your Champion: ' : '⭐ Şampiyonun: ') + '<span style="color:#fff">' + label + '</span>';
     }
   }
 
   function shareFavorite() {
     const who = championShareLabel();
-    const text =
-      'Scout Gamer Arena\'da benim şampiyonum: ' + who +
-      '! Sen kimi seçerdin? 🏆 scoutgamer.com/arena #ScoutGamer #Futbol';
+    const text = isEn
+      ? 'My champion at Scout Gamer Arena: ' + who + '! Who would you pick? 🏆 scoutgamer.com/arena #ScoutGamer #Football'
+      : 'Scout Gamer Arena\'da benim şampiyonum: ' + who + '! Sen kimi seçerdin? 🏆 scoutgamer.com/arena #ScoutGamer #Futbol';
     window.open('https://twitter.com/intent/tweet?text=' + encodeURIComponent(text), '_blank');
   }
 
   document.getElementById('shareBtn').addEventListener('click', shareFavorite);
+  document.getElementById('shareBtn').textContent = isEn ? 'Share on Twitter' : 'Twitter\'da Paylaş';
+  document.getElementById('resetBtn').textContent = isEn ? 'Reset' : 'Sıfırla';
 
   function resetBracket() {
     state = {
@@ -670,34 +674,39 @@
   }
 
   function render() {
+    const R16 = isEn ? 'Round of 16' : 'Son 16';
+    const QF = isEn ? 'Quarter Final' : 'Çeyrek Final';
+    const SF = isEn ? 'Semi Final' : 'Yarı Final';
+    const FIN = isEn ? 'Final' : 'Final';
+    const TROPHY_LABEL = isEn ? '🏆' : '🏆';
     document.getElementById('bracket').innerHTML =
       '<div class="round-col">'
-        + '<div class="round-label">Son 16</div>'
+        + '<div class="round-label">' + R16 + '</div>'
         + [0, 1, 2, 3].map(r16g).join('')
       + '</div>'
       + '<div class="round-col">'
-        + '<div class="round-label">Çeyrek Final</div>'
+        + '<div class="round-label">' + QF + '</div>'
         + [0, 1].map(qfg).join('')
       + '</div>'
       + '<div class="round-col">'
-        + '<div class="round-label">Yarı Final</div>'
+        + '<div class="round-label">' + SF + '</div>'
         + sfg(0)
       + '</div>'
       + '<div class="center-col">'
-        + '<div class="trophy">🏆</div>'
-        + '<div class="final-label">Final</div>'
+        + '<div class="trophy">' + TROPHY_LABEL + '</div>'
+        + '<div class="final-label">' + FIN + '</div>'
         + fg()
       + '</div>'
       + '<div class="round-col round-col--right">'
-        + '<div class="round-label">Yarı Final</div>'
+        + '<div class="round-label">' + SF + '</div>'
         + sfg(1)
       + '</div>'
       + '<div class="round-col round-col--right">'
-        + '<div class="round-label">Çeyrek Final</div>'
+        + '<div class="round-label">' + QF + '</div>'
         + [2, 3].map(qfg).join('')
       + '</div>'
       + '<div class="round-col round-col--right">'
-        + '<div class="round-label">Son 16</div>'
+        + '<div class="round-label">' + R16 + '</div>'
         + [4, 5, 6, 7].map(r16g).join('')
       + '</div>';
   }
