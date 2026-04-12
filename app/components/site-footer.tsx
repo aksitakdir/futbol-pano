@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 
 type Props = { maxWidth?: string; };
 
@@ -63,8 +64,66 @@ Mesajlarınıza genellikle 1-2 iş günü içinde yanıt veriyoruz.`,
   },
 };
 
+const POLICIES_EN: Record<PolicyKey, { title: string; content: string }> = {
+  gizlilik: {
+    title: "Privacy Policy",
+    content: `At Scout Gamer we care about your privacy.
+
+Data we collect
+When you visit, technical data such as browser type, IP address and session duration may be logged. This is used only to improve site performance.
+
+Cookies
+We may use cookies to improve your experience. You can disable them in your browser.
+
+Third-party services
+We may use Google Analytics and similar tools, which have their own policies.
+
+Contact
+Privacy questions: iletisim@scoutgamer.com
+
+Last updated: April 2026`,
+  },
+  kullanim: {
+    title: "Terms of Use",
+    content: `By using Scout Gamer you agree to the following.
+
+Content
+All content belongs to Scout Gamer. No commercial use without permission. Attribution is allowed for quotes.
+
+User responsibility
+Use the site only for lawful purposes. No harmful, misleading or illegal content.
+
+Disclaimer
+We cannot guarantee accuracy at all times. Player data comes from the EA FC database and may not reflect real-world performance.
+
+Changes
+These terms may change without notice.
+
+Last updated: April 2026`,
+  },
+  iletisim: {
+    title: "Contact",
+    content: `Reach the Scout Gamer team via:
+
+Email
+iletisim@scoutgamer.com
+
+Social
+Twitter/X: @ScoutGamer
+Instagram: @scoutgamer
+
+Partnerships
+For content or partnerships: iletisim@scoutgamer.com
+
+We usually reply within 1–2 business days.`,
+  },
+};
+
 export default function SiteFooter({ maxWidth = "max-w-7xl" }: Props) {
+  const pathname = usePathname();
+  const isEn = pathname.startsWith("/en");
   const [open, setOpen] = useState<PolicyKey | null>(null);
+  const policy = open ? (isEn ? POLICIES_EN[open] : POLICIES[open]) : null;
 
   return (
     <>
@@ -76,7 +135,9 @@ export default function SiteFooter({ maxWidth = "max-w-7xl" }: Props) {
                 SCOUT GAMER
               </div>
               <p className="text-sm leading-relaxed max-w-xs" style={{ color: "var(--sg-text-muted)" }}>
-                Futbol verisini sanata dönüştüren yeni nesil scouting platformu. Futbol × Oyun Kültürü.
+                {isEn
+                  ? "Next-gen scouting platform turning football data into art. Football × Game Culture."
+                  : "Futbol verisini sanata dönüştüren yeni nesil scouting platformu. Futbol × Oyun Kültürü."}
               </p>
               <div className="mt-5 flex gap-3">
                 <a href="https://twitter.com" target="_blank" rel="noopener noreferrer"
@@ -94,14 +155,22 @@ export default function SiteFooter({ maxWidth = "max-w-7xl" }: Props) {
 
             <div>
               <p className="mb-4 text-[10px] font-bold uppercase tracking-[0.22em]"
-                style={{ color: "var(--sg-text-muted)", fontFamily: "var(--font-headline)" }}>Hızlı Menü</p>
+                style={{ color: "var(--sg-text-muted)", fontFamily: "var(--font-headline)" }}>{isEn ? "Quick links" : "Hızlı Menü"}</p>
               <div className="flex flex-col gap-2">
-                {[
-                  { href: "/listeler", label: "Listeler" },
-                  { href: "/radar", label: "Radar" },
-                  { href: "/taktik-lab", label: "Taktik Lab" },
-                  { href: "/arena", label: "Arena" },
-                ].map(item => (
+                {(isEn
+                  ? [
+                      { href: "/en/listeler", label: "Scouting Lists" },
+                      { href: "/en/radar", label: "Radar" },
+                      { href: "/en/taktik-lab", label: "Tactics Lab" },
+                      { href: "/en/arena", label: "Arena" },
+                    ]
+                  : [
+                      { href: "/listeler", label: "Listeler" },
+                      { href: "/radar", label: "Radar" },
+                      { href: "/taktik-lab", label: "Taktik Lab" },
+                      { href: "/arena", label: "Arena" },
+                    ]
+                ).map(item => (
                   <Link key={item.href} href={item.href}
                     className="text-sm transition hover:opacity-80"
                     style={{ color: "var(--sg-text-secondary)", fontFamily: "var(--font-headline)" }}>
@@ -113,13 +182,13 @@ export default function SiteFooter({ maxWidth = "max-w-7xl" }: Props) {
 
             <div>
               <p className="mb-4 text-[10px] font-bold uppercase tracking-[0.22em]"
-                style={{ color: "var(--sg-text-muted)", fontFamily: "var(--font-headline)" }}>Yasal</p>
+                style={{ color: "var(--sg-text-muted)", fontFamily: "var(--font-headline)" }}>{isEn ? "Legal" : "Yasal"}</p>
               <div className="flex flex-col gap-2">
                 {(["gizlilik", "kullanim", "iletisim"] as PolicyKey[]).map(key => (
                   <button key={key} onClick={() => setOpen(key)}
                     className="text-left text-sm transition hover:opacity-80"
                     style={{ color: "var(--sg-text-secondary)", fontFamily: "var(--font-headline)" }}>
-                    {POLICIES[key].title}
+                    {(isEn ? POLICIES_EN[key] : POLICIES[key]).title}
                   </button>
                 ))}
               </div>
@@ -131,16 +200,16 @@ export default function SiteFooter({ maxWidth = "max-w-7xl" }: Props) {
             <span className="text-[11px]" style={{ color: "var(--sg-text-muted)", fontFamily: "var(--font-headline)" }}>
               © 2026 SCOUT GAMER. KINETIC LABS LTD.
             </span>
-            <Link href="/arena" className="text-[11px] font-bold uppercase tracking-wider transition hover:opacity-80"
+            <Link href={isEn ? "/en/arena" : "/arena"} className="text-[11px] font-bold uppercase tracking-wider transition hover:opacity-80"
               style={{ color: "var(--sg-primary)", fontFamily: "var(--font-headline)" }}>
-              Oyna & Paylaş
+              {isEn ? "Play & Share" : "Oyna & Paylaş"}
             </Link>
           </div>
         </div>
       </footer>
 
       {/* Slide-over panel */}
-      {open && (
+      {open && policy && (
         <>
           {/* Overlay */}
           <div className="fixed inset-0 z-[998]" style={{ background: "rgba(6,15,30,0.7)", backdropFilter: "blur(4px)" }}
@@ -154,7 +223,7 @@ export default function SiteFooter({ maxWidth = "max-w-7xl" }: Props) {
               <div>
                 <div className="h-[2px] w-8 mb-2" style={{ background: "var(--sg-primary)" }} />
                 <h2 className="text-base font-bold" style={{ fontFamily: "var(--font-headline)" }}>
-                  {POLICIES[open].title}
+                  {policy.title}
                 </h2>
               </div>
               <button onClick={() => setOpen(null)}
@@ -168,7 +237,7 @@ export default function SiteFooter({ maxWidth = "max-w-7xl" }: Props) {
             {/* Panel içerik */}
             <div className="flex-1 overflow-y-auto px-6 py-6">
               <div className="text-sm leading-relaxed whitespace-pre-line" style={{ color: "var(--sg-text-secondary)" }}>
-                {POLICIES[open].content}
+                {policy.content}
               </div>
             </div>
           </div>

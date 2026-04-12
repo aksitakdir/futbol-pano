@@ -43,10 +43,10 @@ function readTime(text: string): number {
 }
 
 function categoryPath(category: string): string {
-  if (category === "listeler") return "/listeler";
-  if (category === "radar") return "/radar";
-  if (category === "taktik-lab") return "/taktik-lab";
-  return "/";
+  if (category === "listeler") return "/en/listeler";
+  if (category === "radar") return "/en/radar";
+  if (category === "taktik-lab") return "/en/taktik-lab";
+  return "/en";
 }
 
 export type YouTubeSearchItem = { title: string; thumbnail: string; videoId: string; channelTitle: string };
@@ -313,9 +313,9 @@ export default function ArticleLayoutEn({
                   <p className="mb-3 text-2xl">🌐</p>
                   <p
                     className="mb-2 text-sm font-bold tracking-wider"
-                    style={{ color: "var(--sg-primary)", fontFamily: "var(--font-headline)", textTransform: "uppercase" }}
+                    style={{ color: "var(--sg-primary)", fontFamily: "var(--font-headline)", letterSpacing: "0.12em" }}
                   >
-                    Coming Soon
+                    COMING SOON
                   </p>
                   <p className="text-sm" style={{ color: "var(--sg-text-muted)" }}>
                     This content is being prepared in English. Check back soon.
@@ -597,7 +597,7 @@ export default function ArticleLayoutEn({
 
               <div style={{ background: "var(--sg-surface)" }}>
                 <div className="h-[2px]" style={{ background: "linear-gradient(90deg, var(--sg-primary), transparent)" }} />
-                <Link href="/radar" className="group block p-5 transition hover:opacity-80">
+                <Link href="/en/radar" className="group block p-5 transition hover:opacity-80">
                   <p
                     className="mb-1 text-[10px] font-bold uppercase tracking-[0.2em]"
                     style={{ color: "var(--sg-primary)", fontFamily: "var(--font-headline)" }}
@@ -636,7 +636,7 @@ export default function ArticleLayoutEn({
                     ].map((l) => (
                       <Link
                         key={l.slug}
-                        href={`/listeler/${l.slug}`}
+                        href={`/en/listeler/${l.slug}`}
                         className="group flex items-center justify-between gap-2 p-3 transition hover:opacity-80"
                         style={{ background: "var(--sg-surface-low)" }}
                       >

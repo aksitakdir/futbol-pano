@@ -84,8 +84,16 @@ export default function EnRadarPage() {
                           </span>
                           <div className="flex items-center gap-3">
                             {!hasEn && (
-                              <span className="px-1.5 py-0.5 text-[9px] font-bold uppercase" style={{ background: "rgba(249,189,34,0.15)", color: "var(--sg-amber)", fontFamily: "var(--font-headline)" }}>
-                                Coming Soon
+                              <span
+                                className="px-1.5 py-0.5 text-[9px] font-bold"
+                                style={{
+                                  background: "rgba(249,189,34,0.15)",
+                                  color: "var(--sg-amber)",
+                                  fontFamily: "var(--font-headline)",
+                                  letterSpacing: "0.06em",
+                                }}
+                              >
+                                COMING SOON
                               </span>
                             )}
                             <span className="flex items-center gap-1 text-[10px]" style={{ color: "var(--sg-text-muted)" }}>
