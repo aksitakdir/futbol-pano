@@ -6,7 +6,7 @@ import Link from "next/link";
 import { useRouter, usePathname } from "next/navigation";
 import { supabase } from "@/lib/supabase";
 
-type Props = { activeNav?: string; maxWidth?: string; };
+type Props = { activeNav?: string; maxWidth?: string; forceEn?: boolean; };
 
 type SearchResult = { id: string; title: string; title_en?: string; slug: string; category: string; };
 
@@ -40,10 +40,10 @@ function navHrefMatches(pathname: string, href: string): boolean {
   return pathname === href || pathname.startsWith(`${href}/`);
 }
 
-export default function SiteHeader({ activeNav, maxWidth = "max-w-7xl" }: Props) {
+export default function SiteHeader({ activeNav, maxWidth = "max-w-7xl", forceEn }: Props) {
   const router = useRouter();
   const pathname = usePathname();
-  const isEn = pathname.startsWith("/en");
+  const isEn = forceEn ?? pathname.startsWith("/en");
 
   const [open, setOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);

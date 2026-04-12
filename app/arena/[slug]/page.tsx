@@ -14,6 +14,7 @@ export default function ArenaBracketPage() {
   const slug = params?.slug ?? "";
   const bracket = getArenaBracketBySlug(slug);
   const lang = searchParams.get("lang") || "tr";
+  const isEnPage = lang === "en";
 
   const [iframeKey, setIframeKey] = useState(0);
   const remountIframe = useCallback(() => setIframeKey((k) => k + 1), []);
@@ -44,7 +45,7 @@ export default function ArenaBracketPage() {
 
   return (
     <main className="flex min-h-screen flex-col bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950 text-slate-100">
-      <SiteHeader activeNav="arena" maxWidth="max-w-7xl" />
+      <SiteHeader activeNav="arena" maxWidth="max-w-7xl" forceEn={isEnPage} />
 
       <div className="mx-auto w-full max-w-7xl px-4 py-3">
         <Breadcrumb

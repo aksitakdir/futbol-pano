@@ -24,7 +24,7 @@ const ICONS = ["⭐", "🏆", "📋", "🇹🇷", "🌍"];
 export default function EnArenaHomePage() {
   return (
     <main style={{ background: "var(--sg-bg)", color: "var(--sg-text-primary)", minHeight: "100vh" }}>
-      <SiteHeader activeNav="arena" maxWidth="max-w-7xl" />
+      <SiteHeader activeNav="arena" maxWidth="max-w-7xl" forceEn={true} />
 
       <div className="pt-[72px]">
         <CategoryHero accent="var(--sg-amber)">
