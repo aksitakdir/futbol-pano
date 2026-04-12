@@ -9,7 +9,15 @@ import SiteFooter from "../../components/site-footer";
 import { supabase } from "@/lib/supabase";
 import { stripHtml, estimateReadMinutes } from "@/lib/utils";
 
-type Content = { id: string; title: string; title_en?: string; slug: string; content: string; created_at: string };
+type Content = {
+  id: string;
+  title: string;
+  title_en?: string;
+  slug: string;
+  content: string;
+  content_en?: string;
+  created_at: string;
+};
 
 const easeOut = [0.22, 1, 0.36, 1] as [number, number, number, number];
 const stagger = { hidden: {}, visible: { transition: { staggerChildren: 0.08 } } };
@@ -23,7 +31,7 @@ export default function EnRadarPage() {
   useEffect(() => {
     supabase
       .from("contents")
-      .select("id,title,title_en,slug,content,created_at")
+      .select("id,title,title_en,slug,content,content_en,created_at")
       .eq("status", "yayinda")
       .eq("category", "radar")
       .order("created_at", { ascending: false })
@@ -97,7 +105,7 @@ export default function EnRadarPage() {
                               </span>
                             )}
                             <span className="flex items-center gap-1 text-[10px]" style={{ color: "var(--sg-text-muted)" }}>
-                              <IconClock /> {estimateReadMinutes(article.content)} min
+                              <IconClock /> {estimateReadMinutes(article.content_en || article.content)} min
                             </span>
                           </div>
                         </div>
@@ -105,7 +113,7 @@ export default function EnRadarPage() {
                           {article.title_en || article.title}
                         </h2>
                         <p className="mb-4 line-clamp-3 text-xs leading-relaxed" style={{ color: "var(--sg-text-secondary)" }}>
-                          {stripHtml(article.content).replace(/\s+/g, " ").trim().slice(0, 160)}…
+                          {stripHtml(article.content_en || article.content).replace(/\s+/g, " ").trim().slice(0, 160)}…
                         </p>
                         <div className="mt-auto inline-flex items-center gap-1 text-[11px] font-bold" style={{ color: accent, fontFamily: "var(--font-headline)" }}>
                           Read <span className="transition-transform group-hover:translate-x-0.5">→</span>

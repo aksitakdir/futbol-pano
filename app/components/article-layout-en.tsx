@@ -18,7 +18,14 @@ import { supabase } from "@/lib/supabase";
 import { getCategoryImage } from "@/lib/category-images";
 import { stripHtml } from "@/lib/utils";
 
-type SidebarItem = { id: string; title: string; slug: string; category: string; created_at: string };
+type SidebarItem = {
+  id: string;
+  title: string;
+  title_en?: string;
+  slug: string;
+  category: string;
+  created_at: string;
+};
 
 const CATEGORY_LABEL: Record<string, string> = {
   listeler: "Lists",
@@ -83,6 +90,8 @@ type Props = {
   showNewsSection?: boolean;
   children?: React.ReactNode;
   isPending?: boolean;
+  /** HTML/markdown source for OG description and read-time when `content` is empty (e.g. pending EN body). */
+  excerptContent?: string;
 };
 
 export default function ArticleLayoutEn({
@@ -102,6 +111,7 @@ export default function ArticleLayoutEn({
   playerName,
   showNewsSection = false,
   isPending = false,
+  excerptContent,
   children,
 }: Props) {
   const [similar, setSimilar] = useState<SidebarItem[]>([]);
@@ -117,7 +127,7 @@ export default function ArticleLayoutEn({
     async function fetchSidebar() {
       const { data: sim } = await supabase
         .from("contents")
-        .select("id,title,slug,category,created_at")
+        .select("id,title,title_en,slug,category,created_at,content,content_en")
         .eq("status", "yayinda")
         .eq("category", category)
         .neq("slug", slug)
@@ -126,7 +136,7 @@ export default function ArticleLayoutEn({
       if (sim) setSimilar(sim);
       const { data: disc } = await supabase
         .from("contents")
-        .select("id,title,slug,category,created_at")
+        .select("id,title,title_en,slug,category,created_at,content,content_en")
         .eq("status", "yayinda")
         .neq("category", category)
         .order("created_at", { ascending: false })
@@ -197,13 +207,14 @@ export default function ArticleLayoutEn({
   }, [effectiveNewsQuery]);
 
   const formattedDate = new Date(date).toLocaleDateString("en-US", { day: "numeric", month: "long", year: "numeric" });
-  const contentForReadTime = content.replace(/<[^>]+>/g, " ").replace(/[#*_`>]/g, " ").replace(/\s+/g, " ").trim();
+  const metaSource = (excerptContent ?? content) || "";
+  const contentForReadTime = metaSource.replace(/<[^>]+>/g, " ").replace(/[#*_`>]/g, " ").replace(/\s+/g, " ").trim();
   const minutes = readTime(contentForReadTime);
   const catLabel = CATEGORY_LABEL[category] ?? category;
   const catColor = CAT_COLOR[category] ?? "var(--sg-primary)";
   const tags = CATEGORY_TAGS[category] ?? ["Analysis", "Scout"];
   const description =
-    stripHtml(content)
+    stripHtml(metaSource)
       .replace(/[#*_\n]/g, " ")
       .trim()
       .slice(0, 160) || `${title} | Scout Gamer`;
@@ -583,7 +594,7 @@ export default function ArticleLayoutEn({
                           style={{ background: "var(--sg-surface-low)" }}
                         >
                           <p className="line-clamp-2 text-xs font-semibold" style={{ fontFamily: "var(--font-headline)", color: "var(--sg-text-primary)" }}>
-                            {item.title}
+                            {item.title_en || item.title}
                           </p>
                           <p className="mt-1 text-[10px]" style={{ color: "var(--sg-text-muted)" }}>
                             {new Date(item.created_at).toLocaleDateString("en-US", { day: "numeric", month: "short" })}
@@ -630,9 +641,9 @@ export default function ArticleLayoutEn({
                   </h3>
                   <div className="space-y-2">
                     {[
-                      { title: "En İyi 10 Genç Stoper", slug: "en-iyi-10-genc-stoper" },
-                      { title: "Süper Lig'in Gizli İsimleri", slug: "super-lig-gizli-isimler" },
-                      { title: "Sürpriz İsimler 2025", slug: "surpriz-isimler-2025" },
+                      { title: "Top 10 Young Centre-Backs", slug: "en-iyi-10-genc-stoper" },
+                      { title: "Hidden Gems of the Süper Lig", slug: "super-lig-gizli-isimler" },
+                      { title: "Surprise Performers of 2025", slug: "surpriz-isimler-2025" },
                     ].map((l) => (
                       <Link
                         key={l.slug}
@@ -682,7 +693,7 @@ export default function ArticleLayoutEn({
                         {CATEGORY_LABEL[item.category] ?? item.category}
                       </span>
                       <p className="line-clamp-2 text-sm font-semibold transition" style={{ fontFamily: "var(--font-headline)", color: "var(--sg-text-primary)" }}>
-                        {item.title}
+                        {item.title_en || item.title}
                       </p>
                       <span className="mt-auto pt-3 text-[10px]" style={{ color: "var(--sg-text-muted)" }}>
                         {new Date(item.created_at).toLocaleDateString("en-US", { day: "numeric", month: "long", year: "numeric" })}

@@ -7,7 +7,15 @@ import SiteHeader from "../../components/site-header";
 import SiteFooter from "../../components/site-footer";
 import { supabase } from "@/lib/supabase";
 
-type Content = { id: string; title: string; title_en?: string; slug: string; created_at: string };
+type Content = {
+  id: string;
+  title: string;
+  title_en?: string;
+  slug: string;
+  content?: string;
+  content_en?: string;
+  created_at: string;
+};
 
 const easeOut = [0.22, 1, 0.36, 1] as [number, number, number, number];
 const stagger = { hidden: {}, visible: { transition: { staggerChildren: 0.08 } } };
@@ -40,7 +48,7 @@ export default function EnListelerPage() {
   useEffect(() => {
     supabase
       .from("contents")
-      .select("id,title,title_en,slug,created_at")
+      .select("id,title,title_en,slug,content,content_en,created_at")
       .eq("status", "yayinda")
       .eq("category", "listeler")
       .order("created_at", { ascending: false })

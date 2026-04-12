@@ -8,7 +8,15 @@ import SiteFooter from "../../components/site-footer";
 import { supabase } from "@/lib/supabase";
 import { stripHtml } from "@/lib/utils";
 
-type Content = { id: string; title: string; title_en?: string; slug: string; content: string; created_at: string };
+type Content = {
+  id: string;
+  title: string;
+  title_en?: string;
+  slug: string;
+  content: string;
+  content_en?: string;
+  created_at: string;
+};
 
 const easeOut = [0.22, 1, 0.36, 1] as [number, number, number, number];
 const stagger = { hidden: {}, visible: { transition: { staggerChildren: 0.08 } } };
@@ -81,7 +89,7 @@ export default function EnTaktikLabPage() {
   useEffect(() => {
     supabase
       .from("contents")
-      .select("id,title,title_en,slug,content,created_at")
+      .select("id,title,title_en,slug,content,content_en,created_at")
       .eq("status", "yayinda")
       .eq("category", "taktik-lab")
       .order("created_at", { ascending: false })
@@ -137,7 +145,7 @@ export default function EnTaktikLabPage() {
                         {item.title_en || item.title}
                       </h2>
                       <p className="mb-4 line-clamp-2 text-xs leading-relaxed" style={{ color: "var(--sg-text-secondary)" }}>
-                        {stripHtml(item.content).trim().slice(0, 120)}…
+                        {stripHtml(item.content_en || item.content).trim().slice(0, 120)}…
                       </p>
                       <div className="mt-auto inline-flex items-center gap-1 text-[11px] font-bold" style={{ color: ACCENT, fontFamily: "var(--font-headline)" }}>
                         Read <span className="transition-transform group-hover:translate-x-0.5">→</span>

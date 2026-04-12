@@ -118,8 +118,9 @@ export default function EnListelerDetailPage() {
 
   return (
     <ArticleLayoutEn
-      title={hasEnglish ? article.title_en! : article.title}
+      title={article.title_en || article.title}
       content={hasEnglish ? article.content_en! : ""}
+      excerptContent={article.content_en || article.content}
       category={article.category}
       date={article.created_at}
       slug={article.slug}
