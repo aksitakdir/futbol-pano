@@ -60,18 +60,18 @@ export default function SiteHeader({ activeNav, maxWidth = "max-w-7xl" }: Props)
 
   const NAV_ITEMS = isEn
     ? [
-        { href: "/en", label: "Home", key: "home" },
-        { href: "/en/listeler", label: "Scouting Lists", key: "listeler" },
-        { href: "/en/radar", label: "Radar", key: "radar" },
-        { href: "/en/taktik-lab", label: "Tactics Lab", key: "taktik-lab" },
-        { href: "/en/arena", label: "Arena", key: "arena" },
+        { href: "/en", label: "HOME", key: "home" },
+        { href: "/en/listeler", label: "SCOUTING LISTS", key: "listeler" },
+        { href: "/en/radar", label: "RADAR", key: "radar" },
+        { href: "/en/taktik-lab", label: "TACTICS LAB", key: "taktik-lab" },
+        { href: "/en/arena", label: "ARENA", key: "arena" },
       ]
     : [
-        { href: "/", label: "Ana Sayfa", key: "home" },
-        { href: "/listeler", label: "Listeler", key: "listeler" },
-        { href: "/radar", label: "Radar", key: "radar" },
-        { href: "/taktik-lab", label: "Taktik Lab", key: "taktik-lab" },
-        { href: "/arena", label: "Arena", key: "arena" },
+        { href: "/", label: "ANA SAYFA", key: "home" },
+        { href: "/listeler", label: "LISTELER", key: "listeler" },
+        { href: "/radar", label: "RADAR", key: "radar" },
+        { href: "/taktik-lab", label: "TAKTIK LAB", key: "taktik-lab" },
+        { href: "/arena", label: "ARENA", key: "arena" },
       ];
 
   function toggleLang() {
@@ -276,7 +276,7 @@ export default function SiteHeader({ activeNav, maxWidth = "max-w-7xl" }: Props)
               return (
                 <Link key={item.key} href={item.href}
                   className="relative px-4 py-2 transition-all duration-200"
-                  style={{ fontFamily: "var(--font-headline)", fontSize: "11px", fontWeight: 700, letterSpacing: "0.1em", color: isActive ? "var(--sg-primary)" : "var(--sg-text-muted)" }}>
+                  style={{ fontFamily: "var(--font-headline)", fontSize: "11px", fontWeight: 700, letterSpacing: "0.08em", color: isActive ? "var(--sg-primary)" : "var(--sg-text-muted)" }}>
                   {item.label}
                   {isActive && (
                     <span className="absolute bottom-0 left-1/2 -translate-x-1/2 h-0.5 w-4 rounded-full"
