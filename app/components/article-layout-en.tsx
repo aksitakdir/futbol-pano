@@ -312,8 +312,8 @@ export default function ArticleLayoutEn({
                 <div className="py-16 text-center" style={{ background: "var(--sg-surface)" }}>
                   <p className="mb-3 text-2xl">🌐</p>
                   <p
-                    className="mb-2 text-sm font-bold uppercase tracking-wider"
-                    style={{ color: "var(--sg-primary)", fontFamily: "var(--font-headline)" }}
+                    className="mb-2 text-sm font-bold tracking-wider"
+                    style={{ color: "var(--sg-primary)", fontFamily: "var(--font-headline)", textTransform: "uppercase" }}
                   >
                     Coming Soon
                   </p>

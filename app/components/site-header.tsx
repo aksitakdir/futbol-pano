@@ -31,6 +31,7 @@ export default function SiteHeader({ activeNav, maxWidth = "max-w-7xl" }: Props)
   const isEn = pathname.startsWith("/en");
 
   const [open, setOpen] = useState(false);
+  const [searchOpen, setSearchOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
   const [scrolled, setScrolled] = useState(false);
 
@@ -120,7 +121,7 @@ export default function SiteHeader({ activeNav, maxWidth = "max-w-7xl" }: Props)
         <button type="button" onClick={() => { toggleLang(); setOpen(false); }}
           className="flex items-center gap-2 rounded-lg px-4 py-3.5 transition"
           style={{ color: isEn ? "var(--sg-secondary)" : "var(--sg-text-muted)", fontFamily: "var(--font-headline)", fontWeight: 600, fontSize: "15px" }}>
-          {isEn ? "🇹🇷 Türkçe'ye Geç" : "🇬🇧 Switch to English"}
+          {isEn ? "🇹🇷 Türkçe" : "🇬🇧 English"}
         </button>
       </nav>
       <div className="relative px-4 pb-8 pt-4">
@@ -144,7 +145,7 @@ export default function SiteHeader({ activeNav, maxWidth = "max-w-7xl" }: Props)
             return (
               <Link key={item.key} href={item.href}
                 className="relative px-4 py-2 transition-all duration-200"
-                style={{ fontFamily: "var(--font-headline)", fontSize: "11px", fontWeight: 700, letterSpacing: "0.12em", textTransform: "uppercase", color: isActive ? "var(--sg-primary)" : "var(--sg-text-muted)" }}>
+                style={{ fontFamily: "var(--font-headline)", fontSize: "11px", fontWeight: 700, letterSpacing: "0.12em", textTransform: "uppercase" as const, color: isActive ? "var(--sg-primary)" : "var(--sg-text-muted)" }}>
                 {item.label}
                 {isActive && (
                   <span className="absolute bottom-0 left-1/2 -translate-x-1/2 h-0.5 w-4 rounded-full"
@@ -156,14 +157,20 @@ export default function SiteHeader({ activeNav, maxWidth = "max-w-7xl" }: Props)
         </div>
         <div className="hidden md:flex items-center gap-3">
           <button type="button" onClick={toggleLang}
-            className="flex items-center gap-1.5 px-3 py-2 text-[11px] font-bold uppercase tracking-wider transition hover:opacity-80"
+            className="flex items-center gap-1.5 px-3 py-2 text-[11px] font-bold tracking-wider transition hover:opacity-80"
             style={{ fontFamily: "var(--font-headline)", color: isEn ? "var(--sg-secondary)" : "var(--sg-text-muted)", border: `1px solid ${isEn ? "var(--sg-secondary)" : "rgba(26,58,92,0.5)"}` }}>
-            {isEn ? "🇬🇧 EN" : "🇹🇷 TR"}
+            {isEn ? "🇹🇷 Türkçe" : "🇬🇧 English"}
           </button>
-          <button className="flex h-9 w-9 items-center justify-center transition-all hover:opacity-80"
-            style={{ color: "var(--sg-text-muted)" }}>
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-              <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" /><circle cx="12" cy="7" r="4" />
+          <button
+            type="button"
+            onClick={() => setSearchOpen((s) => !s)}
+            className="flex h-9 w-9 items-center justify-center transition hover:opacity-80"
+            style={{ color: "var(--sg-text-muted)" }}
+            aria-label={isEn ? "Search" : "Ara"}
+          >
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
+              <circle cx="11" cy="11" r="8" />
+              <path d="M21 21l-4.35-4.35" />
             </svg>
           </button>
         </div>
@@ -175,6 +182,46 @@ export default function SiteHeader({ activeNav, maxWidth = "max-w-7xl" }: Props)
           </svg>
         </button>
       </nav>
+      {searchOpen && (
+        <div
+          className="hidden border-t md:block"
+          style={{
+            borderColor: "rgba(26,58,92,0.5)",
+            background: "rgba(6,15,30,0.98)",
+            backdropFilter: "blur(20px)",
+          }}
+        >
+          <div className={`mx-auto ${maxWidth} px-8 py-4`}>
+            <input
+              autoFocus
+              type="text"
+              placeholder={isEn ? "Search content..." : "İçerik ara..."}
+              className="w-full bg-transparent text-base outline-none"
+              style={{
+                color: "var(--sg-text-primary)",
+                fontFamily: "var(--font-headline)",
+                caretColor: "var(--sg-primary)",
+              }}
+              onKeyDown={(e) => {
+                if (e.key === "Escape") setSearchOpen(false);
+                if (e.key === "Enter") {
+                  const q = (e.target as HTMLInputElement).value.trim();
+                  if (q) {
+                    window.location.href = `${isEn ? "/en" : ""}/radar?q=${encodeURIComponent(q)}`;
+                  }
+                  setSearchOpen(false);
+                }
+              }}
+            />
+            <p
+              className="mt-2 text-[10px]"
+              style={{ color: "var(--sg-text-muted)", fontFamily: "var(--font-headline)" }}
+            >
+              {isEn ? "Press Enter to search, Esc to close" : "Enter ile ara, Esc ile kapat"}
+            </p>
+          </div>
+        </div>
+      )}
       {mobileOverlay ? createPortal(mobileOverlay, document.body) : null}
     </header>
   );
