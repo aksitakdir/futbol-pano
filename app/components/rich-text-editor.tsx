@@ -30,7 +30,7 @@ function Toolbar({ editor }: { editor: Editor | null }) {
       const { data, error } = await supabase.storage.from("content-images").upload(fileName, file, { upsert: true });
       if (error) throw error;
       const { data: urlData } = supabase.storage.from("content-images").getPublicUrl(data.path);
-      editor.chain().focus().setImage({ src: urlData.publicUrl }).run();
+      editor.chain().focus().insertContent({ type: "image", attrs: { src: urlData.publicUrl } }).run();
     } catch (err) {
       console.error("Görsel yükleme hatası:", err);
     }
@@ -86,7 +86,7 @@ function Toolbar({ editor }: { editor: Editor | null }) {
         className={TB}
         onClick={() => {
           const url = window.prompt("Görsel URL:");
-          if (url) editor.chain().focus().setImage({ src: url }).run();
+          if (url) editor.chain().focus().insertContent({ type: "image", attrs: { src: url } }).run();
         }}>
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
           <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/>
