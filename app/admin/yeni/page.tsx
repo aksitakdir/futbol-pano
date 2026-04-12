@@ -62,9 +62,12 @@ function YeniIcerikForm() {
   const searchParams = useSearchParams();
 
   const [title, setTitle] = useState("");
+  const [titleEn, setTitleEn] = useState("");
   const [slug, setSlug] = useState("");
   const [category, setCategory] = useState("listeler");
   const [content, setContent] = useState("");
+  const [contentEn, setContentEn] = useState("");
+  const [activeLang, setActiveLang] = useState<"tr" | "en">("tr");
   const [youtubeId, setYoutubeId] = useState("");
   const [coverImage, setCoverImage] = useState("");
   const [imageUploading, setImageUploading] = useState(false);
@@ -180,9 +183,11 @@ function YeniIcerikForm() {
     setSaving(true);
     const { error: insertError } = await supabase.from("contents").insert({
       title: title.trim(),
+      title_en: titleEn.trim() || null,
       slug: slug.trim(),
       category,
       content: content.trim(),
+      content_en: contentEn.trim() || null,
       youtube_id: youtubeId.trim(),
       cover_image: coverImage.trim(),
       youtube_query_1: youtubeQuery1.trim(),
@@ -235,12 +240,23 @@ function YeniIcerikForm() {
         <form onSubmit={handleSubmit} className="space-y-5">
           {/* Başlık */}
           <div>
+            <div className="flex gap-2 mb-2">
+              <button type="button" onClick={() => setActiveLang("tr")}
+                className={`px-4 py-1.5 text-xs font-bold uppercase tracking-wider transition ${activeLang === "tr" ? "bg-emerald-500 text-slate-950" : "border border-slate-700 text-slate-400 hover:text-slate-200"}`}>
+                🇹🇷 Türkçe
+              </button>
+              <button type="button" onClick={() => setActiveLang("en")}
+                className={`px-4 py-1.5 text-xs font-bold uppercase tracking-wider transition ${activeLang === "en" ? "bg-sky-500 text-slate-950" : "border border-slate-700 text-slate-400 hover:text-slate-200"}`}>
+                🇬🇧 English
+              </button>
+            </div>
             <label className="mb-1.5 block text-xs font-semibold text-slate-300">Başlık</label>
             <input
-              type="text" value={title}
-              onChange={(e) => setTitle(e.target.value)}
-              placeholder="Örn: En İyi 10 Genç Kanat"
-              className="w-full rounded-lg border border-slate-700/80 bg-slate-900/70 px-4 py-2.5 text-sm text-slate-100 placeholder-slate-500 outline-none transition focus:border-emerald-500/60 focus:ring-1 focus:ring-emerald-500/40"
+              type="text"
+              value={activeLang === "tr" ? title : titleEn}
+              onChange={(e) => activeLang === "tr" ? setTitle(e.target.value) : setTitleEn(e.target.value)}
+              placeholder={activeLang === "tr" ? "Örn: En İyi 10 Genç Kanat" : "E.g: Top 10 Young Wingers"}
+              className="w-full rounded-lg border border-slate-700/80 bg-slate-900/70 px-4 py-2.5 text-sm text-slate-100 placeholder-slate-500 outline-none transition focus:border-emerald-500/60"
             />
           </div>
 
@@ -551,7 +567,11 @@ function YeniIcerikForm() {
           {/* İçerik editörü */}
           <div>
             <label className="mb-1.5 block text-xs font-semibold text-slate-300">İçerik</label>
-            <RichTextEditor value={content} onChange={setContent} placeholder="İçerik yazın..." />
+            {activeLang === "tr" ? (
+              <RichTextEditor value={content} onChange={setContent} placeholder="İçerik yazın..." />
+            ) : (
+              <RichTextEditor value={contentEn} onChange={setContentEn} placeholder="Write content in English..." />
+            )}
           </div>
 
           {error && <p className="text-xs text-rose-400">{error}</p>}

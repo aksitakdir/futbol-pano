@@ -3,15 +3,7 @@
 import { useState, useEffect } from "react";
 import { createPortal } from "react-dom";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
-
-const NAV_ITEMS = [
-  { href: "/", label: "Ana Sayfa", key: "home" },
-  { href: "/listeler", label: "Listeler", key: "listeler" },
-  { href: "/radar", label: "Radar", key: "radar" },
-  { href: "/taktik-lab", label: "Taktik Lab", key: "taktik-lab" },
-  { href: "/arena", label: "Arena", key: "arena" },
-];
+import { usePathname, useRouter } from "next/navigation";
 
 type Props = { activeNav?: string; maxWidth?: string; };
 
@@ -28,15 +20,45 @@ function Wordmark() {
   );
 }
 
+function navHrefMatches(pathname: string, href: string): boolean {
+  if (href === "/") return pathname === "/";
+  return pathname === href || pathname.startsWith(`${href}/`);
+}
+
 export default function SiteHeader({ activeNav, maxWidth = "max-w-7xl" }: Props) {
   const pathname = usePathname();
+  const router = useRouter();
   const [open, setOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
   const [scrolled, setScrolled] = useState(false);
 
-  const currentKey = activeNav ?? NAV_ITEMS.find(n =>
-    n.key === "home" ? pathname === "/" : pathname.startsWith("/" + n.key)
-  )?.key ?? "";
+  const isEn = pathname.startsWith("/en");
+
+  const NAV_ITEMS = isEn
+    ? [
+        { href: "/en", label: "Home", key: "home" },
+        { href: "/en/listeler", label: "Scouting Lists", key: "listeler" },
+        { href: "/en/radar", label: "Radar", key: "radar" },
+        { href: "/en/taktik-lab", label: "Tactics Lab", key: "taktik-lab" },
+        { href: "/arena", label: "Arena", key: "arena" },
+      ]
+    : [
+        { href: "/", label: "Ana Sayfa", key: "home" },
+        { href: "/listeler", label: "Listeler", key: "listeler" },
+        { href: "/radar", label: "Radar", key: "radar" },
+        { href: "/taktik-lab", label: "Taktik Lab", key: "taktik-lab" },
+        { href: "/arena", label: "Arena", key: "arena" },
+      ];
+
+  function toggleLang() {
+    if (isEn) {
+      router.push(pathname.replace(/^\/en/, "") || "/");
+    } else {
+      router.push("/en" + pathname);
+    }
+  }
+
+  const currentKey = activeNav ?? NAV_ITEMS.find((n) => navHrefMatches(pathname, n.href))?.key ?? "";
 
   useEffect(() => { setMounted(true); }, []);
 
@@ -94,6 +116,11 @@ export default function SiteHeader({ activeNav, maxWidth = "max-w-7xl" }: Props)
             </Link>
           );
         })}
+        <button type="button" onClick={() => { toggleLang(); setOpen(false); }}
+          className="flex items-center gap-2 rounded-lg px-4 py-3.5 transition"
+          style={{ color: isEn ? "var(--sg-secondary)" : "var(--sg-text-muted)", fontFamily: "var(--font-headline)", fontWeight: 600, fontSize: "15px" }}>
+          {isEn ? "🇹🇷 Türkçe'ye Geç" : "🇬🇧 Switch to English"}
+        </button>
       </nav>
       <div className="relative px-4 pb-8 pt-4">
         <div className="rounded-lg px-4 py-3" style={{ background: "var(--sg-surface-low)" }}>
@@ -127,12 +154,10 @@ export default function SiteHeader({ activeNav, maxWidth = "max-w-7xl" }: Props)
           })}
         </div>
         <div className="hidden md:flex items-center gap-3">
-          <button className="flex h-9 w-9 items-center justify-center transition-all hover:opacity-80"
-            style={{ color: "var(--sg-text-muted)" }}>
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-              <circle cx="12" cy="12" r="10" />
-              <path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" />
-            </svg>
+          <button type="button" onClick={toggleLang}
+            className="flex items-center gap-1.5 px-3 py-2 text-[11px] font-bold uppercase tracking-wider transition hover:opacity-80"
+            style={{ fontFamily: "var(--font-headline)", color: isEn ? "var(--sg-secondary)" : "var(--sg-text-muted)", border: `1px solid ${isEn ? "var(--sg-secondary)" : "rgba(26,58,92,0.5)"}` }}>
+            {isEn ? "🇬🇧 EN" : "🇹🇷 TR"}
           </button>
           <button className="flex h-9 w-9 items-center justify-center transition-all hover:opacity-80"
             style={{ color: "var(--sg-text-muted)" }}>
