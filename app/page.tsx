@@ -12,7 +12,17 @@ import { getCategoryImage } from "@/lib/category-images";
 import { ARENA_BRACKETS, arenaPath } from "@/lib/arena-brackets";
 
 // ─── Tipler ──────────────────────────────────────────────────────────────────
-type SlideContent = { id: string; title: string; slug: string; category: string; content: string; created_at: string; };
+type SlideContent = {
+  id: string;
+  title: string;
+  title_en?: string;
+  slug: string;
+  category: string;
+  content: string;
+  content_en?: string;
+  created_at: string;
+  cover_image?: string;
+};
 type FormPlayer = { name: string; club: string; league: string; position: string; age: string; goals: string; };
 type FormPlayerWithStats = FormPlayer & Partial<PlayerCardData>;
 type FeaturedPlayer = { name: string; club: string; position: string; age: string; league: string; goals: string; assists: string; description: string; whyWatch: string; };
@@ -161,7 +171,12 @@ export default function Home() {
   // Slider verisi
   useEffect(() => {
     async function load() {
-      const { data } = await supabase.from("contents").select("id,title,slug,category,content,created_at").eq("status", "yayinda").order("created_at", { ascending: false }).limit(200);
+      const { data } = await supabase
+        .from("contents")
+        .select("id,title,title_en,slug,category,content,content_en,created_at,cover_image")
+        .eq("status", "yayinda")
+        .order("created_at", { ascending: false })
+        .limit(200);
       if (!data?.length) { setSlides([pickArenaSlide()]); return; }
       setSlides(mergeWithArena(buildHeroSlides(data as SlideContent[])));
     }
@@ -170,7 +185,12 @@ export default function Home() {
 
   // Son eklenenler
   useEffect(() => {
-    supabase.from("contents").select("id,title,slug,category,content,created_at").eq("status", "yayinda").order("created_at", { ascending: false }).limit(6)
+    supabase
+      .from("contents")
+      .select("id,title,title_en,slug,category,content,content_en,created_at,cover_image")
+      .eq("status", "yayinda")
+      .order("created_at", { ascending: false })
+      .limit(6)
       .then(({ data }) => { if (data?.length) setRecentItems(data); });
   }, []);
 
@@ -282,14 +302,25 @@ export default function Home() {
       {/* ── Hero Slider ───────────────────────────────────────────────────── */}
       {slides.length > 0 && (
         <section className="relative w-full overflow-hidden" style={{ height: "80vh", minHeight: "600px" }}>
-          {/* Stadyum arka plan — Unsplash ücretsiz */}
+          {/* Slider arka planı — cover_image varsa onu kullan */}
           <div className="absolute inset-0 z-0">
-            <img
-              src="https://images.unsplash.com/photo-1522778119026-d647f0596c20?w=1600&q=80"
-              alt=""
-              className="w-full h-full object-cover"
-              style={{ filter: "brightness(0.35) saturate(0.8)" }}
-            />
+            {slides[activeSlide]?.kind === "content" && slides[activeSlide].slide.cover_image ? (
+              <img
+                key={slides[activeSlide].slide.cover_image}
+                src={slides[activeSlide].slide.cover_image}
+                alt=""
+                className="w-full h-full object-cover"
+                style={{ filter: "brightness(0.35) saturate(0.8)" }}
+              />
+            ) : (
+              <img
+                key="hero-fallback"
+                src="https://images.unsplash.com/photo-1522778119026-d647f0596c20?w=1600&q=80"
+                alt=""
+                className="w-full h-full object-cover"
+                style={{ filter: "brightness(0.35) saturate(0.8)" }}
+              />
+            )}
             <div className="absolute inset-0" style={{ background: "linear-gradient(to top, var(--sg-bg) 0%, rgba(6,15,30,0.5) 50%, transparent 100%)" }} />
             <div className="absolute inset-0" style={{ background: "linear-gradient(to right, var(--sg-bg) 0%, transparent 60%)" }} />
           </div>
@@ -435,10 +466,13 @@ export default function Home() {
                   className="group lg:col-span-6 flex flex-col transition hover:-translate-y-0.5"
                   style={{ background: "var(--sg-surface)" }}>
                   <div className="relative h-64 lg:h-80 overflow-hidden" style={{ background: "var(--sg-surface-low)" }}>
-                    <img src={getCategoryImage(item.category, item.slug)} alt=""
+                    <img
+                      src={item.cover_image || getCategoryImage(item.category, item.slug)}
+                      alt=""
                       className="w-full h-full object-cover transition group-hover:scale-105 duration-500"
                       style={{ filter: "brightness(0.4) saturate(0.6)" }}
-                      onError={(e) => { (e.target as HTMLImageElement).style.opacity = "0"; }} />
+                      onError={(e) => { (e.target as HTMLImageElement).style.opacity = "0"; }}
+                    />
                     <div className="absolute inset-0" style={{ background: "linear-gradient(to bottom, transparent 30%, var(--sg-surface) 100%)" }} />
                     <span className="absolute top-3 left-3 px-2 py-0.5 text-[9px] font-bold uppercase tracking-[0.18em]"
                       style={{
@@ -481,10 +515,13 @@ export default function Home() {
                     className="group flex flex-col transition hover:-translate-y-0.5"
                     style={{ background: "var(--sg-surface)" }}>
                     <div className="relative h-28 overflow-hidden" style={{ background: "var(--sg-surface-low)" }}>
-                      <img src={getCategoryImage(item.category, item.slug)} alt=""
+                      <img
+                        src={item.cover_image || getCategoryImage(item.category, item.slug)}
+                        alt=""
                         className="w-full h-full object-cover transition group-hover:scale-105 duration-500"
                         style={{ filter: "brightness(0.4) saturate(0.6)" }}
-                        onError={(e) => { (e.target as HTMLImageElement).style.opacity = "0"; }} />
+                        onError={(e) => { (e.target as HTMLImageElement).style.opacity = "0"; }}
+                      />
                       <div className="absolute inset-0" style={{ background: "linear-gradient(to bottom, transparent 20%, var(--sg-surface) 100%)" }} />
                       <span className="absolute top-2 left-2 px-1.5 py-0.5 text-[8px] font-bold uppercase tracking-[0.15em]"
                         style={{
@@ -644,7 +681,7 @@ export default function Home() {
                     style={{ background: "var(--sg-surface)", borderLeft: `3px solid ${accentColor}` }}>
                     <div className="relative h-28 overflow-hidden" style={{ background: "var(--sg-surface-low)" }}>
                       <img
-                        src={getCategoryImage(item.category, `${item.slug}-alt`)}
+                        src={item.cover_image || getCategoryImage(item.category, item.slug)}
                         alt=""
                         className="w-full h-full object-cover transition group-hover:scale-105 duration-500"
                         style={{ filter: "brightness(0.35) saturate(0.6)" }}
