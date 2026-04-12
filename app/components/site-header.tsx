@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { createPortal } from "react-dom";
 import Link from "next/link";
-import { usePathname, useRouter } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 
 type Props = { activeNav?: string; maxWidth?: string; };
 
@@ -26,13 +26,13 @@ function navHrefMatches(pathname: string, href: string): boolean {
 }
 
 export default function SiteHeader({ activeNav, maxWidth = "max-w-7xl" }: Props) {
-  const pathname = usePathname();
   const router = useRouter();
+  const pathname = usePathname();
+  const isEn = pathname.startsWith("/en");
+
   const [open, setOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
   const [scrolled, setScrolled] = useState(false);
-
-  const isEn = pathname.startsWith("/en");
 
   const NAV_ITEMS = isEn
     ? [
@@ -52,7 +52,8 @@ export default function SiteHeader({ activeNav, maxWidth = "max-w-7xl" }: Props)
 
   function toggleLang() {
     if (isEn) {
-      router.push(pathname.replace(/^\/en/, "") || "/");
+      const newPath = pathname.replace(/^\/en/, "") || "/";
+      router.push(newPath);
     } else {
       router.push("/en" + pathname);
     }

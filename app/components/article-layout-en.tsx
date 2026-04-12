@@ -82,7 +82,6 @@ type Props = {
   playerName?: string;
   showNewsSection?: boolean;
   children?: React.ReactNode;
-  lang?: "tr" | "en";
   isPending?: boolean;
 };
 
@@ -103,7 +102,6 @@ export default function ArticleLayoutEn({
   playerName,
   showNewsSection = false,
   isPending = false,
-  lang = "en",
   children,
 }: Props) {
   const [similar, setSimilar] = useState<SidebarItem[]>([]);
@@ -214,7 +212,7 @@ export default function ArticleLayoutEn({
   const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(title + " | Scout Gamer " + shareUrl)}`;
 
   return (
-    <main lang={lang} style={{ background: "var(--sg-bg)", color: "var(--sg-text-primary)", minHeight: "100vh" }}>
+    <main lang="en" style={{ background: "var(--sg-bg)", color: "var(--sg-text-primary)", minHeight: "100vh" }}>
       <title>{title} | Scout Gamer</title>
       <meta name="description" content={description} />
       <meta property="og:title" content={`${title} | Scout Gamer`} />

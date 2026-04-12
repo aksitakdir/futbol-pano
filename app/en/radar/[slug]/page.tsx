@@ -131,7 +131,6 @@ export default function EnRadarDetailPage() {
       youtubeQuery1={article.youtube_query_1}
       youtubeQuery2={article.youtube_query_2}
       playerName={article.player_name}
-      lang="en"
       isPending={!hasEnglish}
     >
       {playerCardData && (
