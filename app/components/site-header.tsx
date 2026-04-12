@@ -29,7 +29,7 @@ function Wordmark({ isEn }: { isEn: boolean }) {
         SCOUT GAMER
       </span>
       <span style={{ fontFamily: "var(--font-headline)", color: "var(--sg-text-muted)", fontSize: "9px", fontWeight: 700, letterSpacing: "0.18em", marginTop: "2px" }}>
-        {isEn ? "FOOTBALL x GAME CULTURE" : "FUTBOL x OYUN KULTURU"}
+        {isEn ? "FOOTBALL x GAME CULTURE" : "FUTBOL x OYUN KÜLTÜRÜ"}
       </span>
     </Link>
   );
