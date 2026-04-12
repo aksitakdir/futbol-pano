@@ -41,7 +41,7 @@ export default function SiteHeader({ activeNav, maxWidth = "max-w-7xl" }: Props)
         { href: "/en/listeler", label: "Scouting Lists", key: "listeler" },
         { href: "/en/radar", label: "Radar", key: "radar" },
         { href: "/en/taktik-lab", label: "Tactics Lab", key: "taktik-lab" },
-        { href: "/arena", label: "Arena", key: "arena" },
+        { href: "/en/arena", label: "Arena", key: "arena" },
       ]
     : [
         { href: "/", label: "Ana Sayfa", key: "home" },
@@ -145,7 +145,16 @@ export default function SiteHeader({ activeNav, maxWidth = "max-w-7xl" }: Props)
             return (
               <Link key={item.key} href={item.href}
                 className="relative px-4 py-2 transition-all duration-200"
-                style={{ fontFamily: "var(--font-headline)", fontSize: "11px", fontWeight: 700, letterSpacing: "0.12em", textTransform: "uppercase" as const, color: isActive ? "var(--sg-primary)" : "var(--sg-text-muted)" }}>
+                style={{
+                  fontFamily: "var(--font-headline)",
+                  fontSize: "11px",
+                  fontWeight: 700,
+                  letterSpacing: "0.12em",
+                  textTransform: "uppercase",
+                  fontLanguageOverride: "normal",
+                  color: isActive ? "var(--sg-primary)" : "var(--sg-text-muted)",
+                }}
+              >
                 {item.label}
                 {isActive && (
                   <span className="absolute bottom-0 left-1/2 -translate-x-1/2 h-0.5 w-4 rounded-full"

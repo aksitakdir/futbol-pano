@@ -16,6 +16,9 @@ export type ArenaBracketConfig = {
   /** Ana arena sayfası kart başlığı */
   cardTitle: string;
   cardDescription: string;
+  /** EN arena listing (`/en/arena`) */
+  cardTitleEn: string;
+  cardDescriptionEn: string;
   /** Ana sayfa hero slider — başlık */
   heroTitle: string;
   /** Ana sayfa hero — kısa teaser (tek slide için) */
@@ -29,6 +32,9 @@ export const ARENA_BRACKETS: ArenaBracketConfig[] = [
     cardTitle: "Gelecek Yıldızlar",
     cardDescription:
       "16 genç yetenek; her açılışta rastgele eşleşmeler. Yamal’dan Mainoo’ya sen kimin şampiyon olacağını seç.",
+    cardTitleEn: "Future Stars",
+    cardDescriptionEn:
+      "16 young talents; random matchups every time. From Yamal to Mainoo — you pick who becomes champion.",
     heroTitle: "Gelecek Yıldızlar Turnuvası",
     heroTeaser: "16 isim, tek şampiyon. Sen seç.",
   },
@@ -38,6 +44,9 @@ export const ARENA_BRACKETS: ArenaBracketConfig[] = [
     cardTitle: "Şampiyonlar Ligi 25-26",
     cardDescription:
       "25-26 sezonu son 16 eşleşmeleriyle sabit bracket — kupayı hangi takıma veriyorsun?",
+    cardTitleEn: "Champions League 25–26",
+    cardDescriptionEn:
+      "Fixed bracket with the 25–26 season round of 16 — which club lifts the trophy?",
     heroTitle: "Şampiyonlar Ligi 25-26",
     heroTeaser: "Kupayı kime veriyorsun?",
   },
@@ -47,6 +56,9 @@ export const ARENA_BRACKETS: ArenaBracketConfig[] = [
     cardTitle: "Teknik Direktör Arenası",
     cardDescription:
       "Guardiola’dan Mourinho’ya 16 teknik direktör; her seferinde rastgele çiftler.",
+    cardTitleEn: "Manager Arena",
+    cardDescriptionEn:
+      "16 managers from Guardiola to Mourinho; random pairings every run.",
     heroTitle: "Teknik Direktör Arenası",
     heroTeaser: "Tarihin en iyi teknik direktörü kim?",
   },
@@ -56,6 +68,9 @@ export const ARENA_BRACKETS: ArenaBracketConfig[] = [
     cardTitle: "Süper Lig Efsaneleri",
     cardDescription:
       "Emre’den Terim’e 16 efsane; her yüklemede yeni eşleşmelerle tek taç.",
+    cardTitleEn: "Süper Lig Legends",
+    cardDescriptionEn:
+      "16 legends from Emre to Terim; fresh matchups each load, one crown.",
     heroTitle: "Süper Lig Efsaneleri",
     heroTeaser: "Efsaneler arasında kim kazanır?",
   },
@@ -65,6 +80,9 @@ export const ARENA_BRACKETS: ArenaBracketConfig[] = [
     cardTitle: "Türkiye'de Oynamış En İyi Yabancılar",
     cardDescription:
       "Drogba’dan Sneijder’a unutulmaz isimler; rastgele bracket ile favorini seç.",
+    cardTitleEn: "Best Foreign Players in Turkey",
+    cardDescriptionEn:
+      "Unforgettable names from Drogba to Sneijder; random bracket, pick your favourite.",
     heroTitle: "Türkiye'nin En İyi Yabancıları",
     heroTeaser: "Türkiye'nin en iyi yabancısı kim?",
   },

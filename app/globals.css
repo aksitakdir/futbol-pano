@@ -39,6 +39,7 @@ body {
   background: var(--sg-bg);
   color: var(--sg-text-primary);
   font-family: var(--font-body);
+  font-language-override: "ENG";
 }
 
 /* Başlıklar Space Grotesk ile */
