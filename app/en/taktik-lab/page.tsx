@@ -3,23 +3,80 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { motion } from "framer-motion";
-import { IconClock } from "../../components/icons";
 import SiteHeader from "../../components/site-header";
 import SiteFooter from "../../components/site-footer";
 import { supabase } from "@/lib/supabase";
-import { stripHtml, estimateReadMinutes } from "@/lib/utils";
+import { stripHtml } from "@/lib/utils";
 
 type Content = { id: string; title: string; title_en?: string; slug: string; content: string; created_at: string };
 
 const easeOut = [0.22, 1, 0.36, 1] as [number, number, number, number];
 const stagger = { hidden: {}, visible: { transition: { staggerChildren: 0.08 } } };
 const fadeUp = { hidden: { opacity: 0, y: 20 }, visible: { opacity: 1, y: 0, transition: { duration: 0.5, ease: easeOut } } };
+
 const ACCENT = "var(--sg-tertiary)";
-const ACCENTS = ["var(--sg-tertiary)", "var(--sg-primary)", "var(--sg-secondary)", "var(--sg-amber)"];
+
+type Archetype = { name: string; slug: string; description: string; position: string; color: string; icon: string };
+
+const ARCHETYPES: Archetype[] = [
+  {
+    name: "Box-to-Box Engine",
+    slug: "box-to-box-engine",
+    description: "High-intensity dynamism covering every blade of grass—the link between defensive graft and attacking transitions.",
+    position: "Midfield",
+    color: "var(--sg-secondary)",
+    icon: "⚡",
+  },
+  {
+    name: "Ball-Playing CB",
+    slug: "ball-playing-cb",
+    description: "Builds from the back: breaks the press with vertical passes and steers how the team progresses the ball.",
+    position: "Defence",
+    color: "var(--sg-primary)",
+    icon: "🏗️",
+  },
+  {
+    name: "Inverted Winger",
+    slug: "inverted-winger",
+    description: "Cuts inside to overload half-spaces, combining creativity and finishing from wide into central zones.",
+    position: "Attack",
+    color: "var(--sg-rose)",
+    icon: "↩",
+  },
+  {
+    name: "Inverted Full-back",
+    slug: "inverted-fullback",
+    description: "Steps into midfield from the back line, acting as an extra playmaker when the team has possession.",
+    position: "Defence",
+    color: "var(--sg-primary)",
+    icon: "⇄",
+  },
+  {
+    name: "False 9",
+    slug: "false-9",
+    description: "Drops deep to connect midfield and attack, pulling centre-backs out of shape and opening lanes.",
+    position: "Attack",
+    color: "var(--sg-rose)",
+    icon: "9",
+  },
+  {
+    name: "High Press Striker",
+    slug: "high-press-striker",
+    description: "The first line of defence: aggressive pressing without the ball sets the team’s defensive rhythm.",
+    position: "Attack",
+    color: "var(--sg-rose)",
+    icon: "↑",
+  },
+];
+
+const posColor: Record<string, string> = {
+  Midfield: "var(--sg-secondary)",
+  Defence: "var(--sg-primary)",
+  Attack: "var(--sg-rose, #fb7185)",
+};
 
 export default function EnTaktikLabPage() {
-  const [articles, setArticles] = useState<Content[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [dbContents, setDbContents] = useState<Content[]>([]);
 
   useEffect(() => {
     supabase
@@ -29,8 +86,7 @@ export default function EnTaktikLabPage() {
       .eq("category", "taktik-lab")
       .order("created_at", { ascending: false })
       .then(({ data }) => {
-        setArticles(data ?? []);
-        setLoading(false);
+        if (data?.length) setDbContents(data);
       });
   }, []);
 
@@ -47,69 +103,91 @@ export default function EnTaktikLabPage() {
             <div className="mb-5 flex items-center gap-3">
               <div className="h-[2px] w-12" style={{ background: ACCENT }} />
               <span className="text-[10px] font-bold uppercase tracking-[0.3em]" style={{ color: ACCENT, fontFamily: "var(--font-headline)" }}>
-                Tactics Lab
+                Tactical Analysis
               </span>
             </div>
             <h1 className="mb-5 font-bold leading-none tracking-tighter" style={{ fontFamily: "var(--font-headline)", fontSize: "clamp(2.5rem, 6vw, 4.5rem)" }}>
-              Tactical <span style={{ color: ACCENT }}>Archive</span>
+              Tactics <span style={{ color: ACCENT }}>Lab</span>
             </h1>
             <p className="max-w-2xl text-base leading-relaxed" style={{ color: "var(--sg-text-secondary)" }}>
-              Formation ideas, positional trends and modern-game breakdowns from a scout-minded angle.
+              Position archetypes, tactical systems and game plan analyses from a scout&apos;s perspective.
             </p>
           </div>
         </div>
         <div className="mx-auto max-w-7xl px-8 pb-20">
-          {loading ? (
-            <div className="flex justify-center py-20">
-              <span
-                className="h-5 w-5 animate-spin rounded-full border-2 border-t-transparent"
-                style={{ borderColor: ACCENT, borderTopColor: "transparent" }}
-              />
-            </div>
-          ) : (
-            <motion.div className="grid gap-4 md:grid-cols-2" variants={stagger} initial="hidden" animate="visible">
-              {articles.map((article, index) => {
-                const accent = ACCENTS[index % ACCENTS.length];
-                const hasEn = !!article.title_en;
-                return (
-                  <motion.div key={article.id} variants={fadeUp}>
-                    <Link
-                      href={`/en/taktik-lab/${article.slug}`}
-                      className="group flex h-full flex-col transition hover:-translate-y-0.5"
-                      style={{ background: "var(--sg-surface)", borderLeft: `3px solid ${accent}` }}
-                    >
-                      <div className="flex flex-1 flex-col p-5">
-                        <div className="mb-4 flex items-center justify-between">
-                          <span className="text-[9px] font-bold uppercase tracking-[0.2em]" style={{ color: accent, fontFamily: "var(--font-headline)" }}>
-                            Tactics Lab
-                          </span>
-                          <div className="flex items-center gap-3">
-                            {!hasEn && (
-                              <span className="px-1.5 py-0.5 text-[9px] font-bold uppercase" style={{ background: "rgba(249,189,34,0.15)", color: "var(--sg-amber)", fontFamily: "var(--font-headline)" }}>
-                                Coming Soon
-                              </span>
-                            )}
-                            <span className="flex items-center gap-1 text-[10px]" style={{ color: "var(--sg-text-muted)" }}>
-                              <IconClock /> {estimateReadMinutes(article.content)} min
-                            </span>
-                          </div>
-                        </div>
-                        <h2 className="mb-3 line-clamp-2 text-sm font-bold leading-snug" style={{ fontFamily: "var(--font-headline)", color: "var(--sg-text-primary)" }}>
-                          {article.title_en || article.title}
-                        </h2>
-                        <p className="mb-4 line-clamp-3 text-xs leading-relaxed" style={{ color: "var(--sg-text-secondary)" }}>
-                          {stripHtml(article.content).replace(/\s+/g, " ").trim().slice(0, 160)}…
-                        </p>
-                        <div className="mt-auto inline-flex items-center gap-1 text-[11px] font-bold" style={{ color: accent, fontFamily: "var(--font-headline)" }}>
-                          Read <span className="transition-transform group-hover:translate-x-0.5">→</span>
-                        </div>
+          {dbContents.length > 0 && (
+            <motion.section className="mb-8 grid gap-4 md:grid-cols-2 lg:grid-cols-3" variants={stagger} initial="hidden" animate="visible">
+              {dbContents.map((item) => (
+                <motion.div key={item.id} variants={fadeUp}>
+                  <Link
+                    href={`/en/taktik-lab/${item.slug}`}
+                    className="group flex h-full flex-col transition hover:-translate-y-0.5"
+                    style={{ background: "var(--sg-surface)", borderLeft: `3px solid ${ACCENT}` }}
+                  >
+                    <div className="flex flex-1 flex-col p-5">
+                      <div className="mb-3 flex items-center justify-between">
+                        <span className="text-[9px] font-bold uppercase tracking-[0.2em]" style={{ color: ACCENT, fontFamily: "var(--font-headline)" }}>
+                          Analysis
+                        </span>
+                        <span className="text-[10px]" style={{ color: "var(--sg-text-muted)" }}>
+                          {new Date(item.created_at).toLocaleDateString("en-US", { day: "numeric", month: "short" })}
+                        </span>
                       </div>
-                    </Link>
-                  </motion.div>
-                );
-              })}
-            </motion.div>
+                      <h2 className="mb-2 line-clamp-2 text-sm font-bold" style={{ fontFamily: "var(--font-headline)", color: "var(--sg-text-primary)" }}>
+                        {item.title_en || item.title}
+                      </h2>
+                      <p className="mb-4 line-clamp-2 text-xs leading-relaxed" style={{ color: "var(--sg-text-secondary)" }}>
+                        {stripHtml(item.content).trim().slice(0, 120)}…
+                      </p>
+                      <div className="mt-auto inline-flex items-center gap-1 text-[11px] font-bold" style={{ color: ACCENT, fontFamily: "var(--font-headline)" }}>
+                        Read <span className="transition-transform group-hover:translate-x-0.5">→</span>
+                      </div>
+                    </div>
+                  </Link>
+                </motion.div>
+              ))}
+            </motion.section>
           )}
+          <motion.section className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3" variants={stagger} initial="hidden" animate="visible">
+            {ARCHETYPES.map((arch) => (
+              <motion.article key={arch.slug} variants={fadeUp}>
+                <Link
+                  href={`/en/taktik-lab/${arch.slug}`}
+                  className="group flex h-full flex-col transition hover:-translate-y-0.5"
+                  style={{ background: "var(--sg-surface)", borderLeft: `3px solid ${arch.color}` }}
+                >
+                  <div className="relative flex flex-1 flex-col overflow-hidden p-6">
+                    <div
+                      className="pointer-events-none absolute -right-2 -top-2 select-none text-[80px] opacity-[0.04]"
+                      style={{ fontFamily: "var(--font-headline)", color: arch.color }}
+                    >
+                      {arch.icon}
+                    </div>
+                    <div className="mb-5 flex h-10 w-10 items-center justify-center text-lg" style={{ background: `${arch.color}15`, color: arch.color }}>
+                      {arch.icon}
+                    </div>
+                    <h2 className="mb-3 font-mono text-base font-bold uppercase tracking-tight" style={{ color: "var(--sg-text-primary)" }}>
+                      {arch.name}
+                    </h2>
+                    <p className="mb-5 text-xs leading-relaxed" style={{ color: "var(--sg-text-secondary)" }}>
+                      {arch.description}
+                    </p>
+                    <div className="mt-auto flex items-center justify-between">
+                      <span
+                        className="text-[9px] font-bold uppercase tracking-[0.2em]"
+                        style={{ color: posColor[arch.position] ?? arch.color, fontFamily: "var(--font-headline)" }}
+                      >
+                        {arch.position}
+                      </span>
+                      <span className="text-[11px] font-bold transition-transform group-hover:translate-x-0.5" style={{ color: arch.color, fontFamily: "var(--font-headline)" }}>
+                        →
+                      </span>
+                    </div>
+                  </div>
+                </Link>
+              </motion.article>
+            ))}
+          </motion.section>
         </div>
       </motion.div>
       <SiteFooter maxWidth="max-w-7xl" />

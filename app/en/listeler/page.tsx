@@ -3,34 +3,49 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { motion } from "framer-motion";
-import { IconClock } from "../../components/icons";
 import SiteHeader from "../../components/site-header";
 import SiteFooter from "../../components/site-footer";
 import { supabase } from "@/lib/supabase";
-import { stripHtml, estimateReadMinutes } from "@/lib/utils";
 
-type Content = { id: string; title: string; title_en?: string; slug: string; content: string; created_at: string };
+type Content = { id: string; title: string; title_en?: string; slug: string; created_at: string };
 
 const easeOut = [0.22, 1, 0.36, 1] as [number, number, number, number];
 const stagger = { hidden: {}, visible: { transition: { staggerChildren: 0.08 } } };
 const fadeUp = { hidden: { opacity: 0, y: 20 }, visible: { opacity: 1, y: 0, transition: { duration: 0.5, ease: easeOut } } };
-const ACCENT = "var(--sg-secondary)";
-const ACCENTS = ["var(--sg-secondary)", "var(--sg-primary)", "var(--sg-tertiary)", "var(--sg-amber)"];
+
+const STATIC_LISTS = [
+  {
+    slug: "en-iyi-10-genc-stoper",
+    title: "Top 10 Young Centre-Backs",
+    description: "Detailed analysis of players fitting the modern CB profile under 23 across European leagues.",
+    color: "var(--sg-primary)",
+  },
+  {
+    slug: "super-lig-gizli-isimler",
+    title: "Hidden Gems of the Süper Lig",
+    description: "Names just entering the radar of major clubs, standing out on the data side.",
+    color: "var(--sg-secondary)",
+  },
+  {
+    slug: "surpriz-isimler-2025",
+    title: "Surprise Performers of 2025",
+    description: "Players who exceeded expectations in 2025, making statistical breakthroughs.",
+    color: "var(--sg-amber)",
+  },
+];
 
 export default function EnListelerPage() {
-  const [articles, setArticles] = useState<Content[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [dbLists, setDbLists] = useState<Content[]>([]);
 
   useEffect(() => {
     supabase
       .from("contents")
-      .select("id,title,title_en,slug,content,created_at")
+      .select("id,title,title_en,slug,created_at")
       .eq("status", "yayinda")
       .eq("category", "listeler")
       .order("created_at", { ascending: false })
       .then(({ data }) => {
-        setArticles(data ?? []);
-        setLoading(false);
+        if (data?.length) setDbLists(data);
       });
   }, []);
 
@@ -45,71 +60,74 @@ export default function EnListelerPage() {
           />
           <div className="relative max-w-3xl">
             <div className="mb-5 flex items-center gap-3">
-              <div className="h-[2px] w-12" style={{ background: ACCENT }} />
-              <span className="text-[10px] font-bold uppercase tracking-[0.3em]" style={{ color: ACCENT, fontFamily: "var(--font-headline)" }}>
-                Scouting Lists
+              <div className="h-[2px] w-12" style={{ background: "var(--sg-secondary)" }} />
+              <span className="text-[10px] font-bold uppercase tracking-[0.3em]" style={{ color: "var(--sg-secondary)", fontFamily: "var(--font-headline)" }}>
+                Curated Lists
               </span>
             </div>
             <h1 className="mb-5 font-bold leading-none tracking-tighter" style={{ fontFamily: "var(--font-headline)", fontSize: "clamp(2.5rem, 6vw, 4.5rem)" }}>
-              Curated <span style={{ color: ACCENT }}>Lists</span>
+              Scouting <span style={{ color: "var(--sg-secondary)" }}>Lists</span>
             </h1>
             <p className="max-w-2xl text-base leading-relaxed" style={{ color: "var(--sg-text-secondary)" }}>
-              Position-based rankings, age-group breakdowns and data-backed shortlists — scout notes included.
+              Curated lists by league, position and age group. Data and scout observations combined.
             </p>
           </div>
         </div>
         <div className="mx-auto max-w-7xl px-8 pb-20">
-          {loading ? (
-            <div className="flex justify-center py-20">
-              <span
-                className="h-5 w-5 animate-spin rounded-full border-2 border-t-transparent"
-                style={{ borderColor: ACCENT, borderTopColor: "transparent" }}
-              />
-            </div>
-          ) : (
-            <motion.div className="grid gap-4 md:grid-cols-2" variants={stagger} initial="hidden" animate="visible">
-              {articles.map((article, index) => {
-                const accent = ACCENTS[index % ACCENTS.length];
-                const hasEn = !!article.title_en;
-                return (
-                  <motion.div key={article.id} variants={fadeUp}>
-                    <Link
-                      href={`/en/listeler/${article.slug}`}
-                      className="group flex h-full flex-col transition hover:-translate-y-0.5"
-                      style={{ background: "var(--sg-surface)", borderLeft: `3px solid ${accent}` }}
-                    >
-                      <div className="flex flex-1 flex-col p-5">
-                        <div className="mb-4 flex items-center justify-between">
-                          <span className="text-[9px] font-bold uppercase tracking-[0.2em]" style={{ color: accent, fontFamily: "var(--font-headline)" }}>
-                            Lists
-                          </span>
-                          <div className="flex items-center gap-3">
-                            {!hasEn && (
-                              <span className="px-1.5 py-0.5 text-[9px] font-bold uppercase" style={{ background: "rgba(249,189,34,0.15)", color: "var(--sg-amber)", fontFamily: "var(--font-headline)" }}>
-                                Coming Soon
-                              </span>
-                            )}
-                            <span className="flex items-center gap-1 text-[10px]" style={{ color: "var(--sg-text-muted)" }}>
-                              <IconClock /> {estimateReadMinutes(article.content)} min
-                            </span>
-                          </div>
-                        </div>
-                        <h2 className="mb-3 line-clamp-2 text-sm font-bold leading-snug" style={{ fontFamily: "var(--font-headline)", color: "var(--sg-text-primary)" }}>
-                          {article.title_en || article.title}
-                        </h2>
-                        <p className="mb-4 line-clamp-3 text-xs leading-relaxed" style={{ color: "var(--sg-text-secondary)" }}>
-                          {stripHtml(article.content).replace(/\s+/g, " ").trim().slice(0, 160)}…
-                        </p>
-                        <div className="mt-auto inline-flex items-center gap-1 text-[11px] font-bold" style={{ color: accent, fontFamily: "var(--font-headline)" }}>
-                          Read <span className="transition-transform group-hover:translate-x-0.5">→</span>
-                        </div>
+          {dbLists.length > 0 && (
+            <motion.section className="mb-8 grid gap-4 md:grid-cols-2 lg:grid-cols-3" variants={stagger} initial="hidden" animate="visible">
+              {dbLists.map((item) => (
+                <motion.div key={item.id} variants={fadeUp}>
+                  <Link
+                    href={`/en/listeler/${item.slug}`}
+                    className="group flex h-full flex-col transition hover:-translate-y-0.5"
+                    style={{ background: "var(--sg-surface)" }}
+                  >
+                    <div className="h-[3px]" style={{ background: "var(--sg-secondary)" }} />
+                    <div className="flex flex-1 flex-col p-5">
+                      <div className="mb-3 flex items-center justify-between">
+                        <span className="text-[9px] font-bold uppercase tracking-[0.2em]" style={{ color: "var(--sg-secondary)", fontFamily: "var(--font-headline)" }}>
+                          New
+                        </span>
+                        <span className="text-[10px]" style={{ color: "var(--sg-text-muted)" }}>
+                          {new Date(item.created_at).toLocaleDateString("en-US", { day: "numeric", month: "short" })}
+                        </span>
                       </div>
-                    </Link>
-                  </motion.div>
-                );
-              })}
-            </motion.div>
+                      <h2 className="mb-4 text-sm font-bold leading-snug" style={{ fontFamily: "var(--font-headline)", color: "var(--sg-text-primary)" }}>
+                        {item.title_en || item.title}
+                      </h2>
+                      <div className="mt-auto inline-flex items-center gap-1 text-[11px] font-bold" style={{ color: "var(--sg-secondary)", fontFamily: "var(--font-headline)" }}>
+                        View List <span className="transition-transform group-hover:translate-x-0.5">→</span>
+                      </div>
+                    </div>
+                  </Link>
+                </motion.div>
+              ))}
+            </motion.section>
           )}
+          <motion.section className="grid gap-4 md:grid-cols-2 lg:grid-cols-3" variants={stagger} initial="hidden" animate="visible">
+            {STATIC_LISTS.map((list) => (
+              <motion.div key={list.slug} variants={fadeUp}>
+                <Link
+                  href={`/en/listeler/${list.slug}`}
+                  className="group flex h-full flex-col transition hover:-translate-y-0.5"
+                  style={{ background: "var(--sg-surface)", borderLeft: `3px solid ${list.color}` }}
+                >
+                  <div className="flex flex-1 flex-col p-5">
+                    <h2 className="mb-2 text-sm font-bold" style={{ fontFamily: "var(--font-headline)", color: "var(--sg-text-primary)" }}>
+                      {list.title}
+                    </h2>
+                    <p className="mb-4 text-xs leading-relaxed" style={{ color: "var(--sg-text-secondary)" }}>
+                      {list.description}
+                    </p>
+                    <div className="mt-auto inline-flex items-center gap-1 text-[11px] font-bold" style={{ color: list.color, fontFamily: "var(--font-headline)" }}>
+                      View List <span className="transition-transform group-hover:translate-x-0.5">→</span>
+                    </div>
+                  </div>
+                </Link>
+              </motion.div>
+            ))}
+          </motion.section>
         </div>
       </motion.div>
       <SiteFooter maxWidth="max-w-7xl" />
