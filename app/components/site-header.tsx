@@ -24,13 +24,56 @@ const CAT_COLOR: Record<string, string> = { listeler: "var(--sg-secondary)", rad
 
 function Wordmark({ isEn }: { isEn: boolean }) {
   return (
-    <Link href={isEn ? "/en" : "/"} className="flex flex-col items-start leading-none">
-      <span style={{ fontFamily: "var(--font-headline)", color: "var(--sg-primary)", fontSize: "20px", fontWeight: 700, letterSpacing: "-0.03em", textShadow: "0 0 20px rgba(70,241,197,0.3)" }}>
-        SCOUT GAMER
-      </span>
-      <span style={{ fontFamily: "var(--font-headline)", color: "var(--sg-text-muted)", fontSize: "9px", fontWeight: 700, letterSpacing: "0.18em", marginTop: "2px" }}>
-        {isEn ? "FOOTBALL x GAME CULTURE" : "FUTBOL x OYUN KÜLTÜRÜ"}
-      </span>
+    <Link href={isEn ? "/en" : "/"} className="flex items-center gap-3">
+      <div
+        style={{
+          width: 32,
+          height: 32,
+          borderRadius: 4,
+          flexShrink: 0,
+          background: "linear-gradient(135deg, var(--accent), var(--accent-2), var(--accent-3))",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+        }}
+      >
+        <span
+          style={{
+            fontFamily: "var(--font-headline)",
+            fontSize: 18,
+            fontWeight: 700,
+            color: "var(--ink-900)",
+            lineHeight: 1,
+          }}
+        >
+          S
+        </span>
+      </div>
+      <div className="flex flex-col items-start leading-none">
+        <span
+          style={{
+            fontFamily: "var(--font-headline)",
+            fontSize: 18,
+            fontWeight: 700,
+            letterSpacing: "-0.02em",
+            color: "var(--ink-100)",
+            lineHeight: 1,
+          }}
+        >
+          Scout Gamer
+        </span>
+        <span
+          style={{
+            fontFamily: "var(--font-mono)",
+            fontSize: 9,
+            letterSpacing: "0.18em",
+            color: "var(--ink-400)",
+            marginTop: 3,
+          }}
+        >
+          {isEn ? "FOOTBALL x GAME CULTURE" : "FUTBOL x OYUN KULTURU"}
+        </span>
+      </div>
     </Link>
   );
 }
