@@ -380,7 +380,7 @@ export default function Home() {
                       })()}
                     </p>
                     <Link href={`${categoryPath(item.slide.category)}/${item.slide.slug}`}
-                      className="inline-flex items-center gap-2 px-8 py-3.5 font-bold uppercase tracking-wider transition-all hover:brightness-110 active:scale-95"
+                      className="sg-btn sg-btn-solid inline-flex items-center gap-2 px-8 py-3.5 font-bold uppercase tracking-wider transition-all hover:brightness-110 active:scale-95"
                       style={{
                         background: "var(--sg-primary)", color: "#060f1e",
                         fontFamily: "var(--font-headline)", fontSize: "12px",
@@ -450,9 +450,8 @@ export default function Home() {
         <section className="py-10 px-8 max-w-7xl mx-auto">
           <div className="flex items-end justify-between mb-8">
             <div>
-              <p className="text-[10px] font-bold uppercase tracking-[0.25em] mb-1"
-                style={{ color: "var(--sg-primary)", fontFamily: "var(--font-headline)" }}>Keşfet</p>
-              <h2 className="text-3xl md:text-4xl font-bold" style={{ fontFamily: "var(--font-headline)" }}>Son Eklenenler</h2>
+              <p className="eyebrow" style={{ marginBottom: 8 }}>Keşfet</p>
+              <h2 className="display" style={{ fontSize: "clamp(2rem, 4vw, 3rem)", fontWeight: 700, margin: 0 }}>Son Eklenenler</h2>
             </div>
           </div>
           <div className="grid grid-cols-1 gap-4 lg:grid-cols-12">
@@ -561,8 +560,8 @@ export default function Home() {
         </div>
         <div className="max-w-7xl mx-auto px-8">
           <div className="mb-10">
-            <p className="text-[10px] font-bold uppercase tracking-[0.25em] mb-1" style={{ color: "var(--sg-primary)", fontFamily: "var(--font-headline)" }}>Öne Çıkan Profil</p>
-            <h2 className="text-3xl md:text-4xl font-bold" style={{ fontFamily: "var(--font-headline)" }}>Bu Haftanın Radar Oyuncusu</h2>
+            <p className="eyebrow" style={{ marginBottom: 8 }}>Öne Çıkan Profil</p>
+            <h2 className="display" style={{ fontSize: "clamp(1.8rem, 3vw, 2.5rem)", fontWeight: 700, margin: 0 }}>Bu Haftanın Radar Oyuncusu</h2>
           </div>
 
           {featuredLoading ? (
@@ -622,8 +621,8 @@ export default function Home() {
       {/* ── Bu Dönem Dikkat Çekenler ──────────────────────────────────────── */}
       <section className="py-20 px-8 max-w-7xl mx-auto">
         <div className="mb-8">
-          <p className="text-[10px] font-bold uppercase tracking-[0.25em] mb-1" style={{ color: "var(--sg-secondary)", fontFamily: "var(--font-headline)" }}>Radarımızda</p>
-          <h2 className="text-3xl md:text-4xl font-bold" style={{ fontFamily: "var(--font-headline)" }}>Bu Dönem Dikkat Çekenler</h2>
+          <p className="eyebrow" style={{ marginBottom: 8 }}>Radarımızda</p>
+          <h2 className="display" style={{ fontSize: "clamp(1.8rem, 3vw, 2.5rem)", fontWeight: 700, margin: 0 }}>Bu Dönem Dikkat Çekenler</h2>
         </div>
 
         {formLoading ? (
@@ -666,9 +665,8 @@ export default function Home() {
           <motion.div variants={fadeUp} initial="hidden" whileInView="visible" viewport={{ once: true, margin: "-60px" }}>
             <div className="mb-6 flex items-end justify-between">
               <div>
-                <p className="text-[10px] font-bold uppercase tracking-[0.25em] mb-1"
-                  style={{ color: "var(--sg-tertiary)", fontFamily: "var(--font-headline)" }}>Gündemden</p>
-                <h2 className="text-2xl md:text-3xl font-bold" style={{ fontFamily: "var(--font-headline)" }}>Öne Çıkan İçerikler</h2>
+                <p className="eyebrow" style={{ marginBottom: 8 }}>Gündemden</p>
+                <h2 className="display" style={{ fontSize: "clamp(1.8rem, 3vw, 2.5rem)", fontWeight: 700, margin: 0 }}>Öne Çıkan İçerikler</h2>
               </div>
             </div>
             <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
