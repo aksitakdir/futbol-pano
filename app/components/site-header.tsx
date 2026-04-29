@@ -308,7 +308,12 @@ export default function SiteHeader({ activeNav, maxWidth = "max-w-7xl", forceEn 
   return (
     <>
       <header className="fixed top-0 w-full z-50 transition-all duration-300"
-        style={{ background: scrolled ? "rgba(6,15,30,0.95)" : "rgba(6,15,30,0.7)", backdropFilter: "blur(20px)", WebkitBackdropFilter: "blur(20px)", borderBottom: "1px solid rgba(26,58,92,0.5)" }}>
+        style={{
+          background: scrolled ? "rgba(15,18,24,0.95)" : "rgba(15,18,24,0.85)",
+          backdropFilter: "blur(16px)",
+          WebkitBackdropFilter: "blur(16px)",
+          borderBottom: "1px solid var(--ink-700)",
+        }}>
         <nav className={`mx-auto flex ${maxWidth} items-center justify-between px-6`} style={{ height: "72px" }}>
           <Wordmark isEn={isEn} />
 
@@ -319,12 +324,17 @@ export default function SiteHeader({ activeNav, maxWidth = "max-w-7xl", forceEn 
               return (
                 <Link key={item.key} href={item.href}
                   className="relative px-4 py-2 transition-all duration-200"
-                  style={{ fontFamily: "var(--font-headline)", fontSize: "11px", fontWeight: 700, letterSpacing: "0.08em", color: isActive ? "var(--sg-primary)" : "var(--sg-text-muted)" }}>
+                  style={{
+                    fontFamily: "var(--font-mono)",
+                    fontSize: "11px",
+                    letterSpacing: "0.16em",
+                    padding: "8px 14px",
+                    borderRadius: 999,
+                    color: isActive ? "var(--accent)" : "var(--ink-300)",
+                    background: isActive ? "rgba(255,255,255,0.04)" : "transparent",
+                    border: `1px solid ${isActive ? "var(--ink-600)" : "transparent"}`,
+                  }}>
                   {item.label}
-                  {isActive && (
-                    <span className="absolute bottom-0 left-1/2 -translate-x-1/2 h-0.5 w-4 rounded-full"
-                      style={{ background: "var(--sg-primary)" }} />
-                  )}
                 </Link>
               );
             })}
@@ -334,26 +344,18 @@ export default function SiteHeader({ activeNav, maxWidth = "max-w-7xl", forceEn 
           <div className="hidden md:flex items-center gap-3">
             {/* Modern dil toggle pill */}
             <button type="button" onClick={toggleLang}
-              className="flex items-center gap-0 transition-all duration-200 hover:opacity-90"
-              style={{ background: "var(--sg-surface)", border: "1px solid rgba(26,58,92,0.6)", padding: "3px", gap: "0" }}>
-              <span className="px-3 py-1.5 text-[10px] font-bold transition-all duration-200"
-                style={{
-                  fontFamily: "var(--font-headline)",
-                  letterSpacing: "0.12em",
-                  background: !isEn ? "var(--sg-primary)" : "transparent",
-                  color: !isEn ? "#060f1e" : "var(--sg-text-muted)",
-                }}>
-                TR
-              </span>
-              <span className="px-3 py-1.5 text-[10px] font-bold transition-all duration-200"
-                style={{
-                  fontFamily: "var(--font-headline)",
-                  letterSpacing: "0.12em",
-                  background: isEn ? "var(--sg-secondary)" : "transparent",
-                  color: isEn ? "#060f1e" : "var(--sg-text-muted)",
-                }}>
-                EN
-              </span>
+              className="transition-all duration-200 hover:opacity-80"
+              style={{
+                fontFamily: "var(--font-mono)",
+                fontSize: 10,
+                letterSpacing: "0.14em",
+                border: "1px solid var(--ink-600)",
+                borderRadius: 999,
+                padding: "6px 12px",
+                color: "var(--ink-200)",
+                background: "transparent",
+              }}>
+              {isEn ? "EN ↔ TR" : "TR ↔ EN"}
             </button>
 
             {/* Search butonu */}
