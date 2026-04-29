@@ -6,7 +6,6 @@ import { motion } from "framer-motion";
 import { IconShield, IconTrendUp, IconStar } from "../components/icons";
 import SiteHeader from "../components/site-header";
 import SiteFooter from "../components/site-footer";
-import CategoryHero from "../components/category-hero";
 import { supabase } from "@/lib/supabase";
 
 type SupabaseContent = { id: string; title: string; slug: string; created_at: string; };
@@ -30,43 +29,44 @@ export default function ListsPage() {
   }, []);
 
   return (
-    <main style={{ background: "var(--sg-bg)", color: "var(--sg-text-primary)", minHeight: "100vh" }}>
+    <main style={{ background: "var(--ink-900)", color: "var(--ink-100)", minHeight: "100vh" }}>
       <SiteHeader activeNav="listeler" />
 
       <motion.div className="pt-[72px]" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, ease: easeOut }}>
 
-        <CategoryHero accent="var(--sg-secondary)">
-          <div className="max-w-3xl">
-            <p className="eyebrow" style={{ marginBottom: 12 }}>Kürasyonlu Listeler</p>
-            <h1 className="display" style={{ fontSize: "clamp(3rem, 8vw, 84px)", fontWeight: 700, lineHeight: 0.92, letterSpacing: "-0.04em", margin: "0 0 20px" }}>
-              Scout&apos;un <span style={{ color: "var(--cyan)" }}>Listeleri</span>
-            </h1>
-            <p style={{ fontSize: 18, color: "var(--ink-200)", lineHeight: 1.5, maxWidth: 540, margin: 0 }}>
-              Liglere, pozisyonlara ve yaş gruplarına göre kürasyonlu listeler.
+        {/* Header */}
+        <div style={{ maxWidth: 1440, margin: "0 auto", padding: "120px 32px 60px" }}>
+          <div style={{ display: "grid", gridTemplateColumns: "2fr 1fr", gap: 32, alignItems: "end", marginBottom: 40 }}>
+            <div>
+              <p className="eyebrow" style={{ marginBottom: 8 }}>ARŞİV</p>
+              <h1 className="display" style={{ fontSize: "clamp(56px, 8vw, 100px)", fontWeight: 700, letterSpacing: "-0.04em", margin: 0, lineHeight: 0.9, color: "var(--cyan)" }}>
+                Listeler
+              </h1>
+            </div>
+            <p style={{ fontSize: 18, color: "var(--ink-200)", lineHeight: 1.5, margin: 0 }}>
+              Kürasyonlu oyuncu listeleri. Her liste scout notları, istatistikler ve karşılaştırmalarla.
             </p>
           </div>
-        </CategoryHero>
-
-        <div className="max-w-7xl mx-auto px-8 pt-16 pb-20">
           {/* Filter bar */}
-          <div style={{ display: "flex", gap: 8, marginBottom: 32, paddingBottom: 16, borderBottom: "1px solid var(--ink-700)", flexWrap: "wrap" }}>
+          <div style={{ display: "flex", gap: 8, paddingBottom: 24, borderBottom: "1px solid var(--ink-700)", flexWrap: "wrap" }}>
             {["TÜMÜ", "GENÇ", "TRANSFER", "TAKTİK", "TÜRKİYE"].map((f, i) => (
-              <button key={f} type="button"
-                className={i === 0 ? "sg-chip sg-chip-solid" : "sg-chip"}
-                style={{ cursor: "pointer" }}>
+              <button key={f} type="button" className={i === 0 ? "sg-chip sg-chip-solid" : "sg-chip"} style={{ cursor: "pointer" }}>
                 {f}
               </button>
             ))}
           </div>
+        </div>
+
+        <div style={{ maxWidth: 1440, margin: "0 auto", padding: "0 32px 80px" }}>
           {dbLists.length > 0 && (
             <motion.section className="mb-16">
               <div className="flex items-center gap-3 mb-6">
                 <div className="h-px flex-1" style={{ background: "rgba(26,58,92,0.5)" }} />
                 <p className="text-[10px] font-bold uppercase tracking-[0.25em]"
-                  style={{ color: "var(--sg-secondary)", fontFamily: "var(--font-headline)" }}>Güncel Listeler</p>
+                  style={{ color: "var(--cyan)", fontFamily: "var(--font-headline)" }}>Güncel Listeler</p>
                 <div className="h-px flex-1" style={{ background: "rgba(26,58,92,0.5)" }} />
               </div>
-              <motion.div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3" variants={stagger} initial="hidden" animate="visible">
+              <motion.div className="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3" variants={stagger} initial="hidden" animate="visible">
                 {dbLists.map(item => {
                   const accentColor = "var(--sg-secondary)";
                   return (
@@ -79,12 +79,12 @@ export default function ListsPage() {
                           <span className="mono" style={{ fontSize: 9, letterSpacing: "0.18em", color: accentColor }}>
                             LİSTE
                           </span>
-                          <span className="text-[10px]" style={{ color: "var(--sg-text-muted)" }}>
+                          <span className="text-[10px]" style={{ color: "var(--ink-400)" }}>
                             {new Date(item.created_at).toLocaleDateString("tr-TR", { day: "numeric", month: "short" })}
                           </span>
                         </div>
                         <h2 className="text-sm font-bold leading-snug mb-4 line-clamp-2 transition"
-                          style={{ fontFamily: "var(--font-headline)", color: "var(--sg-text-primary)" }}>
+                          style={{ fontFamily: "var(--font-headline)", color: "var(--ink-100)" }}>
                           {item.title}
                         </h2>
                         <div className="mt-auto inline-flex items-center gap-1 text-[11px] font-bold"
@@ -104,10 +104,10 @@ export default function ListsPage() {
             <div className="flex items-center gap-3 mb-6">
               <div className="h-px flex-1" style={{ background: "rgba(26,58,92,0.5)" }} />
               <p className="text-[10px] font-bold uppercase tracking-[0.25em]"
-                style={{ color: "var(--sg-secondary)", fontFamily: "var(--font-headline)" }}>Öne Çıkan Listeler</p>
+                style={{ color: "var(--cyan)", fontFamily: "var(--font-headline)" }}>Öne Çıkan Listeler</p>
               <div className="h-px flex-1" style={{ background: "rgba(26,58,92,0.5)" }} />
             </div>
-            <motion.div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3" variants={stagger} initial="hidden" animate="visible">
+            <motion.div className="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3" variants={stagger} initial="hidden" animate="visible">
             {STATIC_LISTS.map(list => (
               <motion.div key={list.slug} variants={fadeUp}>
                 <Link href={`/listeler/${list.slug}`}
@@ -119,10 +119,10 @@ export default function ListsPage() {
                       {list.icon}
                     </div>
                     <h2 className="text-sm font-bold mb-2 transition"
-                      style={{ fontFamily: "var(--font-headline)", color: "var(--sg-text-primary)" }}>
+                      style={{ fontFamily: "var(--font-headline)", color: "var(--ink-100)" }}>
                       {list.title}
                     </h2>
-                    <p className="text-xs leading-relaxed mb-4" style={{ color: "var(--sg-text-secondary)" }}>
+                    <p className="text-xs leading-relaxed mb-4" style={{ color: "var(--ink-300)" }}>
                       {list.description}
                     </p>
                     <div className="mt-auto inline-flex items-center gap-1 text-[11px] font-bold transition"
