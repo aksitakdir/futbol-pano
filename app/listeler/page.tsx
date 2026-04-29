@@ -48,6 +48,16 @@ export default function ListsPage() {
         </CategoryHero>
 
         <div className="max-w-7xl mx-auto px-8 pt-16 pb-20">
+          {/* Filter bar */}
+          <div style={{ display: "flex", gap: 8, marginBottom: 32, paddingBottom: 16, borderBottom: "1px solid var(--ink-700)", flexWrap: "wrap" }}>
+            {["TÜMÜ", "GENÇ", "TRANSFER", "TAKTİK", "TÜRKİYE"].map((f, i) => (
+              <button key={f} type="button"
+                className={i === 0 ? "sg-chip sg-chip-solid" : "sg-chip"}
+                style={{ cursor: "pointer" }}>
+                {f}
+              </button>
+            ))}
+          </div>
           {dbLists.length > 0 && (
             <motion.section className="mb-16">
               <div className="flex items-center gap-3 mb-6">
@@ -57,15 +67,18 @@ export default function ListsPage() {
                 <div className="h-px flex-1" style={{ background: "rgba(26,58,92,0.5)" }} />
               </div>
               <motion.div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3" variants={stagger} initial="hidden" animate="visible">
-                {dbLists.map(item => (
+                {dbLists.map(item => {
+                  const accentColor = "var(--sg-secondary)";
+                  return (
                   <motion.div key={item.id} variants={fadeUp}>
                     <Link href={`/listeler/${item.slug}`}
                       className="group flex flex-col h-full transition hover:-translate-y-0.5"
                       style={{ background: "var(--ink-800)", border: "1px solid var(--ink-700)", borderLeft: "3px solid var(--sg-secondary)" }}>
                       <div className="flex flex-1 flex-col p-5">
                         <div className="flex items-center justify-between mb-3">
-                          <span className="text-[9px] font-bold uppercase tracking-[0.2em]"
-                            style={{ color: "var(--sg-secondary)", fontFamily: "var(--font-headline)" }}>Listeler</span>
+                          <span className="mono" style={{ fontSize: 9, letterSpacing: "0.18em", color: accentColor }}>
+                            LİSTE
+                          </span>
                           <span className="text-[10px]" style={{ color: "var(--sg-text-muted)" }}>
                             {new Date(item.created_at).toLocaleDateString("tr-TR", { day: "numeric", month: "short" })}
                           </span>
@@ -81,7 +94,8 @@ export default function ListsPage() {
                       </div>
                     </Link>
                   </motion.div>
-                ))}
+                  );
+                })}
               </motion.div>
             </motion.section>
           )}

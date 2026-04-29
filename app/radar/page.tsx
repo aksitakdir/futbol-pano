@@ -3,7 +3,6 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { motion } from "framer-motion";
-import { IconClock } from "../components/icons";
 import SiteHeader from "../components/site-header";
 import SiteFooter from "../components/site-footer";
 import CategoryHero from "../components/category-hero";
@@ -15,11 +14,6 @@ type SupabaseContent = { id: string; title: string; slug: string; content: strin
 const easeOut = [0.22, 1, 0.36, 1] as [number, number, number, number];
 const stagger = { hidden: {}, visible: { transition: { staggerChildren: 0.08, delayChildren: 0.1 } } };
 const fadeUp = { hidden: { opacity: 0, y: 20 }, visible: { opacity: 1, y: 0, transition: { duration: 0.5, ease: easeOut } } };
-
-function summary(content: string, max = 160): string {
-  const t = stripHtml(content).replace(/\s+/g, " ").trim();
-  return t.length > max ? `${t.slice(0, max)}…` : t;
-}
 
 export default function RadarPage() {
   const [articles, setArticles] = useState<SupabaseContent[]>([]);
@@ -67,47 +61,43 @@ export default function RadarPage() {
                   style={{ color: "var(--sg-primary)", fontFamily: "var(--font-headline)" }}>Güncel Radarlar</p>
                 <div className="h-px flex-1" style={{ background: "rgba(26,58,92,0.5)" }} />
               </div>
-            <motion.div className="grid gap-4 md:grid-cols-2" variants={stagger} initial="hidden" animate="visible">
-              {articles.map((article, index) => {
-                const readMins = estimateReadMinutes(article.content);
-                const sum = summary(article.content);
-                // Dört renk rotasyonu
-                const accents = ["var(--sg-primary)", "var(--sg-secondary)", "var(--sg-tertiary)", "var(--sg-amber)"];
-                const accent = accents[index % accents.length];
-
-                return (
-                  <motion.div key={article.id} variants={fadeUp}>
-                    <Link href={`/radar/${article.slug}`}
-                      className="group flex flex-col h-full transition hover:-translate-y-0.5"
-                      style={{ background: "var(--ink-800)", border: "1px solid var(--ink-700)", borderLeft: `3px solid ${accent}` }}>
-                      <div className="flex flex-1 flex-col p-5">
-                        {/* Meta */}
-                        <div className="flex items-center justify-between mb-4">
-                          <span className="text-[9px] font-bold uppercase tracking-[0.2em]"
-                            style={{ color: accent, fontFamily: "var(--font-headline)" }}>Radar</span>
-                          <div className="flex items-center gap-3 text-[10px]" style={{ color: "var(--sg-text-muted)" }}>
-                            <span>{new Date(article.created_at).toLocaleDateString("tr-TR", { day: "numeric", month: "long" })}</span>
-                            <span className="flex items-center gap-1"><IconClock /> {readMins} dk</span>
-                          </div>
-                        </div>
-
-                        <h2 className="text-sm font-bold leading-snug mb-3 transition line-clamp-2"
-                          style={{ fontFamily: "var(--font-headline)", color: "var(--sg-text-primary)" }}>
-                          {article.title}
-                        </h2>
-                        <p className="text-xs leading-relaxed line-clamp-3 mb-4" style={{ color: "var(--sg-text-secondary)" }}>
-                          {sum || "İçeriği görüntülemek için tıklayın."}
-                        </p>
-
-                        <div className="mt-auto inline-flex items-center gap-1 text-[11px] font-bold"
-                          style={{ color: accent, fontFamily: "var(--font-headline)" }}>
-                          Detayları Gör <span className="transition-transform group-hover:translate-x-0.5">→</span>
-                        </div>
+            <motion.div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4" variants={stagger} initial="hidden" animate="visible">
+              {articles.map((article) => (
+                <motion.div key={article.id} variants={fadeUp}>
+                  <Link href={`/radar/${article.slug}`}
+                    className="sg-lift group flex flex-col h-full"
+                    style={{ background: "var(--ink-800)", border: "1px solid var(--ink-700)", borderRadius: 4, overflow: "hidden", cursor: "pointer" }}>
+                    {/* Kart üst — stripe texture arka plan */}
+                    <div style={{ height: 160, position: "relative", overflow: "hidden", background: "linear-gradient(140deg, var(--ink-700) 0%, var(--ink-800) 100%)" }}>
+                      <div style={{ position: "absolute", inset: 0, opacity: 0.4, backgroundImage: "repeating-linear-gradient(-45deg, var(--ink-700) 0 8px, var(--ink-800) 8px 16px)" }} />
+                      {/* Kategori ve tarih */}
+                      <div style={{ position: "absolute", bottom: 12, left: 16, right: 16, display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                        <span className="mono" style={{ fontSize: 10, letterSpacing: "0.18em", color: "var(--accent)" }}>RADAR</span>
+                        <span className="mono" style={{ fontSize: 10, letterSpacing: "0.14em", color: "var(--ink-400)" }}>
+                          {new Date(article.created_at).toLocaleDateString("tr-TR", { day: "numeric", month: "short" }).toUpperCase()}
+                        </span>
                       </div>
-                    </Link>
-                  </motion.div>
-                );
-              })}
+                    </div>
+                    {/* İnce accent çizgisi */}
+                    <div style={{ height: 2, background: "var(--accent)" }} />
+                    {/* İçerik */}
+                    <div style={{ padding: 20, flex: 1, display: "flex", flexDirection: "column" }}>
+                      <h2 className="display" style={{ fontSize: 18, fontWeight: 700, letterSpacing: "-0.02em", margin: "0 0 10px", color: "var(--ink-100)", lineHeight: 1.2 }}>
+                        {article.title}
+                      </h2>
+                      <p style={{ fontSize: 13, color: "var(--ink-300)", lineHeight: 1.55, flex: 1 }}>
+                        {stripHtml(article.content).replace(/\s+/g, " ").trim().slice(0, 120)}…
+                      </p>
+                      <div style={{ marginTop: 16, display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+                        <span className="mono" style={{ fontSize: 10, letterSpacing: "0.12em", color: "var(--ink-400)" }}>
+                          {estimateReadMinutes(article.content)} DK OKUMA
+                        </span>
+                        <span className="mono" style={{ fontSize: 10, letterSpacing: "0.1em", color: "var(--accent)" }}>OKU →</span>
+                      </div>
+                    </div>
+                  </Link>
+                </motion.div>
+              ))}
             </motion.div>
             </>
           )}
