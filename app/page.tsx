@@ -325,6 +325,33 @@ export default function Home() {
             <div className="absolute inset-0" style={{ background: "linear-gradient(to right, var(--sg-bg) 0%, transparent 60%)" }} />
           </div>
 
+          {/* Stripe texture */}
+          <div
+            style={{
+              position: "absolute",
+              inset: 0,
+              backgroundImage: "repeating-linear-gradient(-45deg, rgba(0,0,0,0.12) 0 1px, transparent 1px 14px)",
+              pointerEvents: "none",
+              zIndex: 1,
+            }}
+          />
+
+          {/* Slide counter */}
+          <div
+            className="mono"
+            style={{
+              position: "absolute",
+              top: 32,
+              right: 32,
+              zIndex: 20,
+              fontSize: 11,
+              letterSpacing: "0.18em",
+              color: "var(--ink-300)",
+            }}
+          >
+            {String(activeSlide + 1).padStart(2, "0")} / {String(slides.length).padStart(2, "0")}
+          </div>
+
           {/* Slide içerikleri */}
           {slides.map((item, i) => (
             <motion.div
@@ -337,58 +364,73 @@ export default function Home() {
             >
               <div className="w-full max-w-7xl mx-auto px-8 md:px-12 pb-16">
                 {item.kind === "content" ? (
-                  <>
-                    <span className="inline-block px-3 py-1 text-[10px] font-bold tracking-[0.2em] uppercase mb-5 w-fit"
-                      style={{
-                        background: `color-mix(in srgb, ${CAT_COLOR[item.slide.category] ?? "var(--sg-primary)"} 22%, transparent)`,
-                        color: CAT_COLOR[item.slide.category] ?? "var(--sg-primary)",
-                        border: `1px solid color-mix(in srgb, ${CAT_COLOR[item.slide.category] ?? "var(--sg-primary)"} 38%, transparent)`,
-                        fontFamily: "var(--font-headline)",
-                      }}>
-                      {CAT_LABEL[item.slide.category] ?? item.slide.category}
-                    </span>
-                    <h1 className="font-bold tracking-tighter mb-5 max-w-4xl"
-                      style={{
-                        fontFamily: "var(--font-headline)",
-                        fontSize: "clamp(2.5rem, 7vw, 5.5rem)",
-                        lineHeight: 1.18,
-                        paddingBottom: "0.12em",
-                        background: "linear-gradient(135deg, var(--sg-primary), var(--sg-secondary))",
-                        WebkitBackgroundClip: "text",
-                        WebkitTextFillColor: "transparent",
-                        backgroundClip: "text",
-                        boxDecorationBreak: "clone",
-                        WebkitBoxDecorationBreak: "clone",
-                      }}>
-                      {item.slide.title.length > 80 ? item.slide.title.slice(0, 80) + "…" : item.slide.title}
-                    </h1>
-                    <p className="text-base md:text-lg max-w-2xl mb-8 hidden sm:block"
-                      style={{ color: "var(--sg-text-secondary)", fontFamily: "var(--font-body)" }}>
-                      {(() => {
-                        const clean = item.slide.content
-                          .replace(/<[^>]+>/g, " ")
-                          .replace(/[#*_\n]/g, " ")
-                          .replace(/\s+/g, " ")
-                          .trim();
-                        const titleNorm = item.slide.title.replace(/\s+/g, " ").trim().toLowerCase();
-                        const cleanLower = clean.toLowerCase();
-                        const cleanStart = cleanLower.startsWith(titleNorm)
-                          ? clean.slice(item.slide.title.length).trim()
-                          : clean;
-                        const firstSentence = cleanStart.match(/^[^.!?]{20,}[.!?]/)?.[0];
-                        return firstSentence ? firstSentence.trim() : cleanStart.slice(0, 160) + "…";
-                      })()}
-                    </p>
-                    <Link href={`${categoryPath(item.slide.category)}/${item.slide.slug}`}
-                      className="sg-btn sg-btn-solid inline-flex items-center gap-2 px-8 py-3.5 font-bold uppercase tracking-wider transition-all hover:brightness-110 active:scale-95"
-                      style={{
-                        background: "var(--sg-primary)", color: "#060f1e",
-                        fontFamily: "var(--font-headline)", fontSize: "12px",
-                      }}>
-                      Devamını Oku
-                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M5 12h14M12 5l7 7-7 7" /></svg>
-                    </Link>
-                  </>
+                  <div
+                    style={{
+                      display: "grid",
+                      gridTemplateColumns: "1.4fr 1fr",
+                      gap: 48,
+                      alignItems: "center",
+                      height: "100%",
+                    }}
+                  >
+                    {/* Sol — metin */}
+                    <div>
+                      <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 24 }}>
+                        <span className="sg-chip sg-chip-solid" style={{ fontSize: 10 }}>
+                          {CAT_LABEL[item.slide.category] ?? item.slide.category}
+                        </span>
+                        <span className="mono" style={{ fontSize: 10, letterSpacing: "0.18em", color: "var(--ink-300)" }}>
+                          {item.slide.category === "radar" ? "BU HAFTANIN RADAR OYUNCUSU" : "KEŞFET"}
+                        </span>
+                      </div>
+                      <h1
+                        className="display grad-text"
+                        style={{
+                          fontSize: "clamp(48px, 6vw, 84px)",
+                          fontWeight: 700,
+                          lineHeight: 0.95,
+                          letterSpacing: "-0.04em",
+                          margin: "0 0 20px",
+                          textWrap: "balance",
+                        }}
+                      >
+                        {item.slide.title.length > 80 ? item.slide.title.slice(0, 80) + "…" : item.slide.title}
+                      </h1>
+                      <p style={{ fontSize: 18, lineHeight: 1.5, color: "var(--ink-200)", marginBottom: 32, maxWidth: 540 }}>
+                        {(() => {
+                          const raw = item.slide.content;
+                          const clean = raw.replace(/<[^>]+>/g, " ").replace(/[#*_\n]/g, " ").replace(/\s+/g, " ").trim();
+                          const titleNorm = item.slide.title.replace(/\s+/g, " ").trim().toLowerCase();
+                          const cleanStart = clean.toLowerCase().startsWith(titleNorm)
+                            ? clean.slice(item.slide.title.length).trim()
+                            : clean;
+                          const firstSentence = cleanStart.match(/^[^.!?]{20,}[.!?]/)?.[0];
+                          return firstSentence ? firstSentence.trim() : cleanStart.slice(0, 160) + "…";
+                        })()}
+                      </p>
+                      <div style={{ display: "flex", gap: 12 }}>
+                        <Link href={`${categoryPath(item.slide.category)}/${item.slide.slug}`} className="sg-btn sg-btn-solid">
+                          OKU →
+                        </Link>
+                        <Link href={categoryPath(item.slide.category)} className="sg-btn">
+                          TÜM İÇERİKLER
+                        </Link>
+                      </div>
+                    </div>
+                    {/* Sağ — player card (sadece radar kategorisinde göster) */}
+                    {item.slide.category === "radar" && radarCard && (
+                      <div style={{ maxWidth: 320, justifySelf: "end", width: "100%" }}>
+                        <PlayerCard
+                          player={radarCard}
+                          size="full"
+                          showScoutNote={false}
+                          animated={false}
+                          tmLink={`https://www.transfermarkt.com.tr/schnellsuche/ergebnis/schnellsuche?query=${encodeURIComponent(radarCard.name)}`}
+                          gLink={`https://www.google.com/search?q=${encodeURIComponent(radarCard.name + " footballer")}`}
+                        />
+                      </div>
+                    )}
+                  </div>
                 ) : (
                   <>
                     <span className="inline-block px-3 py-1 text-[10px] font-bold tracking-[0.2em] uppercase mb-5 w-fit"
