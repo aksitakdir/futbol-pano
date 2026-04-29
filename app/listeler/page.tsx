@@ -37,17 +37,12 @@ export default function ListsPage() {
 
         <CategoryHero accent="var(--sg-secondary)">
           <div className="max-w-3xl">
-            <div className="flex items-center gap-3 mb-5">
-              <div className="h-[2px] w-12" style={{ background: "var(--sg-secondary)" }} />
-              <span className="text-[10px] font-bold uppercase tracking-[0.3em]"
-                style={{ color: "var(--sg-secondary)", fontFamily: "var(--font-headline)" }}>Kürasyonlu Listeler</span>
-            </div>
-            <h1 className="font-bold tracking-tighter leading-none mb-5"
-              style={{ fontFamily: "var(--font-headline)", fontSize: "clamp(2.5rem, 6vw, 4.5rem)" }}>
-              Scout&apos;un <span style={{ color: "var(--sg-secondary)" }}>Listeleri</span>
+            <p className="eyebrow" style={{ marginBottom: 12 }}>Kürasyonlu Listeler</p>
+            <h1 className="display" style={{ fontSize: "clamp(3rem, 8vw, 84px)", fontWeight: 700, lineHeight: 0.92, letterSpacing: "-0.04em", margin: "0 0 20px" }}>
+              Scout&apos;un <span style={{ color: "var(--cyan)" }}>Listeleri</span>
             </h1>
-            <p className="text-base leading-relaxed max-w-2xl" style={{ color: "var(--sg-text-secondary)" }}>
-              Liglere, pozisyonlara ve yaş gruplarına göre kürasyonlu listeler. Veri ve scout gözlemlerini bir araya getirir.
+            <p style={{ fontSize: 18, color: "var(--ink-200)", lineHeight: 1.5, maxWidth: 540, margin: 0 }}>
+              Liglere, pozisyonlara ve yaş gruplarına göre kürasyonlu listeler.
             </p>
           </div>
         </CategoryHero>
@@ -66,7 +61,7 @@ export default function ListsPage() {
                   <motion.div key={item.id} variants={fadeUp}>
                     <Link href={`/listeler/${item.slug}`}
                       className="group flex flex-col h-full transition hover:-translate-y-0.5"
-                      style={{ background: "var(--sg-surface)", borderLeft: "3px solid var(--sg-secondary)" }}>
+                      style={{ background: "var(--ink-800)", border: "1px solid var(--ink-700)", borderLeft: "3px solid var(--sg-secondary)" }}>
                       <div className="flex flex-1 flex-col p-5">
                         <div className="flex items-center justify-between mb-3">
                           <span className="text-[9px] font-bold uppercase tracking-[0.2em]"
@@ -103,7 +98,7 @@ export default function ListsPage() {
               <motion.div key={list.slug} variants={fadeUp}>
                 <Link href={`/listeler/${list.slug}`}
                   className="group flex flex-col h-full transition hover:-translate-y-0.5"
-                  style={{ background: "var(--sg-surface)", borderLeft: `3px solid ${list.color}` }}>
+                  style={{ background: "var(--ink-800)", border: "1px solid var(--ink-700)", borderLeft: `3px solid ${list.color}` }}>
                   <div className="flex flex-1 flex-col p-5">
                     <div className="mb-4 flex h-10 w-10 items-center justify-center"
                       style={{ background: `${list.color}15`, color: list.color }}>

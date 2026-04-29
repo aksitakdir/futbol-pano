@@ -50,17 +50,12 @@ export default function TaktikLabPage() {
 
         <CategoryHero accent="var(--sg-tertiary)" variant="surface-low">
           <div className="max-w-3xl">
-            <div className="flex items-center gap-3 mb-5">
-              <div className="h-[2px] w-12" style={{ background: "var(--sg-tertiary)" }} />
-              <span className="text-[10px] font-bold uppercase tracking-[0.3em]"
-                style={{ color: "var(--sg-tertiary)", fontFamily: "var(--font-headline)" }}>Analiz Motoru</span>
-            </div>
-            <h1 className="font-bold tracking-tighter leading-none mb-5"
-              style={{ fontFamily: "var(--font-headline)", fontSize: "clamp(2.5rem, 6vw, 4.5rem)" }}>
-              Anlaşılabilir <span style={{ color: "var(--sg-tertiary)" }}>Sofistikasyon</span>
+            <p className="eyebrow" style={{ marginBottom: 12 }}>Analiz Motoru</p>
+            <h1 className="display" style={{ fontSize: "clamp(3rem, 8vw, 84px)", fontWeight: 700, lineHeight: 0.92, letterSpacing: "-0.04em", margin: "0 0 20px" }}>
+              Anlaşılabilir <span style={{ color: "var(--sky)" }}>Sofistikasyon</span>
             </h1>
-            <p className="text-base leading-relaxed max-w-2xl" style={{ color: "var(--sg-text-secondary)" }}>
-              Taktik Lab, ham veriyi sahadaki gerçekliğe dönüştürür. Oyuncu profillerini sadece sayılarla değil, oyunun DNA&apos;sını oluşturan pozisyonel arketip modelleriyle tanımlıyoruz. Her oyuncu bir rol değil, bir fonksiyondur.
+            <p style={{ fontSize: 18, color: "var(--ink-200)", lineHeight: 1.5, maxWidth: 540, margin: 0 }}>
+              Taktik Lab, ham veriyi sahadaki gerçekliğe dönüştürür.
             </p>
           </div>
         </CategoryHero>
@@ -120,7 +115,7 @@ export default function TaktikLabPage() {
                 <motion.article key={arch.slug} variants={fadeUp}>
                   <Link href={`/taktik-lab/${arch.slug}`}
                     className="group flex flex-col h-full transition hover:-translate-y-0.5"
-                    style={{ background: "var(--sg-surface)", borderLeft: `3px solid ${arch.color}` }}>
+                    style={{ background: "var(--ink-800)", border: "1px solid var(--ink-700)", borderLeft: `3px solid ${arch.color}` }}>
                     <div className="relative flex flex-1 flex-col p-6 overflow-hidden">
                       {/* Büyük arka plan ikonu */}
                       <div className="pointer-events-none absolute -right-2 -top-2 text-[80px] opacity-[0.04] select-none"

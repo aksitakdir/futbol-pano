@@ -39,16 +39,11 @@ export default function RadarPage() {
 
         <CategoryHero accent="var(--sg-primary)">
           <div className="max-w-3xl">
-            <div className="flex items-center gap-3 mb-5">
-              <div className="h-[2px] w-12" style={{ background: "var(--sg-primary)" }} />
-              <span className="text-[10px] font-bold uppercase tracking-[0.3em]"
-                style={{ color: "var(--sg-primary)", fontFamily: "var(--font-headline)" }}>Haftalık Radar</span>
-            </div>
-            <h1 className="font-bold tracking-tighter leading-none mb-5"
-              style={{ fontFamily: "var(--font-headline)", fontSize: "clamp(2.5rem, 6vw, 4.5rem)" }}>
-              Radar <span style={{ color: "var(--sg-primary)" }}>Arşivi</span>
+            <p className="eyebrow" style={{ marginBottom: 12 }}>Haftalık Radar</p>
+            <h1 className="display" style={{ fontSize: "clamp(3rem, 8vw, 84px)", fontWeight: 700, lineHeight: 0.92, letterSpacing: "-0.04em", margin: "0 0 20px" }}>
+              Radar <span style={{ color: "var(--accent)" }}>Arşivi</span>
             </h1>
-            <p className="text-base leading-relaxed max-w-2xl" style={{ color: "var(--sg-text-secondary)" }}>
+            <p style={{ fontSize: 18, color: "var(--ink-200)", lineHeight: 1.5, maxWidth: 540, margin: 0 }}>
               Haftalık oyuncu analizleri, keşfedilmemiş yetenekler ve scout perspektifinden derinlemesine incelemeler.
             </p>
           </div>
@@ -84,7 +79,7 @@ export default function RadarPage() {
                   <motion.div key={article.id} variants={fadeUp}>
                     <Link href={`/radar/${article.slug}`}
                       className="group flex flex-col h-full transition hover:-translate-y-0.5"
-                      style={{ background: "var(--sg-surface)", borderLeft: `3px solid ${accent}` }}>
+                      style={{ background: "var(--ink-800)", border: "1px solid var(--ink-700)", borderLeft: `3px solid ${accent}` }}>
                       <div className="flex flex-1 flex-col p-5">
                         {/* Meta */}
                         <div className="flex items-center justify-between mb-4">
