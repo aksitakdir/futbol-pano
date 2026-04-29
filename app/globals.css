@@ -25,14 +25,14 @@
   --sg-text-muted:     #6b7a8d;
 
   --font-headline: var(--font-space-grotesk), 'Trebuchet MS', sans-serif;
-  --font-body:     var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  --font-body:     var(--font-inter-tight), ui-sans-serif, system-ui, sans-serif;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --font-sans: var(--font-space-grotesk);
-  --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  --font-mono: var(--font-ibm-plex-mono), ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
 }
 
 body {

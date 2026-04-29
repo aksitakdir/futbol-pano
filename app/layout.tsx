@@ -1,18 +1,24 @@
 import type { Metadata } from "next";
-import { Space_Grotesk, Inter } from "next/font/google";
+import { Space_Grotesk, Inter_Tight, IBM_Plex_Mono } from "next/font/google";
 import "./globals.css";
 import SmoothScrollProvider from "./components/smooth-scroll-provider";
 
 const spaceGrotesk = Space_Grotesk({
   variable: "--font-space-grotesk",
   subsets: ["latin"],
+  weight: ["400", "500", "600", "700"],
+});
+
+const interTight = Inter_Tight({
+  variable: "--font-inter-tight",
+  subsets: ["latin"],
   weight: ["300", "400", "500", "600", "700"],
 });
 
-const inter = Inter({
-  variable: "--font-inter",
+const ibmPlexMono = IBM_Plex_Mono({
+  variable: "--font-ibm-plex-mono",
   subsets: ["latin"],
-  weight: ["300", "400", "500", "600", "700"],
+  weight: ["400", "500", "600"],
 });
 
 export const metadata: Metadata = {
@@ -27,7 +33,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="tr">
-      <body className={`${spaceGrotesk.variable} ${inter.variable} antialiased`}>
+      <body className={`${spaceGrotesk.variable} ${interTight.variable} ${ibmPlexMono.variable} antialiased`}>
         <SmoothScrollProvider>
           {children}
         </SmoothScrollProvider>
