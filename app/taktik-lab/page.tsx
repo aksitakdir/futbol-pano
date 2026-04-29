@@ -5,35 +5,26 @@ import Link from "next/link";
 import { motion } from "framer-motion";
 import SiteHeader from "../components/site-header";
 import SiteFooter from "../components/site-footer";
-import CategoryHero from "../components/category-hero";
 import { supabase } from "@/lib/supabase";
 import { stripHtml } from "@/lib/utils";
 
-type SupabaseContent = { id: string; title: string; slug: string; content: string; created_at: string; };
+type Content = { id: string; title: string; slug: string; content: string; created_at: string; };
 
 const easeOut = [0.22, 1, 0.36, 1] as [number, number, number, number];
-const stagger = { hidden: {}, visible: { transition: { staggerChildren: 0.08, delayChildren: 0.1 } } };
+const stagger = { hidden: {}, visible: { transition: { staggerChildren: 0.06 } } };
 const fadeUp = { hidden: { opacity: 0, y: 20 }, visible: { opacity: 1, y: 0, transition: { duration: 0.5, ease: easeOut } } };
 
-type Archetype = { name: string; slug: string; description: string; position: string; color: string; icon: string; };
-
-const ARCHETYPES: Archetype[] = [
-  { name: "Box-to-Box Engine", slug: "box-to-box-engine", description: "Sahadaki her santimetreyi kapsayan yüksek yoğunluklu dinamizm. Savunma desteği ile hücum geçişlerini bağlayan temel dişli.", position: "Orta Saha", color: "var(--sg-secondary)", icon: "⚡" },
-  { name: "Ball-Playing CB", slug: "ball-playing-cb", description: "Modern oyunun kurucusu. Sadece savunmakla kalmaz, dikine paslarla pres hattını kırar ve oyun kurulumunu yönetir.", position: "Defans", color: "var(--sg-primary)", icon: "🏗️" },
-  { name: "Inverted Winger", slug: "inverted-winger", description: "İçeri kat ederek yarım alanlarda kaos yaratan, yaratıcılık ve bitiriciliği kanattan merkeze taşıyan profil.", position: "Hücum", color: "var(--sg-rose)", icon: "↩" },
-  { name: "Inverted Full-back", slug: "inverted-fullback", description: "Savunma çizgisinden orta sahaya eklenlenen, topa sahipken ekstra bir oyun kurucu gibi davranan modern bek tanımı.", position: "Defans", color: "var(--sg-primary)", icon: "⇄" },
-  { name: "False 9", slug: "false-9", description: "Geleneksel forvet tanımının ötesinde; derine inerek orta sahayı beşleyen ve rakip stopleri pozisyon dışına çeken beyin.", position: "Hücum", color: "var(--sg-rose)", icon: "9" },
-  { name: "High Press Striker", slug: "high-press-striker", description: "Savunmanın ilk hattı. Rakibi hataya zorlayan agresif pres gücüyle, topsuz oyunda takımın savunma ritmini belirleyen forvet.", position: "Hücum", color: "var(--sg-rose)", icon: "↑" },
+const ARCHETYPES = [
+  { id: "b2b", slug: "box-to-box-engine", name: "Box-to-Box Engine", pos: "ORTA SAHA", color: "var(--sky)", desc: "Hem savunmada hem hücumda saha kaplayan motor.", exemplars: ["BELLİNGHAM", "TCHOUAMÉNİ", "WİRTZ"] },
+  { id: "bpcb", slug: "ball-playing-cb", name: "Ball-Playing CB", pos: "DEFANS", color: "var(--cyan)", desc: "Pas dağılımı ile oyunu inşa eden modern stoper.", exemplars: ["VAN DİJK", "SALİBA", "RÜDİGER"] },
+  { id: "iw", slug: "inverted-winger", name: "Inverted Winger", pos: "HÜCUM", color: "var(--emerald)", desc: "Ters ayağıyla içeri kesip bitiren kanat.", exemplars: ["SALAH", "YAMAL", "SAKA"] },
+  { id: "ifb", slug: "inverted-fullback", name: "Inverted Full-back", pos: "DEFANS", color: "var(--amber)", desc: "Hücumda orta sahaya geçen modern bek.", exemplars: ["ZİNCHENKO", "STONES", "CANCELO"] },
+  { id: "f9", slug: "false-9", name: "False 9", pos: "HÜCUM", color: "var(--rose)", desc: "Ceza sahası dışında oyun kuran pozisyonsuz forvet.", exemplars: ["FODEN", "MÜLLER", "FİRMİNO"] },
+  { id: "hps", slug: "high-press-striker", name: "High Press Striker", pos: "HÜCUM", color: "var(--emerald)", desc: "Savunmadan başlayan ilk hat — modern santrforun temeli.", exemplars: ["NÚÑEZ", "HAALAND", "JACKSON"] },
 ];
 
-const posColor: Record<string, string> = {
-  "Orta Saha": "var(--sg-secondary)",
-  "Defans": "var(--sg-primary)",
-  "Hücum": "var(--sg-rose, #fb7185)",
-};
-
 export default function TaktikLabPage() {
-  const [dbContents, setDbContents] = useState<SupabaseContent[]>([]);
+  const [dbContents, setDbContents] = useState<Content[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -43,134 +34,85 @@ export default function TaktikLabPage() {
   }, []);
 
   return (
-    <main style={{ background: "var(--sg-bg)", color: "var(--sg-text-primary)", minHeight: "100vh" }}>
+    <main style={{ background: "var(--ink-900)", color: "var(--ink-100)", minHeight: "100vh" }}>
       <SiteHeader activeNav="taktik-lab" />
 
-      <motion.div className="pt-[72px]" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, ease: easeOut }}>
-
-        <CategoryHero accent="var(--sg-tertiary)" variant="surface-low">
-          <div className="max-w-3xl">
-            <p className="eyebrow" style={{ marginBottom: 12 }}>Analiz Motoru</p>
-            <h1 className="display" style={{ fontSize: "clamp(3rem, 8vw, 84px)", fontWeight: 700, lineHeight: 0.92, letterSpacing: "-0.04em", margin: "0 0 20px" }}>
-              Anlaşılabilir <span style={{ color: "var(--sky)" }}>Sofistikasyon</span>
+      {/* Header */}
+      <div style={{ maxWidth: 1440, margin: "0 auto", padding: "120px 32px 60px" }}>
+        <div style={{ display: "grid", gridTemplateColumns: "2fr 1fr", gap: 32, alignItems: "end" }}>
+          <div>
+            <p className="eyebrow" style={{ marginBottom: 8 }}>POZİSYON ARKETİPLERİ</p>
+            <h1 className="display" style={{ fontSize: "clamp(56px, 8vw, 100px)", fontWeight: 700, letterSpacing: "-0.04em", margin: 0, lineHeight: 0.9, color: "var(--sky)" }}>
+              Taktik Lab
             </h1>
-            <p style={{ fontSize: 18, color: "var(--ink-200)", lineHeight: 1.5, maxWidth: 540, margin: 0 }}>
-              Taktik Lab, ham veriyi sahadaki gerçekliğe dönüştürür.
-            </p>
           </div>
-        </CategoryHero>
-
-        <div className="max-w-7xl mx-auto px-8 py-16">
-
-          {/* DB içerikleri */}
-          {!loading && dbContents.length > 0 && (
-            <section className="mb-16">
-              <div className="flex items-center gap-3 mb-6">
-                <div className="h-px flex-1" style={{ background: "rgba(26,58,92,0.5)" }} />
-                <p className="text-[10px] font-bold uppercase tracking-[0.25em]"
-                  style={{ color: "var(--sg-tertiary)", fontFamily: "var(--font-headline)" }}>Güncel Analizler</p>
-                <div className="h-px flex-1" style={{ background: "rgba(26,58,92,0.5)" }} />
-              </div>
-              <motion.div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3" variants={stagger} initial="hidden" animate="visible">
-                {dbContents.map(item => (
-                  <motion.div key={item.id} variants={fadeUp}>
-                    <Link href={`/taktik-lab/${item.slug}`}
-                      className="group flex flex-col h-full transition hover:-translate-y-0.5"
-                      style={{ background: "var(--sg-surface)", borderLeft: "3px solid var(--sg-tertiary)" }}>
-                      <div className="flex flex-1 flex-col p-5">
-                        <div className="flex items-center justify-between mb-3">
-                          <span className="text-[9px] font-bold uppercase tracking-[0.2em]"
-                            style={{ color: "var(--sg-tertiary)", fontFamily: "var(--font-headline)" }}>Taktik</span>
-                          <span className="text-[10px]" style={{ color: "var(--sg-text-muted)" }}>
-                            {new Date(item.created_at).toLocaleDateString("tr-TR", { day: "numeric", month: "short" })}
-                          </span>
-                        </div>
-                        <h2 className="text-sm font-bold mb-2 line-clamp-2"
-                          style={{ fontFamily: "var(--font-headline)", color: "var(--sg-text-primary)" }}>{item.title}</h2>
-                        <p className="text-xs leading-relaxed line-clamp-2 mb-4" style={{ color: "var(--sg-text-secondary)" }}>
-                          {stripHtml(item.content).trim().slice(0, 120)}…
-                        </p>
-                        <div className="mt-auto inline-flex items-center gap-1 text-[11px] font-bold"
-                          style={{ color: "var(--sg-tertiary)", fontFamily: "var(--font-headline)" }}>
-                          Detayları Gör <span className="transition-transform group-hover:translate-x-0.5">→</span>
-                        </div>
-                      </div>
-                    </Link>
-                  </motion.div>
-                ))}
-              </motion.div>
-            </section>
-          )}
-
-          {/* Pozisyon arketipleri */}
-          <section>
-            <div className="flex items-center gap-3 mb-6">
-              <div className="h-px flex-1" style={{ background: "rgba(26,58,92,0.5)" }} />
-              <p className="text-[10px] font-bold uppercase tracking-[0.25em]"
-                style={{ color: "var(--sg-text-muted)", fontFamily: "var(--font-headline)" }}>Pozisyon Arketipleri</p>
-              <div className="h-px flex-1" style={{ background: "rgba(26,58,92,0.5)" }} />
-            </div>
-            <motion.div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3" variants={stagger} initial="hidden" animate="visible">
-              {ARCHETYPES.map(arch => (
-                <motion.article key={arch.slug} variants={fadeUp}>
-                  <Link href={`/taktik-lab/${arch.slug}`}
-                    className="group flex flex-col h-full transition hover:-translate-y-0.5"
-                    style={{ background: "var(--ink-800)", border: "1px solid var(--ink-700)", borderLeft: `3px solid ${arch.color}` }}>
-                    <div className="relative flex flex-1 flex-col p-6 overflow-hidden">
-                      {/* Büyük arka plan ikonu */}
-                      <div className="pointer-events-none absolute -right-2 -top-2 text-[80px] opacity-[0.04] select-none"
-                        style={{ fontFamily: "var(--font-headline)", color: arch.color }}>
-                        {arch.icon}
-                      </div>
-                      {/* İkon kutu */}
-                      <div className="mb-5 flex h-10 w-10 items-center justify-center text-lg"
-                        style={{ background: `${arch.color}15`, color: arch.color }}>
-                        {arch.icon}
-                      </div>
-                      <h2 className="font-mono text-base font-bold uppercase tracking-tight mb-3"
-                        style={{ color: "var(--sg-text-primary)" }}>
-                        {arch.name}
-                      </h2>
-                      <p className="text-xs leading-relaxed mb-5" style={{ color: "var(--sg-text-secondary)" }}>
-                        {arch.description}
-                      </p>
-                      <div className="mt-auto flex items-center justify-between">
-                        <span className="text-[9px] font-bold uppercase tracking-[0.2em]"
-                          style={{ color: posColor[arch.position] ?? arch.color, fontFamily: "var(--font-headline)" }}>
-                          {arch.position}
-                        </span>
-                        <span className="text-[11px] font-bold transition-transform group-hover:translate-x-0.5"
-                          style={{ color: arch.color, fontFamily: "var(--font-headline)" }}>→</span>
-                      </div>
-                    </div>
-                  </Link>
-                </motion.article>
-              ))}
-            </motion.div>
-          </section>
-
-          {/* CTA */}
-          <div className="mt-16 p-10 md:p-14 text-center relative overflow-hidden" style={{ background: "var(--sg-surface-low)" }}>
-            <div className="pointer-events-none absolute inset-0"
-              style={{ background: "radial-gradient(ellipse at center, rgba(167,139,250,0.08) 0%, transparent 70%)" }} />
-            <div className="relative">
-              <h2 className="text-2xl md:text-4xl font-bold tracking-tighter mb-3"
-                style={{ fontFamily: "var(--font-headline)" }}>
-                Kendi Taktiğini Oluşturmaya Hazır mısın?
-              </h2>
-              <p className="text-sm mb-6 max-w-lg mx-auto" style={{ color: "var(--sg-text-secondary)" }}>
-                Arketip modellerini kullanarak oyuncu havuzunu filtreleyebilir, sistemine en uygun parçayı saniyeler içinde bulabilirsin.
-              </p>
-              <Link href="/listeler"
-                className="inline-flex items-center gap-2 px-8 py-3.5 font-bold uppercase tracking-wider transition hover:brightness-110"
-                style={{ background: "var(--sg-tertiary)", color: "#060f1e", fontFamily: "var(--font-headline)", fontSize: "12px" }}>
-                Sistem Analizine Başla
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M5 12h14M12 5l7 7-7 7" /></svg>
-              </Link>
-            </div>
-          </div>
+          <p style={{ fontSize: 18, color: "var(--ink-200)", lineHeight: 1.5, margin: 0 }}>
+            Modern futbolun pozisyon arketipleri. Her arketip bir rol — hangi oyuncular en iyi uyguluyor?
+          </p>
         </div>
-      </motion.div>
+      </div>
+
+      <div style={{ maxWidth: 1440, margin: "0 auto", padding: "0 32px 80px" }}>
+
+        {/* Son analizler */}
+        {!loading && dbContents.length > 0 && (
+          <section style={{ marginBottom: 60 }}>
+            <p className="eyebrow" style={{ marginBottom: 16 }}>SON ANALİZLER</p>
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: 16 }}>
+              {dbContents.slice(0, 4).map(item => (
+                <Link key={item.id} href={`/taktik-lab/${item.slug}`} className="sg-lift"
+                  style={{ background: "var(--ink-800)", border: "1px solid var(--ink-700)", borderRadius: 4, padding: 24, display: "flex", flexDirection: "column" }}>
+                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 12 }}>
+                    <span className="mono" style={{ fontSize: 10, letterSpacing: "0.18em", color: "var(--sky)" }}>TAKTİK</span>
+                    <span className="mono" style={{ fontSize: 10, color: "var(--ink-400)" }}>
+                      {new Date(item.created_at).toLocaleDateString("tr-TR", { day: "numeric", month: "short" }).toUpperCase()}
+                    </span>
+                  </div>
+                  <h2 className="display" style={{ fontSize: 20, fontWeight: 700, letterSpacing: "-0.02em", margin: "0 0 8px", lineHeight: 1.2, color: "var(--ink-100)" }}>{item.title}</h2>
+                  <p style={{ fontSize: 13, color: "var(--ink-300)", lineHeight: 1.55, flex: 1, margin: 0 }}>
+                    {stripHtml(item.content).replace(/\s+/g, " ").trim().slice(0, 120)}…
+                  </p>
+                  <div style={{ marginTop: 12 }}>
+                    <span className="mono" style={{ fontSize: 10, color: "var(--sky)", letterSpacing: "0.1em" }}>OKU →</span>
+                  </div>
+                </Link>
+              ))}
+            </div>
+          </section>
+        )}
+
+        {/* Arketipler */}
+        <section>
+          <p className="eyebrow" style={{ marginBottom: 16 }}>ARKETİPLER</p>
+          <motion.div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 16 }}
+            variants={stagger} initial="hidden" animate="visible">
+            {ARCHETYPES.map(arch => (
+              <motion.article key={arch.id} variants={fadeUp}>
+                <Link href={`/taktik-lab/${arch.slug}`} className="sg-lift"
+                  style={{ background: "var(--ink-800)", border: "1px solid var(--ink-700)", borderRadius: 4, padding: 24, display: "flex", flexDirection: "column", height: "100%" }}>
+                  <div style={{ marginBottom: 16 }}>
+                    <span className="mono" style={{ fontSize: 10, letterSpacing: "0.14em", color: arch.color }}>{arch.pos}</span>
+                  </div>
+                  <h2 className="display" style={{ fontSize: 24, fontWeight: 700, letterSpacing: "-0.02em", margin: "0 0 10px", color: "var(--ink-100)" }}>
+                    {arch.name}
+                  </h2>
+                  <p style={{ fontSize: 14, color: "var(--ink-300)", lineHeight: 1.5, flex: 1, margin: "0 0 20px" }}>
+                    {arch.desc}
+                  </p>
+                  <div>
+                    <p className="eyebrow" style={{ marginBottom: 8 }}>EN İYİ UYGULAYANLAR</p>
+                    <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
+                      {arch.exemplars.map(e => (
+                        <span key={e} className="sg-chip" style={{ fontSize: 9, color: arch.color, borderColor: arch.color }}>{e}</span>
+                      ))}
+                    </div>
+                  </div>
+                </Link>
+              </motion.article>
+            ))}
+          </motion.div>
+        </section>
+      </div>
 
       <SiteFooter maxWidth="max-w-7xl" />
     </main>
