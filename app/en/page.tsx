@@ -641,15 +641,26 @@ export default function EnHome() {
               Weekly tactical scouting reports and player analyses delivered directly to you.
             </p>
           </div>
-          <div className="flex gap-0">
-            <input type="email" placeholder="YOUR EMAIL ADDRESS"
+          <form
+            action="https://scoutgamer.substack.com/api/v1/free?nojs=true"
+            method="post"
+            target="_blank"
+            className="flex gap-0">
+            <input
+              type="email"
+              name="email"
+              required
+              placeholder="YOUR EMAIL ADDRESS"
               className="flex-1 px-5 py-4 text-sm font-bold outline-none tracking-wider"
-              style={{ background: "rgba(6,15,30,0.15)", color: "#060f1e", fontFamily: "var(--font-headline)", border: "none" }} />
-            <button className="px-6 py-4 font-bold uppercase tracking-wider transition-all hover:opacity-80"
+              style={{ background: "rgba(6,15,30,0.15)", color: "#060f1e", fontFamily: "var(--font-headline)", border: "none" }}
+            />
+            <button
+              type="submit"
+              className="px-6 py-4 font-bold uppercase tracking-wider transition-all hover:opacity-80"
               style={{ background: "#060f1e", color: "var(--sg-primary)", fontFamily: "var(--font-headline)", fontSize: "12px" }}>
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M5 12h14M12 5l7 7-7 7" /></svg>
             </button>
-          </div>
+          </form>
         </div>
       </section>
 
