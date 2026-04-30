@@ -19,7 +19,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
       title: `${data.title} | Scout Gamer`,
       description,
       url: `https://scoutgamer.com/taktik-lab/${slug}`,
-      images: data.cover_image ? [{ url: data.cover_image }] : [{ url: "https://scoutgamer.com/og-image.jpg" }],
+      images: data.cover_image ? [{ url: data.cover_image }] : [{ url: "https://scoutgamer.com/og-image.png" }],
     },
     twitter: { card: "summary_large_image", title: `${data.title} | Scout Gamer`, description },
   };
