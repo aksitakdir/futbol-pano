@@ -5,18 +5,31 @@ import Link from "next/link";
 import { motion } from "framer-motion";
 import SiteHeader from "./components/site-header";
 import SiteFooter from "./components/site-footer";
+import { PlayerScoutLinks } from "./components/player-scout-links";
 import PlayerCard, { type PlayerCardData } from "./components/player-card";
 import { supabase } from "@/lib/supabase";
 import { getCategoryImage } from "@/lib/category-images";
 import { ARENA_BRACKETS, arenaPath } from "@/lib/arena-brackets";
 
-type SlideContent = { id: string; title: string; slug: string; category: string; content: string; created_at: string; cover_image?: string; };
+// ─── Tipler ──────────────────────────────────────────────────────────────────
+type SlideContent = {
+  id: string;
+  title: string;
+  title_en?: string;
+  slug: string;
+  category: string;
+  content: string;
+  content_en?: string;
+  created_at: string;
+  cover_image?: string;
+};
 type FormPlayer = { name: string; club: string; league: string; position: string; age: string; goals: string; };
 type FormPlayerWithStats = FormPlayer & Partial<PlayerCardData>;
 type FeaturedPlayer = { name: string; club: string; position: string; age: string; league: string; goals: string; assists: string; description: string; whyWatch: string; };
 
+// ─── Kategori sabitleri ────────────────────────────────────────────────────
 const CAT_LABEL: Record<string, string> = { listeler: "Listeler", radar: "Radar", "taktik-lab": "Taktik Lab" };
-const CAT_ACCENT: Record<string, string> = { listeler: "var(--cyan)", radar: "var(--emerald)", "taktik-lab": "var(--sky)", arena: "var(--amber)" };
+const CAT_COLOR: Record<string, string> = { listeler: "var(--sg-secondary)", radar: "var(--sg-primary)", "taktik-lab": "var(--sg-tertiary)", arena: "var(--sg-amber)" };
 
 function categoryPath(cat: string): string {
   if (cat === "listeler") return "/listeler";
@@ -25,6 +38,7 @@ function categoryPath(cat: string): string {
   return "/";
 }
 
+// ─── Slider yardımcıları ───────────────────────────────────────────────────
 const SLIDER_COUNT = 5;
 
 function shuffleInPlace<T>(arr: T[]): T[] {
@@ -36,6 +50,11 @@ function shuffleInPlace<T>(arr: T[]): T[] {
   return a;
 }
 
+const fadeUp = {
+  hidden: { opacity: 0, y: 24 },
+  visible: { opacity: 1, y: 0, transition: { duration: 0.5 } },
+};
+
 function buildHeroSlides(all: SlideContent[]): { slide: SlideContent; slideKey: string }[] {
   if (!all.length) return [];
   const now = Date.now();
@@ -45,13 +64,16 @@ function buildHeroSlides(all: SlideContent[]): { slide: SlideContent; slideKey: 
   const picked: SlideContent[] = [];
   const used = new Set<string>();
   for (const c of byNewest.filter(c => new Date(c.created_at).getTime() >= now - ms7)) {
-    if (picked.length >= 2) break; picked.push(c); used.add(c.id);
+    if (picked.length >= 2) break;
+    picked.push(c); used.add(c.id);
   }
   for (const c of byNewest.filter(c => new Date(c.created_at).getTime() >= now - ms30 && !used.has(c.id))) {
-    if (picked.length >= SLIDER_COUNT) break; picked.push(c); used.add(c.id);
+    if (picked.length >= SLIDER_COUNT) break;
+    picked.push(c); used.add(c.id);
   }
   for (const c of shuffleInPlace(byNewest.filter(c => !used.has(c.id)))) {
-    if (picked.length >= SLIDER_COUNT) break; picked.push(c); used.add(c.id);
+    if (picked.length >= SLIDER_COUNT) break;
+    picked.push(c); used.add(c.id);
   }
   const pool = picked.length > 0 ? picked : byNewest;
   let r = 0;
@@ -76,25 +98,64 @@ function mergeWithArena(content: { slide: SlideContent; slideKey: string }[]): H
   return items;
 }
 
+function translatePosition(pos: string): string {
+  const map: Record<string, string> = {
+    Forward: "Forvet", Winger: "Kanat", Midfielder: "Orta Saha",
+    "Attacking Midfielder": "Ofansif OS", "Defensive Midfielder": "Defansif OS",
+    Defender: "Defans", "Center Back": "Stoper", "Right Back": "Sağ Bek",
+    "Left Back": "Sol Bek", Goalkeeper: "Kaleci",
+    "Right Winger": "Sağ Kanat", "Left Winger": "Sol Kanat", Striker: "Santrafor",
+  };
+  return map[pos?.trim()] ?? pos;
+}
+
 async function fetchFcPlayer(name: string, club?: string) {
-  const { data: exact } = await supabase.from("fc_players").select("overall,pace,shooting,passing,dribbling,defending,physical,photo_url,position,club,league,age").ilike("name", name).limit(1).maybeSingle();
+  // 1. Tam isim
+  const { data: exact } = await supabase
+    .from("fc_players")
+    .select("overall,pace,shooting,passing,dribbling,defending,physical,photo_url,position,club,league,age")
+    .ilike("name", name)
+    .limit(1)
+    .maybeSingle();
   if (exact?.overall) return exact;
+
+  // 2. İlk iki kelime
   const words = name.split(" ");
   if (words.length >= 2) {
-    const { data: two } = await supabase.from("fc_players").select("overall,pace,shooting,passing,dribbling,defending,physical,photo_url,position,club,league,age").ilike("name", `%${words.slice(0, 2).join(" ")}%`).order("overall", { ascending: false }).limit(1).maybeSingle();
-    if (two?.overall) return two;
+    const two = words.slice(0, 2).join(" ");
+    const { data: twoMatch } = await supabase
+      .from("fc_players")
+      .select("overall,pace,shooting,passing,dribbling,defending,physical,photo_url,position,club,league,age")
+      .ilike("name", `%${two}%`)
+      .order("overall", { ascending: false })
+      .limit(1)
+      .maybeSingle();
+    if (twoMatch?.overall) return twoMatch;
   }
+
+  // 3. İlk kelime + kulüp filtresi (kulüp yoksa null dön)
   if (club) {
-    const { data: cm } = await supabase.from("fc_players").select("overall,pace,shooting,passing,dribbling,defending,physical,photo_url,position,club,league,age").ilike("name", `%${words[0]}%`).ilike("club", `%${club}%`).order("overall", { ascending: false }).limit(1).maybeSingle();
-    if (cm?.overall) return cm;
+    const one = words[0];
+    const { data: clubMatch } = await supabase
+      .from("fc_players")
+      .select("overall,pace,shooting,passing,dribbling,defending,physical,photo_url,position,club,league,age")
+      .ilike("name", `%${one}%`)
+      .ilike("club", `%${club}%`)
+      .order("overall", { ascending: false })
+      .limit(1)
+      .maybeSingle();
+    if (clubMatch?.overall) return clubMatch;
   }
+
   return null;
 }
 
+// ─── Ana bileşen ──────────────────────────────────────────────────────────
 export default function Home() {
   const [slides, setSlides] = useState<HeroSlide[]>([]);
   const [activeSlide, setActiveSlide] = useState(0);
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
+
   const [recentItems, setRecentItems] = useState<SlideContent[]>([]);
   const [featuredPlayer, setFeaturedPlayer] = useState<FeaturedPlayer | null>(null);
   const [featuredStats, setFeaturedStats] = useState<Partial<PlayerCardData> | null>(null);
@@ -102,18 +163,38 @@ export default function Home() {
   const [formPlayers, setFormPlayers] = useState<FormPlayerWithStats[]>([]);
   const [formLoading, setFormLoading] = useState(true);
 
-  const editorItems = useMemo(() => (recentItems.length ? shuffleInPlace([...recentItems]).slice(0, 4) : []), [recentItems]);
+  const gundemItems = useMemo(
+    () => (recentItems.length ? shuffleInPlace([...recentItems]).slice(0, 3) : []),
+    [recentItems],
+  );
 
+  // Slider verisi
   useEffect(() => {
-    supabase.from("contents").select("id,title,slug,category,content,created_at,cover_image").eq("status", "yayinda").order("created_at", { ascending: false }).limit(200)
-      .then(({ data }) => { if (!data?.length) { setSlides([pickArenaSlide()]); return; } setSlides(mergeWithArena(buildHeroSlides(data as SlideContent[]))); });
+    async function load() {
+      const { data } = await supabase
+        .from("contents")
+        .select("id,title,title_en,slug,category,content,content_en,created_at,cover_image")
+        .eq("status", "yayinda")
+        .order("created_at", { ascending: false })
+        .limit(200);
+      if (!data?.length) { setSlides([pickArenaSlide()]); return; }
+      setSlides(mergeWithArena(buildHeroSlides(data as SlideContent[])));
+    }
+    load();
   }, []);
 
+  // Son eklenenler
   useEffect(() => {
-    supabase.from("contents").select("id,title,slug,category,content,created_at,cover_image").eq("status", "yayinda").order("created_at", { ascending: false }).limit(8)
+    supabase
+      .from("contents")
+      .select("id,title,title_en,slug,category,content,content_en,created_at,cover_image")
+      .eq("status", "yayinda")
+      .order("created_at", { ascending: false })
+      .limit(6)
       .then(({ data }) => { if (data?.length) setRecentItems(data); });
   }, []);
 
+  // Radar oyuncusu (form_players_pool)
   useEffect(() => {
     async function load() {
       const { data: poolRow } = await supabase.from("site_settings").select("value").eq("key", "form_players_pool").maybeSingle();
@@ -123,47 +204,77 @@ export default function Home() {
           if (Array.isArray(pool) && pool.length > 0) {
             const pick = pool[Math.floor(Math.random() * pool.length)];
             if (pick?.name) {
-              setFeaturedPlayer({ name: pick.name ?? "", club: pick.club ?? "", position: pick.position ?? "", age: String(pick.age ?? ""), league: pick.league ?? "", goals: String(pick.goals ?? ""), assists: String(pick.assists ?? ""), description: pick.description ?? "", whyWatch: pick.why_watch ?? "" });
+              setFeaturedPlayer({
+                name: pick.name ?? "",
+                club: pick.club ?? "",
+                position: pick.position ?? "",
+                age: String(pick.age ?? ""),
+                league: pick.league ?? "",
+                goals: String(pick.goals ?? ""),
+                assists: String(pick.assists ?? ""),
+                description: pick.description ?? "",
+                whyWatch: pick.why_watch ?? "",
+              });
               const stats = await fetchFcPlayer(pick.name, pick.club);
               if (stats?.overall) setFeaturedStats(stats as Partial<PlayerCardData>);
             }
           }
-        } catch { /* ignore */ }
+        } catch {
+          /* ignore */
+        }
       }
       setFeaturedLoading(false);
     }
     load();
   }, []);
 
+  // Form oyuncuları
   useEffect(() => {
     async function load() {
       const { data: poolRow } = await supabase.from("site_settings").select("value").eq("key", "form_players_pool").maybeSingle();
       let list: FormPlayer[] = [];
-      if (poolRow?.value) { try { const p = JSON.parse(poolRow.value as string); if (Array.isArray(p) && p.length) list = shuffleInPlace(p as FormPlayer[]).slice(0, 20); } catch { /* ignore */ } }
+      if (poolRow?.value) {
+        try {
+          const p = JSON.parse(poolRow.value as string);
+          if (Array.isArray(p) && p.length) list = shuffleInPlace(p as FormPlayer[]).slice(0, 20);
+        } catch { /* ignore */ }
+      }
       if (!list.length) {
         const { data: leg } = await supabase.from("site_settings").select("value").eq("key", "form_players").maybeSingle();
-        if (leg?.value) { try { const parsed = JSON.parse(leg.value as string); if (Array.isArray(parsed)) list = shuffleInPlace(parsed as FormPlayer[]).slice(0, 20); } catch { /* ignore */ } }
+        if (leg?.value) {
+          try {
+            const parsed = JSON.parse(leg.value as string);
+            if (Array.isArray(parsed)) list = shuffleInPlace(parsed as FormPlayer[]).slice(0, 20);
+          } catch { /* ignore */ }
+        }
       }
       if (list.length) {
         const { data: stats } = await supabase.from("fc_players").select("name,overall,position,pace,shooting,passing,dribbling,defending,physical,photo_url").in("name", list.map(p => p.name));
         const sm = new Map(((stats ?? []) as { name: string }[]).map(s => [s.name.toLowerCase(), s]));
-        const withStats = list.map(p => { const s = sm.get(p.name.toLowerCase()); return s ? { ...p, ...(s as Partial<PlayerCardData>), age: String((s as { age?: unknown }).age ?? p.age) } : p; });
-        setFormPlayers(shuffleInPlace(withStats.filter(p => ((p as FormPlayerWithStats).overall ?? 0) > 0)).slice(0, 10) as FormPlayerWithStats[]);
+        const withStats = list.map((p) => {
+          const s = sm.get(p.name.toLowerCase());
+          return s
+            ? { ...p, ...(s as Partial<PlayerCardData>), age: String((s as { age?: unknown }).age ?? p.age) }
+            : p;
+        });
+        const statPlayers = withStats.filter((p) => ((p as FormPlayerWithStats).overall ?? 0) > 0);
+        setFormPlayers(shuffleInPlace(statPlayers).slice(0, 10) as FormPlayerWithStats[]);
       }
       setFormLoading(false);
     }
     load();
   }, []);
 
+  // Slider timer
   const resetTimer = useCallback(() => {
     if (timerRef.current) clearInterval(timerRef.current);
     if (slides.length < 2) return;
-    timerRef.current = setInterval(() => setActiveSlide(p => (p + 1) % slides.length), 6500);
+    timerRef.current = setInterval(() => setActiveSlide(p => (p + 1) % slides.length), 5000);
   }, [slides.length]);
 
   useEffect(() => {
     if (slides.length < 2) return;
-    timerRef.current = setInterval(() => setActiveSlide(p => (p + 1) % slides.length), 6500);
+    timerRef.current = setInterval(() => setActiveSlide(p => (p + 1) % slides.length), 5000);
     return () => { if (timerRef.current) clearInterval(timerRef.current); };
   }, [slides.length]);
 
@@ -171,137 +282,269 @@ export default function Home() {
   const prev = () => { setActiveSlide(p => (p - 1 + slides.length) % slides.length); resetTimer(); };
   const next = () => { setActiveSlide(p => (p + 1) % slides.length); resetTimer(); };
 
+  // Radar kartı
   const radarCard: PlayerCardData | null = featuredPlayer && featuredStats
-    ? { name: featuredPlayer.name, club: featuredPlayer.club, league: featuredPlayer.league, position: featuredPlayer.position, age: featuredPlayer.age, overall: featuredStats.overall ?? 0, pace: featuredStats.pace ?? 0, shooting: featuredStats.shooting ?? 0, passing: featuredStats.passing ?? 0, dribbling: featuredStats.dribbling ?? 0, defending: featuredStats.defending ?? 0, physical: featuredStats.physical ?? 0, whyWatch: featuredPlayer.whyWatch, photo_url: featuredStats.photo_url as string | undefined }
+    ? {
+        name: featuredPlayer.name, club: featuredPlayer.club, league: featuredPlayer.league,
+        position: featuredPlayer.position, age: featuredPlayer.age,
+        overall: featuredStats.overall ?? 0, pace: featuredStats.pace ?? 0,
+        shooting: featuredStats.shooting ?? 0, passing: featuredStats.passing ?? 0,
+        dribbling: featuredStats.dribbling ?? 0, defending: featuredStats.defending ?? 0,
+        physical: featuredStats.physical ?? 0, whyWatch: featuredPlayer.whyWatch,
+        photo_url: featuredStats.photo_url as string | undefined,
+      }
     : null;
 
   return (
-    <main style={{ background: "var(--ink-900)", color: "var(--ink-100)", minHeight: "100vh" }}>
+    <main style={{ background: "var(--sg-bg)", color: "var(--sg-text-primary)", minHeight: "100vh" }}>
       <SiteHeader />
 
-      {/* ── HERO SLIDER ─────────────────────────────────────────────── */}
+      {/* ── Hero Slider ───────────────────────────────────────────────────── */}
       {slides.length > 0 && (
-        <section style={{ position: "relative", height: "78vh", minHeight: 580, overflow: "hidden" }}>
-          {/* Arka planlar */}
-          {slides.map((item, i) => (
-            <div key={item.slideKey} className="sg-grain" style={{ position: "absolute", inset: 0, background: "linear-gradient(120deg, var(--ink-800), var(--ink-900))", opacity: i === activeSlide ? 1 : 0, transition: "opacity 0.8s ease", zIndex: 0 }}>
-              {item.kind === "content" && item.slide.cover_image && (
-                <img src={item.slide.cover_image} alt="" style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover", filter: "brightness(0.25) saturate(0.7)" }} />
-              )}
-              {item.kind === "content" && !item.slide.cover_image && (
-                <img src="https://images.unsplash.com/photo-1522778119026-d647f0596c20?w=1600&q=80" alt="" style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover", filter: "brightness(0.2) saturate(0.6)" }} />
-              )}
-            </div>
-          ))}
-          <div style={{ position: "absolute", inset: 0, zIndex: 1, backgroundImage: "repeating-linear-gradient(-45deg, rgba(0,0,0,0.15) 0 1px, transparent 1px 14px)", pointerEvents: "none" }} />
-          <div style={{ position: "absolute", inset: 0, zIndex: 1, background: "linear-gradient(to right, rgba(13,17,23,0.9) 0%, rgba(13,17,23,0.5) 50%, rgba(13,17,23,0.2) 100%)" }} />
-          <div style={{ position: "absolute", inset: 0, zIndex: 1, background: "linear-gradient(to top, var(--ink-900) 0%, transparent 40%)" }} />
-
-          {/* Slide counter */}
-          <div className="mono" style={{ position: "absolute", top: 100, right: 32, zIndex: 20, fontSize: 11, letterSpacing: "0.18em", color: "var(--ink-300)" }}>
-            {String(activeSlide + 1).padStart(2, "0")} / {String(slides.length).padStart(2, "0")}
+        <section className="relative w-full overflow-hidden" style={{ height: "80vh", minHeight: "600px" }}>
+          {/* Slider arka planı — cover_image varsa onu kullan */}
+          <div className="absolute inset-0 z-0">
+            {slides[activeSlide]?.kind === "content" && slides[activeSlide].slide.cover_image ? (
+              <img
+                key={slides[activeSlide].slide.cover_image}
+                src={slides[activeSlide].slide.cover_image}
+                alt=""
+                className="w-full h-full object-cover"
+                style={{ filter: "brightness(0.35) saturate(0.8)" }}
+              />
+            ) : (
+              <img
+                key="hero-fallback"
+                src="https://images.unsplash.com/photo-1522778119026-d647f0596c20?w=1600&q=80"
+                alt=""
+                className="w-full h-full object-cover"
+                style={{ filter: "brightness(0.35) saturate(0.8)" }}
+              />
+            )}
+            <div className="absolute inset-0" style={{ background: "linear-gradient(to top, var(--sg-bg) 0%, rgba(6,15,30,0.5) 50%, transparent 100%)" }} />
+            <div className="absolute inset-0" style={{ background: "linear-gradient(to right, var(--sg-bg) 0%, transparent 60%)" }} />
           </div>
 
-          {/* Slides */}
+          {/* Slide içerikleri */}
           {slides.map((item, i) => (
-            <div key={item.slideKey} style={{ position: "absolute", inset: 0, zIndex: 10, display: "flex", alignItems: "center", opacity: i === activeSlide ? 1 : 0, transition: "opacity 0.8s ease", pointerEvents: i === activeSlide ? "auto" : "none" }}>
-              <div style={{ width: "100%", maxWidth: 1440, margin: "0 auto", padding: "60px 32px", display: "grid", gridTemplateColumns: item.kind === "content" && item.slide.category === "radar" && radarCard ? "1.4fr 1fr" : "1fr", gap: 48, alignItems: "center" }}>
+            <motion.div
+              key={item.slideKey}
+              className="absolute inset-0 flex items-center z-10"
+              initial={false}
+              animate={{ opacity: i === activeSlide ? 1 : 0 }}
+              transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
+              style={{ pointerEvents: i === activeSlide ? "auto" : "none" }}
+            >
+              <div className="w-full max-w-7xl mx-auto px-8 md:px-12 pb-16">
                 {item.kind === "content" ? (
                   <>
-                    <div>
-                      <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 24 }}>
-                        <span className="sg-chip sg-chip-solid" style={{ fontSize: 10 }}>{CAT_LABEL[item.slide.category] ?? item.slide.category}</span>
-                        <span className="mono" style={{ fontSize: 10, letterSpacing: "0.18em", color: "var(--ink-300)" }}>
-                          {item.slide.category === "radar" ? "BU HAFTANIN RADAR OYUNCUSU" : "KEŞFET"}
-                        </span>
-                      </div>
-                      <h1 className="display grad-text" style={{ fontSize: "clamp(48px, 6vw, 84px)", fontWeight: 700, lineHeight: 0.95, letterSpacing: "-0.04em", margin: "0 0 20px" }}>
-                        {item.slide.title.length > 80 ? item.slide.title.slice(0, 80) + "…" : item.slide.title}
-                      </h1>
-                      <p style={{ fontSize: 18, lineHeight: 1.5, color: "var(--ink-200)", marginBottom: 32, maxWidth: 540 }}>
-                        {(() => {
-                          const clean = item.slide.content.replace(/<[^>]+>/g, " ").replace(/[#*_\n]/g, " ").replace(/\s+/g, " ").trim();
-                          const tn = item.slide.title.replace(/\s+/g, " ").trim().toLowerCase();
-                          const cs = clean.toLowerCase().startsWith(tn) ? clean.slice(item.slide.title.length).trim() : clean;
-                          const first = cs.match(/^[^.!?]{20,}[.!?]/)?.[0];
-                          return first ? first.trim() : cs.slice(0, 160) + "…";
-                        })()}
-                      </p>
-                      <div style={{ display: "flex", gap: 12 }}>
-                        <Link href={`${categoryPath(item.slide.category)}/${item.slide.slug}`} className="sg-btn sg-btn-solid">OKU →</Link>
-                        <Link href={categoryPath(item.slide.category)} className="sg-btn">TÜM İÇERİKLER</Link>
-                      </div>
-                    </div>
-                    {item.slide.category === "radar" && radarCard && (
-                      <div style={{ maxWidth: 300, justifySelf: "end", width: "100%" }}>
-                        <PlayerCard player={radarCard} size="full" showScoutNote={false} animated={false}
-                          tmLink={`https://www.transfermarkt.com.tr/schnellsuche/ergebnis/schnellsuche?query=${encodeURIComponent(radarCard.name)}`}
-                          gLink={`https://www.google.com/search?q=${encodeURIComponent(radarCard.name + " footballer")}`}
-                        />
-                      </div>
-                    )}
+                    <span className="inline-block px-3 py-1 text-[10px] font-bold tracking-[0.2em] uppercase mb-5 w-fit"
+                      style={{
+                        background: `color-mix(in srgb, ${CAT_COLOR[item.slide.category] ?? "var(--sg-primary)"} 22%, transparent)`,
+                        color: CAT_COLOR[item.slide.category] ?? "var(--sg-primary)",
+                        border: `1px solid color-mix(in srgb, ${CAT_COLOR[item.slide.category] ?? "var(--sg-primary)"} 38%, transparent)`,
+                        fontFamily: "var(--font-headline)",
+                      }}>
+                      {CAT_LABEL[item.slide.category] ?? item.slide.category}
+                    </span>
+                    <h1 className="font-bold tracking-tighter mb-5 max-w-4xl"
+                      style={{
+                        fontFamily: "var(--font-headline)",
+                        fontSize: "clamp(2.5rem, 7vw, 5.5rem)",
+                        lineHeight: 1.18,
+                        paddingBottom: "0.12em",
+                        background: "linear-gradient(135deg, var(--sg-primary), var(--sg-secondary))",
+                        WebkitBackgroundClip: "text",
+                        WebkitTextFillColor: "transparent",
+                        backgroundClip: "text",
+                        boxDecorationBreak: "clone",
+                        WebkitBoxDecorationBreak: "clone",
+                      }}>
+                      {item.slide.title.length > 80 ? item.slide.title.slice(0, 80) + "…" : item.slide.title}
+                    </h1>
+                    <p className="text-base md:text-lg max-w-2xl mb-8 hidden sm:block"
+                      style={{ color: "var(--sg-text-secondary)", fontFamily: "var(--font-body)" }}>
+                      {(() => {
+                        const clean = item.slide.content
+                          .replace(/<[^>]+>/g, " ")
+                          .replace(/[#*_\n]/g, " ")
+                          .replace(/\s+/g, " ")
+                          .trim();
+                        const titleNorm = item.slide.title.replace(/\s+/g, " ").trim().toLowerCase();
+                        const cleanLower = clean.toLowerCase();
+                        const cleanStart = cleanLower.startsWith(titleNorm)
+                          ? clean.slice(item.slide.title.length).trim()
+                          : clean;
+                        const firstSentence = cleanStart.match(/^[^.!?]{20,}[.!?]/)?.[0];
+                        return firstSentence ? firstSentence.trim() : cleanStart.slice(0, 160) + "…";
+                      })()}
+                    </p>
+                    <Link href={`${categoryPath(item.slide.category)}/${item.slide.slug}`}
+                      className="inline-flex items-center gap-2 px-8 py-3.5 font-bold uppercase tracking-wider transition-all hover:brightness-110 active:scale-95"
+                      style={{
+                        background: "var(--sg-primary)", color: "#060f1e",
+                        fontFamily: "var(--font-headline)", fontSize: "12px",
+                      }}>
+                      Devamını Oku
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M5 12h14M12 5l7 7-7 7" /></svg>
+                    </Link>
                   </>
                 ) : (
-                  <div>
-                    <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 24 }}>
-                      <span className="sg-chip" style={{ fontSize: 10, borderColor: "var(--amber)", color: "var(--amber)" }}>ARENA</span>
-                    </div>
-                    <h1 className="display" style={{ fontSize: "clamp(48px, 6vw, 84px)", fontWeight: 700, lineHeight: 0.95, letterSpacing: "-0.04em", margin: "0 0 20px", color: "var(--amber)" }}>
+                  <>
+                    <span className="inline-block px-3 py-1 text-[10px] font-bold tracking-[0.2em] uppercase mb-5 w-fit"
+                      style={{ background: "rgba(249,189,34,0.15)", color: "var(--sg-amber)", border: "1px solid rgba(249,189,34,0.3)", fontFamily: "var(--font-headline)" }}>
+                      Arena
+                    </span>
+                    <h1 className="font-bold tracking-tighter mb-5 max-w-4xl"
+                      style={{
+                        fontFamily: "var(--font-headline)",
+                        fontSize: "clamp(2.5rem, 7vw, 5.5rem)",
+                        lineHeight: 1.18,
+                        paddingBottom: "0.12em",
+                        background: "linear-gradient(135deg, var(--sg-amber), var(--sg-primary))",
+                        WebkitBackgroundClip: "text",
+                        WebkitTextFillColor: "transparent",
+                        backgroundClip: "text",
+                        boxDecorationBreak: "clone",
+                        WebkitBoxDecorationBreak: "clone",
+                      }}>
                       {item.title}
                     </h1>
-                    <p style={{ fontSize: 18, lineHeight: 1.5, color: "var(--ink-200)", marginBottom: 32, maxWidth: 540 }}>{item.teaser}</p>
-                    <Link href={item.href} className="sg-btn" style={{ borderColor: "var(--amber)", color: "var(--amber)" }}>OYNA →</Link>
-                  </div>
+                    <p className="text-base md:text-lg max-w-2xl mb-8" style={{ color: "var(--sg-text-secondary)" }}>{item.teaser}</p>
+                    <Link href={item.href}
+                      className="inline-flex items-center gap-2 px-8 py-3.5 font-bold uppercase tracking-wider transition-all hover:brightness-110"
+                      style={{ background: "var(--sg-amber)", color: "#060f1e", fontFamily: "var(--font-headline)", fontSize: "12px" }}>
+                      Oyna
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M5 12h14M12 5l7 7-7 7" /></svg>
+                    </Link>
+                  </>
                 )}
               </div>
-            </div>
+            </motion.div>
           ))}
 
-          {/* Dots */}
-          <div style={{ position: "absolute", bottom: 32, left: 32, zIndex: 20, display: "flex", gap: 6 }}>
+          {/* Slide indikatörler */}
+          <div className="absolute bottom-10 left-8 md:left-12 z-20 flex gap-3">
             {slides.map((_, i) => (
-              <button key={i} onClick={() => goTo(i)} style={{ width: i === activeSlide ? 32 : 12, height: 3, borderRadius: 2, background: i === activeSlide ? "var(--accent)" : "rgba(255,255,255,0.3)", border: "none", padding: 0, cursor: "pointer", transition: "all 0.3s" }} />
+              <button key={i} onClick={() => goTo(i)}
+                className="h-1.5 transition-all duration-300"
+                style={{ width: i === activeSlide ? "48px" : "24px", background: i === activeSlide ? "var(--sg-primary)" : "rgba(255,255,255,0.2)" }}
+              />
             ))}
           </div>
-          <div style={{ position: "absolute", bottom: 24, right: 32, zIndex: 20, display: "flex", gap: 8 }}>
-            <button onClick={prev} className="sg-btn" style={{ padding: "8px 12px" }}>←</button>
-            <button onClick={next} className="sg-btn" style={{ padding: "8px 12px" }}>→</button>
-          </div>
+
+          {/* Ok butonları */}
+          <button onClick={prev} className="absolute left-4 top-1/2 -translate-y-1/2 z-20 flex h-10 w-10 items-center justify-center transition-all hover:opacity-80"
+            style={{ background: "rgba(23,32,47,0.7)", backdropFilter: "blur(8px)", color: "var(--sg-text-secondary)" }}>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M15 19l-7-7 7-7" /></svg>
+          </button>
+          <button onClick={next} className="absolute right-4 top-1/2 -translate-y-1/2 z-20 flex h-10 w-10 items-center justify-center transition-all hover:opacity-80"
+            style={{ background: "rgba(23,32,47,0.7)", backdropFilter: "blur(8px)", color: "var(--sg-text-secondary)" }}>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M9 5l7 7-7 7" /></svg>
+          </button>
         </section>
       )}
 
-      {/* ── SON EKLENENLER ───────────────────────────────────────────── */}
+      {/* ── Son Eklenenler ────────────────────────────────────────────────── */}
       {recentItems.length > 0 && (
-        <section style={{ maxWidth: 1440, margin: "0 auto", padding: "80px 32px 40px" }}>
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", marginBottom: 24 }}>
-            <h2 className="display" style={{ fontSize: 36, fontWeight: 700, letterSpacing: "-0.03em", margin: 0 }}>Son Eklenenler</h2>
-            <Link href="/radar" className="sg-link mono" style={{ fontSize: 12, letterSpacing: "0.14em", color: "var(--ink-300)" }}>ARŞİV →</Link>
+        <section className="py-10 px-8 max-w-7xl mx-auto">
+          <div className="flex items-end justify-between mb-8">
+            <div>
+              <p className="text-[10px] font-bold uppercase tracking-[0.25em] mb-1"
+                style={{ color: "var(--sg-primary)", fontFamily: "var(--font-headline)" }}>Keşfet</p>
+              <h2 className="text-3xl md:text-4xl font-bold" style={{ fontFamily: "var(--font-headline)" }}>Son Eklenenler</h2>
+            </div>
           </div>
-          <div style={{ overflowX: "auto", paddingBottom: 16 }}>
-            <div style={{ display: "grid", gridAutoFlow: "column", gridAutoColumns: "minmax(280px, 1fr)", gap: 16, minWidth: "100%" }}>
-              {recentItems.map((item) => {
-                const accent = CAT_ACCENT[item.category] ?? "var(--emerald)";
+          <div className="grid grid-cols-1 gap-4 lg:grid-cols-12">
+            {/* Sol — büyük featured kart */}
+            {recentItems[0] && (() => {
+              const item = recentItems[0];
+              const accentColor = CAT_COLOR[item.category] ?? "var(--sg-primary)";
+              const catLabel = CAT_LABEL[item.category] ?? item.category;
+              return (
+                <Link href={`${categoryPath(item.category)}/${item.slug}`}
+                  className="group lg:col-span-6 flex flex-col transition hover:-translate-y-0.5"
+                  style={{ background: "var(--sg-surface)" }}>
+                  <div className="relative h-64 lg:h-80 overflow-hidden" style={{ background: "var(--sg-surface-low)" }}>
+                    <img
+                      src={item.cover_image || getCategoryImage(item.category, item.slug)}
+                      alt=""
+                      className="w-full h-full object-cover transition group-hover:scale-105 duration-500"
+                      style={{ filter: "brightness(0.4) saturate(0.6)" }}
+                      onError={(e) => { (e.target as HTMLImageElement).style.opacity = "0"; }}
+                    />
+                    <div className="absolute inset-0" style={{ background: "linear-gradient(to bottom, transparent 30%, var(--sg-surface) 100%)" }} />
+                    <span className="absolute top-3 left-3 px-2 py-0.5 text-[9px] font-bold uppercase tracking-[0.18em]"
+                      style={{
+                        background: `color-mix(in srgb, ${accentColor} 20%, transparent)`,
+                        color: accentColor,
+                        fontFamily: "var(--font-headline)",
+                        border: `1px solid color-mix(in srgb, ${accentColor} 30%, transparent)`,
+                      }}>
+                      {catLabel}
+                    </span>
+                    <span className="absolute top-3 right-3 text-[10px]" style={{ color: "var(--sg-text-muted)" }}>
+                      {new Date(item.created_at).toLocaleDateString("tr-TR", { day: "numeric", month: "short" })}
+                    </span>
+                  </div>
+                  <div className="h-[3px]" style={{ background: accentColor }} />
+                  <div className="p-5 flex flex-col flex-1">
+                    <h3 className="text-lg font-bold leading-snug line-clamp-2 mb-3"
+                      style={{ fontFamily: "var(--font-headline)", color: "var(--sg-text-primary)" }}>
+                      {item.title}
+                    </h3>
+                    <p className="text-sm line-clamp-2 mb-4" style={{ color: "var(--sg-text-secondary)" }}>
+                      {item.content ? item.content.replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").trim().slice(0, 120) + "…" : ""}
+                    </p>
+                    <div className="mt-auto inline-flex items-center gap-1 text-[11px] font-bold"
+                      style={{ color: accentColor, fontFamily: "var(--font-headline)" }}>
+                      Oku <span className="transition-transform group-hover:translate-x-0.5">→</span>
+                    </div>
+                  </div>
+                </Link>
+              );
+            })()}
+
+            {/* Sağ — küçük kartlar */}
+            <div className="lg:col-span-6 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-2">
+              {recentItems.slice(1, 5).map((item) => {
+                const accentColor = CAT_COLOR[item.category] ?? "var(--sg-primary)";
+                const catLabel = CAT_LABEL[item.category] ?? item.category;
                 return (
-                  <article key={item.id} onClick={() => window.location.href = `${categoryPath(item.category)}/${item.slug}`}
-                    className="sg-lift" style={{ background: "var(--ink-800)", border: "1px solid var(--ink-700)", borderRadius: 4, overflow: "hidden", cursor: "pointer" }}>
-                    <div style={{ height: 2, background: accent }} />
-                    <div style={{ height: 160, position: "relative", overflow: "hidden", background: "linear-gradient(140deg, var(--ink-700) 0%, var(--ink-800) 100%)" }}>
-                      <div className="sg-stripe" style={{ position: "absolute", inset: 0, opacity: 0.4 }} />
-                      <img src={item.cover_image || getCategoryImage(item.category, item.slug)} alt="" style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover", filter: "brightness(0.35) saturate(0.6)", opacity: 0.7 }} onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }} />
-                      <div style={{ position: "absolute", bottom: 12, left: 16, right: 16, display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                        <span className="mono" style={{ fontSize: 10, letterSpacing: "0.18em", color: accent }}>{CAT_LABEL[item.category] ?? item.category}</span>
-                        <span className="mono" style={{ fontSize: 10, color: "var(--ink-400)" }}>
-                          {new Date(item.created_at).toLocaleDateString("tr-TR", { day: "numeric", month: "short" }).toUpperCase()}
-                        </span>
+                  <Link key={item.id} href={`${categoryPath(item.category)}/${item.slug}`}
+                    className="group flex flex-col transition hover:-translate-y-0.5"
+                    style={{ background: "var(--sg-surface)" }}>
+                    <div className="relative h-28 overflow-hidden" style={{ background: "var(--sg-surface-low)" }}>
+                      <img
+                        src={item.cover_image || getCategoryImage(item.category, item.slug)}
+                        alt=""
+                        className="w-full h-full object-cover transition group-hover:scale-105 duration-500"
+                        style={{ filter: "brightness(0.4) saturate(0.6)" }}
+                        onError={(e) => { (e.target as HTMLImageElement).style.opacity = "0"; }}
+                      />
+                      <div className="absolute inset-0" style={{ background: "linear-gradient(to bottom, transparent 20%, var(--sg-surface) 100%)" }} />
+                      <span className="absolute top-2 left-2 px-1.5 py-0.5 text-[8px] font-bold uppercase tracking-[0.15em]"
+                        style={{
+                          background: `color-mix(in srgb, ${accentColor} 20%, transparent)`,
+                          color: accentColor,
+                          fontFamily: "var(--font-headline)",
+                          border: `1px solid color-mix(in srgb, ${accentColor} 30%, transparent)`,
+                        }}>
+                        {catLabel}
+                      </span>
+                    </div>
+                    <div className="h-[2px]" style={{ background: accentColor }} />
+                    <div className="p-3 flex flex-col flex-1">
+                      <h3 className="text-xs font-bold leading-snug line-clamp-2 mb-2"
+                        style={{ fontFamily: "var(--font-headline)", color: "var(--sg-text-primary)" }}>
+                        {item.title}
+                      </h3>
+                      <div className="mt-auto inline-flex items-center gap-1 text-[10px] font-bold"
+                        style={{ color: accentColor, fontFamily: "var(--font-headline)" }}>
+                        Oku <span className="transition-transform group-hover:translate-x-0.5">→</span>
                       </div>
                     </div>
-                    <div style={{ padding: 20 }}>
-                      <h3 className="display" style={{ fontSize: 16, fontWeight: 700, margin: "0 0 8px", lineHeight: 1.25, color: "var(--ink-100)" }}>{item.title}</h3>
-                      <p style={{ fontSize: 13, color: "var(--ink-300)", lineHeight: 1.5, margin: 0 }}>
-                        {item.content.replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").trim().slice(0, 100)}…
-                      </p>
-                    </div>
-                  </article>
+                  </Link>
                 );
               })}
             </div>
@@ -309,152 +552,188 @@ export default function Home() {
         </section>
       )}
 
-      {/* ── RADAR OYUNCUSU ───────────────────────────────────────────── */}
-      <section style={{ maxWidth: 1440, margin: "0 auto", padding: "60px 32px" }}>
-        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", marginBottom: 32 }}>
-          <div>
-            <p className="eyebrow" style={{ marginBottom: 8 }}>BU HAFTANIN RADAR OYUNCUSU</p>
-            <h2 className="display" style={{ fontSize: 36, fontWeight: 700, letterSpacing: "-0.03em", margin: 0 }}>{featuredPlayer?.name ?? "Radar Oyuncusu"}</h2>
-          </div>
-          <Link href="/radar" className="sg-link mono" style={{ fontSize: 12, letterSpacing: "0.14em", color: "var(--ink-300)" }}>TÜM RADAR →</Link>
+      {/* ── Radar Oyuncusu ───────────────────────────────────────────────── */}
+      <section className="py-20 relative" style={{ background: "var(--sg-surface-low)" }}>
+        {/* Dekoratif glow */}
+        <div className="pointer-events-none absolute inset-0 overflow-hidden">
+          <div className="absolute -left-32 top-1/2 -translate-y-1/2 h-96 w-96 rounded-full opacity-10"
+            style={{ background: "radial-gradient(circle, var(--sg-primary) 0%, transparent 70%)", filter: "blur(60px)" }} />
         </div>
-
-        {featuredLoading ? (
-          <div style={{ display: "flex", alignItems: "center", gap: 8, padding: "48px 0", color: "var(--ink-400)" }}>
-            <span className="h-5 w-5 animate-spin rounded-full border-2 border-t-transparent" style={{ borderColor: "var(--accent)", borderTopColor: "transparent" }} />
+        <div className="max-w-7xl mx-auto px-8">
+          <div className="mb-10">
+            <p className="text-[10px] font-bold uppercase tracking-[0.25em] mb-1" style={{ color: "var(--sg-primary)", fontFamily: "var(--font-headline)" }}>Öne Çıkan Profil</p>
+            <h2 className="text-3xl md:text-4xl font-bold" style={{ fontFamily: "var(--font-headline)" }}>Bu Haftanın Radar Oyuncusu</h2>
           </div>
-        ) : radarCard ? (
-          <div style={{ display: "grid", gridTemplateColumns: "280px 1fr", gap: 48, alignItems: "start" }}>
-            <PlayerCard player={radarCard} size="full" showScoutNote={true} animated={true}
-              tmLink={`https://www.transfermarkt.com.tr/schnellsuche/ergebnis/schnellsuche?query=${encodeURIComponent(radarCard.name)}`}
-              gLink={`https://www.google.com/search?q=${encodeURIComponent(radarCard.name + " footballer")}`}
-            />
-            <div>
-              <p className="eyebrow" style={{ marginBottom: 12 }}>ODAK OYUNCU</p>
-              <h3 className="display" style={{ fontSize: 36, fontWeight: 700, letterSpacing: "-0.03em", margin: "0 0 4px" }}>{radarCard.name}</h3>
-              <p className="mono" style={{ fontSize: 11, color: "var(--ink-400)", letterSpacing: "0.12em", marginBottom: 28 }}>
-                {radarCard.club} · {radarCard.league} · {radarCard.position} · {radarCard.age} YAŞ
-              </p>
-              <div style={{ display: "flex", flexDirection: "column", gap: 10, marginBottom: 28 }}>
-                {[
-                  { label: "PAC · HIZ", v: radarCard.pace },
-                  { label: "SHO · ŞUT", v: radarCard.shooting },
-                  { label: "PAS · PAS", v: radarCard.passing },
-                  { label: "DRI · DRİBLİNG", v: radarCard.dribbling },
-                  { label: "DEF · DEFANS", v: radarCard.defending },
-                  { label: "PHY · FİZİK", v: radarCard.physical },
-                ].map(({ label, v }) => (
-                  <div key={label} style={{ display: "flex", alignItems: "center", gap: 12 }}>
-                    <span className="mono" style={{ fontSize: 10, color: "var(--ink-400)", letterSpacing: "0.1em", width: 140, flexShrink: 0 }}>{label}</span>
-                    <div style={{ flex: 1, height: 3, background: "var(--ink-700)", borderRadius: 2, overflow: "hidden" }}>
-                      <div className="stat-bar-fill" style={{ height: "100%", width: `${v}%`, background: v >= 80 ? "var(--emerald)" : v >= 65 ? "var(--cyan)" : "var(--ink-500)", borderRadius: 2 }} />
-                    </div>
-                    <span className="mono" style={{ fontSize: 11, fontWeight: 600, color: v >= 80 ? "var(--emerald)" : v >= 65 ? "var(--cyan)" : "var(--ink-400)", width: 28, textAlign: "right" }}>{v}</span>
-                  </div>
-                ))}
+
+          {featuredLoading ? (
+            <div className="flex items-center gap-2 py-12" style={{ color: "var(--sg-text-muted)" }}>
+              <span className="h-5 w-5 animate-spin rounded-full border-2 border-t-transparent" style={{ borderColor: "var(--sg-primary)", borderTopColor: "transparent" }} />
+              <span className="text-sm">Yükleniyor...</span>
+            </div>
+          ) : radarCard ? (
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-start">
+              {/* Sol — PlayerCard */}
+              <div className="lg:col-span-4 flex justify-center lg:justify-start">
+                <PlayerCard player={radarCard} size="full" showScoutNote={true} animated={true}
+                  tmLink={`https://www.transfermarkt.com.tr/schnellsuche/ergebnis/schnellsuche?query=${encodeURIComponent(radarCard.name)}`}
+                  gLink={`https://www.google.com/search?q=${encodeURIComponent(radarCard.name + " footballer")}`}
+                />
               </div>
-              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 24, marginBottom: 24 }}>
-                {[
-                  { label: "GOL", value: featuredPlayer?.goals ?? "—" },
-                  { label: "ASİST", value: featuredPlayer?.assists ?? "—" },
-                  { label: "GENEL", value: radarCard.overall, accent: true },
-                ].map(({ label, value, accent }) => (
-                  <div key={label}>
-                    <p className="eyebrow" style={{ marginBottom: 4 }}>{label}</p>
-                    <p className="display" style={{ fontSize: 32, fontWeight: 700, margin: 0, color: accent ? "var(--accent)" : "var(--ink-100)" }}>{value}</p>
-                  </div>
-                ))}
-              </div>
-              {radarCard.whyWatch && (
-                <div style={{ padding: "12px 16px", borderLeft: "2px solid var(--accent)", background: "var(--ink-800)" }}>
-                  <p className="eyebrow" style={{ marginBottom: 6 }}>SCOUT NOTU</p>
-                  <p style={{ fontSize: 13, color: "var(--ink-300)", lineHeight: 1.55, fontStyle: "italic", margin: 0 }}>"{radarCard.whyWatch}"</p>
+
+              {/* Sağ — Detaylar */}
+              <div className="lg:col-span-8 flex flex-col justify-center">
+                <div className="flex flex-wrap items-center gap-3 mb-4">
+                  <h3 className="text-3xl md:text-5xl font-bold tracking-tighter" style={{ fontFamily: "var(--font-headline)", color: "var(--sg-primary)", textShadow: "0 0 20px rgba(70,241,197,0.3)" }}>
+                    {radarCard.name}
+                  </h3>
+                  <PlayerScoutLinks playerName={radarCard.name} />
                 </div>
-              )}
-              <div style={{ display: "flex", gap: 8, marginTop: 16 }}>
-                <a href={`https://www.transfermarkt.com.tr/schnellsuche/ergebnis/schnellsuche?query=${encodeURIComponent(radarCard.name)}`} target="_blank" rel="noopener noreferrer" className="sg-btn" style={{ fontSize: 11 }}>TRANSFERMARKT</a>
-                <a href={`https://www.google.com/search?q=${encodeURIComponent(radarCard.name + " footballer")}`} target="_blank" rel="noopener noreferrer" className="sg-btn" style={{ fontSize: 11 }}>GOOGLE</a>
+                {featuredPlayer?.description && (
+                  <p className="text-base leading-relaxed mb-8 max-w-2xl" style={{ color: "var(--sg-text-secondary)" }}>
+                    {featuredPlayer.description}
+                  </p>
+                )}
+                <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+                  {[
+                    { label: "Yaş", value: radarCard.age },
+                    { label: "Kulüp", value: radarCard.club },
+                    { label: "Pozisyon", value: translatePosition(radarCard.position) },
+                    { label: "Lig", value: radarCard.league },
+                    { label: "Goller", value: featuredPlayer?.goals ?? "—", highlight: true },
+                    { label: "Asist", value: featuredPlayer?.assists ?? "—", highlight: true },
+                  ].map(({ label, value, highlight }) => (
+                    <div key={label} className="p-4 border-l-2" style={{ background: "var(--sg-surface)", borderLeftColor: highlight ? "var(--sg-primary)" : "var(--sg-secondary)" }}>
+                      <p className="text-[10px] font-bold uppercase tracking-[0.18em] mb-1" style={{ color: "var(--sg-text-muted)", fontFamily: "var(--font-headline)" }}>{label}</p>
+                      <p className="text-xl font-bold" style={{ fontFamily: "var(--font-headline)", color: highlight ? "var(--sg-primary)" : "var(--sg-text-primary)" }}>{String(value) || "—"}</p>
+                    </div>
+                  ))}
+                </div>
               </div>
             </div>
-          </div>
-        ) : featuredPlayer ? (
-          <div style={{ padding: 24, background: "var(--ink-800)", border: "1px solid var(--ink-700)" }}>
-            <h3 className="display" style={{ fontSize: 24, color: "var(--accent)", margin: "0 0 8px" }}>{featuredPlayer.name}</h3>
-            <p style={{ fontSize: 14, color: "var(--ink-300)", margin: 0 }}>{featuredPlayer.description}</p>
-          </div>
-        ) : null}
+          ) : featuredPlayer ? (
+            <div className="p-8" style={{ background: "var(--sg-surface)" }}>
+              <h3 className="text-2xl font-bold" style={{ fontFamily: "var(--font-headline)", color: "var(--sg-primary)" }}>{featuredPlayer.name}</h3>
+              <p className="mt-2 text-sm" style={{ color: "var(--sg-text-secondary)" }}>{featuredPlayer.description}</p>
+            </div>
+          ) : null}
+        </div>
       </section>
 
-      {/* ── FORM OYUNCULARI ──────────────────────────────────────────── */}
-      <section style={{ maxWidth: 1440, margin: "0 auto", padding: "40px 32px" }}>
-        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", marginBottom: 24 }}>
-          <div>
-            <p className="eyebrow" style={{ marginBottom: 8 }}>BU DÖNEM DİKKAT ÇEKENLER</p>
-            <h2 className="display" style={{ fontSize: 36, fontWeight: 700, letterSpacing: "-0.03em", margin: 0 }}>Form Oyuncuları</h2>
-          </div>
+      {/* ── Bu Dönem Dikkat Çekenler ──────────────────────────────────────── */}
+      <section className="py-20 px-8 max-w-7xl mx-auto">
+        <div className="mb-8">
+          <p className="text-[10px] font-bold uppercase tracking-[0.25em] mb-1" style={{ color: "var(--sg-secondary)", fontFamily: "var(--font-headline)" }}>Radarımızda</p>
+          <h2 className="text-3xl md:text-4xl font-bold" style={{ fontFamily: "var(--font-headline)" }}>Bu Dönem Dikkat Çekenler</h2>
         </div>
+
         {formLoading ? (
-          <div style={{ padding: "32px 0", color: "var(--ink-400)" }}><span className="h-4 w-4 animate-spin rounded-full border-2 border-t-transparent" style={{ borderColor: "var(--accent)", borderTopColor: "transparent", display: "inline-block" }} /></div>
+          <div className="flex items-center gap-2 py-8" style={{ color: "var(--sg-text-muted)" }}>
+            <span className="h-4 w-4 animate-spin rounded-full border-2 border-t-transparent" style={{ borderColor: "var(--sg-primary)", borderTopColor: "transparent" }} />
+            <span className="text-sm">Yükleniyor...</span>
+          </div>
         ) : formPlayers.length === 0 ? (
-          <p style={{ fontSize: 14, color: "var(--ink-400)", padding: "32px 0" }}>Oyuncular yakında listelenecek.</p>
+          <p className="text-sm py-8 text-center" style={{ color: "var(--sg-text-muted)" }}>Oyuncular yakında listelenecek.</p>
         ) : (
-          <motion.div style={{ display: "grid", gridTemplateColumns: "repeat(5, 1fr)", gap: 16 }}
+          <motion.div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5"
             initial="hidden" whileInView="visible" viewport={{ once: true }}
             variants={{ hidden: {}, visible: { transition: { staggerChildren: 0.07 } } }}>
             {formPlayers.map((player, i) => (
-              <motion.div key={`${player.name}-${i}`} variants={{ hidden: { opacity: 0, y: 20 }, visible: { opacity: 1, y: 0, transition: { duration: 0.5 } } }}>
-                <PlayerCard player={{ name: player.name, club: player.club, league: player.league, position: player.position || "", age: String(player.age), overall: player.overall!, pace: player.pace ?? 0, shooting: player.shooting ?? 0, passing: player.passing ?? 0, dribbling: player.dribbling ?? 0, defending: player.defending ?? 0, physical: player.physical ?? 0, photo_url: player.photo_url as string | undefined }} size="mini" animated={false} />
+              <motion.div key={`${player.name}-${i}`}
+                variants={{ hidden: { opacity: 0, y: 20 }, visible: { opacity: 1, y: 0, transition: { duration: 0.5 } } }}>
+                <PlayerCard
+                  player={{
+                    name: player.name, club: player.club, league: player.league,
+                    position: player.position || "", age: String(player.age),
+                    overall: player.overall!, pace: player.pace ?? 0,
+                    shooting: player.shooting ?? 0, passing: player.passing ?? 0,
+                    dribbling: player.dribbling ?? 0, defending: player.defending ?? 0,
+                    physical: player.physical ?? 0,
+                    photo_url: player.photo_url as string | undefined,
+                  }}
+                  size="mini" animated={false}
+                  tmLink={`https://www.transfermarkt.com.tr/schnellsuche/ergebnis/schnellsuche?query=${encodeURIComponent(player.name)}`}
+                  gLink={`https://www.google.com/search?q=${encodeURIComponent(player.name + " footballer")}`}
+                />
               </motion.div>
             ))}
           </motion.div>
         )}
       </section>
 
-      {/* ── EDİTÖRÜN SEÇİMİ ──────────────────────────────────────────── */}
-      {editorItems.length > 0 && (
-        <section style={{ maxWidth: 1440, margin: "0 auto", padding: "40px 32px" }}>
-          <h2 className="display" style={{ fontSize: 36, fontWeight: 700, letterSpacing: "-0.03em", margin: "0 0 24px" }}>Editörün Seçimi</h2>
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 16 }}>
-            {editorItems.map((item) => {
-              const accent = CAT_ACCENT[item.category] ?? "var(--emerald)";
-              return (
-                <Link key={`${item.id}-ed`} href={`${categoryPath(item.category)}/${item.slug}`} className="sg-lift" style={{ background: "var(--ink-800)", border: "1px solid var(--ink-700)", borderRadius: 4, overflow: "hidden", display: "block" }}>
-                  <div style={{ padding: 24 }}>
-                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16 }}>
-                      <span className="mono" style={{ fontSize: 10, letterSpacing: "0.18em", color: accent }}>{CAT_LABEL[item.category] ?? item.category}</span>
-                      <span className="mono" style={{ fontSize: 10, color: "var(--ink-400)" }}>
-                        {new Date(item.created_at).toLocaleDateString("tr-TR", { day: "numeric", month: "short" }).toUpperCase()}
-                      </span>
+      {/* ── Gündemden 3 İçerik ─────────────────────────────────── */}
+      {gundemItems.length > 0 && (
+        <section className="py-8 px-8 max-w-7xl mx-auto">
+          <motion.div variants={fadeUp} initial="hidden" whileInView="visible" viewport={{ once: true, margin: "-60px" }}>
+            <div className="mb-6 flex items-end justify-between">
+              <div>
+                <p className="text-[10px] font-bold uppercase tracking-[0.25em] mb-1"
+                  style={{ color: "var(--sg-tertiary)", fontFamily: "var(--font-headline)" }}>Gündemden</p>
+                <h2 className="text-2xl md:text-3xl font-bold" style={{ fontFamily: "var(--font-headline)" }}>Öne Çıkan İçerikler</h2>
+              </div>
+            </div>
+            <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
+              {gundemItems.map((item) => {
+                const accentColor = CAT_COLOR[item.category] ?? "var(--sg-primary)";
+                const catLabel = CAT_LABEL[item.category] ?? item.category;
+                return (
+                  <Link key={`${item.id}-gundem`} href={`${categoryPath(item.category)}/${item.slug}`}
+                    className="group flex flex-col transition hover:-translate-y-0.5"
+                    style={{ background: "var(--sg-surface)", borderLeft: `3px solid ${accentColor}` }}>
+                    <div className="relative h-28 overflow-hidden" style={{ background: "var(--sg-surface-low)" }}>
+                      <img
+                        src={item.cover_image || getCategoryImage(item.category, item.slug)}
+                        alt=""
+                        className="w-full h-full object-cover transition group-hover:scale-105 duration-500"
+                        style={{ filter: "brightness(0.35) saturate(0.6)" }}
+                        onError={(e) => { (e.target as HTMLImageElement).style.opacity = "0"; }}
+                      />
+                      <div className="absolute inset-0" style={{ background: "linear-gradient(to bottom, transparent 30%, var(--sg-surface) 100%)" }} />
                     </div>
-                    <h3 className="display" style={{ fontSize: 18, fontWeight: 700, letterSpacing: "-0.02em", margin: "0 0 16px", lineHeight: 1.2, color: "var(--ink-100)" }}>{item.title}</h3>
-                    <div style={{ borderTop: "1px solid var(--ink-700)", paddingTop: 12 }}>
-                      <span className="mono" style={{ fontSize: 10, color: "var(--ink-400)", letterSpacing: "0.1em" }}>
-                        {Math.max(1, Math.ceil(item.content.replace(/<[^>]+>/g, "").split(/\s+/).length / 200))} DK · OKUMA
-                      </span>
+                    <div className="p-4 flex flex-col flex-1">
+                      <span className="text-[9px] font-bold uppercase tracking-[0.18em] mb-2 block"
+                        style={{ color: accentColor, fontFamily: "var(--font-headline)" }}>{catLabel}</span>
+                      <h3 className="text-sm font-bold leading-snug line-clamp-2 mb-3"
+                        style={{ fontFamily: "var(--font-headline)", color: "var(--sg-text-primary)" }}>
+                        {item.title}
+                      </h3>
+                      <div className="mt-auto inline-flex items-center gap-1 text-[10px] font-bold"
+                        style={{ color: accentColor, fontFamily: "var(--font-headline)" }}>
+                        Oku <span className="transition-transform group-hover:translate-x-0.5">→</span>
+                      </div>
                     </div>
-                  </div>
-                </Link>
-              );
-            })}
-          </div>
+                  </Link>
+                );
+              })}
+            </div>
+          </motion.div>
         </section>
       )}
 
-      {/* ── HAFTALIK RADAR CTA ───────────────────────────────────────── */}
-      <section style={{ maxWidth: 1440, margin: "0 auto", padding: "0 32px 80px" }}>
-        <div style={{ background: "var(--ink-800)", border: "1px solid var(--ink-700)", padding: "48px 56px", display: "grid", gridTemplateColumns: "1fr auto", gap: 32, alignItems: "center" }}>
+      {/* ── Laboratuvara Katıl (newsletter CTA) ─────────────────────────── */}
+      <section className="mx-8 mb-16 max-w-7xl lg:mx-auto p-10 md:p-16 relative overflow-hidden"
+        style={{ background: "var(--sg-primary)" }}>
+        <div className="pointer-events-none absolute inset-0" style={{ background: "linear-gradient(135deg, rgba(255,255,255,0.1) 0%, transparent 60%)" }} />
+        <div className="relative grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
           <div>
-            <p className="eyebrow" style={{ marginBottom: 12 }}>HAFTALIK RADAR</p>
-            <h2 className="display" style={{ fontSize: "clamp(28px, 4vw, 48px)", fontWeight: 700, letterSpacing: "-0.03em", margin: "0 0 12px", lineHeight: 1.1 }}>
-              Her hafta bir genç yetenek.
+            <h2 className="text-3xl md:text-5xl font-bold tracking-tighter leading-none mb-3" style={{ fontFamily: "var(--font-headline)", color: "#060f1e" }}>
+              Laboratuvara<br />Katıl
             </h2>
-            <p style={{ fontSize: 16, color: "var(--ink-300)", lineHeight: 1.5, margin: 0 }}>
-              Yükselen oyuncuları, taktik gözüyle ve oyun istatistikleriyle birlikte.<br />Pazartesi sabahları yayında.
+            <p className="text-sm leading-relaxed" style={{ color: "rgba(6,15,30,0.7)", fontFamily: "var(--font-body)" }}>
+              Haftalık taktiksel scout raporları ve oyuncu analizleri doğrudan sana gelsin.
             </p>
           </div>
-          <Link href="/radar" className="sg-btn sg-btn-solid" style={{ whiteSpace: "nowrap" }}>
-            RADAR&apos;A GİT →
-          </Link>
+          <div className="flex gap-0">
+            <input
+              type="email"
+              placeholder="E-POSTA ADRESİN"
+              className="flex-1 px-5 py-4 text-sm font-bold outline-none tracking-wider"
+              style={{ background: "rgba(6,15,30,0.15)", color: "#060f1e", fontFamily: "var(--font-headline)", border: "none" }}
+            />
+            <button className="px-6 py-4 font-bold uppercase tracking-wider transition-all hover:opacity-80"
+              style={{ background: "#060f1e", color: "var(--sg-primary)", fontFamily: "var(--font-headline)", fontSize: "12px" }}>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M5 12h14M12 5l7 7-7 7" /></svg>
+            </button>
+          </div>
         </div>
       </section>
 
