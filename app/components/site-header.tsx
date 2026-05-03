@@ -67,7 +67,7 @@ export default function SiteHeader({ activeNav, maxWidth = "max-w-7xl", forceEn 
         { href: "/en/arena", label: "ARENA", key: "arena" },
       ]
     : [
-        { href: "/", label: "ANA SAYFA", key: "home" },
+        { href: "/tr", label: "ANA SAYFA", key: "home" },
         { href: "/listeler", label: "LİSTELER", key: "listeler" },
         { href: "/radar", label: "RADAR", key: "radar" },
         { href: "/taktik-lab", label: "TAKTİK LAB", key: "taktik-lab" },
@@ -76,9 +76,12 @@ export default function SiteHeader({ activeNav, maxWidth = "max-w-7xl", forceEn 
 
   function toggleLang() {
     if (isEn) {
-      router.push(pathname.replace(/^\/en/, "") || "/");
+      const trPath = pathname.replace(/^\/en/, "") || "/";
+      // /en home → go to /tr home to avoid redirect loop
+      router.push(trPath === "/" ? "/tr" : trPath);
     } else {
-      router.push("/en" + pathname);
+      const enPath = pathname === "/tr" ? "" : pathname;
+      router.push("/en" + enPath);
     }
   }
 
@@ -241,13 +244,13 @@ export default function SiteHeader({ activeNav, maxWidth = "max-w-7xl", forceEn 
           );
         })}
 
-        {/* Mobil dil toggle */}
+        {/* Mobil dil toggle — EN solda */}
         <button type="button" onClick={() => { toggleLang(); setOpen(false); }}
           className="flex items-center gap-2 rounded-lg px-4 py-4 transition"
           style={{ color: "var(--sg-text-secondary)", fontFamily: "var(--font-headline)", fontWeight: 600, fontSize: "15px" }}>
-          <span style={{ opacity: isEn ? 0.4 : 1, color: isEn ? "var(--sg-text-muted)" : "var(--sg-primary)" }}>TR</span>
-          <span style={{ color: "var(--sg-text-muted)", fontSize: "11px" }}>/</span>
           <span style={{ opacity: isEn ? 1 : 0.4, color: isEn ? "var(--sg-secondary)" : "var(--sg-text-muted)" }}>EN</span>
+          <span style={{ color: "var(--sg-text-muted)", fontSize: "11px" }}>/</span>
+          <span style={{ opacity: isEn ? 0.4 : 1, color: isEn ? "var(--sg-text-muted)" : "var(--sg-primary)" }}>TR</span>
         </button>
       </nav>
 
@@ -289,19 +292,10 @@ export default function SiteHeader({ activeNav, maxWidth = "max-w-7xl", forceEn 
 
           {/* Desktop sağ — lang toggle + search */}
           <div className="hidden md:flex items-center gap-3">
-            {/* Modern dil toggle pill */}
+            {/* Modern dil toggle pill — EN solda */}
             <button type="button" onClick={toggleLang}
               className="flex items-center gap-0 transition-all duration-200 hover:opacity-90"
               style={{ background: "var(--sg-surface)", border: "1px solid rgba(26,58,92,0.6)", padding: "3px", gap: "0" }}>
-              <span className="px-3 py-1.5 text-[10px] font-bold transition-all duration-200"
-                style={{
-                  fontFamily: "var(--font-headline)",
-                  letterSpacing: "0.12em",
-                  background: !isEn ? "var(--sg-primary)" : "transparent",
-                  color: !isEn ? "#060f1e" : "var(--sg-text-muted)",
-                }}>
-                TR
-              </span>
               <span className="px-3 py-1.5 text-[10px] font-bold transition-all duration-200"
                 style={{
                   fontFamily: "var(--font-headline)",
@@ -310,6 +304,15 @@ export default function SiteHeader({ activeNav, maxWidth = "max-w-7xl", forceEn 
                   color: isEn ? "#060f1e" : "var(--sg-text-muted)",
                 }}>
                 EN
+              </span>
+              <span className="px-3 py-1.5 text-[10px] font-bold transition-all duration-200"
+                style={{
+                  fontFamily: "var(--font-headline)",
+                  letterSpacing: "0.12em",
+                  background: !isEn ? "var(--sg-primary)" : "transparent",
+                  color: !isEn ? "#060f1e" : "var(--sg-text-muted)",
+                }}>
+                TR
               </span>
             </button>
 
