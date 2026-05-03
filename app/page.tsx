@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState, useCallback, useRef, useMemo } from "react";
+import Image from "next/image";
 import Link from "next/link";
 import { motion } from "framer-motion";
 import SiteHeader from "./components/site-header";
@@ -304,23 +305,30 @@ export default function Home() {
         <section className="relative w-full overflow-hidden" style={{ height: "80vh", minHeight: "600px" }}>
           {/* Slider arka planı — cover_image varsa onu kullan */}
           <div className="absolute inset-0 z-0">
-            {slides[activeSlide]?.kind === "content" && slides[activeSlide].slide.cover_image ? (
-              <img
-                key={slides[activeSlide].slide.cover_image}
-                src={slides[activeSlide].slide.cover_image}
-                alt=""
-                className="w-full h-full object-cover"
-                style={{ filter: "brightness(0.35) saturate(0.8)" }}
-              />
-            ) : (
-              <img
-                key="hero-fallback"
-                src="https://images.unsplash.com/photo-1522778119026-d647f0596c20?w=1600&q=80"
-                alt=""
-                className="w-full h-full object-cover"
-                style={{ filter: "brightness(0.35) saturate(0.8)" }}
-              />
-            )}
+            <div style={{ position: "relative", width: "100%", height: "100%" }}>
+              {slides[activeSlide]?.kind === "content" && slides[activeSlide].slide.cover_image ? (
+                <Image
+                  key={slides[activeSlide].slide.cover_image}
+                  src={slides[activeSlide].slide.cover_image}
+                  alt=""
+                  fill
+                  className="object-cover"
+                  style={{ filter: "brightness(0.35) saturate(0.8)" }}
+                  sizes="100vw"
+                />
+              ) : (
+                <Image
+                  key="hero-fallback"
+                  src="https://images.unsplash.com/photo-1522778119026-d647f0596c20?w=1600&q=80"
+                  alt=""
+                  fill
+                  className="object-cover"
+                  style={{ filter: "brightness(0.35) saturate(0.8)" }}
+                  sizes="100vw"
+                  priority
+                />
+              )}
+            </div>
             <div className="absolute inset-0" style={{ background: "linear-gradient(to top, var(--sg-bg) 0%, rgba(6,15,30,0.5) 50%, transparent 100%)" }} />
             <div className="absolute inset-0" style={{ background: "linear-gradient(to right, var(--sg-bg) 0%, transparent 60%)" }} />
           </div>
@@ -466,12 +474,14 @@ export default function Home() {
                   className="group lg:col-span-6 flex flex-col transition hover:-translate-y-0.5"
                   style={{ background: "var(--sg-surface)" }}>
                   <div className="relative h-64 lg:h-80 overflow-hidden" style={{ background: "var(--sg-surface-low)" }}>
-                    <img
+                    <Image
                       src={item.cover_image || getCategoryImage(item.category, item.slug)}
                       alt=""
-                      className="w-full h-full object-cover transition group-hover:scale-105 duration-500"
+                      fill
+                      className="object-cover transition group-hover:scale-105 duration-500"
                       style={{ filter: "brightness(0.4) saturate(0.6)" }}
-                      onError={(e) => { (e.target as HTMLImageElement).style.opacity = "0"; }}
+                      sizes="(max-width: 1024px) 100vw, 50vw"
+                      onError={undefined}
                     />
                     <div className="absolute inset-0" style={{ background: "linear-gradient(to bottom, transparent 30%, var(--sg-surface) 100%)" }} />
                     <span className="absolute top-3 left-3 px-2 py-0.5 text-[9px] font-bold uppercase tracking-[0.18em]"
@@ -515,12 +525,14 @@ export default function Home() {
                     className="group flex flex-col transition hover:-translate-y-0.5"
                     style={{ background: "var(--sg-surface)" }}>
                     <div className="relative h-28 overflow-hidden" style={{ background: "var(--sg-surface-low)" }}>
-                      <img
+                      <Image
                         src={item.cover_image || getCategoryImage(item.category, item.slug)}
                         alt=""
-                        className="w-full h-full object-cover transition group-hover:scale-105 duration-500"
+                        fill
+                        className="object-cover transition group-hover:scale-105 duration-500"
                         style={{ filter: "brightness(0.4) saturate(0.6)" }}
-                        onError={(e) => { (e.target as HTMLImageElement).style.opacity = "0"; }}
+                        sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
+                        onError={undefined}
                       />
                       <div className="absolute inset-0" style={{ background: "linear-gradient(to bottom, transparent 20%, var(--sg-surface) 100%)" }} />
                       <span className="absolute top-2 left-2 px-1.5 py-0.5 text-[8px] font-bold uppercase tracking-[0.15em]"
@@ -680,12 +692,14 @@ export default function Home() {
                     className="group flex flex-col transition hover:-translate-y-0.5"
                     style={{ background: "var(--sg-surface)", borderLeft: `3px solid ${accentColor}` }}>
                     <div className="relative h-28 overflow-hidden" style={{ background: "var(--sg-surface-low)" }}>
-                      <img
+                      <Image
                         src={item.cover_image || getCategoryImage(item.category, item.slug)}
                         alt=""
-                        className="w-full h-full object-cover transition group-hover:scale-105 duration-500"
+                        fill
+                        className="object-cover transition group-hover:scale-105 duration-500"
                         style={{ filter: "brightness(0.35) saturate(0.6)" }}
-                        onError={(e) => { (e.target as HTMLImageElement).style.opacity = "0"; }}
+                        sizes="(max-width: 768px) 100vw, 33vw"
+                        onError={undefined}
                       />
                       <div className="absolute inset-0" style={{ background: "linear-gradient(to bottom, transparent 30%, var(--sg-surface) 100%)" }} />
                     </div>

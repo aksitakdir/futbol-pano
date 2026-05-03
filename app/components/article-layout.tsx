@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Image from "next/image";
 import Link from "next/link";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
@@ -159,12 +160,16 @@ export default function ArticleLayout({
       <section className="relative overflow-hidden pt-[72px]" style={{ minHeight: "380px" }}>
         {/* Arka plan görsel */}
         <div className="absolute inset-0 z-0">
-          <img
-            src={coverImage || getCategoryImage(category, slug)}
-            alt=""
-            className="w-full h-full object-cover"
-            style={{ filter: "brightness(0.3) saturate(0.7)" }}
-          />
+          <div style={{ position: "relative", width: "100%", height: "100%" }}>
+            <Image
+              src={coverImage || getCategoryImage(category, slug)}
+              alt=""
+              fill
+              className="object-cover"
+              style={{ filter: "brightness(0.3) saturate(0.7)" }}
+              sizes="100vw"
+            />
+          </div>
           <div className="absolute inset-0" style={{ background: "linear-gradient(to top, var(--sg-bg) 30%, rgba(6,15,30,0.6) 70%, transparent 100%)" }} />
           <div className="absolute inset-0" style={{ background: "linear-gradient(to right, var(--sg-bg) 0%, transparent 60%)" }} />
         </div>
