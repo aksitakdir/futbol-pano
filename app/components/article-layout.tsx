@@ -147,12 +147,49 @@ export default function ArticleLayout({
   const xShareUrl = `https://x.com/intent/tweet?text=${encodeURIComponent(title + " | Scout Gamer")}&url=${encodeURIComponent(shareUrl)}`;
   const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(title + " " + shareUrl)}`;
 
+  const canonicalUrl = `https://scoutgamer.com${categoryPath(category)}/${slug}`;
+  const articleJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "Article",
+    headline: title,
+    description,
+    url: canonicalUrl,
+    datePublished: date,
+    dateModified: date,
+    image: coverImage ?? `https://scoutgamer.com/og-image.png`,
+    inLanguage: "tr",
+    author: {
+      "@type": "Organization",
+      name: "Scout Gamer",
+      url: "https://scoutgamer.com",
+    },
+    publisher: {
+      "@type": "Organization",
+      name: "Scout Gamer",
+      url: "https://scoutgamer.com",
+      logo: {
+        "@type": "ImageObject",
+        url: "https://scoutgamer.com/og-image.png",
+      },
+    },
+    keywords: tags.join(", "),
+    articleSection: catLabel,
+    mainEntityOfPage: {
+      "@type": "WebPage",
+      "@id": canonicalUrl,
+    },
+  };
+
   return (
     <main style={{ background: "var(--sg-bg)", color: "var(--sg-text-primary)", minHeight: "100vh" }}>
       <title>{title} | Scout Gamer</title>
       <meta name="description" content={description} />
       <meta property="og:title" content={`${title} | Scout Gamer`} />
       <meta property="og:description" content={description} />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(articleJsonLd) }}
+      />
 
       <SiteHeader activeNav={activeNav} maxWidth="max-w-7xl" />
 
