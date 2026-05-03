@@ -16,7 +16,7 @@ import Breadcrumb from "./breadcrumb";
 import { PlayerScoutLinks } from "./player-scout-links";
 import { supabase } from "@/lib/supabase";
 import { getCategoryImage } from "@/lib/category-images";
-import { stripHtml } from "@/lib/utils";
+import { stripHtml, contentLooksLikeHtml } from "@/lib/utils";
 
 type SidebarItem = {
   id: string;
@@ -316,7 +316,7 @@ export default function ArticleLayoutEn({
             )}
 
             <article
-              className={`mb-10 ${ARTICLE_BODY_CLASS} [&_.table-wrapper]:mb-5 [&_.table-wrapper]:overflow-x-auto [&_table]:w-full [&_table]:border-collapse [&_table]:text-[14px] [&_thead]:border-b [&_th]:px-3 [&_th]:py-2 [&_th]:text-left [&_th]:text-[11px] [&_th]:font-semibold [&_th]:uppercase [&_th]:tracking-wider [&_tr]:border-b [&_td]:px-3 [&_td]:py-2`}
+              className={`mb-10 min-w-0 w-full max-w-full overflow-x-auto break-words ${ARTICLE_BODY_CLASS} [&_.table-wrapper]:mb-5 [&_.table-wrapper]:overflow-x-auto [&_table]:w-full [&_table]:max-w-full [&_table]:border-collapse [&_table]:text-[14px] [&_thead]:border-b [&_th]:px-3 [&_th]:py-2 [&_th]:text-left [&_th]:text-[11px] [&_th]:font-semibold [&_th]:uppercase [&_th]:tracking-wider [&_tr]:border-b [&_td]:px-3 [&_td]:py-2 [&_pre]:max-w-full [&_pre]:overflow-x-auto [&_img]:max-w-full [&_img]:h-auto`}
               style={{ borderLeft: `2px solid ${catColor}`, paddingLeft: "24px" }}
             >
               {isPending ? (
@@ -339,6 +339,8 @@ export default function ArticleLayoutEn({
                     🇹🇷 Türkçe versiyonu oku →
                   </Link>
                 </div>
+              ) : contentLooksLikeHtml(content) ? (
+                <div dangerouslySetInnerHTML={{ __html: content }} />
               ) : (
                 <ReactMarkdown remarkPlugins={[remarkGfm]} rehypePlugins={[rehypeRaw]}>
                   {content}
