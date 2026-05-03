@@ -15,6 +15,13 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   return {
     title: `${data.title} | Scout Gamer`,
     description,
+    alternates: {
+      canonical: `https://scoutgamer.com/listeler/${slug}`,
+      languages: {
+        tr: `https://scoutgamer.com/listeler/${slug}`,
+        en: `https://scoutgamer.com/en/listeler/${slug}`,
+      },
+    },
     openGraph: {
       title: `${data.title} | Scout Gamer`,
       description,

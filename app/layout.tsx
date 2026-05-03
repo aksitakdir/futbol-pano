@@ -23,6 +23,13 @@ const ibmPlexMono = IBM_Plex_Mono({
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://scoutgamer.com"),
+  alternates: {
+    canonical: "https://scoutgamer.com",
+    languages: {
+      tr: "https://scoutgamer.com",
+      en: "https://scoutgamer.com/en",
+    },
+  },
   title: "Scout Gamer",
   description: "Futbol × Oyun Kültürü. Avrupa'nın en parlak genç yeteneklerini keşfet.",
   openGraph: {
