@@ -4,13 +4,13 @@ import { useEditor, EditorContent, type Editor } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
 import Link from "@tiptap/extension-link";
 import Image from "@tiptap/extension-image";
-import { useCallback, useEffect, useRef } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { supabase } from "@/lib/supabase";
 
 const TB = "rounded border border-slate-600/80 bg-slate-800/80 p-1.5 text-slate-300 transition hover:bg-slate-700/80 hover:text-slate-100";
 const TB_ACTIVE = "rounded border border-emerald-500/50 bg-emerald-500/15 p-1.5 text-emerald-300";
 
-function Toolbar({ editor }: { editor: Editor | null }) {
+function Toolbar({ editor, htmlMode, onToggle }: { editor: Editor | null; htmlMode: boolean; onToggle: () => void }) {
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const setLink = useCallback(() => {
@@ -92,6 +92,12 @@ function Toolbar({ editor }: { editor: Editor | null }) {
           <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/>
         </svg>
       </button>
+      <span className="mx-0.5 h-4 w-px bg-slate-600" />
+      <button type="button" onClick={onToggle}
+        className={htmlMode ? TB_ACTIVE : TB}
+        title="HTML kaynak modu">
+        <span className="text-xs font-mono font-bold">&lt;/&gt;</span>
+      </button>
     </div>
   );
 }
@@ -103,6 +109,10 @@ type Props = {
 };
 
 export default function RichTextEditor({ value, onChange, placeholder = "İçerik yazın..." }: Props) {
+  const [htmlMode, setHtmlMode] = useState(false);
+  const [rawHtml, setRawHtml] = useState(value || "");
+  const editorRef = useRef<Editor | null>(null);
+
   const editor = useEditor({
     immediatelyRender: false,
     extensions: [
@@ -121,14 +131,16 @@ export default function RichTextEditor({ value, onChange, placeholder = "İçeri
         class: "min-h-[280px] w-full resize-y rounded-b-xl border border-slate-700/80 bg-slate-900/70 px-4 py-3 text-sm leading-relaxed text-slate-100 outline-none focus:border-emerald-500/40 [&_h2]:mb-3 [&_h2]:mt-5 [&_h2]:text-lg [&_h2]:font-bold [&_h2]:text-slate-50 [&_h3]:mb-2 [&_h3]:mt-4 [&_h3]:text-base [&_h3]:font-semibold [&_h3]:text-slate-100 [&_p]:mb-4 [&_p]:text-slate-200 [&_ul]:mb-4 [&_ul]:list-disc [&_ul]:pl-5 [&_ul]:text-slate-200 [&_ol]:mb-4 [&_ol]:list-decimal [&_ol]:pl-5 [&_ol]:text-slate-200 [&_li]:mb-1 [&_blockquote]:my-4 [&_blockquote]:border-l-2 [&_blockquote]:border-emerald-500/60 [&_blockquote]:pl-4 [&_blockquote]:italic [&_blockquote]:text-slate-300 [&_a]:text-emerald-300 [&_a]:underline [&_a]:decoration-emerald-500/30 hover:[&_a]:text-emerald-200 [&_img]:max-w-full [&_img]:rounded-lg [&_img]:my-4",
       },
       handleDOMEvents: {
-        paste: (view, event) => {
+        paste: (_view, event) => {
           const html = event.clipboardData?.getData("text/html");
           if (html) {
             event.preventDefault();
-            const parser = new DOMParser();
-            const doc = parser.parseFromString(html, "text/html");
-            const text = doc.body.innerText || "";
-            view.dispatch(view.state.tr.insertText(text));
+            const tempDiv = document.createElement("div");
+            tempDiv.innerHTML = html;
+            tempDiv.querySelectorAll("script,style").forEach(el => el.remove());
+            const cleanHtml = tempDiv.innerHTML;
+            const ed = editorRef.current;
+            ed?.chain().focus().insertContent(cleanHtml).run();
             return true;
           }
           return false;
@@ -136,6 +148,10 @@ export default function RichTextEditor({ value, onChange, placeholder = "İçeri
       },
     },
   });
+
+  useEffect(() => {
+    editorRef.current = editor ?? null;
+  }, [editor]);
 
   useEffect(() => {
     if (!editor) return;
@@ -156,8 +172,29 @@ export default function RichTextEditor({ value, onChange, placeholder = "İçeri
 
   return (
     <div className="relative w-full">
-      <Toolbar editor={editor} />
-      <EditorContent editor={editor} />
+      <Toolbar editor={editor} htmlMode={htmlMode} onToggle={() => {
+        if (!htmlMode) {
+          setRawHtml(editor?.getHTML() || "");
+          setHtmlMode(true);
+        } else {
+          editor?.commands.setContent(rawHtml, { emitUpdate: true });
+          setHtmlMode(false);
+        }
+      }} />
+      {htmlMode ? (
+        <textarea
+          value={rawHtml}
+          onChange={(e) => {
+            setRawHtml(e.target.value);
+            onChange?.(e.target.value);
+          }}
+          className="min-h-[280px] w-full rounded-b-xl border border-slate-700/80 bg-slate-900/70 px-4 py-3 font-mono text-xs leading-relaxed text-emerald-300 outline-none focus:border-emerald-500/40 resize-y"
+          placeholder="HTML kodunu buraya yapıştır..."
+          spellCheck={false}
+        />
+      ) : (
+        <EditorContent editor={editor} />
+      )}
     </div>
   );
 }
