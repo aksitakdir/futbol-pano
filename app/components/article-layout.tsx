@@ -180,6 +180,17 @@ export default function ArticleLayout({
     },
   };
 
+  const catPageUrl = `https://scoutgamer.com${categoryPath(category)}`;
+  const breadcrumbJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      { "@type": "ListItem", position: 1, name: "Scout Gamer", item: "https://scoutgamer.com" },
+      { "@type": "ListItem", position: 2, name: catLabel, item: catPageUrl },
+      { "@type": "ListItem", position: 3, name: title, item: canonicalUrl },
+    ],
+  };
+
   return (
     <main style={{ background: "var(--sg-bg)", color: "var(--sg-text-primary)", minHeight: "100vh" }}>
       <title>{title} | Scout Gamer</title>
@@ -200,6 +211,10 @@ export default function ArticleLayout({
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(articleJsonLd) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
       />
 
       <SiteHeader activeNav={activeNav} maxWidth="max-w-7xl" />

@@ -222,12 +222,61 @@ export default function ArticleLayoutEn({
   const xShareUrl = `https://x.com/intent/tweet?text=${encodeURIComponent(title + " | Scout Gamer")}&url=${encodeURIComponent(shareUrl)}`;
   const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(title + " | Scout Gamer " + shareUrl)}`;
 
+  const canonicalUrl = `https://scoutgamer.com${categoryPath(category)}/${slug}`;
+  const ogImage = coverImage || "https://scoutgamer.com/og-image.png";
+  const catPageUrl = `https://scoutgamer.com${categoryPath(category)}`;
+
+  const articleJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "Article",
+    headline: title,
+    description,
+    url: canonicalUrl,
+    datePublished: date,
+    dateModified: date,
+    image: ogImage,
+    inLanguage: "en",
+    author: { "@type": "Organization", name: "Scout Gamer", url: "https://scoutgamer.com" },
+    publisher: {
+      "@type": "Organization",
+      name: "Scout Gamer",
+      url: "https://scoutgamer.com",
+      logo: { "@type": "ImageObject", url: "https://scoutgamer.com/og-image.png" },
+    },
+    keywords: tags.join(", "),
+    articleSection: catLabel,
+    mainEntityOfPage: { "@type": "WebPage", "@id": canonicalUrl },
+  };
+
+  const breadcrumbJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      { "@type": "ListItem", position: 1, name: "Scout Gamer", item: "https://scoutgamer.com/en" },
+      { "@type": "ListItem", position: 2, name: catLabel, item: catPageUrl },
+      { "@type": "ListItem", position: 3, name: title, item: canonicalUrl },
+    ],
+  };
+
   return (
     <main lang="en" style={{ background: "var(--sg-bg)", color: "var(--sg-text-primary)", minHeight: "100vh" }}>
       <title>{title} | Scout Gamer</title>
       <meta name="description" content={description} />
+      <link rel="canonical" href={canonicalUrl} />
+      <meta property="og:type" content="article" />
       <meta property="og:title" content={`${title} | Scout Gamer`} />
       <meta property="og:description" content={description} />
+      <meta property="og:url" content={canonicalUrl} />
+      <meta property="og:site_name" content="Scout Gamer" />
+      <meta property="og:image" content={ogImage} />
+      <meta property="og:image:alt" content={title} />
+      <meta name="twitter:card" content="summary_large_image" />
+      <meta name="twitter:title" content={`${title} | Scout Gamer`} />
+      <meta name="twitter:description" content={description} />
+      <meta name="twitter:site" content="@scoutgamer" />
+      <meta name="twitter:image" content={ogImage} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(articleJsonLd) }} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }} />
 
       <SiteHeader activeNav={activeNav} maxWidth="max-w-7xl" />
 
