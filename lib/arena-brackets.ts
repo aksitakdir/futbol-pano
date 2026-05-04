@@ -1,5 +1,5 @@
 /**
- * Arena (Oyna & Paylaş) bracket’ları — URL slug, iframe ?t= parametresi ve hero metinleri.
+ * Arena (Oyna & Paylaş) bracket'ları — URL slug, iframe ?t= parametresi ve hero metinleri.
  */
 
 export type ArenaBracketSlug =
@@ -19,10 +19,14 @@ export type ArenaBracketConfig = {
   /** EN arena listing (`/en/arena`) */
   cardTitleEn: string;
   cardDescriptionEn: string;
-  /** Ana sayfa hero slider — başlık */
+  /** Ana sayfa hero slider — başlık (TR) */
   heroTitle: string;
-  /** Ana sayfa hero — kısa teaser (tek slide için) */
+  /** Ana sayfa hero — kısa teaser (TR) */
   heroTeaser: string;
+  /** Ana sayfa hero slider — başlık (EN) */
+  heroTitleEn: string;
+  /** Ana sayfa hero — kısa teaser (EN) */
+  heroTeaserEn: string;
 };
 
 export const ARENA_BRACKETS: ArenaBracketConfig[] = [
@@ -31,12 +35,14 @@ export const ARENA_BRACKETS: ArenaBracketConfig[] = [
     queryT: "stars",
     cardTitle: "Gelecek Yıldızlar",
     cardDescription:
-      "16 genç yetenek; her açılışta rastgele eşleşmeler. Yamal’dan Mainoo’ya sen kimin şampiyon olacağını seç.",
+      "16 genç yetenek; her açılışta rastgele eşleşmeler. Yamal'dan Mainoo'ya sen kimin şampiyon olacağını seç.",
     cardTitleEn: "Future Stars",
     cardDescriptionEn:
       "16 young talents; random matchups every time. From Yamal to Mainoo — you pick who becomes champion.",
     heroTitle: "Gelecek Yıldızlar Turnuvası",
     heroTeaser: "16 isim, tek şampiyon. Sen seç.",
+    heroTitleEn: "Future Stars Tournament",
+    heroTeaserEn: "16 names, one champion. You decide.",
   },
   {
     slug: "sampiyonlar-ligi",
@@ -49,42 +55,50 @@ export const ARENA_BRACKETS: ArenaBracketConfig[] = [
       "Fixed bracket with the 25–26 season round of 16 — which club lifts the trophy?",
     heroTitle: "Şampiyonlar Ligi 25-26",
     heroTeaser: "Kupayı kime veriyorsun?",
+    heroTitleEn: "Champions League 25–26",
+    heroTeaserEn: "Who lifts the trophy?",
   },
   {
     slug: "teknik-direktor",
     queryT: "managers",
     cardTitle: "Teknik Direktör Arenası",
     cardDescription:
-      "Guardiola’dan Mourinho’ya 16 teknik direktör; her seferinde rastgele çiftler.",
+      "Guardiola'dan Mourinho'ya 16 teknik direktör; her seferinde rastgele çiftler.",
     cardTitleEn: "Manager Arena",
     cardDescriptionEn:
       "16 managers from Guardiola to Mourinho; random pairings every run.",
     heroTitle: "Teknik Direktör Arenası",
     heroTeaser: "Tarihin en iyi teknik direktörü kim?",
+    heroTitleEn: "Manager Arena",
+    heroTeaserEn: "Who is the greatest manager of all time?",
   },
   {
     slug: "super-lig-efsaneleri",
     queryT: "legends",
     cardTitle: "Süper Lig Efsaneleri",
     cardDescription:
-      "Emre’den Terim’e 16 efsane; her yüklemede yeni eşleşmelerle tek taç.",
+      "Emre'den Terim'e 16 efsane; her yüklemede yeni eşleşmelerle tek taç.",
     cardTitleEn: "Süper Lig Legends",
     cardDescriptionEn:
       "16 legends from Emre to Terim; fresh matchups each load, one crown.",
     heroTitle: "Süper Lig Efsaneleri",
     heroTeaser: "Efsaneler arasında kim kazanır?",
+    heroTitleEn: "Süper Lig Legends",
+    heroTeaserEn: "Who reigns among the legends?",
   },
   {
     slug: "turkiyede-en-iyi-yabancilar",
     queryT: "foreigners",
     cardTitle: "Türkiye'de Oynamış En İyi Yabancılar",
     cardDescription:
-      "Drogba’dan Sneijder’a unutulmaz isimler; rastgele bracket ile favorini seç.",
+      "Drogba'dan Sneijder'a unutulmaz isimler; rastgele bracket ile favorini seç.",
     cardTitleEn: "Best Foreign Players in Turkey",
     cardDescriptionEn:
       "Unforgettable names from Drogba to Sneijder; random bracket, pick your favourite.",
     heroTitle: "Türkiye'nin En İyi Yabancıları",
     heroTeaser: "Türkiye'nin en iyi yabancısı kim?",
+    heroTitleEn: "Best Foreign Players in Turkey",
+    heroTeaserEn: "Who is the greatest foreign player to grace Turkish football?",
   },
 ];
 

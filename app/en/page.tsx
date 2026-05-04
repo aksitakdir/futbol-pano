@@ -86,7 +86,7 @@ type HeroSlide = HeroContentSlide | HeroArenaSlide;
 
 function pickArenaSlide(): HeroArenaSlide {
   const b = ARENA_BRACKETS[Math.floor(Math.random() * ARENA_BRACKETS.length)];
-  return { kind: "arena", slideKey: `arena-en-${b.slug}-${Date.now()}`, title: b.heroTitle, teaser: b.heroTeaser, href: arenaPath(b.slug) };
+  return { kind: "arena", slideKey: `arena-en-${b.slug}-${Date.now()}`, title: b.heroTitleEn, teaser: b.heroTeaserEn, href: arenaPath(b.slug) };
 }
 
 function mergeWithArena(content: { slide: SlideContent; slideKey: string }[]): HeroSlide[] {

@@ -24,7 +24,7 @@ const CAT_COLOR: Record<string, string> = { listeler: "var(--sg-secondary)", rad
 
 function Wordmark({ isEn }: { isEn: boolean }) {
   return (
-    <Link href={isEn ? "/en" : "/"} className="flex flex-col items-start leading-none">
+    <Link href={isEn ? "/en" : "/tr"} className="flex flex-col items-start leading-none">
       <span style={{ fontFamily: "var(--font-headline)", color: "var(--sg-primary)", fontSize: "20px", fontWeight: 700, letterSpacing: "-0.03em", textShadow: "0 0 20px rgba(70,241,197,0.3)" }}>
         SCOUT GAMER
       </span>
