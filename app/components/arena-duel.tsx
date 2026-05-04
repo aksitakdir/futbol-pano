@@ -27,6 +27,7 @@ export type ArenaDuelProps = {
   gameType: "random_16" | "fixed_8";
   title: string;
   lang?: "tr" | "en";
+  canonicalUrl?: string;
 };
 
 // ─── Constants ────────────────────────────────────────────────────────────────
@@ -239,7 +240,7 @@ function PlayerCard({ participant, side, onSelect, isLoser, isSelected, disabled
 
 // ─── Main Component ───────────────────────────────────────────────────────────
 
-export default function ArenaDuel({ participants, gameType, title, lang = "tr" }: ArenaDuelProps) {
+export default function ArenaDuel({ participants, gameType, title, lang = "tr", canonicalUrl }: ArenaDuelProps) {
   const isEn = lang === "en";
   const roundNames = isEn ? ROUND_NAMES_EN : ROUND_NAMES_TR;
   const nextRoundLabels = isEn ? NEXT_ROUND_EN : NEXT_ROUND_TR;
@@ -341,7 +342,8 @@ export default function ArenaDuel({ participants, gameType, title, lang = "tr" }
     const shareTitle = isEn
       ? `My champion in "${title}": ${champion.name}!`
       : `"${title}" turnuvasında şampiyonum: ${champion.name}!`;
-    const shareUrl = typeof window !== "undefined" ? window.location.href : "";
+    // Always use canonical URL (never a Vercel preview URL)
+    const shareUrl = canonicalUrl ?? "https://scoutgamer.com/arena";
 
     if (typeof navigator !== "undefined" && navigator.share) {
       navigator.share({ title: shareTitle, url: shareUrl }).catch(() => {});
@@ -349,7 +351,7 @@ export default function ArenaDuel({ participants, gameType, title, lang = "tr" }
       const twitterUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(shareTitle + " " + shareUrl)}`;
       window.open(twitterUrl, "_blank", "noopener,noreferrer");
     }
-  }, [champion, title, isEn]);
+  }, [champion, title, isEn, canonicalUrl]);
 
   // ── Champion Screen ──────────────────────────────────────────────────────────
   if (phase === "champion" && champion) {
@@ -528,7 +530,8 @@ export default function ArenaDuel({ participants, gameType, title, lang = "tr" }
   const loserSide = selectedSide === "left" ? "right" : selectedSide === "right" ? "left" : null;
 
   return (
-    <div className="w-full" style={{ background: "var(--sg-bg)" }}>
+    // flex-1 fills remaining space in parent flex-col, pushing SiteFooter below the fold
+    <div className="flex w-full flex-1 flex-col" style={{ background: "var(--sg-bg)" }}>
       {/* Progress bar */}
       <div className="w-full px-4 py-4 md:px-8">
         <div className="mx-auto max-w-2xl">

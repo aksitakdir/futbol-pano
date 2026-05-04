@@ -11,9 +11,10 @@ import type { ArenaGame } from "@/lib/arena-brackets";
 type Props = {
   game: ArenaGame;
   lang: "tr" | "en";
+  canonicalUrl: string;
 };
 
-export default function ArenaSlugClient({ game, lang }: Props) {
+export default function ArenaSlugClient({ game, lang, canonicalUrl }: Props) {
   const isEn = lang === "en";
   const title = isEn ? game.title_en : game.title_tr;
   const description = isEn ? game.description_en : game.description_tr;
@@ -22,9 +23,13 @@ export default function ArenaSlugClient({ game, lang }: Props) {
   const remount = useCallback(() => setDuelKey((k) => k + 1), []);
 
   return (
-    <main className="flex min-h-screen flex-col" style={{ background: "var(--sg-bg)", color: "var(--sg-text-primary)" }}>
+    <main
+      className="flex min-h-screen flex-col"
+      style={{ background: "var(--sg-bg)", color: "var(--sg-text-primary)" }}
+    >
       <SiteHeader activeNav="arena" maxWidth="max-w-7xl" forceEn={isEn} />
 
+      {/* Fixed header stuff — breadcrumb + controls + title */}
       <div className="mx-auto w-full max-w-7xl px-4 pt-[88px] pb-2">
         <Breadcrumb
           items={[
@@ -38,7 +43,11 @@ export default function ArenaSlugClient({ game, lang }: Props) {
         <Link
           href={isEn ? "/en/arena" : "/arena"}
           className="inline-flex items-center gap-2 px-4 py-2 text-xs font-semibold transition hover:opacity-80"
-          style={{ border: "1px solid rgba(26,58,92,0.6)", background: "var(--sg-surface)", color: "var(--sg-text-secondary)" }}
+          style={{
+            border: "1px solid rgba(26,58,92,0.6)",
+            background: "var(--sg-surface)",
+            color: "var(--sg-text-secondary)",
+          }}
         >
           ← {isEn ? "All Arenas" : "Tüm Arenalar"}
         </Link>
@@ -46,7 +55,11 @@ export default function ArenaSlugClient({ game, lang }: Props) {
           type="button"
           onClick={remount}
           className="inline-flex items-center gap-2 px-4 py-2 text-xs font-semibold transition hover:opacity-80"
-          style={{ border: "1px solid rgba(26,58,92,0.6)", background: "var(--sg-surface)", color: "var(--sg-text-secondary)" }}
+          style={{
+            border: "1px solid rgba(26,58,92,0.6)",
+            background: "var(--sg-surface)",
+            color: "var(--sg-text-secondary)",
+          }}
         >
           🔀 {isEn ? "New Matchups" : "Yeni Eşleşme"}
         </button>
@@ -64,19 +77,21 @@ export default function ArenaSlugClient({ game, lang }: Props) {
         </p>
       </div>
 
+      {/* Duel — flex-1 so it fills the remaining space and pushes footer below the fold */}
       {game.participants?.length > 0 && (
-        <ArenaDuel
-          key={duelKey}
-          participants={game.participants}
-          gameType={game.game_type}
-          title={title}
-          lang={lang}
-        />
+        <div className="flex flex-1 flex-col">
+          <ArenaDuel
+            key={duelKey}
+            participants={game.participants}
+            gameType={game.game_type}
+            title={title}
+            lang={lang}
+            canonicalUrl={canonicalUrl}
+          />
+        </div>
       )}
 
-      <div className="mt-auto">
-        <SiteFooter maxWidth="max-w-7xl" />
-      </div>
+      <SiteFooter maxWidth="max-w-7xl" />
     </main>
   );
 }

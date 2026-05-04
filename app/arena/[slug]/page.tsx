@@ -49,6 +49,16 @@ export async function generateMetadata({
   const pageUrl = `${BASE}/arena/${slug}${isEn ? "?lang=en" : ""}`;
   const canonical = `${BASE}/arena/${slug}`;
 
+  // Build OG image URL with all data embedded — no Supabase call inside the image route
+  const names = game.participants.slice(0, 4).map((p) => p.name).join("|");
+  const ogImg = new URL(`${BASE}/arena/${slug}/opengraph-image`);
+  ogImg.searchParams.set("t", title);
+  ogImg.searchParams.set("c", game.card_color);
+  ogImg.searchParams.set("d", description.slice(0, 110));
+  ogImg.searchParams.set("n", names);
+  ogImg.searchParams.set("cnt", String(game.participants.length));
+  const ogImgUrl = ogImg.toString();
+
   return {
     title: `${title} | Arena — Scout Gamer`,
     description,
@@ -65,20 +75,13 @@ export async function generateMetadata({
       url: pageUrl,
       siteName: "Scout Gamer",
       type: "website",
-      images: [
-        {
-          url: `${BASE}/arena/${slug}/opengraph-image`,
-          width: 1200,
-          height: 630,
-          alt: title,
-        },
-      ],
+      images: [{ url: ogImgUrl, width: 1200, height: 630, alt: title }],
     },
     twitter: {
       card: "summary_large_image",
       title: `${title} | Scout Gamer`,
       description,
-      images: [`${BASE}/arena/${slug}/opengraph-image`],
+      images: [ogImgUrl],
     },
   };
 }
@@ -126,7 +129,11 @@ export default async function ArenaBracketPage({
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
-      <ArenaSlugClient game={game} lang={resolvedLang} />
+      <ArenaSlugClient
+        game={game}
+        lang={resolvedLang}
+        canonicalUrl={`${BASE}/arena/${slug}`}
+      />
     </>
   );
 }
