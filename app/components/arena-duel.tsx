@@ -1,0 +1,602 @@
+"use client";
+
+import { useState, useMemo, useCallback, useRef, useEffect } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+
+// ─── Types ────────────────────────────────────────────────────────────────────
+
+export type ParticipantData = {
+  name: string;
+  subtitle?: string;
+  photo_url?: string;
+  vs?: string; // fixed_8 only
+};
+
+type Participant = {
+  name: string;
+  subtitle?: string;
+  photo_url?: string;
+};
+
+type Match = { left: Participant; right: Participant };
+
+type Phase = "playing" | "round_transition" | "champion";
+
+export type ArenaDuelProps = {
+  participants: ParticipantData[];
+  gameType: "random_16" | "fixed_8";
+  title: string;
+  lang?: "tr" | "en";
+};
+
+// ─── Constants ────────────────────────────────────────────────────────────────
+
+const ROUND_NAMES_TR = ["Son 16", "Çeyrek Final", "Yarı Final", "Final"];
+const ROUND_NAMES_EN = ["Round of 16", "Quarter-Final", "Semi-Final", "Final"];
+const NEXT_ROUND_TR = ["Çeyrek Final Başlıyor!", "Yarı Final Başlıyor!", "Final Başlıyor!"];
+const NEXT_ROUND_EN = ["Quarter-Finals Begin!", "Semi-Finals Begin!", "The Final Is Here!"];
+const MATCH_LABEL_TR = "Maç";
+const MATCH_LABEL_EN = "Match";
+
+// ─── Helpers ──────────────────────────────────────────────────────────────────
+
+function shuffle<T>(arr: T[]): T[] {
+  const a = [...arr];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+function buildInitialMatches(participants: ParticipantData[], gameType: string): Match[] {
+  if (gameType === "fixed_8") {
+    return participants.map((p) => ({
+      left: { name: p.name, subtitle: p.subtitle, photo_url: p.photo_url },
+      right: { name: p.vs ?? "TBD", subtitle: undefined },
+    }));
+  }
+  const shuffled = shuffle(participants);
+  const matches: Match[] = [];
+  for (let i = 0; i < shuffled.length - 1; i += 2) {
+    matches.push({
+      left: { name: shuffled[i].name, subtitle: shuffled[i].subtitle, photo_url: shuffled[i].photo_url },
+      right: { name: shuffled[i + 1].name, subtitle: shuffled[i + 1].subtitle, photo_url: shuffled[i + 1].photo_url },
+    });
+  }
+  return matches;
+}
+
+// ─── Confetti Particle ────────────────────────────────────────────────────────
+
+const CONFETTI_COLORS = [
+  "var(--sg-primary)", "var(--sg-secondary)", "var(--sg-amber)",
+  "var(--sg-tertiary)", "#fb7185", "#a78bfa",
+];
+
+function ConfettiParticles() {
+  const particles = useMemo(
+    () =>
+      Array.from({ length: 32 }, (_, i) => ({
+        id: i,
+        x: Math.random() * 100,
+        delay: Math.random() * 0.8,
+        dur: 1.4 + Math.random() * 1.2,
+        size: 6 + Math.random() * 8,
+        color: CONFETTI_COLORS[Math.floor(Math.random() * CONFETTI_COLORS.length)],
+        rot: Math.random() * 360,
+      })),
+    [],
+  );
+
+  return (
+    <div className="pointer-events-none absolute inset-0 overflow-hidden">
+      {particles.map((p) => (
+        <motion.div
+          key={p.id}
+          className="absolute rounded-sm"
+          style={{
+            left: `${p.x}%`,
+            top: "-20px",
+            width: p.size,
+            height: p.size * 0.5,
+            background: p.color,
+            rotate: p.rot,
+          }}
+          animate={{
+            y: ["0vh", "110vh"],
+            rotate: [p.rot, p.rot + 360 * (Math.random() > 0.5 ? 1 : -1)],
+            opacity: [1, 1, 0],
+          }}
+          transition={{ duration: p.dur, delay: p.delay, ease: "linear" }}
+        />
+      ))}
+    </div>
+  );
+}
+
+// ─── Player Card ──────────────────────────────────────────────────────────────
+
+type PlayerCardProps = {
+  participant: Participant;
+  side: "left" | "right";
+  onSelect: () => void;
+  isLoser: boolean;
+  isSelected: boolean;
+  disabled: boolean;
+  lang: "tr" | "en";
+};
+
+function PlayerCard({ participant, side, onSelect, isLoser, isSelected, disabled, lang }: PlayerCardProps) {
+  const isEn = lang === "en";
+  const btnLabel = isEn ? "CHOOSE" : "SEÇ";
+
+  return (
+    <motion.div
+      key={`card-${participant.name}`}
+      className="relative flex flex-col items-center"
+      initial={{ opacity: 0, x: side === "left" ? -50 : 50 }}
+      animate={
+        isLoser
+          ? { opacity: 0, scale: 0.8, y: 30, filter: "blur(4px)" }
+          : { opacity: 1, x: 0, scale: isSelected ? 1.04 : 1, filter: "blur(0px)" }
+      }
+      transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
+      style={{ width: "100%", maxWidth: "320px" }}
+    >
+      <div
+        className="w-full cursor-pointer overflow-hidden border transition-all duration-200"
+        style={{
+          background: "var(--sg-surface)",
+          borderColor: isSelected
+            ? "var(--sg-amber)"
+            : "rgba(26,58,92,0.6)",
+          boxShadow: isSelected
+            ? "0 0 32px rgba(249,189,34,0.25), 0 0 0 2px var(--sg-amber)"
+            : "none",
+        }}
+        onClick={disabled ? undefined : onSelect}
+        role="button"
+        tabIndex={disabled ? -1 : 0}
+        onKeyDown={(e) => { if (!disabled && (e.key === "Enter" || e.key === " ")) onSelect(); }}
+      >
+        {/* Photo area */}
+        <div
+          className="relative flex items-center justify-center overflow-hidden"
+          style={{ height: "180px", background: "var(--sg-surface-low)" }}
+        >
+          {participant.photo_url ? (
+            <img
+              src={participant.photo_url}
+              alt={participant.name}
+              className="h-full w-full object-cover"
+              style={{ filter: "brightness(0.85) saturate(0.9)" }}
+            />
+          ) : (
+            <div
+              className="flex h-20 w-20 items-center justify-center rounded-full text-4xl font-black"
+              style={{
+                background: "rgba(70,241,197,0.08)",
+                color: "var(--sg-primary)",
+                fontFamily: "var(--font-headline)",
+              }}
+            >
+              {participant.name.charAt(0)}
+            </div>
+          )}
+          <div
+            className="absolute inset-0"
+            style={{ background: "linear-gradient(to bottom, transparent 50%, var(--sg-surface) 100%)" }}
+          />
+        </div>
+
+        {/* Info */}
+        <div className="px-5 pb-5 pt-3 text-center">
+          <h3
+            className="mb-1 text-xl font-black leading-tight tracking-tight"
+            style={{ fontFamily: "var(--font-headline)", color: "var(--sg-text-primary)" }}
+          >
+            {participant.name}
+          </h3>
+          {participant.subtitle && (
+            <p
+              className="mb-5 text-xs font-semibold uppercase tracking-widest"
+              style={{ color: "var(--sg-text-muted)" }}
+            >
+              {participant.subtitle}
+            </p>
+          )}
+
+          <button
+            type="button"
+            disabled={disabled}
+            onClick={disabled ? undefined : (e) => { e.stopPropagation(); onSelect(); }}
+            className="w-full py-3 text-sm font-black uppercase tracking-widest transition-all duration-200 hover:brightness-110 active:scale-95 disabled:cursor-not-allowed disabled:opacity-40"
+            style={{
+              background: isSelected ? "var(--sg-amber)" : "var(--sg-primary)",
+              color: "#060f1e",
+              fontFamily: "var(--font-headline)",
+              letterSpacing: "0.12em",
+            }}
+          >
+            {btnLabel}
+          </button>
+        </div>
+      </div>
+    </motion.div>
+  );
+}
+
+// ─── Main Component ───────────────────────────────────────────────────────────
+
+export default function ArenaDuel({ participants, gameType, title, lang = "tr" }: ArenaDuelProps) {
+  const isEn = lang === "en";
+  const roundNames = isEn ? ROUND_NAMES_EN : ROUND_NAMES_TR;
+  const nextRoundLabels = isEn ? NEXT_ROUND_EN : NEXT_ROUND_TR;
+  const matchLabel = isEn ? MATCH_LABEL_EN : MATCH_LABEL_TR;
+
+  // Build initial matches once (stable via useMemo + empty deps)
+  const initialMatches = useMemo(
+    () => buildInitialMatches(participants, gameType),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [],
+  );
+
+  // All rounds accumulated as we play
+  const [rounds, setRounds] = useState<Match[][]>([initialMatches]);
+  const [roundIndex, setRoundIndex] = useState(0);
+  const [matchIndex, setMatchIndex] = useState(0);
+  const [roundWinners, setRoundWinners] = useState<Participant[]>([]);
+  const [phase, setPhase] = useState<Phase>("playing");
+  const [selectedSide, setSelectedSide] = useState<"left" | "right" | null>(null);
+  const [champion, setChampion] = useState<Participant | null>(null);
+  const [matchKey, setMatchKey] = useState(0);
+
+  // Refs to avoid stale closure inside setTimeout
+  const stateRef = useRef({ roundIndex, matchIndex, roundWinners, rounds });
+  useEffect(() => {
+    stateRef.current = { roundIndex, matchIndex, roundWinners, rounds };
+  });
+
+  const currentRound = rounds[roundIndex] ?? [];
+  const currentMatch = currentRound[matchIndex];
+  const totalMatchesInRound = currentRound.length;
+
+  // Global progress (0–15 total matches across all rounds: 8+4+2+1)
+  const matchesBefore = rounds.slice(0, roundIndex).reduce((s, r) => s + r.length, 0);
+  const globalMatchNum = matchesBefore + matchIndex + 1;
+  const totalMatchesAll = 15;
+  const progressPct = ((globalMatchNum - 1) / totalMatchesAll) * 100;
+
+  const handleSelect = useCallback(
+    (side: "left" | "right") => {
+      if (selectedSide !== null) return;
+      setSelectedSide(side);
+
+      const { roundIndex: ri, matchIndex: mi, roundWinners: rw, rounds: rs } = stateRef.current;
+      const round = rs[ri];
+      const match = round[mi];
+      const winner = side === "left" ? match.left : match.right;
+
+      setTimeout(() => {
+        const newWinners = [...rw, winner];
+
+        if (mi + 1 < round.length) {
+          // More matches in this round
+          setRoundWinners(newWinners);
+          setMatchIndex(mi + 1);
+          setSelectedSide(null);
+          setMatchKey((k) => k + 1);
+        } else if (newWinners.length === 1) {
+          // Champion!
+          setChampion(newWinners[0]);
+          setPhase("champion");
+        } else {
+          // Round complete — build next round
+          const nextMatches: Match[] = [];
+          for (let i = 0; i + 1 < newWinners.length; i += 2) {
+            nextMatches.push({ left: newWinners[i], right: newWinners[i + 1] });
+          }
+          setRounds((prev) => [...prev, nextMatches]);
+          setPhase("round_transition");
+
+          setTimeout(() => {
+            setRoundIndex(ri + 1);
+            setMatchIndex(0);
+            setRoundWinners([]);
+            setSelectedSide(null);
+            setMatchKey((k) => k + 1);
+            setPhase("playing");
+          }, 2600);
+        }
+      }, 580);
+    },
+    [selectedSide],
+  );
+
+  const handleRestart = useCallback(() => {
+    const fresh = buildInitialMatches(participants, gameType);
+    setRounds([fresh]);
+    setRoundIndex(0);
+    setMatchIndex(0);
+    setRoundWinners([]);
+    setPhase("playing");
+    setSelectedSide(null);
+    setChampion(null);
+    setMatchKey((k) => k + 1);
+  }, [participants, gameType]);
+
+  const handleShare = useCallback(() => {
+    if (!champion) return;
+    const shareTitle = isEn
+      ? `My champion in "${title}": ${champion.name}!`
+      : `"${title}" turnuvasında şampiyonum: ${champion.name}!`;
+    const shareUrl = typeof window !== "undefined" ? window.location.href : "";
+
+    if (typeof navigator !== "undefined" && navigator.share) {
+      navigator.share({ title: shareTitle, url: shareUrl }).catch(() => {});
+    } else {
+      const twitterUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(shareTitle + " " + shareUrl)}`;
+      window.open(twitterUrl, "_blank", "noopener,noreferrer");
+    }
+  }, [champion, title, isEn]);
+
+  // ── Champion Screen ──────────────────────────────────────────────────────────
+  if (phase === "champion" && champion) {
+    return (
+      <div
+        className="relative flex min-h-[60vh] flex-col items-center justify-center overflow-hidden px-6 py-16"
+        style={{ background: "var(--sg-bg)" }}
+      >
+        <ConfettiParticles />
+
+        {/* Glow halo */}
+        <div
+          className="pointer-events-none absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 rounded-full opacity-30"
+          style={{
+            width: "500px",
+            height: "500px",
+            background: "radial-gradient(circle, var(--sg-amber) 0%, transparent 70%)",
+            filter: "blur(60px)",
+          }}
+        />
+
+        <motion.div
+          initial={{ opacity: 0, scale: 0.7 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+          className="relative z-10 flex flex-col items-center gap-6 text-center"
+        >
+          <motion.div
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.3 }}
+            className="text-5xl"
+          >
+            🏆
+          </motion.div>
+
+          <motion.p
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.4 }}
+            className="text-xs font-black uppercase tracking-[0.3em]"
+            style={{ color: "var(--sg-amber)", fontFamily: "var(--font-headline)" }}
+          >
+            {isEn ? "Champion" : "Şampiyon"}
+          </motion.p>
+
+          <motion.h2
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.5, duration: 0.6 }}
+            className="font-black leading-none tracking-tighter"
+            style={{
+              fontFamily: "var(--font-headline)",
+              fontSize: "clamp(2.8rem, 8vw, 5.5rem)",
+              background: "linear-gradient(135deg, var(--sg-amber), var(--sg-primary))",
+              WebkitBackgroundClip: "text",
+              WebkitTextFillColor: "transparent",
+              backgroundClip: "text",
+              filter: "drop-shadow(0 0 24px rgba(249,189,34,0.4))",
+            }}
+          >
+            {champion.name}
+          </motion.h2>
+
+          {champion.subtitle && (
+            <motion.p
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.7 }}
+              className="text-sm font-semibold uppercase tracking-[0.2em]"
+              style={{ color: "var(--sg-text-secondary)" }}
+            >
+              {champion.subtitle}
+            </motion.p>
+          )}
+
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.9 }}
+            className="mt-4 flex gap-3"
+          >
+            <button
+              type="button"
+              onClick={handleShare}
+              className="flex items-center gap-2 px-6 py-3 font-black uppercase tracking-wider transition-all hover:brightness-110 active:scale-95"
+              style={{
+                background: "var(--sg-amber)",
+                color: "#060f1e",
+                fontFamily: "var(--font-headline)",
+                fontSize: "11px",
+              }}
+            >
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                <path d="M4 12v8a2 2 0 002 2h12a2 2 0 002-2v-8M16 6l-4-4-4 4M12 2v13" />
+              </svg>
+              {isEn ? "Share" : "Paylaş"}
+            </button>
+            <button
+              type="button"
+              onClick={handleRestart}
+              className="flex items-center gap-2 px-6 py-3 font-black uppercase tracking-wider transition-all hover:brightness-110 active:scale-95"
+              style={{
+                background: "var(--sg-surface)",
+                color: "var(--sg-text-secondary)",
+                border: "1px solid rgba(26,58,92,0.6)",
+                fontFamily: "var(--font-headline)",
+                fontSize: "11px",
+              }}
+            >
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                <path d="M3 12a9 9 0 109-9M3 3v6h6" />
+              </svg>
+              {isEn ? "Play Again" : "Yeniden Oyna"}
+            </button>
+          </motion.div>
+        </motion.div>
+      </div>
+    );
+  }
+
+  // ── Round Transition Screen ──────────────────────────────────────────────────
+  if (phase === "round_transition") {
+    return (
+      <div
+        className="flex min-h-[50vh] flex-col items-center justify-center px-6 py-20"
+        style={{ background: "var(--sg-bg)" }}
+      >
+        <motion.div
+          initial={{ opacity: 0, y: 40 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
+          className="flex flex-col items-center gap-4 text-center"
+        >
+          <div className="text-4xl">⚡</div>
+          <p
+            className="text-xs font-black uppercase tracking-[0.3em]"
+            style={{ color: "var(--sg-text-muted)", fontFamily: "var(--font-headline)" }}
+          >
+            {isEn ? "Round Complete" : "Round Tamamlandı"}
+          </p>
+          <h2
+            className="font-black leading-none tracking-tighter"
+            style={{
+              fontFamily: "var(--font-headline)",
+              fontSize: "clamp(2rem, 6vw, 3.5rem)",
+              background: "linear-gradient(135deg, var(--sg-primary), var(--sg-secondary))",
+              WebkitBackgroundClip: "text",
+              WebkitTextFillColor: "transparent",
+              backgroundClip: "text",
+            }}
+          >
+            {nextRoundLabels[roundIndex] ?? ""}
+          </h2>
+
+          <motion.div
+            className="mt-2 h-1 overflow-hidden rounded-full"
+            style={{ width: "160px", background: "rgba(26,58,92,0.5)" }}
+          >
+            <motion.div
+              className="h-full rounded-full"
+              style={{ background: "var(--sg-primary)" }}
+              initial={{ width: "0%" }}
+              animate={{ width: "100%" }}
+              transition={{ duration: 2.4, ease: "linear" }}
+            />
+          </motion.div>
+        </motion.div>
+      </div>
+    );
+  }
+
+  // ── Playing Screen ───────────────────────────────────────────────────────────
+  if (!currentMatch) return null;
+
+  const loserSide = selectedSide === "left" ? "right" : selectedSide === "right" ? "left" : null;
+
+  return (
+    <div className="w-full" style={{ background: "var(--sg-bg)" }}>
+      {/* Progress bar */}
+      <div className="w-full px-4 py-4 md:px-8">
+        <div className="mx-auto max-w-2xl">
+          <div className="mb-2 flex items-center justify-between">
+            <span
+              className="text-xs font-black uppercase tracking-[0.2em]"
+              style={{ color: "var(--sg-amber)", fontFamily: "var(--font-headline)" }}
+            >
+              {roundNames[roundIndex] ?? ""}
+            </span>
+            <span
+              className="text-xs font-semibold"
+              style={{ color: "var(--sg-text-muted)", fontFamily: "var(--font-headline)" }}
+            >
+              {matchLabel} {matchIndex + 1}/{totalMatchesInRound}
+            </span>
+          </div>
+          <div
+            className="h-1.5 w-full overflow-hidden rounded-full"
+            style={{ background: "rgba(26,58,92,0.5)" }}
+          >
+            <motion.div
+              className="h-full rounded-full"
+              style={{ background: "var(--sg-amber)" }}
+              animate={{ width: `${progressPct}%` }}
+              transition={{ duration: 0.4 }}
+            />
+          </div>
+        </div>
+      </div>
+
+      {/* Cards */}
+      <AnimatePresence mode="wait">
+        <motion.div
+          key={matchKey}
+          className="mx-auto flex w-full max-w-2xl flex-col items-center gap-6 px-4 pb-8 md:flex-row md:items-start md:gap-8 md:px-8"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          transition={{ duration: 0.25 }}
+        >
+          {/* Left card */}
+          <PlayerCard
+            participant={currentMatch.left}
+            side="left"
+            onSelect={() => handleSelect("left")}
+            isLoser={loserSide === "left"}
+            isSelected={selectedSide === "left"}
+            disabled={selectedSide !== null}
+            lang={lang}
+          />
+
+          {/* VS divider */}
+          <div className="flex shrink-0 flex-row items-center gap-3 md:flex-col md:pt-24">
+            <div className="h-px w-8 md:h-16 md:w-px" style={{ background: "rgba(26,58,92,0.5)" }} />
+            <motion.span
+              animate={{ scale: [1, 1.15, 1] }}
+              transition={{ repeat: Infinity, duration: 1.6, ease: "easeInOut" }}
+              className="text-sm font-black tracking-widest"
+              style={{ color: "var(--sg-text-muted)", fontFamily: "var(--font-headline)" }}
+            >
+              VS
+            </motion.span>
+            <div className="h-px w-8 md:h-16 md:w-px" style={{ background: "rgba(26,58,92,0.5)" }} />
+          </div>
+
+          {/* Right card */}
+          <PlayerCard
+            participant={currentMatch.right}
+            side="right"
+            onSelect={() => handleSelect("right")}
+            isLoser={loserSide === "right"}
+            isSelected={selectedSide === "right"}
+            disabled={selectedSide !== null}
+            lang={lang}
+          />
+        </motion.div>
+      </AnimatePresence>
+    </div>
+  );
+}

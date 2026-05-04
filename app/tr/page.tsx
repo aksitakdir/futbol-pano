@@ -10,7 +10,7 @@ import { PlayerScoutLinks } from "../components/player-scout-links";
 import PlayerCard, { type PlayerCardData } from "../components/player-card";
 import { supabase } from "@/lib/supabase";
 import { getCategoryImage } from "@/lib/category-images";
-import { ARENA_BRACKETS, arenaPath } from "@/lib/arena-brackets";
+import { arenaPath, type ArenaGame } from "@/lib/arena-brackets";
 
 // ─── Tipler ──────────────────────────────────────────────────────────────────
 type SlideContent = {
@@ -86,16 +86,17 @@ type HeroContentSlide = { kind: "content"; slide: SlideContent; slideKey: string
 type HeroArenaSlide = { kind: "arena"; slideKey: string; title: string; teaser: string; href: string };
 type HeroSlide = HeroContentSlide | HeroArenaSlide;
 
-function pickArenaSlide(): HeroArenaSlide {
-  const b = ARENA_BRACKETS[Math.floor(Math.random() * ARENA_BRACKETS.length)];
-  return { kind: "arena", slideKey: `arena-${b.slug}-${Date.now()}`, title: b.heroTitle, teaser: b.heroTeaser, href: arenaPath(b.slug) };
+function pickArenaSlide(arenaGames: ArenaGame[]): HeroArenaSlide | null {
+  if (!arenaGames.length) return null;
+  const g = arenaGames[Math.floor(Math.random() * arenaGames.length)];
+  return { kind: "arena", slideKey: `arena-${g.slug}-${Date.now()}`, title: g.hero_title_tr, teaser: g.hero_teaser_tr, href: arenaPath(g.slug) };
 }
 
-function mergeWithArena(content: { slide: SlideContent; slideKey: string }[]): HeroSlide[] {
-  const arena = pickArenaSlide();
+function mergeWithArena(content: { slide: SlideContent; slideKey: string }[], arenaGames: ArenaGame[]): HeroSlide[] {
+  const arena = pickArenaSlide(arenaGames);
   const items: HeroSlide[] = content.map(({ slide, slideKey }) => ({ kind: "content", slide, slideKey }));
-  if (!items.length) return [arena];
-  items.splice(Math.floor(Math.random() * (items.length + 1)), 0, arena);
+  if (!items.length) return arena ? [arena] : [];
+  if (arena) items.splice(Math.floor(Math.random() * (items.length + 1)), 0, arena);
   return items;
 }
 
@@ -168,14 +169,25 @@ export default function HomeTR() {
 
   useEffect(() => {
     async function load() {
-      const { data } = await supabase
-        .from("contents")
-        .select("id,title,title_en,slug,category,content,content_en,created_at,cover_image")
-        .eq("status", "yayinda")
-        .order("created_at", { ascending: false })
-        .limit(200);
-      if (!data?.length) { setSlides([pickArenaSlide()]); return; }
-      setSlides(mergeWithArena(buildHeroSlides(data as SlideContent[])));
+      const [contentsRes, arenaRes] = await Promise.all([
+        supabase
+          .from("contents")
+          .select("id,title,title_en,slug,category,content,content_en,created_at,cover_image")
+          .eq("status", "yayinda")
+          .order("created_at", { ascending: false })
+          .limit(200),
+        supabase
+          .from("arena_games")
+          .select("id,slug,status,title_tr,title_en,description_tr,description_en,hero_title_tr,hero_title_en,hero_teaser_tr,hero_teaser_en,card_color,game_type,created_at")
+          .eq("status", "published"),
+      ]);
+      const arenaGames = (arenaRes.data ?? []) as ArenaGame[];
+      if (!contentsRes.data?.length) {
+        const a = pickArenaSlide(arenaGames);
+        setSlides(a ? [a] : []);
+        return;
+      }
+      setSlides(mergeWithArena(buildHeroSlides(contentsRes.data as SlideContent[]), arenaGames));
     }
     load();
   }, []);
