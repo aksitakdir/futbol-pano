@@ -29,11 +29,17 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const now = new Date();
   const supabase = createClient();
 
-  const { data: articles } = await supabase
-    .from("contents")
-    .select("slug,category,created_at")
-    .eq("status", "yayinda")
-    .order("created_at", { ascending: false });
+  const [{ data: articles }, { data: arenaGames }] = await Promise.all([
+    supabase
+      .from("contents")
+      .select("slug,category,created_at")
+      .eq("status", "yayinda")
+      .order("created_at", { ascending: false }),
+    supabase
+      .from("arena_games")
+      .select("slug,created_at")
+      .eq("status", "published"),
+  ]);
 
   const staticItems: MetadataRoute.Sitemap = staticEntries.map(({ url, priority }) => ({
     url: `${base}${url}`,
@@ -52,5 +58,24 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     ];
   });
 
-  return [...staticItems, ...articleItems];
+  // Arena oyun sayfaları — hem TR hem EN URL'si
+  const arenaItems: MetadataRoute.Sitemap = (arenaGames ?? []).flatMap((g) => {
+    const lastMod = new Date(g.created_at);
+    return [
+      {
+        url: `${base}/arena/${g.slug}`,
+        lastModified: lastMod,
+        changeFrequency: "monthly" as const,
+        priority: 0.72,
+      },
+      {
+        url: `${base}/arena/${g.slug}?lang=en`,
+        lastModified: lastMod,
+        changeFrequency: "monthly" as const,
+        priority: 0.68,
+      },
+    ];
+  });
+
+  return [...staticItems, ...articleItems, ...arenaItems];
 }
