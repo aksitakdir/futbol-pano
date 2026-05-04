@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Space_Grotesk, Inter_Tight, IBM_Plex_Mono } from "next/font/google";
+import { headers } from "next/headers";
 import "./globals.css";
 import SmoothScrollProvider from "./components/smooth-scroll-provider";
 import { Analytics } from "@vercel/analytics/next";
@@ -52,13 +53,16 @@ export const metadata: Metadata = {
   },
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const h = await headers();
+  const pathname = h.get("x-pathname") ?? "";
+  const lang = pathname.startsWith("/en") ? "en" : "tr";
   return (
-    <html lang="tr">
+    <html lang={lang}>
       <body className={`${spaceGrotesk.variable} ${interTight.variable} ${ibmPlexMono.variable} antialiased`}>
         <SmoothScrollProvider>
           {children}
