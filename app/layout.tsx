@@ -4,6 +4,7 @@ import "./globals.css";
 import SmoothScrollProvider from "./components/smooth-scroll-provider";
 import { Analytics } from "@vercel/analytics/next";
 import { SpeedInsights } from "@vercel/speed-insights/next";
+import { GoogleAnalytics } from "@next/third-parties/google";
 
 const spaceGrotesk = Space_Grotesk({
   variable: "--font-space-grotesk",
@@ -28,17 +29,26 @@ export const metadata: Metadata = {
   alternates: {
     canonical: "https://scoutgamer.com",
     languages: {
-      tr: "https://scoutgamer.com",
+      tr: "https://scoutgamer.com/tr",
       en: "https://scoutgamer.com/en",
     },
   },
-  title: "Scout Gamer",
+  title: {
+    default: "Scout Gamer",
+    template: "%s | Scout Gamer",
+  },
   description: "Futbol × Oyun Kültürü. Avrupa'nın en parlak genç yeteneklerini keşfet.",
   openGraph: {
-    images: [{ url: "https://scoutgamer.com/og-image.png", width: 1200, height: 630 }],
+    type: "website",
+    siteName: "Scout Gamer",
+    locale: "tr_TR",
+    url: "https://scoutgamer.com",
+    images: [{ url: "https://scoutgamer.com/og-image.png", width: 1200, height: 630, alt: "Scout Gamer" }],
   },
   twitter: {
     card: "summary_large_image",
+    site: "@scoutgamer",
+    creator: "@scoutgamer",
   },
 };
 
@@ -56,6 +66,7 @@ export default function RootLayout({
         <Analytics />
         <SpeedInsights />
       </body>
+      <GoogleAnalytics gaId="G-R45Y11BCD1" />
     </html>
   );
 }

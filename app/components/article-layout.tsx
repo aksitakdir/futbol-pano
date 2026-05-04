@@ -184,8 +184,19 @@ export default function ArticleLayout({
     <main style={{ background: "var(--sg-bg)", color: "var(--sg-text-primary)", minHeight: "100vh" }}>
       <title>{title} | Scout Gamer</title>
       <meta name="description" content={description} />
+      <meta property="og:type" content="article" />
       <meta property="og:title" content={`${title} | Scout Gamer`} />
       <meta property="og:description" content={description} />
+      <meta property="og:url" content={canonicalUrl} />
+      <meta property="og:site_name" content="Scout Gamer" />
+      {coverImage && <meta property="og:image" content={coverImage} />}
+      {coverImage && <meta property="og:image:alt" content={title} />}
+      <meta name="twitter:card" content="summary_large_image" />
+      <meta name="twitter:title" content={`${title} | Scout Gamer`} />
+      <meta name="twitter:description" content={description} />
+      <meta name="twitter:site" content="@scoutgamer" />
+      {coverImage && <meta name="twitter:image" content={coverImage} />}
+      <link rel="canonical" href={canonicalUrl} />
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(articleJsonLd) }}
