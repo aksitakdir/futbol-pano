@@ -340,15 +340,16 @@ export default function ArenaDuel({ participants, gameType, title, lang = "tr", 
   const handleShare = useCallback(() => {
     if (!champion) return;
     const shareTitle = isEn
-      ? `My champion in "${title}": ${champion.name}!`
-      : `"${title}" turnuvasında şampiyonum: ${champion.name}!`;
-    // Always use canonical URL (never a Vercel preview URL)
-    const shareUrl = canonicalUrl ?? "https://scoutgamer.com/arena";
+      ? `My champion in "${title}": ${champion.name}! Who's yours?`
+      : `"${title}" turnuvasında şampiyonum: ${champion.name}! Seninki kim?`;
+    // Embed champion name in URL so the shared link shows a champion-specific OG image
+    const base = canonicalUrl ?? "https://scoutgamer.com/arena";
+    const shareUrl = `${base}?champion=${encodeURIComponent(champion.name)}`;
 
     if (typeof navigator !== "undefined" && navigator.share) {
       navigator.share({ title: shareTitle, url: shareUrl }).catch(() => {});
     } else {
-      const twitterUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(shareTitle + " " + shareUrl)}`;
+      const twitterUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(shareTitle + "\n" + shareUrl)}`;
       window.open(twitterUrl, "_blank", "noopener,noreferrer");
     }
   }, [champion, title, isEn, canonicalUrl]);
@@ -530,8 +531,8 @@ export default function ArenaDuel({ participants, gameType, title, lang = "tr", 
   const loserSide = selectedSide === "left" ? "right" : selectedSide === "right" ? "left" : null;
 
   return (
-    // flex-1 fills remaining space in parent flex-col, pushing SiteFooter below the fold
-    <div className="flex w-full flex-1 flex-col" style={{ background: "var(--sg-bg)" }}>
+    // min-h-screen ensures the playing section alone fills the viewport — footer stays below the fold
+    <div className="flex w-full flex-col" style={{ background: "var(--sg-bg)", minHeight: "100svh" }}>
       {/* Progress bar */}
       <div className="w-full px-4 py-4 md:px-8">
         <div className="mx-auto max-w-2xl">

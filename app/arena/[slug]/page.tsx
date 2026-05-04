@@ -36,51 +36,88 @@ export async function generateMetadata({
   searchParams,
 }: {
   params: Promise<{ slug: string }>;
-  searchParams: Promise<{ lang?: string }>;
+  searchParams: Promise<{ lang?: string; champion?: string }>;
 }): Promise<Metadata> {
   const { slug } = await params;
-  const { lang } = await searchParams;
+  const { lang, champion: championParam } = await searchParams;
   const isEn = lang === "en";
   const game = await fetchGame(slug);
   if (!game) return { title: "Arena | Scout Gamer" };
 
-  const title = isEn ? game.title_en || game.title_tr : game.title_tr;
-  const description = isEn ? game.description_en || game.description_tr : game.description_tr;
-  const pageUrl = `${BASE}/arena/${slug}${isEn ? "?lang=en" : ""}`;
+  const gameTitle = isEn ? game.title_en || game.title_tr : game.title_tr;
+  const gameDesc  = isEn ? game.description_en || game.description_tr : game.description_tr;
   const canonical = `${BASE}/arena/${slug}`;
 
-  // Build OG image URL with all data embedded — no Supabase call inside the image route
+  // ── Champion result share: special metadata ──────────────────────────────
+  if (championParam) {
+    const champion = decodeURIComponent(championParam);
+    const shareTitle = isEn
+      ? `My champion in "${gameTitle}": ${champion}!`
+      : `"${gameTitle}" şampiyonum: ${champion}!`;
+    const shareDesc = isEn
+      ? `Who will you pick as champion? Play on Scout Gamer Arena.`
+      : `Sen kimi seçerdin? Scout Gamer Arena'da oyna ve paylaş.`;
+    const ogImg = new URL(`${BASE}/arena/${slug}/opengraph-image`);
+    ogImg.searchParams.set("t", gameTitle);
+    ogImg.searchParams.set("c", game.card_color);
+    ogImg.searchParams.set("champion", champion);
+    ogImg.searchParams.set("lang", isEn ? "en" : "tr");
+    const ogImgUrl = ogImg.toString();
+
+    return {
+      title: `${shareTitle} | Scout Gamer`,
+      description: shareDesc,
+      alternates: { canonical },
+      openGraph: {
+        title: shareTitle,
+        description: shareDesc,
+        url: `${BASE}/arena/${slug}?champion=${encodeURIComponent(champion)}`,
+        siteName: "Scout Gamer",
+        type: "website",
+        images: [{ url: ogImgUrl, width: 1200, height: 630, alt: shareTitle }],
+      },
+      twitter: {
+        card: "summary_large_image",
+        title: shareTitle,
+        description: shareDesc,
+        images: [ogImgUrl],
+      },
+    };
+  }
+
+  // ── Default game metadata ────────────────────────────────────────────────
+  const pageUrl = `${BASE}/arena/${slug}${isEn ? "?lang=en" : ""}`;
   const names = game.participants.slice(0, 4).map((p) => p.name).join("|");
   const ogImg = new URL(`${BASE}/arena/${slug}/opengraph-image`);
-  ogImg.searchParams.set("t", title);
+  ogImg.searchParams.set("t", gameTitle);
   ogImg.searchParams.set("c", game.card_color);
-  ogImg.searchParams.set("d", description.slice(0, 110));
+  ogImg.searchParams.set("d", gameDesc.slice(0, 110));
   ogImg.searchParams.set("n", names);
   ogImg.searchParams.set("cnt", String(game.participants.length));
   const ogImgUrl = ogImg.toString();
 
   return {
-    title: `${title} | Arena — Scout Gamer`,
-    description,
+    title: `${gameTitle} | Arena — Scout Gamer`,
+    description: gameDesc,
     alternates: {
       canonical,
       languages: {
-        "tr": `${BASE}/arena/${slug}`,
-        "en": `${BASE}/arena/${slug}?lang=en`,
+        tr: `${BASE}/arena/${slug}`,
+        en: `${BASE}/arena/${slug}?lang=en`,
       },
     },
     openGraph: {
-      title: `${title} | Scout Gamer Arena`,
-      description,
+      title: `${gameTitle} | Scout Gamer Arena`,
+      description: gameDesc,
       url: pageUrl,
       siteName: "Scout Gamer",
       type: "website",
-      images: [{ url: ogImgUrl, width: 1200, height: 630, alt: title }],
+      images: [{ url: ogImgUrl, width: 1200, height: 630, alt: gameTitle }],
     },
     twitter: {
       card: "summary_large_image",
-      title: `${title} | Scout Gamer`,
-      description,
+      title: `${gameTitle} | Scout Gamer`,
+      description: gameDesc,
       images: [ogImgUrl],
     },
   };
