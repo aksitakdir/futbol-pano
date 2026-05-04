@@ -134,25 +134,22 @@ function PlayerCard({ participant, side, onSelect, isLoser, isSelected, disabled
   return (
     <motion.div
       key={`card-${participant.name}`}
-      className="relative flex flex-col items-center"
-      initial={{ opacity: 0, x: side === "left" ? -50 : 50 }}
+      className="relative flex min-w-0 flex-1 flex-col"
+      initial={{ opacity: 0, x: side === "left" ? -40 : 40 }}
       animate={
         isLoser
           ? { opacity: 0, scale: 0.8, y: 30, filter: "blur(4px)" }
-          : { opacity: 1, x: 0, scale: isSelected ? 1.04 : 1, filter: "blur(0px)" }
+          : { opacity: 1, x: 0, scale: isSelected ? 1.03 : 1, filter: "blur(0px)" }
       }
       transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
-      style={{ width: "100%", maxWidth: "320px" }}
     >
       <div
-        className="w-full cursor-pointer overflow-hidden border transition-all duration-200"
+        className="flex h-full w-full cursor-pointer flex-col overflow-hidden border transition-all duration-200"
         style={{
           background: "var(--sg-surface)",
-          borderColor: isSelected
-            ? "var(--sg-amber)"
-            : "rgba(26,58,92,0.6)",
+          borderColor: isSelected ? "var(--sg-amber)" : "rgba(26,58,92,0.6)",
           boxShadow: isSelected
-            ? "0 0 32px rgba(249,189,34,0.25), 0 0 0 2px var(--sg-amber)"
+            ? "0 0 28px rgba(249,189,34,0.22), 0 0 0 2px var(--sg-amber)"
             : "none",
         }}
         onClick={disabled ? undefined : onSelect}
@@ -160,10 +157,10 @@ function PlayerCard({ participant, side, onSelect, isLoser, isSelected, disabled
         tabIndex={disabled ? -1 : 0}
         onKeyDown={(e) => { if (!disabled && (e.key === "Enter" || e.key === " ")) onSelect(); }}
       >
-        {/* Photo area */}
+        {/* Photo / avatar area — shorter on mobile */}
         <div
-          className="relative flex items-center justify-center overflow-hidden"
-          style={{ height: "180px", background: "var(--sg-surface-low)" }}
+          className="relative flex shrink-0 items-center justify-center overflow-hidden"
+          style={{ height: "clamp(80px, 18vw, 176px)", background: "var(--sg-surface-low)" }}
         >
           {participant.photo_url ? (
             <img
@@ -174,8 +171,11 @@ function PlayerCard({ participant, side, onSelect, isLoser, isSelected, disabled
             />
           ) : (
             <div
-              className="flex h-20 w-20 items-center justify-center rounded-full text-4xl font-black"
+              className="flex items-center justify-center rounded-full font-black"
               style={{
+                width: "clamp(36px, 9vw, 72px)",
+                height: "clamp(36px, 9vw, 72px)",
+                fontSize: "clamp(14px, 4vw, 32px)",
                 background: "rgba(70,241,197,0.08)",
                 color: "var(--sg-primary)",
                 fontFamily: "var(--font-headline)",
@@ -190,18 +190,26 @@ function PlayerCard({ participant, side, onSelect, isLoser, isSelected, disabled
           />
         </div>
 
-        {/* Info */}
-        <div className="px-5 pb-5 pt-3 text-center">
+        {/* Info — compact padding on mobile */}
+        <div className="flex flex-1 flex-col px-2 pb-3 pt-2 text-center sm:px-4 sm:pb-4 sm:pt-3 md:px-5 md:pb-5">
           <h3
-            className="mb-1 text-xl font-black leading-tight tracking-tight"
-            style={{ fontFamily: "var(--font-headline)", color: "var(--sg-text-primary)" }}
+            className="mb-0.5 font-black leading-tight tracking-tight sm:mb-1"
+            style={{
+              fontFamily: "var(--font-headline)",
+              color: "var(--sg-text-primary)",
+              fontSize: "clamp(11px, 3.2vw, 20px)",
+            }}
           >
             {participant.name}
           </h3>
           {participant.subtitle && (
             <p
-              className="mb-5 text-xs font-semibold uppercase tracking-widest"
-              style={{ color: "var(--sg-text-muted)" }}
+              className="mb-2 font-semibold uppercase sm:mb-3 md:mb-5"
+              style={{
+                color: "var(--sg-text-muted)",
+                fontSize: "clamp(8px, 2vw, 11px)",
+                letterSpacing: "0.12em",
+              }}
             >
               {participant.subtitle}
             </p>
@@ -211,12 +219,14 @@ function PlayerCard({ participant, side, onSelect, isLoser, isSelected, disabled
             type="button"
             disabled={disabled}
             onClick={disabled ? undefined : (e) => { e.stopPropagation(); onSelect(); }}
-            className="w-full py-3 text-sm font-black uppercase tracking-widest transition-all duration-200 hover:brightness-110 active:scale-95 disabled:cursor-not-allowed disabled:opacity-40"
+            className="mt-auto w-full font-black uppercase tracking-widest transition-all duration-200 hover:brightness-110 active:scale-95 disabled:cursor-not-allowed disabled:opacity-40"
             style={{
               background: isSelected ? "var(--sg-amber)" : "var(--sg-primary)",
               color: "#060f1e",
               fontFamily: "var(--font-headline)",
-              letterSpacing: "0.12em",
+              padding: "clamp(6px, 1.5vw, 12px) 4px",
+              fontSize: "clamp(9px, 2.4vw, 13px)",
+              letterSpacing: "0.1em",
             }}
           >
             {btnLabel}
@@ -550,11 +560,11 @@ export default function ArenaDuel({ participants, gameType, title, lang = "tr" }
         </div>
       </div>
 
-      {/* Cards */}
+      {/* Cards — always side-by-side on all screen sizes */}
       <AnimatePresence mode="wait">
         <motion.div
           key={matchKey}
-          className="mx-auto flex w-full max-w-2xl flex-col items-center gap-6 px-4 pb-8 md:flex-row md:items-start md:gap-8 md:px-8"
+          className="mx-auto flex w-full max-w-2xl flex-row items-stretch gap-2 px-3 pb-8 sm:gap-4 sm:px-5 md:gap-8 md:px-8"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
@@ -571,18 +581,23 @@ export default function ArenaDuel({ participants, gameType, title, lang = "tr" }
             lang={lang}
           />
 
-          {/* VS divider */}
-          <div className="flex shrink-0 flex-row items-center gap-3 md:flex-col md:pt-24">
-            <div className="h-px w-8 md:h-16 md:w-px" style={{ background: "rgba(26,58,92,0.5)" }} />
+          {/* VS divider — always vertical */}
+          <div className="flex shrink-0 flex-col items-center justify-center gap-2 py-4"
+            style={{ width: "clamp(20px, 5vw, 40px)" }}>
+            <div className="flex-1 w-px" style={{ background: "rgba(26,58,92,0.5)" }} />
             <motion.span
-              animate={{ scale: [1, 1.15, 1] }}
+              animate={{ scale: [1, 1.18, 1] }}
               transition={{ repeat: Infinity, duration: 1.6, ease: "easeInOut" }}
-              className="text-sm font-black tracking-widest"
-              style={{ color: "var(--sg-text-muted)", fontFamily: "var(--font-headline)" }}
+              className="font-black tracking-widest"
+              style={{
+                color: "var(--sg-text-muted)",
+                fontFamily: "var(--font-headline)",
+                fontSize: "clamp(9px, 2.4vw, 14px)",
+              }}
             >
               VS
             </motion.span>
-            <div className="h-px w-8 md:h-16 md:w-px" style={{ background: "rgba(26,58,92,0.5)" }} />
+            <div className="flex-1 w-px" style={{ background: "rgba(26,58,92,0.5)" }} />
           </div>
 
           {/* Right card */}

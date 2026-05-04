@@ -2,7 +2,7 @@ import { ImageResponse } from "next/og";
 import { createClient } from "@/lib/supabase";
 import type { ArenaGame } from "@/lib/arena-brackets";
 
-export const runtime = "edge";
+export const runtime = "nodejs";
 export const alt = "Scout Gamer Arena";
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
