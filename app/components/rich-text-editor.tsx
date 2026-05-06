@@ -4,6 +4,7 @@ import { useEditor, EditorContent, type Editor } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
 import Link from "@tiptap/extension-link";
 import Image from "@tiptap/extension-image";
+import Youtube from "@tiptap/extension-youtube";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { supabase } from "@/lib/supabase";
 
@@ -92,6 +93,18 @@ function Toolbar({ editor, htmlMode, onToggle }: { editor: Editor | null; htmlMo
           <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/>
         </svg>
       </button>
+      {/* YouTube embed */}
+      <button type="button" title="YouTube video ekle"
+        className={TB}
+        onClick={() => {
+          const url = window.prompt("YouTube video URL'si (örn: https://youtu.be/xxxx):");
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          if (url) (editor!.chain().focus() as any).setYoutubeVideo({ src: url, width: 640, height: 360 }).run();
+        }}>
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+          <path d="M23 7s-.3-2-1.2-2.8c-1.1-1.2-2.4-1.2-3-1.3C16.4 2.7 12 2.7 12 2.7s-4.4 0-6.8.2c-.6.1-1.9.1-3 1.3C1.3 5 1 7 1 7S.7 9.1.7 11.3v2c0 2.1.3 4.2.3 4.2s.3 2 1.2 2.8c1.1 1.2 2.6 1.1 3.3 1.2C7.3 21.7 12 21.7 12 21.7s4.4 0 6.8-.3c.6-.1 1.9-.1 3-1.3.9-.8 1.2-2.8 1.2-2.8s.3-2.1.3-4.2v-2C23.3 9.1 23 7 23 7zM9.7 15.5V8.3l8.1 3.6-8.1 3.6z"/>
+        </svg>
+      </button>
       <span className="mx-0.5 h-4 w-px bg-slate-600" />
       <button type="button" onClick={onToggle}
         className={htmlMode ? TB_ACTIVE : TB}
@@ -123,6 +136,11 @@ export default function RichTextEditor({ value, onChange, placeholder = "İçeri
       }),
       Image.configure({
         HTMLAttributes: { class: "max-w-full rounded-lg my-4" },
+      }),
+      Youtube.configure({
+        controls: true,
+        nocookie: true,
+        HTMLAttributes: { class: "w-full rounded-lg my-4 aspect-video" },
       }),
     ],
     content: value || "",
