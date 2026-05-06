@@ -130,17 +130,16 @@ export default async function ArenaBracketPage({
   searchParams,
 }: {
   params: Promise<{ slug: string }>;
-  searchParams: Promise<{ lang?: string }>;
+  searchParams: Promise<{ lang?: string; champion?: string }>;
 }) {
   const { slug } = await params;
-  const { lang } = await searchParams;
+  const { lang, champion } = await searchParams;
   const game = await fetchGame(slug);
 
   if (!game) notFound();
 
   const resolvedLang = lang === "en" ? "en" : "tr";
 
-  // JSON-LD: Game / InteractiveFeature
   const jsonLd = {
     "@context": "https://schema.org",
     "@type": "Game",
@@ -148,16 +147,8 @@ export default async function ArenaBracketPage({
     "description": resolvedLang === "en" ? game.description_en || game.description_tr : game.description_tr,
     "url": `${BASE}/arena/${slug}`,
     "inLanguage": resolvedLang === "en" ? "en" : "tr",
-    "publisher": {
-      "@type": "Organization",
-      "name": "Scout Gamer",
-      "url": BASE,
-    },
-    "numberOfPlayers": {
-      "@type": "QuantitativeValue",
-      "minValue": 1,
-      "maxValue": 1,
-    },
+    "publisher": { "@type": "Organization", "name": "Scout Gamer", "url": BASE },
+    "numberOfPlayers": { "@type": "QuantitativeValue", "minValue": 1, "maxValue": 1 },
   };
 
   return (
@@ -170,6 +161,7 @@ export default async function ArenaBracketPage({
         game={game}
         lang={resolvedLang}
         canonicalUrl={`${BASE}/arena/${slug}`}
+        initialChampion={champion ? decodeURIComponent(champion) : undefined}
       />
     </>
   );
