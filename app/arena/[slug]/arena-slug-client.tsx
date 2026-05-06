@@ -9,6 +9,8 @@ import SiteFooter from "../../components/site-footer";
 import Breadcrumb from "../../components/breadcrumb";
 import ArenaDuel from "../../components/arena-duel";
 import type { ArenaGame } from "@/lib/arena-brackets";
+import { getLeaderboard } from "@/app/arena/actions";
+import type { LeaderboardEntry } from "@/app/arena/actions";
 
 type Props = {
   game: ArenaGame;
@@ -68,6 +70,11 @@ function ChampionResultView({
   const gameTitle = isEn ? game.title_en || game.title_tr : game.title_tr;
   const accentColor = CARD_COLOR_MAP[game.card_color as keyof typeof CARD_COLOR_MAP] ?? "#F59E0B";
   const [shared, setShared] = useState(false);
+  const [leaderboard, setLeaderboard] = useState<LeaderboardEntry[]>([]);
+
+  useEffect(() => {
+    getLeaderboard(game.slug, 5).then(setLeaderboard).catch(() => {});
+  }, [game.slug]);
 
   const handleShare = useCallback(() => {
     const shareUrl = `${canonicalUrl}?champion=${encodeURIComponent(champion)}`;
@@ -217,6 +224,66 @@ function ChampionResultView({
           </button>
         </motion.div>
 
+        {/* Leaderboard */}
+        {leaderboard.length > 0 && (
+          <motion.div
+            initial={{ opacity: 0, y: 24 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.85, duration: 0.5 }}
+            className="w-full max-w-xs"
+          >
+            <p
+              className="mb-3 text-center text-xs font-black uppercase tracking-[0.2em]"
+              style={{ color: "var(--sg-text-muted)" }}
+            >
+              {isEn ? "Community picks" : "Topluluk seçimleri"}
+            </p>
+            <div className="flex flex-col gap-2">
+              {leaderboard.map((entry, i) => {
+                const maxVotes = leaderboard[0]?.vote_count ?? 1;
+                const pct = Math.round((entry.vote_count / maxVotes) * 100);
+                const isChamp = entry.champion_name === champion;
+                const medals = ["🥇", "🥈", "🥉"];
+                return (
+                  <motion.div
+                    key={entry.champion_name}
+                    initial={{ opacity: 0, x: -16 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: 0.95 + i * 0.08 }}
+                    className="flex items-center gap-2"
+                  >
+                    <span className="w-5 shrink-0 text-center text-sm">{medals[i] ?? `${i + 1}.`}</span>
+                    <div className="relative flex-1 overflow-hidden rounded-sm" style={{ height: 26 }}>
+                      <motion.div
+                        className="absolute inset-y-0 left-0"
+                        style={{
+                          background: isChamp ? accentColor : "rgba(26,58,92,0.7)",
+                          opacity: isChamp ? 0.9 : 0.5,
+                        }}
+                        initial={{ width: 0 }}
+                        animate={{ width: `${pct}%` }}
+                        transition={{ delay: 1.05 + i * 0.08, duration: 0.6, ease: "easeOut" }}
+                      />
+                      <span
+                        className="relative z-10 flex h-full items-center truncate px-2 text-xs font-semibold"
+                        style={{ color: isChamp ? "#060f1e" : "var(--sg-text-primary)" }}
+                      >
+                        {entry.champion_name}
+                      </span>
+                    </div>
+                    <span
+                      className="w-8 shrink-0 text-right text-xs font-black tabular-nums"
+                      style={{ color: isChamp ? accentColor : "var(--sg-text-muted)" }}
+                    >
+                      {entry.vote_count}
+                    </span>
+                  </motion.div>
+                );
+              })}
+            </div>
+          </motion.div>
+        )}
+
         {/* Back link */}
         <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.8 }}>
           <Link
@@ -353,6 +420,7 @@ export default function ArenaSlugClient({ game, lang, canonicalUrl, initialChamp
                   title={title}
                   lang={lang}
                   canonicalUrl={canonicalUrl}
+                  gameSlug={game.slug}
                 />
               </div>
             )}

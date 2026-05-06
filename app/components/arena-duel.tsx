@@ -2,6 +2,8 @@
 
 import { useState, useMemo, useCallback, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { recordVoteAndGetLeaderboard } from "@/app/arena/actions";
+import type { LeaderboardEntry } from "@/app/arena/actions";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -28,6 +30,7 @@ export type ArenaDuelProps = {
   title: string;
   lang?: "tr" | "en";
   canonicalUrl?: string;
+  gameSlug?: string;
 };
 
 // ─── Constants ────────────────────────────────────────────────────────────────
@@ -240,7 +243,7 @@ function PlayerCard({ participant, side, onSelect, isLoser, isSelected, disabled
 
 // ─── Main Component ───────────────────────────────────────────────────────────
 
-export default function ArenaDuel({ participants, gameType, title, lang = "tr", canonicalUrl }: ArenaDuelProps) {
+export default function ArenaDuel({ participants, gameType, title, lang = "tr", canonicalUrl, gameSlug }: ArenaDuelProps) {
   const isEn = lang === "en";
   const roundNames = isEn ? ROUND_NAMES_EN : ROUND_NAMES_TR;
   const nextRoundLabels = isEn ? NEXT_ROUND_EN : NEXT_ROUND_TR;
@@ -262,6 +265,7 @@ export default function ArenaDuel({ participants, gameType, title, lang = "tr", 
   const [selectedSide, setSelectedSide] = useState<"left" | "right" | null>(null);
   const [champion, setChampion] = useState<Participant | null>(null);
   const [matchKey, setMatchKey] = useState(0);
+  const [leaderboard, setLeaderboard] = useState<LeaderboardEntry[]>([]);
 
   // Refs to avoid stale closure inside setTimeout
   const stateRef = useRef({ roundIndex, matchIndex, roundWinners, rounds });
@@ -302,6 +306,10 @@ export default function ArenaDuel({ participants, gameType, title, lang = "tr", 
           // Champion!
           setChampion(newWinners[0]);
           setPhase("champion");
+          // Oyu kaydet ve leaderboard'u güncelle
+          if (gameSlug) {
+            recordVoteAndGetLeaderboard(gameSlug, newWinners[0].name).then(setLeaderboard).catch(() => {});
+          }
         } else {
           // Round complete — build next round
           const nextMatches: Match[] = [];
@@ -469,6 +477,68 @@ export default function ArenaDuel({ participants, gameType, title, lang = "tr", 
               {isEn ? "Play Again" : "Yeniden Oyna"}
             </button>
           </motion.div>
+
+          {/* Leaderboard */}
+          {leaderboard.length > 0 && (
+            <motion.div
+              initial={{ opacity: 0, y: 24 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 1.2, duration: 0.5 }}
+              className="mt-8 w-full max-w-xs"
+            >
+              <p
+                className="mb-3 text-center text-xs font-black uppercase tracking-[0.2em]"
+                style={{ color: "var(--sg-text-muted)", fontFamily: "var(--font-headline)" }}
+              >
+                {isEn ? "Community picks" : "Topluluk seçimleri"}
+              </p>
+              <div className="flex flex-col gap-2">
+                {leaderboard.map((entry, i) => {
+                  const maxVotes = leaderboard[0]?.vote_count ?? 1;
+                  const pct = Math.round((entry.vote_count / maxVotes) * 100);
+                  const isWinner = entry.champion_name === champion.name;
+                  const medals = ["🥇", "🥈", "🥉"];
+                  return (
+                    <motion.div
+                      key={entry.champion_name}
+                      initial={{ opacity: 0, x: -16 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{ delay: 1.3 + i * 0.08 }}
+                      className="flex items-center gap-2"
+                    >
+                      <span className="w-5 shrink-0 text-center text-sm">{medals[i] ?? `${i + 1}.`}</span>
+                      <div className="relative flex-1 overflow-hidden rounded-sm" style={{ height: 26 }}>
+                        <motion.div
+                          className="absolute inset-y-0 left-0"
+                          style={{
+                            background: isWinner
+                              ? "var(--sg-amber)"
+                              : "rgba(26,58,92,0.7)",
+                            opacity: isWinner ? 0.9 : 0.5,
+                          }}
+                          initial={{ width: 0 }}
+                          animate={{ width: `${pct}%` }}
+                          transition={{ delay: 1.4 + i * 0.08, duration: 0.6, ease: "easeOut" }}
+                        />
+                        <span
+                          className="relative z-10 flex h-full items-center px-2 text-xs font-semibold truncate"
+                          style={{ color: isWinner ? "#060f1e" : "var(--sg-text-primary)" }}
+                        >
+                          {entry.champion_name}
+                        </span>
+                      </div>
+                      <span
+                        className="w-8 shrink-0 text-right text-xs font-black tabular-nums"
+                        style={{ color: isWinner ? "var(--sg-amber)" : "var(--sg-text-muted)" }}
+                      >
+                        {entry.vote_count}
+                      </span>
+                    </motion.div>
+                  );
+                })}
+              </div>
+            </motion.div>
+          )}
         </motion.div>
       </div>
     );
