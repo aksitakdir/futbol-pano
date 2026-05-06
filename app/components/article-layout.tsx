@@ -325,8 +325,8 @@ export default function ArticleLayout({
                       <a key={v.videoId} href={`https://www.youtube.com/watch?v=${v.videoId}`} target="_blank" rel="noopener noreferrer"
                         className="group flex flex-col overflow-hidden transition hover:-translate-y-0.5"
                         style={{ background: "var(--sg-surface)" }}>
-                        <div className="aspect-video overflow-hidden" style={{ background: "var(--sg-surface-low)" }}>
-                          <img src={v.thumbnail} alt="" className="h-full w-full object-cover transition group-hover:scale-105" />
+                        <div className="relative aspect-video overflow-hidden" style={{ background: "var(--sg-surface-low)" }}>
+                          <Image src={v.thumbnail} alt="" fill className="object-cover transition group-hover:scale-105" sizes="(max-width:640px) 50vw, 33vw" />
                         </div>
                         <div className="p-2.5">
                           <p className="line-clamp-2 text-xs font-medium transition" style={{ color: "var(--sg-text-primary)" }}>{v.title}</p>
@@ -362,8 +362,8 @@ export default function ArticleLayout({
                       <a key={v.videoId} href={`https://www.youtube.com/watch?v=${v.videoId}`} target="_blank" rel="noopener noreferrer"
                         className="group flex flex-col overflow-hidden transition hover:-translate-y-0.5"
                         style={{ background: "var(--sg-surface)" }}>
-                        <div className="aspect-video overflow-hidden" style={{ background: "var(--sg-surface-low)" }}>
-                          <img src={v.thumbnail} alt="" className="h-full w-full object-cover transition group-hover:scale-105" />
+                        <div className="relative aspect-video overflow-hidden" style={{ background: "var(--sg-surface-low)" }}>
+                          <Image src={v.thumbnail} alt="" fill className="object-cover transition group-hover:scale-105" sizes="(max-width:640px) 50vw, 33vw" />
                         </div>
                         <div className="p-2.5">
                           <p className="line-clamp-2 text-xs font-medium" style={{ color: "var(--sg-text-primary)" }}>{v.title}</p>

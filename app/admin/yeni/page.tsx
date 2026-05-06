@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef, Suspense } from "react";
+import Image from "next/image";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { supabase } from "@/lib/supabase";
@@ -335,7 +336,7 @@ function YeniIcerikForm() {
                     />
                   </label>
                   {coverImage && (
-                    <img src={coverImage} alt="" className="h-10 w-16 rounded object-cover border border-slate-700/60" />
+                    <Image src={coverImage} alt="" width={64} height={40} unoptimized className="h-10 w-16 rounded object-cover border border-slate-700/60" />
                   )}
                 </div>
               </div>
