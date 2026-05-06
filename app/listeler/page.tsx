@@ -11,6 +11,7 @@ import { supabase } from "@/lib/supabase";
 
 type SupabaseContent = { id: string; title: string; slug: string; created_at: string; };
 
+const PAGE_SIZE = 9;
 const easeOut = [0.22, 1, 0.36, 1] as [number, number, number, number];
 const stagger = { hidden: {}, visible: { transition: { staggerChildren: 0.08, delayChildren: 0.1 } } };
 const fadeUp = { hidden: { opacity: 0, y: 20 }, visible: { opacity: 1, y: 0, transition: { duration: 0.5, ease: easeOut } } };
@@ -23,11 +24,30 @@ const STATIC_LISTS = [
 
 export default function ListsPage() {
   const [dbLists, setDbLists] = useState<SupabaseContent[]>([]);
+  const [loadingMore, setLoadingMore] = useState(false);
+  const [hasMore, setHasMore] = useState(true);
 
   useEffect(() => {
-    supabase.from("contents").select("id,title,slug,created_at").eq("status", "yayinda").eq("category", "listeler").order("created_at", { ascending: false })
-      .then(({ data }) => { if (data?.length) setDbLists(data); });
+    supabase.from("contents").select("id,title,slug,created_at")
+      .eq("status", "yayinda").eq("category", "listeler").order("created_at", { ascending: false })
+      .range(0, PAGE_SIZE - 1)
+      .then(({ data }) => {
+        const items = data ?? [];
+        setDbLists(items);
+        setHasMore(items.length === PAGE_SIZE);
+      });
   }, []);
+
+  async function handleLoadMore() {
+    setLoadingMore(true);
+    const { data } = await supabase.from("contents").select("id,title,slug,created_at")
+      .eq("status", "yayinda").eq("category", "listeler").order("created_at", { ascending: false })
+      .range(dbLists.length, dbLists.length + PAGE_SIZE - 1);
+    const items = data ?? [];
+    setDbLists(prev => [...prev, ...items]);
+    setHasMore(items.length === PAGE_SIZE);
+    setLoadingMore(false);
+  }
 
   return (
     <main style={{ background: "var(--sg-bg)", color: "var(--sg-text-primary)", minHeight: "100vh" }}>
@@ -88,6 +108,25 @@ export default function ListsPage() {
                   </motion.div>
                 ))}
               </motion.div>
+
+              {hasMore && (
+                <div className="mt-10 flex justify-center">
+                  <button
+                    type="button"
+                    onClick={handleLoadMore}
+                    disabled={loadingMore}
+                    className="flex items-center gap-2 px-8 py-3 text-xs font-black uppercase tracking-widest transition-all hover:brightness-110 disabled:opacity-50"
+                    style={{ background: "var(--sg-surface)", color: "var(--sg-secondary)", border: "1px solid rgba(16,185,129,0.3)", fontFamily: "var(--font-headline)" }}
+                  >
+                    {loadingMore ? (
+                      <>
+                        <span className="h-3 w-3 animate-spin rounded-full border border-t-transparent" style={{ borderColor: "var(--sg-secondary)", borderTopColor: "transparent" }} />
+                        Yükleniyor...
+                      </>
+                    ) : "Daha Fazla Yükle →"}
+                  </button>
+                </div>
+              )}
             </motion.section>
           )}
 

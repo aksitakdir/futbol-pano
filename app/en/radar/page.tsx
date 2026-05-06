@@ -19,6 +19,7 @@ type Content = {
   created_at: string;
 };
 
+const PAGE_SIZE = 9;
 const easeOut = [0.22, 1, 0.36, 1] as [number, number, number, number];
 const stagger = { hidden: {}, visible: { transition: { staggerChildren: 0.08 } } };
 const fadeUp = { hidden: { opacity: 0, y: 20 }, visible: { opacity: 1, y: 0, transition: { duration: 0.5, ease: easeOut } } };
@@ -27,6 +28,8 @@ const ACCENTS = ["var(--sg-primary)", "var(--sg-secondary)", "var(--sg-tertiary)
 export default function EnRadarPage() {
   const [articles, setArticles] = useState<Content[]>([]);
   const [loading, setLoading] = useState(true);
+  const [loadingMore, setLoadingMore] = useState(false);
+  const [hasMore, setHasMore] = useState(true);
 
   useEffect(() => {
     supabase
@@ -35,11 +38,29 @@ export default function EnRadarPage() {
       .eq("status", "yayinda")
       .eq("category", "radar")
       .order("created_at", { ascending: false })
+      .range(0, PAGE_SIZE - 1)
       .then(({ data }) => {
-        setArticles(data ?? []);
+        const items = data ?? [];
+        setArticles(items);
+        setHasMore(items.length === PAGE_SIZE);
         setLoading(false);
       });
   }, []);
+
+  async function handleLoadMore() {
+    setLoadingMore(true);
+    const { data } = await supabase
+      .from("contents")
+      .select("id,title,title_en,slug,content,content_en,created_at")
+      .eq("status", "yayinda")
+      .eq("category", "radar")
+      .order("created_at", { ascending: false })
+      .range(articles.length, articles.length + PAGE_SIZE - 1);
+    const items = data ?? [];
+    setArticles(prev => [...prev, ...items]);
+    setHasMore(items.length === PAGE_SIZE);
+    setLoadingMore(false);
+  }
 
   return (
     <main style={{ background: "var(--sg-bg)", color: "var(--sg-text-primary)", minHeight: "100vh" }}>
@@ -74,6 +95,7 @@ export default function EnRadarPage() {
               />
             </div>
           ) : (
+            <>
             <motion.div className="grid gap-4 md:grid-cols-2" variants={stagger} initial="hidden" animate="visible">
               {articles.map((article, index) => {
                 const accent = ACCENTS[index % ACCENTS.length];
@@ -124,6 +146,26 @@ export default function EnRadarPage() {
                 );
               })}
             </motion.div>
+
+            {hasMore && (
+              <div className="mt-12 flex justify-center">
+                <button
+                  type="button"
+                  onClick={handleLoadMore}
+                  disabled={loadingMore}
+                  className="flex items-center gap-2 px-8 py-3 text-xs font-black uppercase tracking-widest transition-all hover:brightness-110 disabled:opacity-50"
+                  style={{ background: "var(--sg-surface)", color: "var(--sg-primary)", border: "1px solid rgba(59,130,246,0.3)", fontFamily: "var(--font-headline)" }}
+                >
+                  {loadingMore ? (
+                    <>
+                      <span className="h-3 w-3 animate-spin rounded-full border border-t-transparent" style={{ borderColor: "var(--sg-primary)", borderTopColor: "transparent" }} />
+                      Loading...
+                    </>
+                  ) : "Load More →"}
+                </button>
+              </div>
+            )}
+            </>
           )}
         </div>
       </motion.div>
