@@ -2,29 +2,50 @@ import { NextResponse } from "next/server";
 
 export type SuggestTitleMode = "trend" | "general" | "historical" | "chronological";
 
-const MODE_SYSTEM_ADDITION: Record<SuggestTitleMode, string> = {
-  trend:
-    "Mod: Güncel & Trend. Web araması yapmadan, genel futbol bilginle güncel gündem ve trendlere uygun, tıklanmaya teşvik eden başlıklar öner.",
-  general:
-    "Mod: Genel Güncel. 2025-26 sezonu futbol gündeminden, taraftarın merak edeceği güncel konulara odaklan.",
-  historical:
-    "Mod: Tarihsel. Futbol tarihinden evergreen, yıllar sonra da ilgi görecek, hiç eskimeyen konulu başlıklar öner.",
-  chronological:
-    "Mod: Kronolojik. Bir oyuncunun veya kulübün kariyer/tarih zaman çizelgesi formatına uygun başlıklar öner (ör. evreler, dönemler, kırılma anları).",
-};
+function buildSuggestSystem(): string {
+  const today = new Date().toISOString().split("T")[0];
+  return `You are a football content editor for Scout Gamer, a global football analysis platform.
+Today's date: ${today}. Current football season: 2025-26.
 
-const SUGGEST_SYSTEM = `Sen bir Türkçe futbol içerik editörüsün. Kullanıcı bir keyword veya konu verir; sen 8 adet makale başlığı önerirsin.
+The user provides a keyword or topic; you suggest 8 article titles.
 
-Kurallar:
-- Başlıklar Türkçe, net ve SEO dostu olsun.
-- Kategori her biri için tam olarak şunlardan biri: "radar", "taktik-lab", "listeler" (küçük harf, tire ile).
-- seo_value: "Yüksek", "Orta" veya "Düşük" (Türkçe, tam bu yazım).
-- slug: URL dostu, küçük harf, Türkçe karakter yok, tire ile kelimeler (ör. genc-yetenek-radar-notu).
+Rules:
+- Titles must be in ENGLISH. Scout Gamer is an English-first global platform.
+- Titles must be decisive statements or strong claims — never vague or generic.
+- Do NOT include specific years or seasons in the title (e.g. avoid "2024", "2025-26").
+- Do NOT force Turkey, Süper Lig, or Turkish club references unless the keyword explicitly requires it.
+- Focus on global football: La Liga, Premier League, Bundesliga, Serie A, Champions League, etc.
+- Category must be exactly one of: "radar", "taktik-lab", "listeler" (lowercase, hyphenated).
+- seo_value: "Yüksek", "Orta", or "Düşük" (assess based on search intent and topic popularity).
+- slug: URL-friendly, lowercase, no special characters, hyphen-separated (e.g. lamine-yamal-radar).
 
-Yanıtın SADECE geçerli bir JSON dizisi olsun, başka metin veya markdown kod bloğu kullanma:
+Respond with ONLY a valid JSON array, no other text or markdown:
 [{"title":"...","category":"radar","seo_value":"Yüksek","slug":"..."}, ...]
 
-Tam 8 öğe döndür.`;
+Return exactly 8 items.`;
+}
+
+const MODE_SYSTEM_ADDITION: Record<SuggestTitleMode, string> = {
+  trend:
+    "Mode: Trending & Current. Use the trending topics provided (if any) to suggest timely, click-worthy titles based on what is happening in football right now.",
+  general:
+    "Mode: General Current. Focus on the 2025-26 season football agenda — topics fans are curious about today.",
+  historical:
+    "Mode: Historical. Suggest evergreen topics from football history that will never go stale.",
+  chronological:
+    "Mode: Chronological. Suggest titles suited to a career or club timeline format (phases, eras, turning points).",
+};
+
+async function fetchTrendTitles(baseUrl: string): Promise<string[]> {
+  try {
+    const res = await fetch(`${baseUrl}/api/trends`, { cache: "no-store" });
+    if (!res.ok) return [];
+    const data = await res.json() as { trends?: Array<{ title: string }> };
+    return (data.trends ?? []).map((t) => t.title).slice(0, 5);
+  } catch {
+    return [];
+  }
+}
 
 function extractJsonArray(raw: string): string | null {
   let text = raw
@@ -60,10 +81,16 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "keyword gerekli" }, { status: 400 });
   }
 
+  const origin = new URL(request.url).origin;
+  const trendTitles = mode === "trend" ? await fetchTrendTitles(origin) : [];
+  const trendContext = trendTitles.length > 0
+    ? `\n\nCurrently trending football topics (use these as angle inspiration):\n${trendTitles.map((t) => `- ${t}`).join("\n")}\n`
+    : "";
+
   const userMessage =
-    `${MODE_SYSTEM_ADDITION[mode]}\n\n` +
-    `Kullanıcı konu / keyword: "${keyword}"\n\n` +
-    `Bu konuya uygun tam 8 başlık üret.`;
+    `${MODE_SYSTEM_ADDITION[mode]}${trendContext}\n\n` +
+    `User keyword / topic: "${keyword}"\n\n` +
+    `Suggest exactly 8 titles on this topic.`;
 
   const res = await fetch("https://api.anthropic.com/v1/messages", {
     method: "POST",
@@ -75,7 +102,7 @@ export async function POST(request: Request) {
     body: JSON.stringify({
       model: "claude-haiku-4-5-20251001",
       max_tokens: 2048,
-      system: SUGGEST_SYSTEM,
+      system: buildSuggestSystem(),
       messages: [{ role: "user", content: userMessage }],
     }),
   });

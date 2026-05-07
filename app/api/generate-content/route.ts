@@ -69,56 +69,66 @@ type Category = (typeof CATEGORIES)[number];
 
 const FALLBACK_TOPICS: Record<Category, string[]> = {
   radar: [
-    "Avrupa liglerinde öne çıkan genç oyuncular",
-    "Güncel transfer söylentileri",
-    "Şampiyonlar Ligi'nde dikkat çeken performanslar",
-    "Süper Lig'in yükselen yıldızları",
-    "Brezilya Série A'nın Avrupa'ya ihraç edeceği genç oyuncular",
-    "Arjantin'in keşfedilmemiş yetenekleri",
+    "Breakout wingers in European football this season",
+    "Champions League standout performers",
+    "Young midfielders redefining the box-to-box role",
+    "Strikers leading the xG charts in top-five leagues",
+    "South American talents making their mark in Europe",
+    "Underrated full-backs in the Premier League",
   ],
   "taktik-lab": [
-    "Modern futbolda pozisyon devrimleri",
-    "Yüksek pressing sistemlerinin anatomisi",
-    "Oyun kurucu stoper tipolojisi",
-    "False 9 ve alternatif forvet rolleri",
-    "Brezilya futbolunun taktiksel DNA'sı: Jogo Bonito'dan modern pressing'e",
-    "Arjantin'in yetiştirdiği Box-to-Box oyuncular",
+    "How modern football is evolving beyond formations",
+    "The anatomy of a high press",
+    "The ball-playing centre-back and why defences are changing",
+    "False nine vs complete forward: the striker debate",
+    "Why inverted wingers dominate modern attacking play",
+    "How gegenpressing changed the game",
   ],
   listeler: [
-    "En umut verici U21 oyuncuları",
-    "Son dönemin en iyi transferleri",
-    "En yüksek xG üretimi yapan forvetler",
-    "En iyi pressing takımları sıralaması",
-    "Latin Amerika'nın en değerli 10 genç oyuncusu",
-    "Güney Amerika'dan Avrupa'ya en iyi transferler",
+    "The best U21 players in European football right now",
+    "Top transfers of the current season ranked",
+    "Forwards with the highest xG per 90 in the top five leagues",
+    "The best pressing teams in Europe this season",
+    "Most improved players in the Champions League",
+    "The next generation: talents to watch in the next 12 months",
   ],
 };
 
 /** Tekil üretim isteğinde mod bağlamı (web araması yok) */
 const SINGLE_MODE_HINT: Record<string, string> = {
-  trend: "İçerik güncel ve trend odaklı olsun; taraftarın bugün merak ettiği tonda yaz.",
-  general: "2025-26 sezon gündemi ve güncel futbol dünyasıyla uyumlu olsun.",
-  historical: "Evergreen, futbol tarihi ve kalıcı değer odaklı; zamanla eskimeyen bir metin olsun.",
+  trend: "Content should be timely and trend-driven — write in the tone of what football fans are talking about today.",
+  general: "Aligned with the 2025-26 season agenda and current global football landscape.",
+  historical: "Evergreen, football-history focused; content that will not age.",
   chronological:
-    "Kronolojik yapı kullan: bölümler oyuncu veya kulübün kariyer/tarih evrelerine göre ilerlesin (zaman çizelgesi hissi).",
+    "Use a chronological structure: sections progress through the player's or club's career phases or eras (timeline feel).",
 };
 
-const SYSTEM_PROMPT = `Sen bir futbol içerik yazarısın. Kısa, dikkat çekici, SEO odaklı başlıklar kullan. Başlıkta günlük konuşma dilindeki futbol terimlerini ve popüler arama kelimelerini tercih et. Teknik jargonu minimumda tut. Güncel futbol dünyasından yaz. Başlıkta tarih, yıl veya sezon ibaresi kullanma. Örnek başlık formatları: "X Takımın Yeni Yıldızı: Y Kimdir?", "Z Transferi Neden Önemli?", "Sürpriz İsim: W". HTML formatında içerik yaz, markdown kullanma.
+function buildSystemPrompt(): string {
+  const today = new Date().toISOString().split("T")[0];
+  return `You are a football content writer for Scout Gamer, a global English-first football analysis platform.
+Today's date: ${today}. Current football season: 2025-26.
 
-Yanıtını SADECE şu JSON formatında ver, başka hiçbir şey yazma:
+Write short, compelling, SEO-optimised titles. Prefer common football search terms. Minimise obscure jargon.
+Write about global football. Do NOT force Turkey, Süper Lig, or Turkish club references unless the topic explicitly requires it.
+Do NOT include specific years or seasons in the title.
+Write content in HTML format — use <h2>, <h3>, <p>, <ul>, <li>, <strong> tags. No markdown.
+
+Respond with ONLY this JSON format, nothing else:
 {
-  "title": "kısa ve dikkat çekici başlık (yıl veya sezon bilgisi olmadan)",
-  "slug": "url-dostu-slug",
-  "category": "radar veya taktik-lab veya listeler",
-  "content": "HTML formatında içerik. <h2>, <h3>, <p>, <ul>, <li>, <strong> taglarını kullan. Markdown kullanma. En az 400 kelime yaz."
+  "title": "short compelling English title (no year or season)",
+  "slug": "url-friendly-slug",
+  "category": "radar or taktik-lab or listeler",
+  "content": "HTML content. Use <h2>, <h3>, <p>, <ul>, <li>, <strong>. No markdown. Minimum 400 words.",
+  "players": ["Player Name 1", "Player Name 2"]
 }
 
-Kategori rehberi — bu kurallara KESİNLİKLE uy:
-- radar: güncel oyuncu analizi, transfer söylentisi, haftalık performans değerlendirmesi. "players" alanı: içerikte öne çıkan 1 oyuncunun adı.
-- taktik-lab: modern pozisyon arketipleri, taktiksel analiz, oyun modeli incelemesi. "players" alanı: örnek olarak gösterilen oyuncular (max 3).
-- listeler: sıralama ve karşılaştırma listeleri, en iyi/en kötü/en umut verici gibi formatlar. "players" alanı: listede geçen TÜM oyuncuların tam adları (max 10). Kategori isteği "listeler" ise JSON'daki "category" alanı MUTLAKA "listeler" olmalı.
+Category guide — follow strictly:
+- radar: current player analysis, transfer news, weekly performance breakdown. "players": the 1 featured player's name.
+- taktik-lab: modern positional archetypes, tactical analysis, system breakdown. "players": example players referenced (max 3).
+- listeler: ranking and comparison lists. "players": ALL player names in the list (max 10). If category requested is "listeler", JSON "category" field MUST be "listeler".
 
-"players" alanı her yanıtta ZORUNLUDUR. Boş bırakma.`;
+"players" field is REQUIRED in every response. Do not leave it empty.`;
+}
 
 function slugify(text: string): string {
   return text
@@ -218,7 +228,7 @@ async function generateWithClaude(
   const body: Record<string, unknown> = {
     model: "claude-haiku-4-5-20251001",
     max_tokens: 4096,
-    system: SYSTEM_PROMPT,
+    system: buildSystemPrompt(),
     messages: [{ role: "user", content: userMessage }],
   };
   if (useWebSearch) {

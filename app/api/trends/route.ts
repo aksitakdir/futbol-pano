@@ -7,19 +7,19 @@ export type TrendItem = {
 };
 
 const FOOTBALL_KEYWORDS = [
-  "futbol", "transfer", "golcü", "defans", "orta saha", "scout",
-  "liga", "şampiyonlar", "uefa", "fifa", "süper lig",
-  "real madrid", "barcelona", "liverpool", "manchester",
-  "galatasaray", "fenerbahçe", "beşiktaş", "trabzonspor",
-  "chelsea", "arsenal", "bayern", "juventus", "inter", "milan",
-  "psg", "dortmund", "atletico", "tottenham", "napoli", "benfica",
-  "porto", "ajax", "sporting", "celtic", "rangers",
-  "messi", "ronaldo", "mbappé", "mbappe", "haaland", "vinicius",
-  "premier league", "la liga", "serie a", "bundesliga", "ligue 1",
-  "champions league", "europa league", "world cup", "euro 2026",
-  "gol", "maç", "derbi", "penaltı", "kırmızı kart", "hakem",
-  "teknik direktör", "antrenör", "forvet", "kaleci", "stoper",
-  "kanat", "bek", "şampiyon", "kupa", "lig", "play-off",
+  "football", "soccer", "transfer", "scout", "league", "champions",
+  "uefa", "fifa", "premier league", "la liga", "serie a", "bundesliga", "ligue 1",
+  "champions league", "europa league", "conference league", "world cup", "euro 2026",
+  "real madrid", "barcelona", "liverpool", "manchester city", "manchester united",
+  "chelsea", "arsenal", "tottenham", "newcastle", "aston villa",
+  "bayern", "dortmund", "juventus", "inter", "milan", "napoli", "roma",
+  "psg", "atletico", "benfica", "porto", "ajax", "sporting",
+  "messi", "ronaldo", "mbappé", "mbappe", "haaland", "vinicius", "yamal",
+  "bellingham", "salah", "de bruyne", "pedri", "rodri", "musiala",
+  "goal", "assist", "xg", "transfer", "signing", "scouting", "tactics",
+  "winger", "striker", "midfielder", "defender", "goalkeeper",
+  "pressing", "formation", "manager", "coach", "derby", "final",
+  "futbol", "transfer", "şampiyonlar", "maç",
 ];
 
 function stripCdata(text: string): string {
