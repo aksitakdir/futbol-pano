@@ -367,7 +367,7 @@ export default function HomeTR() {
                         boxDecorationBreak: "clone",
                         WebkitBoxDecorationBreak: "clone",
                       }}>
-                      {item.slide.title.length > 80 ? item.slide.title.slice(0, 80) + "…" : item.slide.title}
+                      {item.slide.title}
                     </h1>
                     <p className="text-base md:text-lg max-w-2xl mb-8 hidden sm:block line-clamp-3"
                       style={{ color: "var(--sg-text-secondary)", fontFamily: "var(--font-body)" }}>

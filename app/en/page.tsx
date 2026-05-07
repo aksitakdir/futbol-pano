@@ -319,10 +319,7 @@ export default function EnHome() {
                         background: "linear-gradient(135deg, var(--sg-primary), var(--sg-secondary))",
                         WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", backgroundClip: "text",
                       }}>
-                      {(() => {
-                        const t = item.slide.title_en || item.slide.title;
-                        return t.length > 80 ? t.slice(0, 80) + "…" : t;
-                      })()}
+                      {item.slide.title_en || item.slide.title}
                     </h1>
                     <p className="text-base md:text-lg max-w-2xl mb-8 hidden sm:block line-clamp-3"
                       style={{ color: "var(--sg-text-secondary)" }}>
