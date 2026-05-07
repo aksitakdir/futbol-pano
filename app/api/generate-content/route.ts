@@ -385,9 +385,11 @@ export async function POST(request: Request) {
 
       const row = {
         title: finalTitle,
+        title_en: finalTitle,
         slug: finalSlug,
         category: finalCategory,
-        content: generated.content,
+        content: "",
+        content_en: generated.content,
         status: "bekliyor" as const,
         players_json:
           generated.category === "listeler" && generated.players?.length
@@ -474,9 +476,11 @@ export async function POST(request: Request) {
 
       const row = {
         title: finalTitle,
+        title_en: finalTitle,
         slug: finalSlug,
         category: finalCategory,
-        content: generated.content,
+        content: "",
+        content_en: generated.content,
         status: "bekliyor" as const,
         players_json:
           generated.category === "listeler" && generated.players?.length
@@ -602,9 +606,11 @@ export async function POST(request: Request) {
 
     const { error: dbError } = await supabase.from("contents").insert({
       title: generated.title,
+      title_en: generated.title,
       slug: generated.slug,
       category: generated.category,
-      content: generated.content,
+      content: "",
+      content_en: generated.content,
       status: "bekliyor",
       players_json:
         generated.category === "listeler" && generated.players?.length

@@ -327,7 +327,7 @@ export default function DuzenlePage() {
               </button>
               <button type="button" onClick={() => setActiveLang("en")}
                 className={`px-4 py-1.5 text-xs font-bold uppercase tracking-wider transition ${activeLang === "en" ? "bg-sky-500 text-slate-950" : "border border-slate-700 text-slate-400 hover:text-slate-200"}`}>
-                🇬🇧 English
+                🇬🇧 EN
               </button>
             </div>
             <label className="mb-1.5 block text-xs font-semibold text-slate-300">Başlık</label>
