@@ -119,6 +119,7 @@ export default function EnTaktikLabDetailClient({ slug }: { slug: string }) {
       backLabel="Back to Tactics Lab"
       youtubeId={article.youtube_id}
       coverImage={article.cover_image}
+      newsQuery={article.news_query}
       youtubeQuery1={article.youtube_query_1}
       youtubeQuery2={article.youtube_query_2}
       playerName={article.player_name}

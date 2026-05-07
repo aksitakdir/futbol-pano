@@ -109,7 +109,7 @@ export default function ArticleLayoutEn({
   youtubeQuery2,
   newsQuery,
   playerName,
-  showNewsSection = false,
+  showNewsSection = true,
   isPending = false,
   excerptContent,
   children,
