@@ -182,9 +182,9 @@ export default function RichTextEditor({ value, onChange, placeholder = "İçeri
     if (!editor) return;
     const fromStore = value?.trim() || "";
     const current = editor.getHTML();
-    const empty = !current || current === "<p></p>" || current.trim() === "<p></p>";
-    if (fromStore && empty) {
-      editor.commands.setContent(fromStore, { emitUpdate: false });
+    const normalizedCurrent = current === "<p></p>" ? "" : current.trim();
+    if (fromStore !== normalizedCurrent) {
+      editor.commands.setContent(fromStore || "<p></p>", { emitUpdate: false });
     }
   }, [value, editor]);
 

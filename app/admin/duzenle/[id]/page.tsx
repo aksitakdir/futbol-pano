@@ -20,10 +20,11 @@ const CATEGORIES = [
   { value: "taktik-lab", label: "Taktik Lab" },
 ];
 
-function categoryPublicPath(cat: string): string {
-  if (cat === "radar") return "/radar";
-  if (cat === "taktik-lab") return "/taktik-lab";
-  return "/listeler";
+function categoryPublicPath(cat: string, lang: "tr" | "en" = "tr"): string {
+  const prefix = lang === "en" ? "/en" : "";
+  if (cat === "radar") return `${prefix}/radar`;
+  if (cat === "taktik-lab") return `${prefix}/taktik-lab`;
+  return `${prefix}/listeler`;
 }
 
 const SLUG_PATTERN = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
@@ -352,7 +353,7 @@ export default function DuzenlePage() {
             <p className="mt-1.5 text-[11px] leading-relaxed text-slate-500">
               Yayında sayfa adresi:{" "}
               <span className="font-mono text-slate-400">
-                {categoryPublicPath(category)}/{slug.trim() || "…"}
+                {categoryPublicPath(category, activeLang)}/{slug.trim() || "…"}
               </span>
             </p>
           </div>
