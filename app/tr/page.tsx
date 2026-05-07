@@ -369,7 +369,7 @@ export default function HomeTR() {
                       }}>
                       {item.slide.title.length > 80 ? item.slide.title.slice(0, 80) + "…" : item.slide.title}
                     </h1>
-                    <p className="text-base md:text-lg max-w-2xl mb-8 hidden sm:block"
+                    <p className="text-base md:text-lg max-w-2xl mb-8 hidden sm:block line-clamp-3"
                       style={{ color: "var(--sg-text-secondary)", fontFamily: "var(--font-body)" }}>
                       {(() => {
                         const clean = item.slide.content
@@ -383,7 +383,8 @@ export default function HomeTR() {
                           ? clean.slice(item.slide.title.length).trim()
                           : clean;
                         const firstSentence = cleanStart.match(/^[^.!?]{20,}[.!?]/)?.[0];
-                        return firstSentence ? firstSentence.trim() : cleanStart.slice(0, 160) + "…";
+                        const text = firstSentence ? firstSentence.trim() : cleanStart.slice(0, 140);
+                        return text.length > 140 ? text.slice(0, 140) + "…" : text;
                       })()}
                     </p>
                     <Link href={`${categoryPath(item.slide.category)}/${item.slide.slug}`}

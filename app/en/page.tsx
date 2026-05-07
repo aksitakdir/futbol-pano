@@ -324,7 +324,7 @@ export default function EnHome() {
                         return t.length > 80 ? t.slice(0, 80) + "…" : t;
                       })()}
                     </h1>
-                    <p className="text-base md:text-lg max-w-2xl mb-8 hidden sm:block"
+                    <p className="text-base md:text-lg max-w-2xl mb-8 hidden sm:block line-clamp-3"
                       style={{ color: "var(--sg-text-secondary)" }}>
                       {(() => {
                         const raw = item.slide.content_en || item.slide.content;
@@ -332,7 +332,8 @@ export default function EnHome() {
                         const titleNorm = (item.slide.title_en || item.slide.title).replace(/\s+/g, " ").trim().toLowerCase();
                         const cleanStart = clean.toLowerCase().startsWith(titleNorm) ? clean.slice((item.slide.title_en || item.slide.title).length).trim() : clean;
                         const firstSentence = cleanStart.match(/^[^.!?]{20,}[.!?]/)?.[0];
-                        return firstSentence ? firstSentence.trim() : cleanStart.slice(0, 160) + "…";
+                        const text = firstSentence ? firstSentence.trim() : cleanStart.slice(0, 140);
+                        return text.length > 140 ? text.slice(0, 140) + "…" : text;
                       })()}
                     </p>
                     <Link href={`${categoryPath(item.slide.category)}/${item.slide.slug}`}
