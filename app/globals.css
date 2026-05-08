@@ -1,31 +1,87 @@
 @import "tailwindcss";
 
+/* ─────────────────────────────────────────────────────────────────
+   Scout Gamer — V2 Design System
+   oklch-based token system with dark/light theme support
+───────────────────────────────────────────────────────────────── */
+
 :root {
-  --background: #0a1323;
-  --foreground: #dae2fd;
+  /* ── Ink scale (dark surfaces) ── */
+  --ink-900: oklch(0.13 0.012 240);
+  --ink-800: oklch(0.18 0.015 240);
+  --ink-700: oklch(0.24 0.018 240);
+  --ink-600: oklch(0.32 0.018 240);
+  --ink-500: oklch(0.45 0.02 240);
+  --ink-400: oklch(0.62 0.02 240);
+  --ink-300: oklch(0.78 0.015 240);
+  --ink-200: oklch(0.88 0.01 240);
+  --ink-100: oklch(0.95 0.008 240);
+  --paper:   oklch(0.97 0.008 80);
 
-  /* Scout Gamer — Kinetic Obsidian renk sistemi */
-  --sg-bg:           #0a1323;
-  --sg-surface-low:  #131c2b;
-  --sg-surface:      #17202f;
-  --sg-surface-high: #1e2a3a;
-  --sg-surface-top:  #2c3546;
-  --sg-border:       rgba(186, 202, 194, 0.08);
+  /* ── Accent palette (uniform chroma/lightness) ── */
+  --emerald: oklch(0.78 0.16 165);
+  --cyan:    oklch(0.82 0.13 200);
+  --sky:     oklch(0.78 0.13 235);
+  --rose:    oklch(0.74 0.16 18);
+  --amber:   oklch(0.82 0.14 75);
+  --lime:    oklch(0.86 0.18 130);
 
-  --sg-primary:      #46f1c5;
-  --sg-primary-dim:  #28dfb5;
-  --sg-primary-dark: #00d4aa;
-  --sg-secondary:    #5de6ff;
-  --sg-tertiary:     #a78bfa;
-  --sg-amber:        #f9bd22;
-  --sg-rose:         #fb7185;
+  /* ── Stat tier colors ── */
+  --tier-elite: var(--emerald);
+  --tier-good:  var(--cyan);
+  --tier-base:  oklch(0.6 0.04 235);
 
-  --sg-text-primary:   #dae2fd;
-  --sg-text-secondary: #bacac2;
-  --sg-text-muted:     #6b7a8d;
+  /* ── Live theme accent (overridable per-page) ── */
+  --accent:   var(--emerald);
+  --accent-2: var(--cyan);
+  --accent-3: var(--sky);
 
-  --font-headline: var(--font-space-grotesk), 'Trebuchet MS', sans-serif;
-  --font-body:     var(--font-inter-tight), ui-sans-serif, system-ui, sans-serif;
+  /* ── Semantic surface tokens (dark default) ── */
+  --sg-bg:           var(--ink-900);
+  --sg-surface-low:  var(--ink-800);
+  --sg-surface:      oklch(0.20 0.016 240);
+  --sg-surface-high: var(--ink-700);
+  --sg-surface-top:  var(--ink-600);
+  --sg-border:       oklch(0.24 0.018 240 / 0.5);
+
+  /* ── Semantic color aliases (backward compat) ── */
+  --sg-primary:      var(--emerald);
+  --sg-primary-dim:  oklch(0.70 0.14 165);
+  --sg-primary-dark: oklch(0.65 0.15 165);
+  --sg-secondary:    var(--cyan);
+  --sg-tertiary:     var(--sky);
+  --sg-amber:        var(--amber);
+  --sg-rose:         var(--rose);
+
+  /* ── Text tokens ── */
+  --sg-text-primary:   var(--ink-100);
+  --sg-text-secondary: var(--ink-200);
+  --sg-text-muted:     var(--ink-400);
+
+  /* ── Typography ── */
+  --font-display:  var(--font-space-grotesk), 'Space Grotesk', ui-sans-serif, system-ui;
+  --font-headline: var(--font-space-grotesk), 'Space Grotesk', ui-sans-serif, system-ui;
+  --font-body:     var(--font-inter-tight), 'Inter Tight', ui-sans-serif, system-ui;
+  --font-mono-stack: var(--font-ibm-plex-mono), 'IBM Plex Mono', ui-monospace, monospace;
+
+  /* Legacy alias */
+  --background: var(--ink-900);
+  --foreground: var(--ink-100);
+}
+
+/* ── Light theme ── */
+[data-theme="light"] {
+  --sg-bg:           var(--paper);
+  --sg-surface-low:  oklch(0.93 0.008 80);
+  --sg-surface:      oklch(0.90 0.008 80);
+  --sg-surface-high: oklch(0.86 0.01 80);
+  --sg-surface-top:  oklch(0.80 0.012 80);
+  --sg-border:       oklch(0.80 0.01 240 / 0.4);
+  --sg-text-primary:   var(--ink-800);
+  --sg-text-secondary: var(--ink-700);
+  --sg-text-muted:     var(--ink-500);
+  --background: var(--paper);
+  --foreground: var(--ink-800);
 }
 
 @theme inline {
@@ -35,48 +91,159 @@
   --font-mono: var(--font-ibm-plex-mono), ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
 }
 
+/* ─── Base ─────────────────────────────────────────────────────── */
+* { box-sizing: border-box; }
+
 body {
   background: var(--sg-bg);
   color: var(--sg-text-primary);
   font-family: var(--font-body);
-  font-language-override: "ENG";
+  font-feature-settings: "ss01", "cv11";
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+  transition: background 0.2s ease, color 0.2s ease;
 }
 
-/* Başlıklar Space Grotesk ile */
 h1, h2, h3, h4, h5, h6 {
   font-family: var(--font-headline);
 }
 
-/* Neon glow yardımcı class */
-.sg-glow-primary {
-  text-shadow: 0 0 12px rgba(70, 241, 197, 0.5);
-}
-.sg-glow-secondary {
-  text-shadow: 0 0 12px rgba(93, 230, 255, 0.5);
+a { color: inherit; text-decoration: none; }
+button { font-family: inherit; cursor: pointer; }
+
+/* ─── Typography helpers ────────────────────────────────────────── */
+.display  { font-family: var(--font-display);   letter-spacing: -0.03em; }
+.mono     { font-family: var(--font-mono-stack); font-feature-settings: "zero"; }
+.eyebrow  {
+  font-family: var(--font-mono-stack);
+  font-size: 11px; letter-spacing: 0.18em;
+  text-transform: uppercase; color: var(--ink-400);
 }
 
-/* Ghost border — sınır yerine ton farkı kullan, zorunlu durum için */
-.sg-ghost-border {
-  border: 1px solid rgba(186, 202, 194, 0.08);
+/* ─── Gradient text ─────────────────────────────────────────────── */
+.grad-text {
+  background: linear-gradient(95deg, var(--accent) 0%, var(--accent-2) 50%, var(--accent-3) 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
 }
 
-/* Glassmorphism panel */
-.sg-glass {
-  background: rgba(23, 32, 47, 0.6);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
+/* ─── Buttons ───────────────────────────────────────────────────── */
+.btn {
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 10px 16px; border-radius: 999px;
+  font-family: var(--font-mono-stack); font-size: 12px;
+  letter-spacing: 0.1em; text-transform: uppercase;
+  background: transparent;
+  border: 1px solid var(--sg-surface-top); color: var(--sg-text-primary);
+  transition: all 0.15s ease;
+}
+.btn:hover { border-color: var(--accent); color: var(--accent); }
+
+.btn-solid {
+  background: var(--accent); color: var(--ink-900);
+  border-color: var(--accent); font-weight: 600;
+}
+.btn-solid:hover { background: transparent; color: var(--accent); }
+
+/* ─── Chips ─────────────────────────────────────────────────────── */
+.chip {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 4px 10px; border-radius: 999px;
+  font-family: var(--font-mono-stack); font-size: 10px;
+  letter-spacing: 0.12em; text-transform: uppercase;
+  border: 1px solid var(--sg-surface-top); color: var(--sg-text-secondary);
+  background: oklch(1 0 0 / 0.02);
+}
+.chip.solid {
+  background: var(--accent); color: var(--ink-900);
+  border-color: var(--accent); font-weight: 600;
 }
 
-/* Mobil tam ekran menü */
+/* ─── Cards & Lift ──────────────────────────────────────────────── */
+.lift { transition: transform 0.25s cubic-bezier(.2,.7,.2,1), border-color 0.15s; }
+.lift:hover { transform: translateY(-3px); }
+
+/* ─── Underline link ────────────────────────────────────────────── */
+.u-link { position: relative; }
+.u-link::after {
+  content: ""; position: absolute; left: 0; right: 0; bottom: -3px;
+  height: 1px; background: var(--accent);
+  transform: scaleX(0); transform-origin: left;
+  transition: transform 0.25s ease;
+}
+.u-link:hover::after { transform: scaleX(1); }
+
+/* ─── Category accent rule ──────────────────────────────────────── */
+.cat-rule { height: 2px; background: var(--accent); }
+
+/* ─── Grain texture overlay ─────────────────────────────────────── */
+.grain::before {
+  content: "";
+  position: absolute; inset: 0;
+  pointer-events: none; opacity: 0.06;
+  mix-blend-mode: overlay;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+}
+
+/* ─── Striped placeholder ───────────────────────────────────────── */
+.stripe-placeholder {
+  background-image: repeating-linear-gradient(
+    -45deg,
+    var(--ink-700) 0 8px,
+    var(--ink-800) 8px 16px
+  );
+}
+
+/* ─── Animations ────────────────────────────────────────────────── */
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.page-enter { animation: fadeUp 0.35s ease both; }
+
+@keyframes slideFade {
+  0%   { opacity: 0; transform: scale(1.04); }
+  10%  { opacity: 1; transform: scale(1.02); }
+  90%  { opacity: 1; transform: scale(1.0); }
+  100% { opacity: 0; transform: scale(1.0); }
+}
+
+@keyframes statFill {
+  from { width: 0%; }
+}
+.stat-bar-fill { animation: statFill 0.9s cubic-bezier(.2,.7,.2,1) both; }
+
+@keyframes confettiFall {
+  0%   { transform: translateY(-20px) rotate(0deg); opacity: 1; }
+  100% { transform: translateY(420px) rotate(720deg); opacity: 0; }
+}
+.confetti-dot { position: absolute; width: 8px; height: 12px; animation: confettiFall 2s ease-in forwards; }
+
+/* ─── Mobile nav ────────────────────────────────────────────────── */
 @keyframes mobile-nav-overlay-in {
   from { transform: translateY(-100%); }
   to   { transform: translateY(0); }
 }
-
 .mobile-nav-fullscreen {
   animation: mobile-nav-overlay-in 0.2s ease-out forwards;
 }
 
-/* Scrollbar gizle */
+/* ─── Scrollbars ────────────────────────────────────────────────── */
 .scrollbar-none::-webkit-scrollbar { display: none; }
 .scrollbar-none { -ms-overflow-style: none; scrollbar-width: none; }
+
+.h-scroll { overflow-x: auto; scrollbar-width: thin; }
+.h-scroll::-webkit-scrollbar { height: 8px; }
+.h-scroll::-webkit-scrollbar-thumb { background: var(--sg-surface-top); border-radius: 4px; }
+.h-scroll::-webkit-scrollbar-track { background: transparent; }
+
+/* ─── Legacy helpers (backward compat) ─────────────────────────── */
+.sg-ghost-border { border: 1px solid var(--sg-border); }
+.sg-glass {
+  background: oklch(0.18 0.015 240 / 0.6);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+}
+.sg-glow-primary   { text-shadow: 0 0 12px oklch(0.78 0.16 165 / 0.5); }
+.sg-glow-secondary { text-shadow: 0 0 12px oklch(0.82 0.13 200 / 0.5); }

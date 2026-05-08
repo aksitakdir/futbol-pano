@@ -5,7 +5,6 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 
 type Props = { maxWidth?: string; };
-
 type PolicyKey = "gizlilik" | "kullanim" | "iletisim";
 
 const POLICIES: Record<PolicyKey, { title: string; content: string }> = {
@@ -119,126 +118,159 @@ We usually reply within 1–2 business days.`,
   },
 };
 
+const NAV_SECTIONS = (isEn: boolean) => [
+  {
+    heading: isEn ? "SECTIONS" : "BÖLÜMLER",
+    links: isEn
+      ? [
+          { href: "/en/listeler", label: "LISTS" },
+          { href: "/en/radar", label: "RADAR" },
+          { href: "/en/taktik-lab", label: "TACTICS LAB" },
+          { href: "/en/arena", label: "ARENA" },
+        ]
+      : [
+          { href: "/listeler", label: "LİSTELER" },
+          { href: "/radar", label: "RADAR" },
+          { href: "/taktik-lab", label: "TAKTİK LAB" },
+          { href: "/arena", label: "ARENA" },
+        ],
+  },
+];
+
 export default function SiteFooter({ maxWidth = "max-w-7xl" }: Props) {
   const pathname = usePathname();
   const isEn = pathname.startsWith("/en");
   const [open, setOpen] = useState<PolicyKey | null>(null);
   const policy = open ? (isEn ? POLICIES_EN[open] : POLICIES[open]) : null;
+  const policyKeys: PolicyKey[] = ["gizlilik", "kullanim", "iletisim"];
 
   return (
     <>
-      <footer style={{ background: "var(--sg-surface-low)", borderTop: "1px solid rgba(26,58,92,0.4)" }}>
-        <div className={`mx-auto ${maxWidth} px-8 py-12`}>
-          <div className="grid grid-cols-1 gap-10 md:grid-cols-3">
+      <footer style={{ background: "var(--sg-surface-low)", borderTop: "1px solid var(--sg-border)", marginTop: 80 }}>
+        <div className={`mx-auto ${maxWidth} px-8 py-16`}>
+
+          {/* 4-column grid */}
+          <div className="grid grid-cols-1 gap-12 md:grid-cols-[2fr_1fr_1fr_1fr]">
+
+            {/* Brand col */}
             <div>
-              <div className="mb-3" style={{ fontFamily: "var(--font-headline)", fontSize: "18px", fontWeight: 700, color: "var(--sg-primary)", letterSpacing: "-0.02em" }}>
-                SCOUT GAMER
+              <div className="display grad-text" style={{ fontSize: 28, fontWeight: 700, letterSpacing: "-0.03em", lineHeight: 1 }}>
+                Scout Gamer
               </div>
-              <p className="text-sm leading-relaxed max-w-xs" style={{ color: "var(--sg-text-muted)" }}>
+              <div className="mono" style={{ fontSize: 10, letterSpacing: "0.18em", color: "var(--sg-text-muted)", marginTop: 6 }}>
+                {isEn ? "FOOTBALL × GAME CULTURE" : "FUTBOL × OYUN KÜLTÜRÜ"}
+              </div>
+              <p style={{ fontSize: 14, color: "var(--sg-text-muted)", maxWidth: 320, marginTop: 16, lineHeight: 1.6, fontFamily: "var(--font-body)" }}>
                 {isEn
-                  ? "Next-gen scouting platform turning football data into art. Football × Game Culture."
-                  : "Futbol verisini sanata dönüştüren yeni nesil scouting platformu. Futbol × Oyun Kültürü."}
+                  ? "Consumable quality with understandable sophistication. Where football scouting meets gaming culture."
+                  : "Anlaşılabilir bir derinlik. Futbol scouting'i ile oyun kültürünü buluşturan içerik platformu."}
               </p>
-              <div className="mt-5 flex gap-3">
+              {/* Social */}
+              <div className="mt-6 flex gap-2">
                 <a href="https://x.com/ScoutGamer" target="_blank" rel="noopener noreferrer"
                   className="flex h-8 w-8 items-center justify-center transition hover:opacity-70"
-                  style={{ background: "var(--sg-surface)", color: "var(--sg-text-muted)" }}>
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+                  style={{ border: "1px solid var(--sg-border)", borderRadius: 999, color: "var(--sg-text-muted)" }}>
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor">
                     <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
                   </svg>
                 </a>
                 <a href="https://instagram.com" target="_blank" rel="noopener noreferrer"
                   className="flex h-8 w-8 items-center justify-center transition hover:opacity-70"
-                  style={{ background: "var(--sg-surface)", color: "var(--sg-text-muted)" }}>
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><rect x="2" y="2" width="20" height="20" rx="5" /><circle cx="12" cy="12" r="4" /><circle cx="17.5" cy="6.5" r="0.5" fill="currentColor" /></svg>
+                  style={{ border: "1px solid var(--sg-border)", borderRadius: 999, color: "var(--sg-text-muted)" }}>
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+                    <rect x="2" y="2" width="20" height="20" rx="5" />
+                    <circle cx="12" cy="12" r="4" />
+                    <circle cx="17.5" cy="6.5" r="0.5" fill="currentColor" />
+                  </svg>
                 </a>
               </div>
             </div>
 
-            <div>
-              <p className="mb-4 text-[10px] font-bold uppercase tracking-[0.22em]"
-                style={{ color: "var(--sg-text-muted)", fontFamily: "var(--font-headline)" }}>{isEn ? "Quick links" : "Hızlı Menü"}</p>
-              <div className="flex flex-col gap-2">
-                {(isEn
-                  ? [
-                      { href: "/en/listeler", label: "Scouting Lists" },
-                      { href: "/en/radar", label: "Radar" },
-                      { href: "/en/taktik-lab", label: "Tactics Lab" },
-                      { href: "/en/arena", label: "Arena" },
-                    ]
-                  : [
-                      { href: "/listeler", label: "Listeler" },
-                      { href: "/radar", label: "Radar" },
-                      { href: "/taktik-lab", label: "Taktik Lab" },
-                      { href: "/arena", label: "Arena" },
-                    ]
-                ).map(item => (
-                  <Link key={item.href} href={item.href}
-                    className="text-sm transition hover:opacity-80"
-                    style={{ color: "var(--sg-text-secondary)", fontFamily: "var(--font-headline)" }}>
-                    {item.label}
-                  </Link>
-                ))}
+            {/* Sections col */}
+            {NAV_SECTIONS(isEn).map(sec => (
+              <div key={sec.heading}>
+                <div className="eyebrow mb-4">{sec.heading}</div>
+                <div className="flex flex-col gap-2.5">
+                  {sec.links.map(l => (
+                    <Link key={l.href} href={l.href}
+                      className="mono u-link transition hover:opacity-80"
+                      style={{ fontSize: 11, letterSpacing: "0.12em", color: "var(--sg-text-secondary)" }}>
+                      {l.label}
+                    </Link>
+                  ))}
+                </div>
               </div>
-            </div>
+            ))}
 
+            {/* Platform col */}
             <div>
-              <p className="mb-4 text-[10px] font-bold uppercase tracking-[0.22em]"
-                style={{ color: "var(--sg-text-muted)", fontFamily: "var(--font-headline)" }}>{isEn ? "Legal" : "Yasal"}</p>
-              <div className="flex flex-col gap-2">
-                {(["gizlilik", "kullanim", "iletisim"] as PolicyKey[]).map(key => (
+              <div className="eyebrow mb-4">{isEn ? "PLATFORM" : "PLATFORM"}</div>
+              <div className="flex flex-col gap-2.5">
+                {policyKeys.map(key => (
                   <button key={key} onClick={() => setOpen(key)}
-                    className="text-left text-sm transition hover:opacity-80"
-                    style={{ color: "var(--sg-text-secondary)", fontFamily: "var(--font-headline)" }}>
-                    {(isEn ? POLICIES_EN[key] : POLICIES[key]).title}
+                    className="mono u-link text-left transition hover:opacity-80"
+                    style={{ fontSize: 11, letterSpacing: "0.12em", color: "var(--sg-text-secondary)", background: "none", border: "none", padding: 0 }}>
+                    {(isEn ? POLICIES_EN[key] : POLICIES[key]).title.toUpperCase()}
                   </button>
                 ))}
               </div>
             </div>
+
+            {/* Follow col */}
+            <div>
+              <div className="eyebrow mb-4">{isEn ? "FOLLOW" : "TAKİP ET"}</div>
+              <div className="flex flex-col gap-2.5">
+                {[
+                  { href: "https://x.com/ScoutGamer", label: "X / TWITTER" },
+                  { href: "https://instagram.com", label: "INSTAGRAM" },
+                ].map(l => (
+                  <a key={l.href} href={l.href} target="_blank" rel="noopener noreferrer"
+                    className="mono u-link transition hover:opacity-80"
+                    style={{ fontSize: 11, letterSpacing: "0.12em", color: "var(--sg-text-secondary)" }}>
+                    {l.label}
+                  </a>
+                ))}
+              </div>
+            </div>
           </div>
 
-          <div className="mt-10 pt-6 flex flex-col items-center justify-between gap-3 sm:flex-row"
-            style={{ borderTop: "1px solid rgba(26,58,92,0.4)" }}>
-            <span className="text-[11px]" style={{ color: "var(--sg-text-muted)", fontFamily: "var(--font-headline)" }}>
-              © 2026 SCOUT GAMER. KINETIC LABS LTD.
+          {/* Bottom bar */}
+          <div className="mt-14 pt-6 flex flex-col items-start justify-between gap-3 sm:flex-row sm:items-center"
+            style={{ borderTop: "1px solid var(--sg-border)" }}>
+            <span className="mono" style={{ fontSize: 10, letterSpacing: "0.12em", color: "var(--sg-text-muted)" }}>
+              © 2026 SCOUTGAMER.COM · TÜM HAKLARI SAKLIDIR
             </span>
-            <Link href={isEn ? "/en/arena" : "/arena"} className="text-[11px] font-bold uppercase tracking-wider transition hover:opacity-80"
-              style={{ color: "var(--sg-primary)", fontFamily: "var(--font-headline)" }}>
-              {isEn ? "Play & Share" : "Oyna & Paylaş"}
-            </Link>
+            <span className="mono" style={{ fontSize: 10, letterSpacing: "0.12em", color: "var(--sg-text-muted)" }}>
+              v2.0 · BUILT WITH SUPABASE × CLAUDE
+            </span>
           </div>
         </div>
       </footer>
 
-      {/* Slide-over panel */}
+      {/* Policy slide-over */}
       {open && policy && (
         <>
-          {/* Overlay */}
-          <div className="fixed inset-0 z-[998]" style={{ background: "rgba(6,15,30,0.7)", backdropFilter: "blur(4px)" }}
+          <div className="fixed inset-0 z-[998]"
+            style={{ background: "oklch(0.13 0.012 240 / 0.7)", backdropFilter: "blur(4px)" }}
             onClick={() => setOpen(null)} />
-          {/* Panel */}
           <div className="fixed right-0 top-0 bottom-0 z-[999] w-full max-w-md flex flex-col overflow-hidden"
-            style={{ background: "var(--sg-surface-low)", borderLeft: "1px solid rgba(26,58,92,0.5)" }}>
-            {/* Panel header */}
+            style={{ background: "var(--sg-surface-low)", borderLeft: "1px solid var(--sg-border)" }}>
             <div className="flex items-center justify-between px-6 py-5"
-              style={{ borderBottom: "1px solid rgba(26,58,92,0.4)" }}>
+              style={{ borderBottom: "1px solid var(--sg-border)" }}>
               <div>
-                <div className="h-[2px] w-8 mb-2" style={{ background: "var(--sg-primary)" }} />
-                <h2 className="text-base font-bold" style={{ fontFamily: "var(--font-headline)" }}>
-                  {policy.title}
-                </h2>
+                <div className="h-[2px] w-8 mb-2" style={{ background: "var(--accent)" }} />
+                <h2 className="display" style={{ fontSize: 16, fontWeight: 700 }}>{policy.title}</h2>
               </div>
               <button onClick={() => setOpen(null)}
-                className="flex h-9 w-9 items-center justify-center transition hover:opacity-70"
-                style={{ background: "var(--sg-surface)", color: "var(--sg-text-muted)" }}>
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
+                className="flex h-8 w-8 items-center justify-center transition hover:opacity-70"
+                style={{ border: "1px solid var(--sg-border)", borderRadius: 999, color: "var(--sg-text-muted)", background: "transparent" }}>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
                   <line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" />
                 </svg>
               </button>
             </div>
-            {/* Panel içerik */}
             <div className="flex-1 overflow-y-auto px-6 py-6">
-              <div className="text-sm leading-relaxed whitespace-pre-line" style={{ color: "var(--sg-text-secondary)" }}>
+              <div className="text-sm leading-relaxed whitespace-pre-line" style={{ color: "var(--sg-text-secondary)", fontFamily: "var(--font-body)" }}>
                 {policy.content}
               </div>
             </div>
