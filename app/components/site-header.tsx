@@ -268,11 +268,28 @@ export default function SiteHeader({ activeNav, maxWidth = "max-w-7xl", forceEn 
 
       {/* Bottom controls */}
       <div className="flex items-center gap-3 px-4 pb-8 pt-3" style={{ borderTop: "1px solid var(--sg-border)" }}>
-        <button type="button" onClick={() => { toggleLang(); setOpen(false); }}
-          className="mono flex-1 py-2.5 text-center transition"
-          style={{ fontSize: 11, letterSpacing: "0.14em", background: "var(--sg-surface)", border: "1px solid var(--sg-border)", borderRadius: 999, color: "var(--sg-text-secondary)" }}>
-          {isEn ? "EN ↔ TR" : "TR ↔ EN"}
-        </button>
+        <div className="mono flex flex-1 overflow-hidden"
+          style={{ border: "1px solid var(--sg-border)", borderRadius: 999, fontSize: 11, letterSpacing: "0.14em" }}>
+          <button type="button" onClick={() => { if (isEn) { toggleLang(); setOpen(false); } }}
+            className="flex-1 py-2.5 text-center transition"
+            style={{
+              background: !isEn ? "var(--accent)" : "transparent",
+              color: !isEn ? "var(--ink-900)" : "var(--sg-text-muted)",
+              fontWeight: !isEn ? 700 : 400,
+            }}>
+            TR
+          </button>
+          <span style={{ width: 1, background: "var(--sg-border)", flexShrink: 0 }} />
+          <button type="button" onClick={() => { if (!isEn) { toggleLang(); setOpen(false); } }}
+            className="flex-1 py-2.5 text-center transition"
+            style={{
+              background: isEn ? "var(--accent)" : "transparent",
+              color: isEn ? "var(--ink-900)" : "var(--sg-text-muted)",
+              fontWeight: isEn ? 700 : 400,
+            }}>
+            EN
+          </button>
+        </div>
       </div>
     </div>
   ) : null;
@@ -313,15 +330,31 @@ export default function SiteHeader({ activeNav, maxWidth = "max-w-7xl", forceEn 
 
           {/* Desktop right controls */}
           <div className="hidden md:flex items-center gap-2">
-            {/* Language toggle */}
-            <button type="button" onClick={toggleLang}
-              className="mono transition hover:opacity-80"
-              style={{
-                padding: "6px 14px", borderRadius: 999, fontSize: 10, letterSpacing: "0.14em",
-                border: "1px solid var(--sg-surface-top)", background: "transparent", color: "var(--sg-text-secondary)",
-              }}>
-              {isEn ? "EN ↔ TR" : "TR ↔ EN"}
-            </button>
+            {/* Language toggle — EN | TR pill pair */}
+            <div className="mono flex items-center overflow-hidden"
+              style={{ border: "1px solid var(--sg-surface-top)", borderRadius: 999, fontSize: 10, letterSpacing: "0.14em" }}>
+              <Link href={isEn ? pathname.replace(/^\/en/, "") || "/tr" : "#"}
+                onClick={e => { if (!isEn) e.preventDefault(); else { e.preventDefault(); toggleLang(); } }}
+                className="transition-all px-3 py-1.5"
+                style={{
+                  background: !isEn ? "var(--accent)" : "transparent",
+                  color: !isEn ? "var(--ink-900)" : "var(--sg-text-muted)",
+                  fontWeight: !isEn ? 700 : 400,
+                }}>
+                TR
+              </Link>
+              <span style={{ width: 1, height: 14, background: "var(--sg-surface-top)", flexShrink: 0 }} />
+              <Link href={isEn ? "#" : "/en" + (pathname === "/tr" ? "" : pathname)}
+                onClick={e => { if (isEn) e.preventDefault(); else { e.preventDefault(); toggleLang(); } }}
+                className="transition-all px-3 py-1.5"
+                style={{
+                  background: isEn ? "var(--accent)" : "transparent",
+                  color: isEn ? "var(--ink-900)" : "var(--sg-text-muted)",
+                  fontWeight: isEn ? 700 : 400,
+                }}>
+                EN
+              </Link>
+            </div>
 
             {/* Search */}
             <button type="button" onClick={() => setSearchOpen(s => !s)}

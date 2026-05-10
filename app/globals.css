@@ -224,16 +224,6 @@ button { font-family: inherit; cursor: pointer; }
 .h-scroll::-webkit-scrollbar-track { background: transparent; }
 
 /* ─── V2 Article Body ───────────────────────────────────────────── */
-.article-v2 h2 {
-  font-family: var(--font-display);
-  font-size: clamp(28px, 3.2vw, 40px);
-  font-weight: 700;
-  letter-spacing: -0.03em;
-  color: var(--sg-text-primary);
-  margin: 56px 0 20px;
-  line-height: 1.05;
-  text-wrap: balance;
-}
 .article-v2 h3 {
   font-family: var(--font-display);
   font-size: clamp(20px, 2.4vw, 28px);
@@ -255,21 +245,95 @@ button { font-family: inherit; cursor: pointer; }
 }
 .article-v2 em { color: var(--sg-text-secondary); }
 .article-v2 blockquote {
-  margin: 48px 0;
-  padding: 32px 0;
-  border-top: 2px solid var(--accent);
-  border-bottom: 2px solid var(--accent);
-  text-align: center;
+  margin: 52px -8px;
+  padding: 36px 40px;
+  border-left: 4px solid var(--accent);
+  background: color-mix(in oklch, var(--accent) 6%, var(--sg-surface));
+  border-radius: 0 8px 8px 0;
   font-family: var(--font-display);
   font-style: italic;
-  font-size: clamp(22px, 2.8vw, 32px);
+  font-size: clamp(20px, 2.4vw, 28px);
   font-weight: 500;
-  line-height: 1.2;
+  line-height: 1.25;
   letter-spacing: -0.02em;
   color: var(--sg-text-primary);
   text-wrap: balance;
+  position: relative;
+}
+.article-v2 blockquote::before {
+  content: '\201C';
+  position: absolute;
+  top: 12px;
+  left: 16px;
+  font-size: 60px;
+  line-height: 1;
+  color: var(--accent);
+  opacity: 0.4;
+  font-family: var(--font-display);
 }
 .article-v2 blockquote p { font-size: inherit; color: inherit; margin: 0; }
+
+/* Lead paragraph — büyük açılış metni */
+.article-v2 p.lead {
+  font-size: clamp(20px, 2.2vw, 26px);
+  line-height: 1.5;
+  color: var(--sg-text-primary);
+  font-weight: 400;
+  letter-spacing: -0.01em;
+  margin-bottom: 36px;
+}
+
+/* Highlight / mark */
+.article-v2 mark {
+  background: color-mix(in oklch, var(--accent) 20%, transparent);
+  color: var(--sg-text-primary);
+  padding: 1px 4px;
+  border-radius: 3px;
+}
+
+/* Callout box */
+.article-v2 .callout {
+  border: 1px solid color-mix(in oklch, var(--accent) 35%, transparent);
+  background: color-mix(in oklch, var(--accent) 6%, var(--sg-surface));
+  border-radius: 10px;
+  padding: 20px 24px;
+  margin: 36px 0;
+  font-size: 16px;
+  line-height: 1.65;
+}
+.article-v2 .callout p { font-size: 16px; margin-bottom: 12px; }
+.article-v2 .callout p:last-child { margin-bottom: 0; }
+.article-v2 .callout strong { color: var(--accent); }
+
+/* Key stat inline highlight */
+.article-v2 .stat-highlight {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 4px;
+  font-family: var(--font-mono-stack);
+  font-size: 0.85em;
+  font-weight: 700;
+  color: var(--accent);
+  background: color-mix(in oklch, var(--accent) 10%, transparent);
+  padding: 2px 8px;
+  border-radius: 4px;
+  letter-spacing: 0.04em;
+}
+
+/* H2 — accent bar solunda */
+.article-v2 h2 {
+  font-family: var(--font-display);
+  font-size: clamp(28px, 3.2vw, 40px);
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  color: var(--sg-text-primary);
+  margin: 64px 0 20px;
+  line-height: 1.05;
+  text-wrap: balance;
+  padding-left: 16px;
+  border-left: 3px solid var(--accent);
+}
+
 .article-v2 ul, .article-v2 ol {
   padding-left: 20px;
   margin-bottom: 24px;

@@ -111,14 +111,24 @@ Today's date: ${today}. Current football season: 2025-26.
 Write short, compelling, SEO-optimised titles. Prefer common football search terms. Minimise obscure jargon.
 Write about global football. Do NOT force Turkey, Süper Lig, or Turkish club references unless the topic explicitly requires it.
 Do NOT include specific years or seasons in the title.
-Write content in HTML format — use <h2>, <h3>, <p>, <ul>, <li>, <strong> tags. No markdown.
+Write content in HTML format. Use these tags:
+- <h2> for main section headings (2–4 per article)
+- <h3> for sub-headings
+- <p> for body paragraphs
+- <p class="lead"> for the opening intro paragraph (larger, prominent)
+- <blockquote> for a pull quote — a striking single sentence extracted from the article body (1 per article, placed after 2nd or 3rd section)
+- <div class="callout"><p>...</p></div> for a key insight or tactical note box (1 per article)
+- <strong> for inline emphasis
+- <mark> for highlighting a key number, name, or stat inline (use sparingly, 2–4 times)
+- <ul>, <li> for lists
+No markdown. Minimum 500 words. Make the content feel editorial and magazine-quality, not Wikipedia.
 
 Respond with ONLY this JSON format, nothing else:
 {
   "title": "short compelling English title (no year or season)",
   "slug": "url-friendly-slug",
   "category": "radar or taktik-lab or listeler",
-  "content": "HTML content. Use <h2>, <h3>, <p>, <ul>, <li>, <strong>. No markdown. Minimum 400 words.",
+  "content": "HTML content with lead, blockquote, callout, mark as described above. Minimum 500 words.",
   "players": ["Player Name 1", "Player Name 2"],
   "hero_variant": "one of: player-cards | cover-image | pitch-diagram | stat-focus | text-only",
   "accent": "one of: emerald | cyan | sky | rose | amber | lime"
