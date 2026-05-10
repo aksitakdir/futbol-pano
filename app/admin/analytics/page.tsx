@@ -63,6 +63,8 @@ export default function AnalyticsPage() {
   const [arenaVotes, setArenaVotes] = useState<ArenaVote[]>([]);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState<"content" | "arena" | "generation">("content");
+  const [migrating, setMigrating] = useState(false);
+  const [migrateResult, setMigrateResult] = useState<string | null>(null);
 
   useEffect(() => {
     async function fetchAll() {
@@ -106,6 +108,27 @@ export default function AnalyticsPage() {
 
   const byHeroVariant: Record<string, number> = {};
   contents.forEach((c) => { const v = c.hero_variant ?? "text-only"; byHeroVariant[v] = (byHeroVariant[v] ?? 0) + 1; });
+
+  async function runBatchMigration() {
+    setMigrating(true);
+    setMigrateResult(null);
+    try {
+      const res = await fetch("/api/migrate-content", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ batch: true }),
+      });
+      const data = await res.json() as { migrated?: number; failed?: number; total?: number; error?: string };
+      if (data.error) {
+        setMigrateResult(`Hata: ${data.error}`);
+      } else {
+        setMigrateResult(`✓ ${data.migrated ?? 0} içerik migrate edildi, ${data.failed ?? 0} hata (toplam: ${data.total ?? 0})`);
+      }
+    } catch {
+      setMigrateResult("Bağlantı hatası");
+    }
+    setMigrating(false);
+  }
 
   const generatedLast7d = contents.filter((c) => {
     const d = new Date(c.created_at);
@@ -254,6 +277,29 @@ export default function AnalyticsPage() {
         {/* Generation tab */}
         {activeTab === "generation" && (
           <div className="space-y-4">
+            {/* sections_json migration */}
+            <div className="rounded-xl border border-sky-500/20 bg-sky-500/5 p-5">
+              <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-sky-400 mb-2">sections_json Hard Migration</p>
+              <p className="text-[11px] text-slate-400 mb-4">
+                Mevcut HTML içerikleri yapısal sections_json formatına dönüştürür. <code className="text-sky-300 text-[10px]">sections_json IS NULL</code> olan içerikleri işler (max 50/batch).
+              </p>
+              <div className="flex items-center gap-3">
+                <button
+                  onClick={runBatchMigration}
+                  disabled={migrating}
+                  className="rounded-lg bg-sky-500 px-4 py-2 text-xs font-semibold text-slate-950 transition hover:bg-sky-400 disabled:opacity-50"
+                >
+                  {migrating ? "Migrate ediliyor..." : "Batch Migrate (50 içerik)"}
+                </button>
+                {migrateResult && (
+                  <span className={`text-[11px] ${migrateResult.startsWith("✓") ? "text-emerald-400" : "text-rose-400"}`}>{migrateResult}</span>
+                )}
+              </div>
+              <p className="mt-3 text-[10px] text-slate-500">
+                Not: Önce Supabase SQL Editor&apos;da <code className="text-slate-400">supabase/v2_columns_migration.sql</code> dosyasını çalıştırın.
+              </p>
+            </div>
+
             <div className="grid grid-cols-2 gap-4 sm:grid-cols-3">
               <StatCard label="Son 7 Gün" value={generatedLast7d} sub="üretilen içerik" color="emerald" />
               <StatCard label="Toplam Bekleyen" value={pending.length} sub="yayına alınmadı" color="amber" />

@@ -89,6 +89,12 @@ function getNewsQueryFromTitle(title: string): string {
   return t.split(/\s+/).filter(Boolean).slice(0, 2).join(" ") || t;
 }
 
+type SectionItem =
+  | { type: "intro"; html: string }
+  | { type: "section"; heading: string; html: string }
+  | { type: "pullquote"; text: string }
+  | { type: "callout"; html: string };
+
 type Props = {
   title: string; content: string; category: string; date: string; slug: string;
   activeNav: "listeler" | "radar" | "taktik-lab";
@@ -97,6 +103,7 @@ type Props = {
   youtubeQuery1?: string; youtubeQuery2?: string;
   newsQuery?: string; playerName?: string;
   heroVariant?: string; accentOverride?: string;
+  sectionsJson?: SectionItem[] | null;
   showNewsSection?: boolean; children?: React.ReactNode;
   excerptContent?: string; isPending?: boolean;
 };
@@ -107,7 +114,7 @@ export default function ArticleLayout({
   youtubeId: _youtubeId, coverImage, playerName: _playerName,
   youtubeQuery1, youtubeQuery2,
   newsQuery, showNewsSection = true, children,
-  heroVariant = "text-only", accentOverride,
+  heroVariant = "text-only", accentOverride, sectionsJson,
   excerptContent: _excerptContent, isPending: _isPending,
 }: Props) {
   const [similar, setSimilar] = useState<SidebarItem[]>([]);
@@ -334,11 +341,46 @@ export default function ArticleLayout({
 
         {/* Left — article body */}
         <article>
-          {/* Content */}
-          <div className="article-v2" style={{
-            fontSize: 19, lineHeight: 1.65, color: "var(--sg-text-secondary)",
-          }}>
-            {contentLooksLikeHtml(content) ? (
+          {/* Content — sections_json (V2 structured) or legacy HTML */}
+          <div className="article-v2" style={{ fontSize: 19, lineHeight: 1.65, color: "var(--sg-text-secondary)" }}>
+            {sectionsJson && sectionsJson.length > 0 ? (
+              <div>
+                {sectionsJson.map((sec, i) => {
+                  if (sec.type === "intro") {
+                    return <div key={i} dangerouslySetInnerHTML={{ __html: addDropCap(sec.html, accent) }} />;
+                  }
+                  if (sec.type === "section") {
+                    const headingId = sec.heading.toLowerCase().replace(/[^a-z0-9ğüşıöç]/g, "-").replace(/-+/g, "-").slice(0, 40);
+                    return (
+                      <div key={i}>
+                        <h2 id={headingId}>{sec.heading}</h2>
+                        <div dangerouslySetInnerHTML={{ __html: sec.html }} />
+                      </div>
+                    );
+                  }
+                  if (sec.type === "pullquote") {
+                    return (
+                      <blockquote key={i} style={{
+                        borderLeft: `4px solid ${accent}`, paddingLeft: 24, margin: "40px 0",
+                        fontStyle: "italic", fontSize: "1.15em", color: "var(--sg-text-primary)", lineHeight: 1.5,
+                      }}>
+                        {sec.text}
+                      </blockquote>
+                    );
+                  }
+                  if (sec.type === "callout") {
+                    return (
+                      <div key={i} style={{
+                        background: `color-mix(in oklch, ${accent} 8%, var(--sg-surface))`,
+                        border: `1px solid color-mix(in oklch, ${accent} 30%, transparent)`,
+                        borderRadius: 8, padding: "20px 24px", margin: "32px 0",
+                      }} dangerouslySetInnerHTML={{ __html: sec.html }} />
+                    );
+                  }
+                  return null;
+                })}
+              </div>
+            ) : contentLooksLikeHtml(content) ? (
               <div dangerouslySetInnerHTML={{ __html: processedHtml }} />
             ) : (
               <ReactMarkdown remarkPlugins={[remarkGfm]} rehypePlugins={[rehypeRaw]}>
