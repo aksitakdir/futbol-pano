@@ -4,105 +4,51 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { supabase } from "@/lib/supabase";
 import ArticleLayoutEn from "../../../components/article-layout-en";
-import PlayerCard, { type PlayerCardData } from "../../../components/player-card";
+
+type SectionBlock =
+  | { type: "intro"; html: string }
+  | { type: "section"; heading: string; html: string }
+  | { type: "pullquote"; text: string }
+  | { type: "callout"; html: string };
 
 type ContentRow = {
-  id: string;
-  title: string;
-  title_en?: string;
-  slug: string;
-  category: string;
-  content: string;
-  content_en?: string;
-  created_at: string;
-  youtube_id?: string;
-  cover_image?: string;
-  youtube_query_1?: string;
-  youtube_query_2?: string;
-  news_query?: string;
-  player_name?: string;
+  id: string; title: string; title_en?: string;
+  slug: string; category: string;
+  content: string; content_en?: string; created_at: string;
+  youtube_id?: string; cover_image?: string;
+  youtube_query_1?: string; youtube_query_2?: string;
+  news_query?: string; player_name?: string;
+  hero_variant?: string; accent?: string;
+  sections_json?: SectionBlock[] | null;
 };
-
-async function fetchPlayerStats(name: string) {
-  const { data: exact } = await supabase
-    .from("fc_players")
-    .select("overall,pace,shooting,passing,dribbling,defending,physical,photo_url,position,club,league,age")
-    .ilike("name", name)
-    .limit(1)
-    .maybeSingle();
-  if (exact?.overall) return exact;
-  const two = name.split(" ").slice(0, 2).join(" ");
-  const { data: two2 } = await supabase
-    .from("fc_players")
-    .select("overall,pace,shooting,passing,dribbling,defending,physical,photo_url,position,club,league,age")
-    .ilike("name", `%${two}%`)
-    .order("overall", { ascending: false })
-    .limit(1)
-    .maybeSingle();
-  return two2?.overall ? two2 : null;
-}
 
 export default function EnTaktikLabDetailClient({ slug }: { slug: string }) {
   const [article, setArticle] = useState<ContentRow | null>(null);
   const [loading, setLoading] = useState(true);
   const [notFound, setNotFound] = useState(false);
-  const [playerCardData, setPlayerCardData] = useState<PlayerCardData | null>(null);
 
   useEffect(() => {
     if (!slug) return;
-    async function fetchArticle() {
-      const { data, error } = await supabase
-        .from("contents")
-        .select("*")
-        .eq("slug", slug)
-        .eq("status", "yayinda")
-        .single();
-      if (error || !data) {
-        setNotFound(true);
+    supabase.from("contents").select("*").eq("slug", slug).eq("status", "yayinda").single()
+      .then(({ data, error }) => {
+        if (error || !data) { setNotFound(true); } else { setArticle(data as ContentRow); }
         setLoading(false);
-        return;
-      }
-      setArticle(data as ContentRow);
-      if (data.player_name) {
-        const stats = await fetchPlayerStats(data.player_name);
-        if (stats?.overall) {
-          setPlayerCardData({
-            name: data.player_name,
-            club: stats.club ?? "",
-            league: stats.league ?? "",
-            position: stats.position ?? "",
-            age: stats.age ?? "",
-            overall: stats.overall,
-            pace: stats.pace ?? 0,
-            shooting: stats.shooting ?? 0,
-            passing: stats.passing ?? 0,
-            dribbling: stats.dribbling ?? 0,
-            defending: stats.defending ?? 0,
-            physical: stats.physical ?? 0,
-            photo_url: stats.photo_url ?? undefined,
-          });
-        }
-      }
-      setLoading(false);
-    }
-    fetchArticle();
+      });
   }, [slug]);
 
-  if (loading)
-    return (
-      <main className="flex min-h-screen items-center justify-center" style={{ background: "var(--sg-bg)" }}>
-        <span className="h-5 w-5 animate-spin rounded-full border-2 border-t-transparent"
-          style={{ borderColor: "var(--sg-tertiary)", borderTopColor: "transparent" }} />
-      </main>
-    );
+  if (loading) return (
+    <main className="flex min-h-screen items-center justify-center" style={{ background: "var(--sg-bg)" }}>
+      <span className="h-5 w-5 animate-spin rounded-full border-2"
+        style={{ borderColor: "var(--cyan)", borderTopColor: "transparent" }} />
+    </main>
+  );
 
-  if (notFound || !article)
-    return (
-      <main className="flex min-h-screen flex-col items-center justify-center" style={{ background: "var(--sg-bg)", color: "var(--sg-text-primary)" }}>
-        <h1 className="mb-2 text-2xl font-bold">404</h1>
-        <Link href="/en/taktik-lab" className="text-sm" style={{ color: "var(--sg-tertiary)" }}>← Back to Tactics Lab</Link>
-      </main>
-    );
+  if (notFound || !article) return (
+    <main className="flex min-h-screen flex-col items-center justify-center" style={{ background: "var(--sg-bg)", color: "var(--sg-text-primary)" }}>
+      <h1 className="mb-2 text-2xl font-bold">404</h1>
+      <Link href="/en/taktik-lab" style={{ color: "var(--cyan)", fontSize: 13 }}>← Back to Tactics Lab</Link>
+    </main>
+  );
 
   const hasEnglish = !!(article.title_en && article.content_en);
 
@@ -124,20 +70,9 @@ export default function EnTaktikLabDetailClient({ slug }: { slug: string }) {
       youtubeQuery2={article.youtube_query_2}
       playerName={article.player_name}
       isPending={!hasEnglish}
-    >
-      {playerCardData && (
-        <div className="mb-8">
-          <p className="mb-3 text-[11px] font-bold uppercase tracking-[0.2em]" style={{ color: "var(--sg-tertiary)", fontFamily: "var(--font-headline)" }}>Player Card</p>
-          <PlayerCard
-            player={playerCardData}
-            size="full"
-            showScoutNote={false}
-            animated={true}
-            tmLink={`https://www.transfermarkt.com/schnellsuche/ergebnis/schnellsuche?query=${encodeURIComponent(playerCardData.name)}`}
-            gLink={`https://www.google.com/search?q=${encodeURIComponent(playerCardData.name + " footballer")}`}
-          />
-        </div>
-      )}
-    </ArticleLayoutEn>
+      heroVariant={article.hero_variant ?? "pitch-diagram"}
+      accentOverride={article.accent ?? "cyan"}
+      sectionsJson={Array.isArray(article.sections_json) ? article.sections_json : null}
+    />
   );
 }

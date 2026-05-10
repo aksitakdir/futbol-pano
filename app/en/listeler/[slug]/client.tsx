@@ -90,26 +90,15 @@ function V2SilhouetteCard({ player }: { player: PlayerWithStats }) {
       }}>
         {initials}
       </div>
-      {player.photo_url ? (
-        <div style={{ position: "absolute", bottom: hasStats ? 48 : 28, left: "50%", transform: "translateX(-50%)" }}>
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
-            src={`/api/player-image?url=${encodeURIComponent(player.photo_url)}`}
-            alt={player.name}
-            style={{ height: 110, objectFit: "contain", objectPosition: "bottom" }}
-            onError={(e) => { (e.currentTarget as HTMLImageElement).style.display = "none"; }}
-          />
-        </div>
-      ) : (
-        <div style={{
-          position: "absolute", top: "50%", left: "50%",
-          transform: "translate(-50%, -62%)",
-          fontFamily: "var(--font-display)", fontSize: 56, fontWeight: 900,
-          color: "oklch(1 0 0 / 0.20)", letterSpacing: "-0.04em", lineHeight: 1,
-        }}>
-          {initials}
-        </div>
-      )}
+      {/* Silhouette — gradient initials, no external photo fetch */}
+      <div style={{
+        position: "absolute", top: "50%", left: "50%",
+        transform: "translate(-50%, -62%)",
+        fontFamily: "var(--font-display)", fontSize: 64, fontWeight: 900,
+        color: "oklch(1 0 0 / 0.18)", letterSpacing: "-0.04em", lineHeight: 1,
+      }}>
+        {initials}
+      </div>
       <div style={{
         position: "absolute", top: 10, right: 10,
         fontFamily: "var(--font-mono-stack)", fontSize: 28, fontWeight: 900,

@@ -355,21 +355,14 @@ export default function ArticleLayoutEn({
                   }
                   if (sec.type === "pullquote") {
                     return (
-                      <blockquote key={i} style={{
-                        borderLeft: `4px solid ${accent}`, paddingLeft: 24, margin: "40px 0",
-                        fontStyle: "italic", fontSize: "1.15em", color: "var(--sg-text-primary)", lineHeight: 1.5,
-                      }}>
+                      <blockquote key={i}>
                         {sec.text}
                       </blockquote>
                     );
                   }
                   if (sec.type === "callout") {
                     return (
-                      <div key={i} style={{
-                        background: `color-mix(in oklch, ${accent} 8%, var(--sg-surface))`,
-                        border: `1px solid color-mix(in oklch, ${accent} 30%, transparent)`,
-                        borderRadius: 8, padding: "20px 24px", margin: "32px 0",
-                      }} dangerouslySetInnerHTML={{ __html: sec.html }} />
+                      <div key={i} className="callout" dangerouslySetInnerHTML={{ __html: sec.html }} />
                     );
                   }
                   return null;

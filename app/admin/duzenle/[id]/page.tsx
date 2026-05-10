@@ -7,6 +7,7 @@ import { useParams, useRouter } from "next/navigation";
 import { supabase } from "@/lib/supabase";
 import RichTextEditor from "@/app/components/rich-text-editor";
 import AdminLayout from "../../components/admin-layout";
+import SectionsEditor, { type SectionBlock } from "../../components/sections-editor";
 
 function isContentEmpty(html: string): boolean {
   if (!html?.trim()) return true;
@@ -131,6 +132,10 @@ export default function DuzenlePage() {
   const [heroVariant, setHeroVariant] = useState("text-only");
   const [accentColor, setAccentColor] = useState("emerald");
 
+  // Sections JSON (blok editörü)
+  const [sectionsBlocks, setSectionsBlocks] = useState<SectionBlock[]>([]);
+  const [contentMode, setContentMode] = useState<"rich" | "blocks">("rich");
+
   const [loadingData, setLoadingData] = useState(true);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
@@ -183,11 +188,17 @@ export default function DuzenlePage() {
         setPlayersList([]);
       }
 
-      const row = data as { title_en?: string | null; content_en?: string | null; hero_variant?: string | null; accent?: string | null };
+      const row = data as { title_en?: string | null; content_en?: string | null; hero_variant?: string | null; accent?: string | null; sections_json?: SectionBlock[] | null };
       setTitleEn(row.title_en ?? "");
       setContentEn(row.content_en ?? "");
       setHeroVariant(row.hero_variant ?? "text-only");
       setAccentColor(row.accent ?? "emerald");
+
+      // Blok editörü — mevcut sections_json'ı yükle
+      if (Array.isArray(row.sections_json) && row.sections_json.length > 0) {
+        setSectionsBlocks(row.sections_json as SectionBlock[]);
+        setContentMode("blocks");
+      }
 
       setLoadingData(false);
     }
@@ -294,6 +305,7 @@ export default function DuzenlePage() {
       players_json: playersList.length > 0 ? JSON.stringify(playersList) : null,
       hero_variant: heroVariant,
       accent: accentColor,
+      sections_json: sectionsBlocks.length > 0 ? sectionsBlocks : null,
     };
 
     if (publish) updateData.status = "yayinda";
@@ -715,13 +727,56 @@ export default function DuzenlePage() {
             </div>
           </div>
 
-          {/* İçerik editörü */}
-          <div>
-            <label className="mb-1.5 block text-xs font-semibold text-slate-300">İçerik</label>
-            {activeLang === "tr" ? (
-              <RichTextEditor value={content} onChange={setContent} placeholder="İçerik yazın..." />
+          {/* İçerik editörü — Rich Text veya Blok Editörü */}
+          <div className="rounded-xl border border-slate-700/60 bg-slate-900/40 p-5">
+            {/* Mod seçimi */}
+            <div className="flex items-center justify-between mb-4">
+              <label className="text-xs font-semibold text-slate-300">İçerik</label>
+              <div className="flex rounded-lg overflow-hidden border border-slate-700/60">
+                <button
+                  type="button"
+                  onClick={() => setContentMode("rich")}
+                  className={`px-3 py-1.5 text-[11px] font-semibold transition ${
+                    contentMode === "rich"
+                      ? "bg-slate-700 text-slate-100"
+                      : "bg-transparent text-slate-500 hover:text-slate-300"
+                  }`}
+                >
+                  ✏️ Rich Text
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setContentMode("blocks")}
+                  className={`px-3 py-1.5 text-[11px] font-semibold transition ${
+                    contentMode === "blocks"
+                      ? "bg-emerald-500/20 text-emerald-300 border-l border-slate-700/60"
+                      : "bg-transparent text-slate-500 hover:text-slate-300 border-l border-slate-700/60"
+                  }`}
+                >
+                  🧱 Blok Editörü
+                </button>
+              </div>
+            </div>
+
+            {contentMode === "rich" ? (
+              <div>
+                {activeLang === "tr" ? (
+                  <RichTextEditor value={content} onChange={setContent} placeholder="İçerik yazın..." />
+                ) : (
+                  <RichTextEditor value={contentEn} onChange={setContentEn} placeholder="Write content in English..." />
+                )}
+                <p className="mt-2 text-[10px] text-slate-600">
+                  Ham HTML editörü. <strong className="text-slate-500">Blok Editörü</strong> sekmesine geçerek lead, spot alıntı ve callout blokları görsel olarak ekleyebilirsin.
+                </p>
+              </div>
             ) : (
-              <RichTextEditor value={contentEn} onChange={setContentEn} placeholder="Write content in English..." />
+              <div>
+                <p className="text-[11px] text-slate-500 mb-4">
+                  Her blok ayrı bir bölüm olarak render edilir. Kaydettiğinde <code className="text-sky-400">sections_json</code> kolonu güncellenir
+                  ve makale bu yapıyı kullanır (Rich Text yerine).
+                </p>
+                <SectionsEditor value={sectionsBlocks} onChange={setSectionsBlocks} />
+              </div>
             )}
           </div>
 
