@@ -2,7 +2,7 @@
 
 /* ─────────────────────────────────────────────────────────────────
    Scout Gamer — V2 Design System
-   oklch-based token system with dark/light theme support
+   oklch-based token system — dark mode only
 ───────────────────────────────────────────────────────────────── */
 
 :root {
@@ -69,20 +69,6 @@
   --foreground: var(--ink-100);
 }
 
-/* ── Light theme ── */
-[data-theme="light"] {
-  --sg-bg:           var(--paper);
-  --sg-surface-low:  oklch(0.93 0.008 80);
-  --sg-surface:      oklch(0.90 0.008 80);
-  --sg-surface-high: oklch(0.86 0.01 80);
-  --sg-surface-top:  oklch(0.80 0.012 80);
-  --sg-border:       oklch(0.80 0.01 240 / 0.4);
-  --sg-text-primary:   var(--ink-800);
-  --sg-text-secondary: var(--ink-700);
-  --sg-text-muted:     var(--ink-500);
-  --background: var(--paper);
-  --foreground: var(--ink-800);
-}
 
 @theme inline {
   --color-background: var(--background);
@@ -101,7 +87,6 @@ body {
   font-feature-settings: "ss01", "cv11";
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
-  transition: background 0.2s ease, color 0.2s ease;
 }
 
 h1, h2, h3, h4, h5, h6 {

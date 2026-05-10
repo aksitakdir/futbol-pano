@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef, useCallback } from "react";
+// Theme is always dark — toggle removed
 import { createPortal } from "react-dom";
 import Link from "next/link";
 import { useRouter, usePathname } from "next/navigation";
@@ -24,27 +25,6 @@ const CAT_COLOR: Record<string, string> = {
   radar: "var(--emerald)",
   "taktik-lab": "var(--sky)",
 };
-
-/* ── Theme hook ───────────────────────────────────────────────── */
-function useTheme() {
-  const [theme, setThemeState] = useState<"dark" | "light">("dark");
-
-  useEffect(() => {
-    const saved = localStorage.getItem("sg-theme") as "dark" | "light" | null;
-    const initial = saved ?? "dark";
-    setThemeState(initial);
-    document.documentElement.dataset.theme = initial;
-  }, []);
-
-  const setTheme = (t: "dark" | "light") => {
-    setThemeState(t);
-    document.documentElement.dataset.theme = t;
-    localStorage.setItem("sg-theme", t);
-  };
-
-  const toggle = () => setTheme(theme === "dark" ? "light" : "dark");
-  return { theme, toggle };
-}
 
 /* ── Logo ─────────────────────────────────────────────────────── */
 function Wordmark({ isEn }: { isEn: boolean }) {
@@ -74,28 +54,10 @@ function navHrefMatches(pathname: string, href: string): boolean {
   return pathname === href || pathname.startsWith(`${href}/`);
 }
 
-/* ── Theme toggle icon ─────────────────────────────────────────── */
-function ThemeIcon({ theme }: { theme: "dark" | "light" }) {
-  return theme === "dark" ? (
-    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
-      <circle cx="12" cy="12" r="5" /><line x1="12" y1="2" x2="12" y2="4" /><line x1="12" y1="20" x2="12" y2="22" />
-      <line x1="4.22" y1="4.22" x2="5.64" y2="5.64" /><line x1="18.36" y1="18.36" x2="19.78" y2="19.78" />
-      <line x1="2" y1="12" x2="4" y2="12" /><line x1="20" y1="12" x2="22" y2="12" />
-      <line x1="4.22" y1="19.78" x2="5.64" y2="18.36" /><line x1="18.36" y1="5.64" x2="19.78" y2="4.22" />
-    </svg>
-  ) : (
-    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
-      <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
-    </svg>
-  );
-}
-
 export default function SiteHeader({ activeNav, maxWidth = "max-w-7xl", forceEn }: Props) {
   const router = useRouter();
   const pathname = usePathname();
   const isEn = forceEn ?? pathname.startsWith("/en");
-  const { theme, toggle: toggleTheme } = useTheme();
-
   const [open, setOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
@@ -311,12 +273,6 @@ export default function SiteHeader({ activeNav, maxWidth = "max-w-7xl", forceEn 
           style={{ fontSize: 11, letterSpacing: "0.14em", background: "var(--sg-surface)", border: "1px solid var(--sg-border)", borderRadius: 999, color: "var(--sg-text-secondary)" }}>
           {isEn ? "EN ↔ TR" : "TR ↔ EN"}
         </button>
-        <button type="button" onClick={toggleTheme}
-          className="flex h-10 w-10 items-center justify-center transition hover:opacity-80"
-          style={{ background: "var(--sg-surface)", border: "1px solid var(--sg-border)", borderRadius: 999, color: "var(--sg-text-muted)" }}
-          aria-label="Toggle theme">
-          <ThemeIcon theme={theme} />
-        </button>
       </div>
     </div>
   ) : null;
@@ -365,17 +321,6 @@ export default function SiteHeader({ activeNav, maxWidth = "max-w-7xl", forceEn 
                 border: "1px solid var(--sg-surface-top)", background: "transparent", color: "var(--sg-text-secondary)",
               }}>
               {isEn ? "EN ↔ TR" : "TR ↔ EN"}
-            </button>
-
-            {/* Theme toggle */}
-            <button type="button" onClick={toggleTheme}
-              className="flex h-8 w-8 items-center justify-center transition hover:opacity-80"
-              style={{
-                border: "1px solid var(--sg-surface-top)", background: "transparent",
-                borderRadius: 999, color: "var(--sg-text-muted)",
-              }}
-              aria-label="Toggle theme">
-              <ThemeIcon theme={theme} />
             </button>
 
             {/* Search */}
