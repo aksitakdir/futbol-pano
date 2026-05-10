@@ -2,173 +2,209 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { motion } from "framer-motion";
-import { IconClock } from "../../components/icons";
 import SiteHeader from "../../components/site-header";
 import SiteFooter from "../../components/site-footer";
+import PlayerCard, { type PlayerCardData } from "../../components/player-card";
 import { supabase } from "@/lib/supabase";
 import { stripHtml, estimateReadMinutes } from "@/lib/utils";
 
 type Content = {
-  id: string;
-  title: string;
-  title_en?: string;
-  slug: string;
-  content: string;
-  content_en?: string;
-  created_at: string;
+  id: string; title: string; title_en?: string; slug: string;
+  content: string; content_en?: string; created_at: string;
 };
 
 const PAGE_SIZE = 9;
-const easeOut = [0.22, 1, 0.36, 1] as [number, number, number, number];
-const stagger = { hidden: {}, visible: { transition: { staggerChildren: 0.08 } } };
-const fadeUp = { hidden: { opacity: 0, y: 20 }, visible: { opacity: 1, y: 0, transition: { duration: 0.5, ease: easeOut } } };
-const ACCENTS = ["var(--sg-primary)", "var(--sg-secondary)", "var(--sg-tertiary)", "var(--sg-amber)"];
+
+function RadarMosaic({ players }: { players: Partial<PlayerCardData>[] }) {
+  if (!players.length) return null;
+  const offsets = [
+    { top: 0, left: 0, rotate: -4, zIndex: 1 },
+    { top: 20, left: 60, rotate: 2, zIndex: 2 },
+    { top: -10, left: 120, rotate: -2, zIndex: 3 },
+  ];
+  return (
+    <div style={{ position: "relative", height: 280, width: "100%" }}>
+      {players.slice(0, 3).map((p, i) => (
+        <div key={i} style={{
+          position: "absolute",
+          top: offsets[i]?.top ?? 0, left: offsets[i]?.left ?? 0,
+          transform: `rotate(${offsets[i]?.rotate ?? 0}deg)`,
+          zIndex: offsets[i]?.zIndex ?? 1, opacity: 1 - i * 0.08,
+          transformOrigin: "center bottom",
+        }}>
+          <PlayerCard player={p as PlayerCardData} size="mini" animated={false} showScoutNote={false} />
+        </div>
+      ))}
+    </div>
+  );
+}
 
 export default function EnRadarPage() {
   const [articles, setArticles] = useState<Content[]>([]);
   const [loading, setLoading] = useState(true);
   const [loadingMore, setLoadingMore] = useState(false);
   const [hasMore, setHasMore] = useState(true);
+  const [heroPlayers, setHeroPlayers] = useState<Partial<PlayerCardData>[]>([]);
 
   useEffect(() => {
-    supabase
-      .from("contents")
+    supabase.from("contents")
       .select("id,title,title_en,slug,content,content_en,created_at")
-      .eq("status", "yayinda")
-      .eq("category", "radar")
-      .order("created_at", { ascending: false })
-      .range(0, PAGE_SIZE - 1)
+      .eq("status", "yayinda").eq("category", "radar")
+      .order("created_at", { ascending: false }).range(0, PAGE_SIZE - 1)
       .then(({ data }) => {
         const items = data ?? [];
-        setArticles(items);
-        setHasMore(items.length === PAGE_SIZE);
-        setLoading(false);
+        setArticles(items); setHasMore(items.length === PAGE_SIZE); setLoading(false);
+      });
+  }, []);
+
+  useEffect(() => {
+    supabase.from("fc_players")
+      .select("name,overall,pace,shooting,passing,dribbling,defending,physical,photo_url,position,club,league,age")
+      .order("overall", { ascending: false }).limit(9)
+      .then(({ data }) => {
+        if (data?.length) {
+          const shuffled = [...data].sort(() => Math.random() - 0.5).slice(0, 3);
+          setHeroPlayers(shuffled);
+        }
       });
   }, []);
 
   async function handleLoadMore() {
     setLoadingMore(true);
-    const { data } = await supabase
-      .from("contents")
+    const { data } = await supabase.from("contents")
       .select("id,title,title_en,slug,content,content_en,created_at")
-      .eq("status", "yayinda")
-      .eq("category", "radar")
+      .eq("status", "yayinda").eq("category", "radar")
       .order("created_at", { ascending: false })
       .range(articles.length, articles.length + PAGE_SIZE - 1);
     const items = data ?? [];
     setArticles(prev => [...prev, ...items]);
-    setHasMore(items.length === PAGE_SIZE);
-    setLoadingMore(false);
+    setHasMore(items.length === PAGE_SIZE); setLoadingMore(false);
   }
 
   return (
     <main style={{ background: "var(--sg-bg)", color: "var(--sg-text-primary)", minHeight: "100vh" }}>
       <SiteHeader activeNav="radar" />
-      <motion.div className="pt-[72px]" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, ease: easeOut }}>
-        <div className="relative mx-auto max-w-7xl overflow-hidden px-8 py-20">
-          <div
-            className="pointer-events-none absolute -right-40 -top-20 h-96 w-96 rounded-full opacity-10"
-            style={{ background: "radial-gradient(circle, var(--sg-primary) 0%, transparent 70%)", filter: "blur(120px)" }}
-          />
-          <div className="relative max-w-3xl">
-            <div className="mb-5 flex items-center gap-3">
-              <div className="h-[2px] w-12" style={{ background: "var(--sg-primary)" }} />
-              <span className="text-[10px] font-bold uppercase tracking-[0.3em]" style={{ color: "var(--sg-primary)", fontFamily: "var(--font-headline)" }}>
-                Weekly Radar
-              </span>
-            </div>
-            <h1 className="mb-5 font-bold leading-none tracking-tighter" style={{ fontFamily: "var(--font-headline)", fontSize: "clamp(2.5rem, 6vw, 4.5rem)" }}>
-              Radar <span style={{ color: "var(--sg-primary)" }}>Archive</span>
+      <div style={{ paddingTop: "68px" }} />
+
+      {/* ── V2 Category Hero ── */}
+      <section className="grain relative overflow-hidden" style={{
+        background: "var(--sg-surface-low)", borderBottom: "1px solid var(--sg-border)",
+      }}>
+        <div style={{
+          backgroundImage: "repeating-linear-gradient(-45deg, rgba(0,0,0,0.06) 0 1px, transparent 1px 12px)",
+          position: "absolute", inset: 0, pointerEvents: "none",
+        }} />
+        <div style={{
+          maxWidth: 1440, margin: "0 auto", padding: "72px 32px 56px",
+          display: "grid", gridTemplateColumns: "1fr 1fr", gap: 48, alignItems: "center",
+        }}>
+          <div>
+            <div className="eyebrow" style={{ color: "var(--accent)", marginBottom: 14 }}>WEEKLY RADAR</div>
+            <h1 className="display" style={{
+              fontSize: "clamp(3rem, 6vw, 5rem)", fontWeight: 700,
+              letterSpacing: "-0.04em", lineHeight: 0.92, margin: "0 0 20px",
+            }}>
+              Radar<br />
+              <span style={{
+                background: "linear-gradient(120deg, var(--accent) 0%, var(--accent-2) 100%)",
+                WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", backgroundClip: "text",
+              }}>Archive</span>
             </h1>
-            <p className="max-w-2xl text-base leading-relaxed" style={{ color: "var(--sg-text-secondary)" }}>
-              Weekly player analyses, undiscovered talents and in-depth scouting reports.
+            <p style={{ fontSize: 18, lineHeight: 1.6, color: "var(--sg-text-secondary)", maxWidth: 440, margin: "0 0 28px" }}>
+              Weekly player analyses, undiscovered talents and in-depth reviews from a scout&apos;s perspective.
             </p>
+            <div style={{ display: "flex", gap: 8 }}>
+              {["Forward", "Midfield", "Defence", "Goalkeeper"].map((pos) => (
+                <span key={pos} className="chip" style={{ fontSize: 10 }}>{pos}</span>
+              ))}
+            </div>
+          </div>
+          <div style={{ display: "flex", justifyContent: "flex-end", paddingRight: 24 }}>
+            {heroPlayers.length > 0 ? (
+              <RadarMosaic players={heroPlayers} />
+            ) : (
+              <div style={{
+                width: 220, height: 280, border: "1px solid var(--sg-border)",
+                background: "var(--sg-surface)", display: "flex", alignItems: "center", justifyContent: "center",
+              }}>
+                <span className="mono" style={{ fontSize: 10, letterSpacing: "0.14em", color: "var(--sg-text-muted)" }}>
+                  RADAR RADAR
+                </span>
+              </div>
+            )}
           </div>
         </div>
-        <div className="mx-auto max-w-7xl px-8 pb-20">
-          {loading ? (
-            <div className="flex justify-center py-20">
-              <span
-                className="h-5 w-5 animate-spin rounded-full border-2 border-t-transparent"
-                style={{ borderColor: "var(--sg-primary)", borderTopColor: "transparent" }}
-              />
+      </section>
+
+      {/* ── Article Grid ── */}
+      <div style={{ maxWidth: 1440, margin: "0 auto", padding: "60px 32px 80px" }}>
+        {loading ? (
+          <div style={{ display: "flex", justifyContent: "center", padding: "80px 0" }}>
+            <span className="h-5 w-5 animate-spin rounded-full border-2 border-t-transparent"
+              style={{ borderColor: "var(--accent)", borderTopColor: "transparent" }} />
+          </div>
+        ) : articles.length === 0 ? (
+          <p className="mono" style={{ fontSize: 12, textAlign: "center", padding: "80px 0", color: "var(--sg-text-muted)" }}>
+            NO RADAR ARTICLES PUBLISHED YET.
+          </p>
+        ) : (
+          <>
+            <div style={{ marginBottom: 32 }}>
+              <div className="eyebrow" style={{ color: "var(--accent)" }}>LATEST ANALYSES</div>
+              <h2 className="display" style={{ fontSize: 28, fontWeight: 700, letterSpacing: "-0.03em", margin: "6px 0 0" }}>
+                All Reports
+              </h2>
             </div>
-          ) : (
-            <>
-            <motion.div className="grid gap-4 md:grid-cols-2" variants={stagger} initial="hidden" animate="visible">
-              {articles.map((article, index) => {
-                const accent = ACCENTS[index % ACCENTS.length];
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 16 }}>
+              {articles.map((article) => {
                 const hasEn = !!article.title_en;
+                const readMins = estimateReadMinutes(article.content_en || article.content);
                 return (
-                  <motion.div key={article.id} variants={fadeUp}>
-                    <Link
-                      href={`/en/radar/${article.slug}`}
-                      className="group flex h-full flex-col transition hover:-translate-y-0.5"
-                      style={{ background: "var(--sg-surface)", borderLeft: `3px solid ${accent}` }}
-                    >
-                      <div className="flex flex-1 flex-col p-5">
-                        <div className="mb-4 flex items-center justify-between">
-                          <span className="text-[9px] font-bold uppercase tracking-[0.2em]" style={{ color: accent, fontFamily: "var(--font-headline)" }}>
-                            Radar
-                          </span>
-                          <div className="flex items-center gap-3">
-                            {!hasEn && (
-                              <span
-                                className="px-1.5 py-0.5 text-[9px] font-bold"
-                                style={{
-                                  background: "rgba(249,189,34,0.15)",
-                                  color: "var(--sg-amber)",
-                                  fontFamily: "var(--font-headline)",
-                                  letterSpacing: "0.06em",
-                                }}
-                              >
-                                COMING SOON
-                              </span>
-                            )}
-                            <span className="flex items-center gap-1 text-[10px]" style={{ color: "var(--sg-text-muted)" }}>
-                              <IconClock /> {estimateReadMinutes(article.content_en || article.content)} min
-                            </span>
-                          </div>
-                        </div>
-                        <h2 className="mb-3 line-clamp-2 text-sm font-bold leading-snug" style={{ fontFamily: "var(--font-headline)", color: "var(--sg-text-primary)" }}>
-                          {article.title_en || article.title}
-                        </h2>
-                        <p className="mb-4 line-clamp-3 text-xs leading-relaxed" style={{ color: "var(--sg-text-secondary)" }}>
-                          {stripHtml(article.content_en || article.content).replace(/\s+/g, " ").trim().slice(0, 160)}…
-                        </p>
-                        <div className="mt-auto inline-flex items-center gap-1 text-[11px] font-bold" style={{ color: accent, fontFamily: "var(--font-headline)" }}>
-                          Read <span className="transition-transform group-hover:translate-x-0.5">→</span>
+                  <Link key={article.id} href={`/en/radar/${article.slug}`}
+                    className="lift" style={{
+                      background: "var(--sg-surface)", border: "1px solid var(--sg-border)",
+                      borderRadius: 4, overflow: "hidden", display: "flex", flexDirection: "column",
+                    }}>
+                    <div style={{ height: 2, background: "var(--accent)" }} />
+                    <div style={{ padding: "20px 24px 24px", flex: 1, display: "flex", flexDirection: "column" }}>
+                      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 14 }}>
+                        <span className="mono" style={{ fontSize: 9, letterSpacing: "0.2em", color: "var(--accent)" }}>RADAR</span>
+                        <div className="mono" style={{ fontSize: 9, letterSpacing: "0.14em", color: "var(--sg-text-muted)", display: "flex", gap: 10, alignItems: "center" }}>
+                          {!hasEn && (
+                            <span style={{ color: "var(--amber)", fontSize: 8, letterSpacing: "0.1em" }}>DRAFT</span>
+                          )}
+                          <span>{new Date(article.created_at).toLocaleDateString("en-US", { day: "numeric", month: "short" })}</span>
+                          <span>{readMins} MIN</span>
                         </div>
                       </div>
-                    </Link>
-                  </motion.div>
+                      <h2 className="display" style={{
+                        fontSize: 18, fontWeight: 600, lineHeight: 1.2,
+                        letterSpacing: "-0.02em", margin: "0 0 10px", textWrap: "balance",
+                      }}>
+                        {article.title_en || article.title}
+                      </h2>
+                      <p style={{ fontSize: 13, lineHeight: 1.5, color: "var(--sg-text-secondary)", flex: 1, margin: "0 0 16px" }}>
+                        {stripHtml(article.content_en || article.content).replace(/\s+/g, " ").trim().slice(0, 160)}…
+                      </p>
+                      <div className="mono" style={{ fontSize: 10, letterSpacing: "0.14em", color: "var(--accent)" }}>
+                        READ REPORT →
+                      </div>
+                    </div>
+                  </Link>
                 );
               })}
-            </motion.div>
-
+            </div>
             {hasMore && (
-              <div className="mt-12 flex justify-center">
-                <button
-                  type="button"
-                  onClick={handleLoadMore}
-                  disabled={loadingMore}
-                  className="flex items-center gap-2 px-8 py-3 text-xs font-black uppercase tracking-widest transition-all hover:brightness-110 disabled:opacity-50"
-                  style={{ background: "var(--sg-surface)", color: "var(--sg-primary)", border: "1px solid rgba(59,130,246,0.3)", fontFamily: "var(--font-headline)" }}
-                >
-                  {loadingMore ? (
-                    <>
-                      <span className="h-3 w-3 animate-spin rounded-full border border-t-transparent" style={{ borderColor: "var(--sg-primary)", borderTopColor: "transparent" }} />
-                      Loading...
-                    </>
-                  ) : "Load More →"}
+              <div style={{ marginTop: 48, display: "flex", justifyContent: "center" }}>
+                <button type="button" onClick={handleLoadMore} disabled={loadingMore} className="btn">
+                  {loadingMore ? "Loading..." : "LOAD MORE →"}
                 </button>
               </div>
             )}
-            </>
-          )}
-        </div>
-      </motion.div>
+          </>
+        )}
+      </div>
+
       <SiteFooter maxWidth="max-w-7xl" />
     </main>
   );

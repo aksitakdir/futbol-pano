@@ -2,19 +2,14 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { motion } from "framer-motion";
 import { IconShield, IconTrendUp, IconStar } from "../components/icons";
 import SiteHeader from "../components/site-header";
 import SiteFooter from "../components/site-footer";
-import CategoryHero from "../components/category-hero";
 import { supabase } from "@/lib/supabase";
 
 type SupabaseContent = { id: string; title: string; slug: string; created_at: string; };
 
 const PAGE_SIZE = 9;
-const easeOut = [0.22, 1, 0.36, 1] as [number, number, number, number];
-const stagger = { hidden: {}, visible: { transition: { staggerChildren: 0.08, delayChildren: 0.1 } } };
-const fadeUp = { hidden: { opacity: 0, y: 20 }, visible: { opacity: 1, y: 0, transition: { duration: 0.5, ease: easeOut } } };
 
 const STATIC_LISTS = [
   { slug: "en-iyi-10-genc-stoper", title: "En İyi 10 Genç Stoper", description: "Avrupa liglerinde 23 yaş altı modern stoper profiline uyan oyuncuların detaylı analizi.", icon: <IconShield />, color: "var(--sg-primary)" },
@@ -52,121 +47,163 @@ export default function ListsPage() {
   return (
     <main style={{ background: "var(--sg-bg)", color: "var(--sg-text-primary)", minHeight: "100vh" }}>
       <SiteHeader activeNav="listeler" />
+      <div style={{ paddingTop: "68px" }} />
 
-      <motion.div className="pt-[72px]" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, ease: easeOut }}>
-
-        <CategoryHero accent="var(--sg-secondary)">
-          <div className="max-w-3xl">
-            <div className="flex items-center gap-3 mb-5">
-              <div className="h-[2px] w-12" style={{ background: "var(--sg-secondary)" }} />
-              <span className="text-[10px] font-bold uppercase tracking-[0.3em]"
-                style={{ color: "var(--sg-secondary)", fontFamily: "var(--font-headline)" }}>Kürasyonlu Listeler</span>
-            </div>
-            <h1 className="font-bold tracking-tighter leading-none mb-5"
-              style={{ fontFamily: "var(--font-headline)", fontSize: "clamp(2.5rem, 6vw, 4.5rem)" }}>
-              Scout&apos;un <span style={{ color: "var(--sg-secondary)" }}>Listeleri</span>
+      {/* ── V2 Category Hero ── */}
+      <section className="grain relative overflow-hidden" style={{
+        background: "var(--sg-surface-low)",
+        borderBottom: "1px solid var(--sg-border)",
+      }}>
+        <div style={{
+          backgroundImage: "repeating-linear-gradient(-45deg, rgba(0,0,0,0.06) 0 1px, transparent 1px 12px)",
+          position: "absolute", inset: 0, pointerEvents: "none",
+        }} />
+        <div style={{
+          maxWidth: 1440, margin: "0 auto", padding: "72px 32px 56px",
+          display: "grid", gridTemplateColumns: "1fr 1fr", gap: 48, alignItems: "center",
+        }}>
+          {/* Left */}
+          <div>
+            <div className="eyebrow" style={{ color: "var(--emerald)", marginBottom: 14 }}>KÜRASYONLU LİSTELER</div>
+            <h1 className="display" style={{
+              fontSize: "clamp(3rem, 6vw, 5rem)", fontWeight: 700,
+              letterSpacing: "-0.04em", lineHeight: 0.92, margin: "0 0 20px",
+            }}>
+              Scout&apos;un<br />
+              <span style={{
+                background: "linear-gradient(120deg, var(--emerald) 0%, var(--accent) 100%)",
+                WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", backgroundClip: "text",
+              }}>Listeleri</span>
             </h1>
-            <p className="text-base leading-relaxed max-w-2xl" style={{ color: "var(--sg-text-secondary)" }}>
-              Liglere, pozisyonlara ve yaş gruplarına göre kürasyonlu listeler. Veri ve scout gözlemlerini bir araya getirir.
+            <p style={{ fontSize: 18, lineHeight: 1.6, color: "var(--sg-text-secondary)", maxWidth: 440, margin: "0 0 28px" }}>
+              Liglere, pozisyonlara ve yaş gruplarına göre kürasyonlu listeler. Veri ve scout gözlemini birleştirir.
             </p>
-          </div>
-        </CategoryHero>
-
-        <div className="max-w-7xl mx-auto px-8 pt-16 pb-20">
-          {dbLists.length > 0 && (
-            <motion.section className="mb-16">
-              <div className="flex items-center gap-3 mb-6">
-                <div className="h-px flex-1" style={{ background: "rgba(26,58,92,0.5)" }} />
-                <p className="text-[10px] font-bold uppercase tracking-[0.25em]"
-                  style={{ color: "var(--sg-secondary)", fontFamily: "var(--font-headline)" }}>Güncel Listeler</p>
-                <div className="h-px flex-1" style={{ background: "rgba(26,58,92,0.5)" }} />
-              </div>
-              <motion.div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3" variants={stagger} initial="hidden" animate="visible">
-                {dbLists.map(item => (
-                  <motion.div key={item.id} variants={fadeUp}>
-                    <Link href={`/listeler/${item.slug}`}
-                      className="group flex flex-col h-full transition hover:-translate-y-0.5"
-                      style={{ background: "var(--sg-surface)", borderLeft: "3px solid var(--sg-secondary)" }}>
-                      <div className="flex flex-1 flex-col p-5">
-                        <div className="flex items-center justify-between mb-3">
-                          <span className="text-[9px] font-bold uppercase tracking-[0.2em]"
-                            style={{ color: "var(--sg-secondary)", fontFamily: "var(--font-headline)" }}>Listeler</span>
-                          <span className="text-[10px]" style={{ color: "var(--sg-text-muted)" }}>
-                            {new Date(item.created_at).toLocaleDateString("tr-TR", { day: "numeric", month: "short" })}
-                          </span>
-                        </div>
-                        <h2 className="text-sm font-bold leading-snug mb-4 line-clamp-2 transition"
-                          style={{ fontFamily: "var(--font-headline)", color: "var(--sg-text-primary)" }}>
-                          {item.title}
-                        </h2>
-                        <div className="mt-auto inline-flex items-center gap-1 text-[11px] font-bold"
-                          style={{ color: "var(--sg-secondary)", fontFamily: "var(--font-headline)" }}>
-                          Detayları Gör <span className="transition-transform group-hover:translate-x-0.5">→</span>
-                        </div>
-                      </div>
-                    </Link>
-                  </motion.div>
-                ))}
-              </motion.div>
-
-              {hasMore && (
-                <div className="mt-10 flex justify-center">
-                  <button
-                    type="button"
-                    onClick={handleLoadMore}
-                    disabled={loadingMore}
-                    className="flex items-center gap-2 px-8 py-3 text-xs font-black uppercase tracking-widest transition-all hover:brightness-110 disabled:opacity-50"
-                    style={{ background: "var(--sg-surface)", color: "var(--sg-secondary)", border: "1px solid rgba(16,185,129,0.3)", fontFamily: "var(--font-headline)" }}
-                  >
-                    {loadingMore ? (
-                      <>
-                        <span className="h-3 w-3 animate-spin rounded-full border border-t-transparent" style={{ borderColor: "var(--sg-secondary)", borderTopColor: "transparent" }} />
-                        Yükleniyor...
-                      </>
-                    ) : "Daha Fazla Yükle →"}
-                  </button>
+            <div style={{ display: "flex", gap: 20 }}>
+              {[
+                { label: "50+", desc: "Oyuncu profili" },
+                { label: "12", desc: "Aktif liste" },
+                { label: "5", desc: "Lig kapsanıyor" },
+              ].map(({ label, desc }) => (
+                <div key={label}>
+                  <div className="display" style={{ fontSize: 28, fontWeight: 700, color: "var(--emerald)", letterSpacing: "-0.03em" }}>{label}</div>
+                  <div className="mono" style={{ fontSize: 10, letterSpacing: "0.14em", color: "var(--sg-text-muted)" }}>{desc.toUpperCase()}</div>
                 </div>
-              )}
-            </motion.section>
-          )}
-
-          <motion.section>
-            <div className="flex items-center gap-3 mb-6">
-              <div className="h-px flex-1" style={{ background: "rgba(26,58,92,0.5)" }} />
-              <p className="text-[10px] font-bold uppercase tracking-[0.25em]"
-                style={{ color: "var(--sg-secondary)", fontFamily: "var(--font-headline)" }}>Öne Çıkan Listeler</p>
-              <div className="h-px flex-1" style={{ background: "rgba(26,58,92,0.5)" }} />
+              ))}
             </div>
-            <motion.div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3" variants={stagger} initial="hidden" animate="visible">
-            {STATIC_LISTS.map(list => (
-              <motion.div key={list.slug} variants={fadeUp}>
-                <Link href={`/listeler/${list.slug}`}
-                  className="group flex flex-col h-full transition hover:-translate-y-0.5"
-                  style={{ background: "var(--sg-surface)", borderLeft: `3px solid ${list.color}` }}>
-                  <div className="flex flex-1 flex-col p-5">
-                    <div className="mb-4 flex h-10 w-10 items-center justify-center"
-                      style={{ background: `${list.color}15`, color: list.color }}>
-                      {list.icon}
+          </div>
+          {/* Right — Rank Card Stack */}
+          <div style={{ display: "flex", justifyContent: "flex-end", gap: 0 }}>
+            <div style={{ display: "flex", flexDirection: "column", gap: 8, width: 280 }}>
+              {[
+                { rank: "#01", pos: "Forvet", tag: "HÜCUM", color: "var(--rose)" },
+                { rank: "#02", pos: "Orta Saha", tag: "KREATİF", color: "var(--accent)" },
+                { rank: "#03", pos: "Defans", tag: "MOBİL", color: "var(--emerald)" },
+                { rank: "#04", pos: "Bek", tag: "MODERN", color: "var(--sky)" },
+              ].map(({ rank, pos, tag, color }, i) => (
+                <div key={rank} style={{
+                  background: "var(--sg-surface)", border: "1px solid var(--sg-border)",
+                  borderLeft: `3px solid ${color}`,
+                  padding: "12px 16px", display: "flex", alignItems: "center", gap: 12,
+                  opacity: 1 - i * 0.12,
+                }}>
+                  <span className="mono" style={{ fontSize: 22, fontWeight: 700, color, letterSpacing: "-0.02em", minWidth: 44 }}>{rank}</span>
+                  <div>
+                    <div className="display" style={{ fontSize: 14, fontWeight: 600 }}>{pos}</div>
+                    <div className="mono" style={{ fontSize: 9, letterSpacing: "0.18em", color: "var(--sg-text-muted)" }}>{tag}</div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ── Content Grid ── */}
+      <div style={{ maxWidth: 1440, margin: "0 auto", padding: "60px 32px 80px" }}>
+
+        {/* DB Lists */}
+        {dbLists.length > 0 && (
+          <section style={{ marginBottom: 64 }}>
+            <div style={{ marginBottom: 32 }}>
+              <div className="eyebrow" style={{ color: "var(--emerald)" }}>GÜNCEL LİSTELER</div>
+              <h2 className="display" style={{ fontSize: 28, fontWeight: 700, letterSpacing: "-0.03em", margin: "6px 0 0" }}>
+                Son Eklenenler
+              </h2>
+            </div>
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 16 }}>
+              {dbLists.map((item) => (
+                <Link key={item.id} href={`/listeler/${item.slug}`}
+                  className="lift" style={{
+                    background: "var(--sg-surface)", border: "1px solid var(--sg-border)",
+                    borderRadius: 4, overflow: "hidden", display: "flex", flexDirection: "column",
+                  }}>
+                  <div style={{ height: 2, background: "var(--emerald)" }} />
+                  <div style={{ padding: "20px 24px 24px", flex: 1, display: "flex", flexDirection: "column" }}>
+                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 14 }}>
+                      <span className="mono" style={{ fontSize: 9, letterSpacing: "0.2em", color: "var(--emerald)" }}>LİSTE</span>
+                      <span className="mono" style={{ fontSize: 9, letterSpacing: "0.14em", color: "var(--sg-text-muted)" }}>
+                        {new Date(item.created_at).toLocaleDateString("tr-TR", { day: "numeric", month: "short" })}
+                      </span>
                     </div>
-                    <h2 className="text-sm font-bold mb-2 transition"
-                      style={{ fontFamily: "var(--font-headline)", color: "var(--sg-text-primary)" }}>
-                      {list.title}
+                    <h2 className="display" style={{ fontSize: 18, fontWeight: 600, lineHeight: 1.2, letterSpacing: "-0.02em", margin: "0 0 16px", textWrap: "balance", flex: 1 }}>
+                      {item.title}
                     </h2>
-                    <p className="text-xs leading-relaxed mb-4" style={{ color: "var(--sg-text-secondary)" }}>
-                      {list.description}
-                    </p>
-                    <div className="mt-auto inline-flex items-center gap-1 text-[11px] font-bold transition"
-                      style={{ color: list.color, fontFamily: "var(--font-headline)" }}>
-                      Detayları Gör <span className="transition-transform group-hover:translate-x-0.5">→</span>
+                    <div className="mono" style={{ fontSize: 10, letterSpacing: "0.14em", color: "var(--emerald)" }}>
+                      DETAYLARI GÖR →
                     </div>
                   </div>
                 </Link>
-              </motion.div>
+              ))}
+            </div>
+            {hasMore && (
+              <div style={{ marginTop: 36, display: "flex", justifyContent: "center" }}>
+                <button type="button" onClick={handleLoadMore} disabled={loadingMore} className="btn" style={{ borderColor: "var(--emerald)", color: "var(--emerald)" }}>
+                  {loadingMore ? "Yükleniyor..." : "DAHA FAZLA YÜKLE →"}
+                </button>
+              </div>
+            )}
+          </section>
+        )}
+
+        {/* Static featured lists */}
+        <section>
+          <div style={{ marginBottom: 32 }}>
+            <div className="eyebrow">ÖNE ÇIKAN LİSTELER</div>
+            <h2 className="display" style={{ fontSize: 28, fontWeight: 700, letterSpacing: "-0.03em", margin: "6px 0 0" }}>
+              Seçilmiş Koleksiyonlar
+            </h2>
+          </div>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 16 }}>
+            {STATIC_LISTS.map((list) => (
+              <Link key={list.slug} href={`/listeler/${list.slug}`}
+                className="lift" style={{
+                  background: "var(--sg-surface)", border: "1px solid var(--sg-border)",
+                  borderRadius: 4, overflow: "hidden", display: "flex", flexDirection: "column",
+                }}>
+                <div style={{ height: 2, background: list.color }} />
+                <div style={{ padding: "24px", flex: 1, display: "flex", flexDirection: "column" }}>
+                  <div style={{
+                    width: 40, height: 40, display: "flex", alignItems: "center", justifyContent: "center",
+                    background: `color-mix(in oklch, ${list.color} 15%, transparent)`,
+                    color: list.color, marginBottom: 20,
+                  }}>
+                    {list.icon}
+                  </div>
+                  <h2 className="display" style={{ fontSize: 18, fontWeight: 600, lineHeight: 1.2, letterSpacing: "-0.02em", margin: "0 0 10px" }}>
+                    {list.title}
+                  </h2>
+                  <p style={{ fontSize: 13, lineHeight: 1.5, color: "var(--sg-text-secondary)", flex: 1, margin: "0 0 16px" }}>
+                    {list.description}
+                  </p>
+                  <div className="mono" style={{ fontSize: 10, letterSpacing: "0.14em", color: list.color }}>
+                    DETAYLARI GÖR →
+                  </div>
+                </div>
+              </Link>
             ))}
-            </motion.div>
-          </motion.section>
-        </div>
-      </motion.div>
+          </div>
+        </section>
+      </div>
 
       <SiteFooter maxWidth="max-w-7xl" />
     </main>

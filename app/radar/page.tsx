@@ -2,24 +2,48 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { motion } from "framer-motion";
-import { IconClock } from "../components/icons";
 import SiteHeader from "../components/site-header";
 import SiteFooter from "../components/site-footer";
-import CategoryHero from "../components/category-hero";
+import PlayerCard, { type PlayerCardData } from "../components/player-card";
 import { supabase } from "@/lib/supabase";
 import { stripHtml, estimateReadMinutes } from "@/lib/utils";
 
 type SupabaseContent = { id: string; title: string; slug: string; content: string; created_at: string; };
 
 const PAGE_SIZE = 9;
-const easeOut = [0.22, 1, 0.36, 1] as [number, number, number, number];
-const stagger = { hidden: {}, visible: { transition: { staggerChildren: 0.08, delayChildren: 0.1 } } };
-const fadeUp = { hidden: { opacity: 0, y: 20 }, visible: { opacity: 1, y: 0, transition: { duration: 0.5, ease: easeOut } } };
 
 function summary(content: string, max = 160): string {
   const t = stripHtml(content).replace(/\s+/g, " ").trim();
   return t.length > max ? `${t.slice(0, max)}…` : t;
+}
+
+function RadarMosaic({ players }: { players: Partial<PlayerCardData>[] }) {
+  if (!players.length) return null;
+  const offsets = [
+    { top: 0, left: 0, rotate: -4, zIndex: 1 },
+    { top: 20, left: 60, rotate: 2, zIndex: 2 },
+    { top: -10, left: 120, rotate: -2, zIndex: 3 },
+  ];
+  return (
+    <div style={{ position: "relative", height: 280, width: "100%" }}>
+      {players.slice(0, 3).map((p, i) => (
+        <div key={i} style={{
+          position: "absolute",
+          top: offsets[i]?.top ?? 0,
+          left: offsets[i]?.left ?? 0,
+          transform: `rotate(${offsets[i]?.rotate ?? 0}deg)`,
+          zIndex: offsets[i]?.zIndex ?? 1,
+          opacity: 1 - i * 0.08,
+          transformOrigin: "center bottom",
+        }}>
+          <PlayerCard
+            player={p as PlayerCardData}
+            size="mini" animated={false} showScoutNote={false}
+          />
+        </div>
+      ))}
+    </div>
+  );
 }
 
 export default function RadarPage() {
@@ -27,6 +51,7 @@ export default function RadarPage() {
   const [loading, setLoading] = useState(true);
   const [loadingMore, setLoadingMore] = useState(false);
   const [hasMore, setHasMore] = useState(true);
+  const [heroPlayers, setHeroPlayers] = useState<Partial<PlayerCardData>[]>([]);
 
   useEffect(() => {
     supabase.from("contents").select("id,title,slug,content,created_at")
@@ -37,6 +62,19 @@ export default function RadarPage() {
         setArticles(items);
         setHasMore(items.length === PAGE_SIZE);
         setLoading(false);
+      });
+  }, []);
+
+  useEffect(() => {
+    supabase.from("fc_players")
+      .select("name,overall,pace,shooting,passing,dribbling,defending,physical,photo_url,position,club,league,age")
+      .order("overall", { ascending: false })
+      .limit(9)
+      .then(({ data }) => {
+        if (data?.length) {
+          const shuffled = [...data].sort(() => Math.random() - 0.5).slice(0, 3);
+          setHeroPlayers(shuffled);
+        }
       });
   }, []);
 
@@ -54,109 +92,127 @@ export default function RadarPage() {
   return (
     <main style={{ background: "var(--sg-bg)", color: "var(--sg-text-primary)", minHeight: "100vh" }}>
       <SiteHeader activeNav="radar" />
+      <div style={{ paddingTop: "68px" }} />
 
-      <motion.div className="pt-[72px]" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, ease: easeOut }}>
-
-        <CategoryHero accent="var(--sg-primary)">
-          <div className="max-w-3xl">
-            <div className="flex items-center gap-3 mb-5">
-              <div className="h-[2px] w-12" style={{ background: "var(--sg-primary)" }} />
-              <span className="text-[10px] font-bold uppercase tracking-[0.3em]"
-                style={{ color: "var(--sg-primary)", fontFamily: "var(--font-headline)" }}>Haftalık Radar</span>
-            </div>
-            <h1 className="font-bold tracking-tighter leading-none mb-5"
-              style={{ fontFamily: "var(--font-headline)", fontSize: "clamp(2.5rem, 6vw, 4.5rem)" }}>
-              Radar <span style={{ color: "var(--sg-primary)" }}>Arşivi</span>
+      {/* ── V2 Category Hero ── */}
+      <section className="grain relative overflow-hidden" style={{
+        background: "var(--sg-surface-low)",
+        borderBottom: "1px solid var(--sg-border)",
+      }}>
+        <div style={{
+          backgroundImage: "repeating-linear-gradient(-45deg, rgba(0,0,0,0.06) 0 1px, transparent 1px 12px)",
+          position: "absolute", inset: 0, pointerEvents: "none",
+        }} />
+        <div style={{
+          maxWidth: 1440, margin: "0 auto", padding: "72px 32px 56px",
+          display: "grid", gridTemplateColumns: "1fr 1fr", gap: 48, alignItems: "center",
+        }}>
+          {/* Left */}
+          <div>
+            <div className="eyebrow" style={{ color: "var(--accent)", marginBottom: 14 }}>HAFTALIK RADAR</div>
+            <h1 className="display" style={{
+              fontSize: "clamp(3rem, 6vw, 5rem)", fontWeight: 700,
+              letterSpacing: "-0.04em", lineHeight: 0.92, margin: "0 0 20px",
+            }}>
+              Radar<br />
+              <span style={{
+                background: "linear-gradient(120deg, var(--accent) 0%, var(--accent-2) 100%)",
+                WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", backgroundClip: "text",
+              }}>Arşivi</span>
             </h1>
-            <p className="text-base leading-relaxed max-w-2xl" style={{ color: "var(--sg-text-secondary)" }}>
+            <p style={{ fontSize: 18, lineHeight: 1.6, color: "var(--sg-text-secondary)", maxWidth: 440, margin: "0 0 28px" }}>
               Haftalık oyuncu analizleri, keşfedilmemiş yetenekler ve scout perspektifinden derinlemesine incelemeler.
             </p>
+            <div style={{ display: "flex", gap: 8 }}>
+              {["Forvet", "Orta Saha", "Defans", "Kaleci"].map((pos) => (
+                <span key={pos} className="chip" style={{ fontSize: 10 }}>{pos}</span>
+              ))}
+            </div>
           </div>
-        </CategoryHero>
-
-        <div className="max-w-7xl mx-auto px-8 pt-16 pb-20">
-          {loading ? (
-            <div className="flex justify-center py-20">
-              <span className="h-5 w-5 animate-spin rounded-full border-2 border-t-transparent"
-                style={{ borderColor: "var(--sg-primary)", borderTopColor: "transparent" }} />
-            </div>
-          ) : articles.length === 0 ? (
-            <div className="py-20 text-center" style={{ color: "var(--sg-text-muted)" }}>
-              <p className="text-sm">Henüz yayında radar yazısı yok.</p>
-            </div>
-          ) : (
-            <>
-              <div className="flex items-center gap-3 mb-6">
-                <div className="h-px flex-1" style={{ background: "rgba(26,58,92,0.5)" }} />
-                <p className="text-[10px] font-bold uppercase tracking-[0.25em]"
-                  style={{ color: "var(--sg-primary)", fontFamily: "var(--font-headline)" }}>Güncel Radarlar</p>
-                <div className="h-px flex-1" style={{ background: "rgba(26,58,92,0.5)" }} />
+          {/* Right — PlayerCard mosaic */}
+          <div style={{ display: "flex", justifyContent: "flex-end", paddingRight: 24 }}>
+            {heroPlayers.length > 0 ? (
+              <RadarMosaic players={heroPlayers} />
+            ) : (
+              <div style={{
+                width: 220, height: 280, border: "1px solid var(--sg-border)",
+                background: "var(--sg-surface)", display: "flex", alignItems: "center", justifyContent: "center",
+              }}>
+                <span className="mono" style={{ fontSize: 10, letterSpacing: "0.14em", color: "var(--sg-text-muted)" }}>
+                  RADAR RADAR
+                </span>
               </div>
-            <motion.div className="grid gap-4 md:grid-cols-2" variants={stagger} initial="hidden" animate="visible">
-              {articles.map((article, index) => {
+            )}
+          </div>
+        </div>
+      </section>
+
+      {/* ── Article Grid ── */}
+      <div style={{ maxWidth: 1440, margin: "0 auto", padding: "60px 32px 80px" }}>
+        {loading ? (
+          <div style={{ display: "flex", justifyContent: "center", padding: "80px 0" }}>
+            <span className="h-5 w-5 animate-spin rounded-full border-2 border-t-transparent"
+              style={{ borderColor: "var(--accent)", borderTopColor: "transparent" }} />
+          </div>
+        ) : articles.length === 0 ? (
+          <p className="mono" style={{ fontSize: 12, textAlign: "center", padding: "80px 0", color: "var(--sg-text-muted)" }}>
+            HENÜZ YAYINDA RADAR YAZISI YOK.
+          </p>
+        ) : (
+          <>
+            <div style={{ marginBottom: 32 }}>
+              <div className="eyebrow" style={{ color: "var(--accent)" }}>GÜNCEL RADARLAR</div>
+              <h2 className="display" style={{ fontSize: 28, fontWeight: 700, letterSpacing: "-0.03em", margin: "6px 0 0" }}>
+                Tüm Analizler
+              </h2>
+            </div>
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 16 }}>
+              {articles.map((article) => {
                 const readMins = estimateReadMinutes(article.content);
                 const sum = summary(article.content);
-                // Dört renk rotasyonu
-                const accents = ["var(--sg-primary)", "var(--sg-secondary)", "var(--sg-tertiary)", "var(--sg-amber)"];
-                const accent = accents[index % accents.length];
-
                 return (
-                  <motion.div key={article.id} variants={fadeUp}>
-                    <Link href={`/radar/${article.slug}`}
-                      className="group flex flex-col h-full transition hover:-translate-y-0.5"
-                      style={{ background: "var(--sg-surface)", borderLeft: `3px solid ${accent}` }}>
-                      <div className="flex flex-1 flex-col p-5">
-                        {/* Meta */}
-                        <div className="flex items-center justify-between mb-4">
-                          <span className="text-[9px] font-bold uppercase tracking-[0.2em]"
-                            style={{ color: accent, fontFamily: "var(--font-headline)" }}>Radar</span>
-                          <div className="flex items-center gap-3 text-[10px]" style={{ color: "var(--sg-text-muted)" }}>
-                            <span>{new Date(article.created_at).toLocaleDateString("tr-TR", { day: "numeric", month: "long" })}</span>
-                            <span className="flex items-center gap-1"><IconClock /> {readMins} dk</span>
-                          </div>
-                        </div>
-
-                        <h2 className="text-sm font-bold leading-snug mb-3 transition line-clamp-2"
-                          style={{ fontFamily: "var(--font-headline)", color: "var(--sg-text-primary)" }}>
-                          {article.title}
-                        </h2>
-                        <p className="text-xs leading-relaxed line-clamp-3 mb-4" style={{ color: "var(--sg-text-secondary)" }}>
-                          {sum || "İçeriği görüntülemek için tıklayın."}
-                        </p>
-
-                        <div className="mt-auto inline-flex items-center gap-1 text-[11px] font-bold"
-                          style={{ color: accent, fontFamily: "var(--font-headline)" }}>
-                          Detayları Gör <span className="transition-transform group-hover:translate-x-0.5">→</span>
+                  <Link key={article.id} href={`/radar/${article.slug}`}
+                    className="lift" style={{
+                      background: "var(--sg-surface)", border: "1px solid var(--sg-border)",
+                      borderRadius: 4, overflow: "hidden", display: "flex", flexDirection: "column",
+                    }}>
+                    <div style={{ height: 2, background: "var(--accent)" }} />
+                    <div style={{ padding: "20px 24px 24px", flex: 1, display: "flex", flexDirection: "column" }}>
+                      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 14 }}>
+                        <span className="mono" style={{ fontSize: 9, letterSpacing: "0.2em", color: "var(--accent)" }}>RADAR</span>
+                        <div className="mono" style={{ fontSize: 9, letterSpacing: "0.14em", color: "var(--sg-text-muted)", display: "flex", gap: 10 }}>
+                          <span>{new Date(article.created_at).toLocaleDateString("tr-TR", { day: "numeric", month: "short" })}</span>
+                          <span>{readMins} DK</span>
                         </div>
                       </div>
-                    </Link>
-                  </motion.div>
+                      <h2 className="display" style={{
+                        fontSize: 18, fontWeight: 600, lineHeight: 1.2,
+                        letterSpacing: "-0.02em", margin: "0 0 10px", textWrap: "balance",
+                      }}>
+                        {article.title}
+                      </h2>
+                      <p style={{ fontSize: 13, lineHeight: 1.5, color: "var(--sg-text-secondary)", flex: 1, margin: "0 0 16px" }}>
+                        {sum || "İçeriği görüntülemek için tıklayın."}
+                      </p>
+                      <div className="mono" style={{ fontSize: 10, letterSpacing: "0.14em", color: "var(--accent)" }}>
+                        DETAYLARI GÖR →
+                      </div>
+                    </div>
+                  </Link>
                 );
               })}
-            </motion.div>
+            </div>
 
             {hasMore && (
-              <div className="mt-12 flex justify-center">
-                <button
-                  type="button"
-                  onClick={handleLoadMore}
-                  disabled={loadingMore}
-                  className="flex items-center gap-2 px-8 py-3 text-xs font-black uppercase tracking-widest transition-all hover:brightness-110 disabled:opacity-50"
-                  style={{ background: "var(--sg-surface)", color: "var(--sg-primary)", border: "1px solid rgba(59,130,246,0.3)", fontFamily: "var(--font-headline)" }}
-                >
-                  {loadingMore ? (
-                    <>
-                      <span className="h-3 w-3 animate-spin rounded-full border border-t-transparent" style={{ borderColor: "var(--sg-primary)", borderTopColor: "transparent" }} />
-                      Yükleniyor...
-                    </>
-                  ) : "Daha Fazla Yükle →"}
+              <div style={{ marginTop: 48, display: "flex", justifyContent: "center" }}>
+                <button type="button" onClick={handleLoadMore} disabled={loadingMore} className="btn">
+                  {loadingMore ? "Yükleniyor..." : "DAHA FAZLA YÜKLE →"}
                 </button>
               </div>
             )}
-            </>
-          )}
-        </div>
-      </motion.div>
+          </>
+        )}
+      </div>
 
       <SiteFooter maxWidth="max-w-7xl" />
     </main>

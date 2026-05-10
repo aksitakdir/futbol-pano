@@ -2,19 +2,14 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { motion } from "framer-motion";
 import SiteHeader from "../components/site-header";
 import SiteFooter from "../components/site-footer";
-import CategoryHero from "../components/category-hero";
 import { supabase } from "@/lib/supabase";
 import { stripHtml } from "@/lib/utils";
 
 type SupabaseContent = { id: string; title: string; slug: string; content: string; created_at: string; };
 
 const PAGE_SIZE = 9;
-const easeOut = [0.22, 1, 0.36, 1] as [number, number, number, number];
-const stagger = { hidden: {}, visible: { transition: { staggerChildren: 0.08, delayChildren: 0.1 } } };
-const fadeUp = { hidden: { opacity: 0, y: 20 }, visible: { opacity: 1, y: 0, transition: { duration: 0.5, ease: easeOut } } };
 
 type Archetype = { name: string; slug: string; description: string; position: string; color: string; icon: string; };
 
@@ -65,156 +60,196 @@ export default function TaktikLabPage() {
   return (
     <main style={{ background: "var(--sg-bg)", color: "var(--sg-text-primary)", minHeight: "100vh" }}>
       <SiteHeader activeNav="taktik-lab" />
+      <div style={{ paddingTop: "68px" }} />
 
-      <motion.div className="pt-[72px]" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, ease: easeOut }}>
-
-        <CategoryHero accent="var(--sg-tertiary)" variant="surface-low">
-          <div className="max-w-3xl">
-            <div className="flex items-center gap-3 mb-5">
-              <div className="h-[2px] w-12" style={{ background: "var(--sg-tertiary)" }} />
-              <span className="text-[10px] font-bold uppercase tracking-[0.3em]"
-                style={{ color: "var(--sg-tertiary)", fontFamily: "var(--font-headline)" }}>Analiz Motoru</span>
-            </div>
-            <h1 className="font-bold tracking-tighter leading-none mb-5"
-              style={{ fontFamily: "var(--font-headline)", fontSize: "clamp(2.5rem, 6vw, 4.5rem)" }}>
-              Anlaşılabilir <span style={{ color: "var(--sg-tertiary)" }}>Sofistikasyon</span>
+      {/* ── V2 Category Hero ── */}
+      <section className="grain relative overflow-hidden" style={{
+        background: "var(--sg-surface-low)",
+        borderBottom: "1px solid var(--sg-border)",
+      }}>
+        <div style={{
+          backgroundImage: "repeating-linear-gradient(-45deg, rgba(0,0,0,0.06) 0 1px, transparent 1px 12px)",
+          position: "absolute", inset: 0, pointerEvents: "none",
+        }} />
+        <div style={{
+          maxWidth: 1440, margin: "0 auto", padding: "72px 32px 56px",
+          display: "grid", gridTemplateColumns: "1fr 1fr", gap: 48, alignItems: "center",
+        }}>
+          {/* Left */}
+          <div>
+            <div className="eyebrow" style={{ color: "var(--sky)", marginBottom: 14 }}>ANALİZ MOTORU</div>
+            <h1 className="display" style={{
+              fontSize: "clamp(3rem, 6vw, 5rem)", fontWeight: 700,
+              letterSpacing: "-0.04em", lineHeight: 0.92, margin: "0 0 20px",
+            }}>
+              Taktik<br />
+              <span style={{
+                background: "linear-gradient(120deg, var(--sky) 0%, var(--cyan) 100%)",
+                WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", backgroundClip: "text",
+              }}>Lab</span>
             </h1>
-            <p className="text-base leading-relaxed max-w-2xl" style={{ color: "var(--sg-text-secondary)" }}>
-              Taktik Lab, ham veriyi sahadaki gerçekliğe dönüştürür. Oyuncu profillerini sadece sayılarla değil, oyunun DNA&apos;sını oluşturan pozisyonel arketip modelleriyle tanımlıyoruz. Her oyuncu bir rol değil, bir fonksiyondur.
+            <p style={{ fontSize: 18, lineHeight: 1.6, color: "var(--sg-text-secondary)", maxWidth: 440, margin: "0 0 28px" }}>
+              Ham veriyi sahadaki gerçekliğe dönüştürürüz. Oyuncu profillerini pozisyonel arketip modelleriyle tanımlıyoruz.
             </p>
-          </div>
-        </CategoryHero>
-
-        <div className="max-w-7xl mx-auto px-8 py-16">
-
-          {/* DB içerikleri */}
-          {!loading && dbContents.length > 0 && (
-            <section className="mb-16">
-              <div className="flex items-center gap-3 mb-6">
-                <div className="h-px flex-1" style={{ background: "rgba(26,58,92,0.5)" }} />
-                <p className="text-[10px] font-bold uppercase tracking-[0.25em]"
-                  style={{ color: "var(--sg-tertiary)", fontFamily: "var(--font-headline)" }}>Güncel Analizler</p>
-                <div className="h-px flex-1" style={{ background: "rgba(26,58,92,0.5)" }} />
-              </div>
-              <motion.div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3" variants={stagger} initial="hidden" animate="visible">
-                {dbContents.map(item => (
-                  <motion.div key={item.id} variants={fadeUp}>
-                    <Link href={`/taktik-lab/${item.slug}`}
-                      className="group flex flex-col h-full transition hover:-translate-y-0.5"
-                      style={{ background: "var(--sg-surface)", borderLeft: "3px solid var(--sg-tertiary)" }}>
-                      <div className="flex flex-1 flex-col p-5">
-                        <div className="flex items-center justify-between mb-3">
-                          <span className="text-[9px] font-bold uppercase tracking-[0.2em]"
-                            style={{ color: "var(--sg-tertiary)", fontFamily: "var(--font-headline)" }}>Taktik</span>
-                          <span className="text-[10px]" style={{ color: "var(--sg-text-muted)" }}>
-                            {new Date(item.created_at).toLocaleDateString("tr-TR", { day: "numeric", month: "short" })}
-                          </span>
-                        </div>
-                        <h2 className="text-sm font-bold mb-2 line-clamp-2"
-                          style={{ fontFamily: "var(--font-headline)", color: "var(--sg-text-primary)" }}>{item.title}</h2>
-                        <p className="text-xs leading-relaxed line-clamp-2 mb-4" style={{ color: "var(--sg-text-secondary)" }}>
-                          {stripHtml(item.content).trim().slice(0, 120)}…
-                        </p>
-                        <div className="mt-auto inline-flex items-center gap-1 text-[11px] font-bold"
-                          style={{ color: "var(--sg-tertiary)", fontFamily: "var(--font-headline)" }}>
-                          Detayları Gör <span className="transition-transform group-hover:translate-x-0.5">→</span>
-                        </div>
-                      </div>
-                    </Link>
-                  </motion.div>
-                ))}
-              </motion.div>
-
-              {hasMore && (
-                <div className="mt-10 flex justify-center">
-                  <button
-                    type="button"
-                    onClick={handleLoadMore}
-                    disabled={loadingMore}
-                    className="flex items-center gap-2 px-8 py-3 text-xs font-black uppercase tracking-widest transition-all hover:brightness-110 disabled:opacity-50"
-                    style={{ background: "var(--sg-surface)", color: "var(--sg-tertiary)", border: "1px solid rgba(139,92,246,0.3)", fontFamily: "var(--font-headline)" }}
-                  >
-                    {loadingMore ? (
-                      <>
-                        <span className="h-3 w-3 animate-spin rounded-full border border-t-transparent" style={{ borderColor: "var(--sg-tertiary)", borderTopColor: "transparent" }} />
-                        Yükleniyor...
-                      </>
-                    ) : "Daha Fazla Yükle →"}
-                  </button>
-                </div>
-              )}
-            </section>
-          )}
-
-          {/* Pozisyon arketipleri */}
-          <section>
-            <div className="flex items-center gap-3 mb-6">
-              <div className="h-px flex-1" style={{ background: "rgba(26,58,92,0.5)" }} />
-              <p className="text-[10px] font-bold uppercase tracking-[0.25em]"
-                style={{ color: "var(--sg-text-muted)", fontFamily: "var(--font-headline)" }}>Pozisyon Arketipleri</p>
-              <div className="h-px flex-1" style={{ background: "rgba(26,58,92,0.5)" }} />
-            </div>
-            <motion.div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3" variants={stagger} initial="hidden" animate="visible">
-              {ARCHETYPES.map(arch => (
-                <motion.article key={arch.slug} variants={fadeUp}>
-                  <Link href={`/taktik-lab/${arch.slug}`}
-                    className="group flex flex-col h-full transition hover:-translate-y-0.5"
-                    style={{ background: "var(--sg-surface)", borderLeft: `3px solid ${arch.color}` }}>
-                    <div className="relative flex flex-1 flex-col p-6 overflow-hidden">
-                      {/* Büyük arka plan ikonu */}
-                      <div className="pointer-events-none absolute -right-2 -top-2 text-[80px] opacity-[0.04] select-none"
-                        style={{ fontFamily: "var(--font-headline)", color: arch.color }}>
-                        {arch.icon}
-                      </div>
-                      {/* İkon kutu */}
-                      <div className="mb-5 flex h-10 w-10 items-center justify-center text-lg"
-                        style={{ background: `${arch.color}15`, color: arch.color }}>
-                        {arch.icon}
-                      </div>
-                      <h2 className="font-mono text-base font-bold uppercase tracking-tight mb-3"
-                        style={{ color: "var(--sg-text-primary)" }}>
-                        {arch.name}
-                      </h2>
-                      <p className="text-xs leading-relaxed mb-5" style={{ color: "var(--sg-text-secondary)" }}>
-                        {arch.description}
-                      </p>
-                      <div className="mt-auto flex items-center justify-between">
-                        <span className="text-[9px] font-bold uppercase tracking-[0.2em]"
-                          style={{ color: posColor[arch.position] ?? arch.color, fontFamily: "var(--font-headline)" }}>
-                          {arch.position}
-                        </span>
-                        <span className="text-[11px] font-bold transition-transform group-hover:translate-x-0.5"
-                          style={{ color: arch.color, fontFamily: "var(--font-headline)" }}>→</span>
-                      </div>
-                    </div>
-                  </Link>
-                </motion.article>
+            <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+              {["Box-to-Box", "Ball-Playing CB", "Inverted Winger", "False 9"].map((tag) => (
+                <span key={tag} className="chip" style={{ fontSize: 10 }}>{tag}</span>
               ))}
-            </motion.div>
-          </section>
-
-          {/* CTA */}
-          <div className="mt-16 p-10 md:p-14 text-center relative overflow-hidden" style={{ background: "var(--sg-surface-low)" }}>
-            <div className="pointer-events-none absolute inset-0"
-              style={{ background: "radial-gradient(ellipse at center, rgba(167,139,250,0.08) 0%, transparent 70%)" }} />
-            <div className="relative">
-              <h2 className="text-2xl md:text-4xl font-bold tracking-tighter mb-3"
-                style={{ fontFamily: "var(--font-headline)" }}>
-                Kendi Taktiğini Oluşturmaya Hazır mısın?
-              </h2>
-              <p className="text-sm mb-6 max-w-lg mx-auto" style={{ color: "var(--sg-text-secondary)" }}>
-                Arketip modellerini kullanarak oyuncu havuzunu filtreleyebilir, sistemine en uygun parçayı saniyeler içinde bulabilirsin.
-              </p>
-              <Link href="/listeler"
-                className="inline-flex items-center gap-2 px-8 py-3.5 font-bold uppercase tracking-wider transition hover:brightness-110"
-                style={{ background: "var(--sg-tertiary)", color: "#060f1e", fontFamily: "var(--font-headline)", fontSize: "12px" }}>
-                Sistem Analizine Başla
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M5 12h14M12 5l7 7-7 7" /></svg>
-              </Link>
             </div>
+          </div>
+          {/* Right — SVG Pitch Diagram */}
+          <div style={{ display: "flex", justifyContent: "flex-end" }}>
+            <svg viewBox="0 0 240 340" width="240" height="340" style={{ opacity: 0.85 }}>
+              {/* Pitch outline */}
+              <rect x="10" y="10" width="220" height="320" rx="4" fill="none" stroke="var(--sky)" strokeWidth="1.5" strokeOpacity="0.4" />
+              {/* Halfway line */}
+              <line x1="10" y1="170" x2="230" y2="170" stroke="var(--sky)" strokeWidth="1" strokeOpacity="0.3" />
+              {/* Center circle */}
+              <circle cx="120" cy="170" r="32" fill="none" stroke="var(--sky)" strokeWidth="1" strokeOpacity="0.3" />
+              <circle cx="120" cy="170" r="2" fill="var(--sky)" fillOpacity="0.4" />
+              {/* Penalty box top */}
+              <rect x="60" y="10" width="120" height="52" rx="2" fill="none" stroke="var(--sky)" strokeWidth="1" strokeOpacity="0.25" />
+              {/* Penalty box bottom */}
+              <rect x="60" y="278" width="120" height="52" rx="2" fill="none" stroke="var(--sky)" strokeWidth="1" strokeOpacity="0.25" />
+              {/* 4-3-3 formation — top team */}
+              {/* GK */}
+              <circle cx="120" cy="40" r="8" fill="var(--sky)" fillOpacity="0.7" />
+              {/* DEF 4 */}
+              {[60, 90, 150, 180].map((x) => <circle key={x} cx={x} cy="90" r="7" fill="var(--accent)" fillOpacity="0.7" />)}
+              {/* MID 3 */}
+              {[75, 120, 165].map((x) => <circle key={x} cx={x} cy="140" r="7" fill="var(--accent-2)" fillOpacity="0.7" />)}
+              {/* FWD 3 */}
+              {[70, 120, 170].map((x) => <circle key={x} cx={x} cy="185" r="7" fill="var(--rose)" fillOpacity="0.7" />)}
+              {/* Labels */}
+              <text x="120" y="28" textAnchor="middle" fontSize="8" fill="var(--sky)" fillOpacity="0.6" fontFamily="monospace">GK</text>
+              <text x="120" y="108" textAnchor="middle" fontSize="8" fill="var(--accent)" fillOpacity="0.6" fontFamily="monospace">DEF</text>
+              <text x="120" y="157" textAnchor="middle" fontSize="8" fill="var(--accent-2)" fillOpacity="0.6" fontFamily="monospace">MID</text>
+              <text x="120" y="202" textAnchor="middle" fontSize="8" fill="var(--rose)" fillOpacity="0.6" fontFamily="monospace">FWD</text>
+              {/* Formation label */}
+              <text x="120" y="280" textAnchor="middle" fontSize="11" fill="var(--sky)" fillOpacity="0.5" fontFamily="monospace" letterSpacing="3">4-3-3</text>
+            </svg>
           </div>
         </div>
-      </motion.div>
+      </section>
+
+      {/* ── Content Grid ── */}
+      <div style={{ maxWidth: 1440, margin: "0 auto", padding: "60px 32px 80px" }}>
+
+        {/* DB articles */}
+        {!loading && dbContents.length > 0 && (
+          <section style={{ marginBottom: 64 }}>
+            <div style={{ marginBottom: 32 }}>
+              <div className="eyebrow" style={{ color: "var(--sky)" }}>GÜNCEL ANALİZLER</div>
+              <h2 className="display" style={{ fontSize: 28, fontWeight: 700, letterSpacing: "-0.03em", margin: "6px 0 0" }}>
+                Son Yazılar
+              </h2>
+            </div>
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 16 }}>
+              {dbContents.map((item) => (
+                <Link key={item.id} href={`/taktik-lab/${item.slug}`}
+                  className="lift" style={{
+                    background: "var(--sg-surface)", border: "1px solid var(--sg-border)",
+                    borderRadius: 4, overflow: "hidden", display: "flex", flexDirection: "column",
+                  }}>
+                  <div style={{ height: 2, background: "var(--sky)" }} />
+                  <div style={{ padding: "20px 24px 24px", flex: 1, display: "flex", flexDirection: "column" }}>
+                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 14 }}>
+                      <span className="mono" style={{ fontSize: 9, letterSpacing: "0.2em", color: "var(--sky)" }}>TAKTİK</span>
+                      <span className="mono" style={{ fontSize: 9, letterSpacing: "0.14em", color: "var(--sg-text-muted)" }}>
+                        {new Date(item.created_at).toLocaleDateString("tr-TR", { day: "numeric", month: "short" })}
+                      </span>
+                    </div>
+                    <h2 className="display" style={{ fontSize: 18, fontWeight: 600, lineHeight: 1.2, letterSpacing: "-0.02em", margin: "0 0 10px", textWrap: "balance" }}>
+                      {item.title}
+                    </h2>
+                    <p style={{ fontSize: 13, lineHeight: 1.5, color: "var(--sg-text-secondary)", flex: 1, margin: "0 0 16px" }}>
+                      {stripHtml(item.content).trim().slice(0, 120)}…
+                    </p>
+                    <div className="mono" style={{ fontSize: 10, letterSpacing: "0.14em", color: "var(--sky)" }}>
+                      DETAYLARI GÖR →
+                    </div>
+                  </div>
+                </Link>
+              ))}
+            </div>
+            {hasMore && (
+              <div style={{ marginTop: 36, display: "flex", justifyContent: "center" }}>
+                <button type="button" onClick={handleLoadMore} disabled={loadingMore} className="btn" style={{ borderColor: "var(--sky)", color: "var(--sky)" }}>
+                  {loadingMore ? "Yükleniyor..." : "DAHA FAZLA YÜKLE →"}
+                </button>
+              </div>
+            )}
+          </section>
+        )}
+
+        {/* Archetypes */}
+        <section>
+          <div style={{ marginBottom: 32 }}>
+            <div className="eyebrow">POZİSYON ARKETİPLERİ</div>
+            <h2 className="display" style={{ fontSize: 28, fontWeight: 700, letterSpacing: "-0.03em", margin: "6px 0 0" }}>
+              Oyun Fonksiyonları
+            </h2>
+          </div>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 16 }}>
+            {ARCHETYPES.map((arch) => (
+              <Link key={arch.slug} href={`/taktik-lab/${arch.slug}`}
+                className="lift" style={{
+                  background: "var(--sg-surface)", border: "1px solid var(--sg-border)",
+                  borderRadius: 4, overflow: "hidden", display: "flex", flexDirection: "column", position: "relative",
+                }}>
+                <div style={{ height: 2, background: arch.color }} />
+                <div style={{ padding: "24px", flex: 1, display: "flex", flexDirection: "column", position: "relative", overflow: "hidden" }}>
+                  <div style={{
+                    position: "absolute", right: -8, top: -8, fontSize: 80,
+                    opacity: 0.04, pointerEvents: "none", fontFamily: "var(--font-headline)", color: arch.color,
+                  }}>
+                    {arch.icon}
+                  </div>
+                  <div style={{
+                    width: 40, height: 40, display: "flex", alignItems: "center", justifyContent: "center",
+                    background: `color-mix(in oklch, ${arch.color} 15%, transparent)`,
+                    color: arch.color, fontSize: 18, marginBottom: 20,
+                  }}>
+                    {arch.icon}
+                  </div>
+                  <div className="mono" style={{ fontSize: 10, letterSpacing: "0.14em", color: arch.color, marginBottom: 8 }}>
+                    {posColor[arch.position] ? arch.position.toUpperCase() : arch.position.toUpperCase()}
+                  </div>
+                  <h2 className="display" style={{ fontSize: 16, fontWeight: 700, letterSpacing: "-0.01em", margin: "0 0 10px" }}>
+                    {arch.name}
+                  </h2>
+                  <p style={{ fontSize: 13, lineHeight: 1.5, color: "var(--sg-text-secondary)", flex: 1 }}>
+                    {arch.description}
+                  </p>
+                  <div className="mono" style={{ fontSize: 10, letterSpacing: "0.14em", color: arch.color, marginTop: 16 }}>
+                    İNCELE →
+                  </div>
+                </div>
+              </Link>
+            ))}
+          </div>
+        </section>
+
+        {/* CTA */}
+        <div className="grain" style={{
+          marginTop: 64, padding: "48px", position: "relative", overflow: "hidden",
+          background: "linear-gradient(120deg, var(--sg-surface) 0%, color-mix(in oklch, var(--sky) 20%, var(--sg-surface)) 100%)",
+          border: "1px solid var(--sg-border)", borderRadius: 6,
+          display: "grid", gridTemplateColumns: "1fr auto", gap: 32, alignItems: "center",
+        }}>
+          <div>
+            <h2 className="display" style={{ fontSize: 28, fontWeight: 700, letterSpacing: "-0.03em", margin: "0 0 10px" }}>
+              Kendi taktiğini oluşturmaya hazır mısın?
+            </h2>
+            <p style={{ fontSize: 16, color: "var(--sg-text-secondary)", margin: 0 }}>
+              Arketip modellerini kullanarak sistemine en uygun oyuncuyu bul.
+            </p>
+          </div>
+          <Link href="/listeler" className="btn btn-solid" style={{ background: "var(--sky)", borderColor: "var(--sky)", whiteSpace: "nowrap" }}>
+            SİSTEM ANALİZİNE BAŞLA →
+          </Link>
+        </div>
+      </div>
 
       <SiteFooter maxWidth="max-w-7xl" />
     </main>
