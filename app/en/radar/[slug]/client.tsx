@@ -1,9 +1,10 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { supabase } from "@/lib/supabase";
 import ArticleLayoutEn from "../../../components/article-layout-en";
+import PlayerCard, { type PlayerCardData } from "../../../components/player-card";
 
 type SectionBlock =
   | { type: "intro"; html: string }
@@ -25,100 +26,55 @@ type ContentRow = {
   stat_overall?: number;
 };
 
-type PlayerStats = {
-  overall: number; pace?: number; shooting?: number; passing?: number;
-  dribbling?: number; defending?: number; physical?: number;
-  position?: string; club?: string;
-};
-
-async function fetchPlayerStats(name: string): Promise<PlayerStats | null> {
+async function fetchPlayerStats(name: string): Promise<Partial<PlayerCardData> | null> {
   const { data: exact } = await supabase.from("fc_players")
-    .select("overall,pace,shooting,passing,dribbling,defending,physical,position,club")
+    .select("overall,pace,shooting,passing,dribbling,defending,physical,position,club,league,age")
     .ilike("name", name).limit(1).maybeSingle();
   if (exact?.overall) return exact;
   const two = name.split(" ").slice(0, 2).join(" ");
   const { data: fuzzy } = await supabase.from("fc_players")
-    .select("overall,pace,shooting,passing,dribbling,defending,physical,position,club")
+    .select("overall,pace,shooting,passing,dribbling,defending,physical,position,club,league,age")
     .ilike("name", `%${two}%`).order("overall", { ascending: false }).limit(1).maybeSingle();
   return fuzzy?.overall ? fuzzy : null;
 }
 
-/* ─── V2 Silhouette hero card ────────────────────────────────────── */
-function V2RadarHeroCard({ name, position, club, overall, pace, shooting, passing, dribbling, defending, physical, accent }: {
-  name: string; position?: string; club?: string; overall?: number;
-  pace?: number; shooting?: number; passing?: number;
-  dribbling?: number; defending?: number; physical?: number; accent: string;
-}) {
-  const initials = name.split(" ").map((w) => w[0]).slice(0, 2).join("").toUpperCase();
-  const POS_GRADIENT: Record<string, string> = {
-    GK:"linear-gradient(160deg,oklch(0.22 0.04 260),oklch(0.11 0.02 260))",
-    CB:"linear-gradient(160deg,oklch(0.20 0.06 240),oklch(0.10 0.03 240))",
-    LB:"linear-gradient(160deg,oklch(0.18 0.06 220),oklch(0.10 0.03 220))",
-    RB:"linear-gradient(160deg,oklch(0.18 0.06 220),oklch(0.10 0.03 220))",
-    CDM:"linear-gradient(160deg,oklch(0.20 0.07 200),oklch(0.10 0.04 200))",
-    CM:"linear-gradient(160deg,oklch(0.18 0.08 180),oklch(0.10 0.04 180))",
-    CAM:"linear-gradient(160deg,oklch(0.24 0.09 150),oklch(0.12 0.05 150))",
-    LW:"linear-gradient(160deg,oklch(0.24 0.10 130),oklch(0.12 0.05 130))",
-    RW:"linear-gradient(160deg,oklch(0.24 0.10 130),oklch(0.12 0.05 130))",
-    ST:"linear-gradient(160deg,oklch(0.22 0.10 20),oklch(0.12 0.05 20))",
-    CF:"linear-gradient(160deg,oklch(0.22 0.09 30),oklch(0.12 0.05 30))",
-  };
-  const gradient = POS_GRADIENT[position?.toUpperCase() ?? ""] ?? "linear-gradient(160deg,oklch(0.18 0.06 240),oklch(0.10 0.03 240))";
-
-  const STATS = [
-    {label:"PAC",val:pace},{label:"SHO",val:shooting},{label:"PAS",val:passing},
-    {label:"DRI",val:dribbling},{label:"DEF",val:defending},{label:"PHY",val:physical},
-  ];
-  const hasStats = STATS.some((s)=>s.val);
-
-  return (
-    <div style={{ width:"100%",maxWidth:240,background:gradient,borderRadius:10,overflow:"hidden",border:"1px solid oklch(1 0 0 / 0.08)",position:"relative" }}>
-      <div style={{ position:"absolute",inset:0,backgroundImage:"repeating-linear-gradient(-45deg,oklch(1 0 0 / 0.04) 0 1px,transparent 1px 12px)",pointerEvents:"none" }} />
-      <div style={{ position:"relative",padding:"10px 12px 0",display:"flex",justifyContent:"space-between",alignItems:"center" }}>
-        <span style={{ fontFamily:"var(--font-mono-stack)",fontSize:8,letterSpacing:"0.14em",color:"oklch(1 0 0 / 0.40)" }}>SCOUT GAMER · №001</span>
-        <span style={{ fontFamily:"var(--font-mono-stack)",fontSize:8,color:"oklch(1 0 0 / 0.40)" }}>{position} / {overall ?? 0}</span>
-      </div>
-      <div style={{ position:"relative",height:140,display:"flex",alignItems:"center",justifyContent:"center" }}>
-        <div style={{ position:"absolute",fontFamily:"var(--font-display)",fontSize:96,fontWeight:900,letterSpacing:"-0.07em",color:"oklch(1 0 0 / 0.07)",userSelect:"none",lineHeight:1 }}>{initials}</div>
-        <div style={{ fontFamily:"var(--font-display)",fontSize:52,fontWeight:900,color:"oklch(1 0 0 / 0.22)",letterSpacing:"-0.05em",lineHeight:1,position:"relative" }}>{initials}</div>
-        <div style={{ position:"absolute",top:8,right:12,fontFamily:"var(--font-mono-stack)",fontSize:28,fontWeight:900,color:"oklch(1 0 0 / 0.88)",lineHeight:1 }}>{overall ?? "—"}</div>
-      </div>
-      <div style={{ padding:"8px 12px 4px",background:"linear-gradient(to top,oklch(0 0 0 / 0.70) 0%,transparent 100%)" }}>
-        <div style={{ fontFamily:"var(--font-mono-stack)",fontSize:8,letterSpacing:"0.14em",color:`color-mix(in oklch,${accent} 80%,white)`,marginBottom:3 }}>ON THE RADAR · {position}</div>
-        <div style={{ fontFamily:"var(--font-display)",fontSize:15,fontWeight:700,color:"oklch(1 0 0 / 0.92)",lineHeight:1.1 }}>{name}</div>
-        <div style={{ fontFamily:"var(--font-mono-stack)",fontSize:8,color:"oklch(1 0 0 / 0.40)",letterSpacing:"0.06em",marginTop:2 }}>{club}</div>
-      </div>
-      {hasStats && (
-        <div style={{ display:"grid",gridTemplateColumns:"repeat(6, 1fr)",padding:"8px 10px 10px",background:"oklch(0 0 0 / 0.45)" }}>
-          {STATS.map(({label,val})=>(
-            <div key={label} style={{ textAlign:"center" }}>
-              <div style={{ fontFamily:"var(--font-mono-stack)",fontSize:11,fontWeight:900,color:val && val>=80?"var(--emerald)":val && val>=65?"var(--cyan)":"var(--ink-300)",lineHeight:1 }}>{val??"—"}</div>
-              <div style={{ fontFamily:"var(--font-mono-stack)",fontSize:7,color:"oklch(1 0 0 / 0.30)",letterSpacing:"0.06em",marginTop:1 }}>{label}</div>
-            </div>
-          ))}
-        </div>
-      )}
-    </div>
-  );
-}
-
-/* ─── Main client ────────────────────────────────────────────────── */
 export default function EnRadarDetailClient({ slug }: { slug: string }) {
   const [article, setArticle] = useState<ContentRow | null>(null);
-  const [playerStats, setPlayerStats] = useState<PlayerStats | null>(null);
+  const [playerCard, setPlayerCard] = useState<PlayerCardData | null>(null);
   const [loading, setLoading] = useState(true);
   const [notFound, setNotFound] = useState(false);
 
   useEffect(() => {
     if (!slug) return;
-    supabase.from("contents").select("*").eq("slug", slug).eq("status", "yayinda").single()
+    supabase.from("contents").select("*")
+      .eq("slug", slug).eq("status", "yayinda").single()
       .then(async ({ data, error }) => {
         if (error || !data) { setNotFound(true); setLoading(false); return; }
-        setArticle(data as ContentRow);
         const row = data as ContentRow;
-        if (row.player_name && !row.stat_overall) {
-          const stats = await fetchPlayerStats(row.player_name);
-          if (stats) setPlayerStats(stats);
+        setArticle(row);
+
+        if (row.player_name) {
+          const hasStored = row.stat_overall || row.stat_pace;
+          const stats = hasStored
+            ? { overall: row.stat_overall, pace: row.stat_pace, shooting: row.stat_shooting, passing: row.stat_passing, dribbling: row.stat_dribbling, defending: row.stat_defending, physical: row.stat_physical }
+            : await fetchPlayerStats(row.player_name);
+
+          if (stats?.overall) {
+            setPlayerCard({
+              name: row.player_name,
+              club: (stats as {club?: string}).club ?? "",
+              league: (stats as {league?: string}).league ?? "",
+              position: (stats as {position?: string}).position ?? "",
+              age: (stats as {age?: number}).age ?? "",
+              overall: stats.overall!,
+              pace: stats.pace ?? 0,
+              shooting: stats.shooting ?? 0,
+              passing: stats.passing ?? 0,
+              dribbling: stats.dribbling ?? 0,
+              defending: stats.defending ?? 0,
+              physical: stats.physical ?? 0,
+            });
+          }
         }
         setLoading(false);
       });
@@ -139,24 +95,6 @@ export default function EnRadarDetailClient({ slug }: { slug: string }) {
   );
 
   const hasEnglish = !!(article.title_en && article.content_en);
-  const ACCENT_CSS: Record<string, string> = {
-    emerald: "var(--emerald)", cyan: "var(--cyan)", sky: "var(--sky)",
-    rose: "var(--rose)", amber: "var(--amber)", lime: "var(--lime)",
-  };
-  const accent = ACCENT_CSS[article.accent ?? ""] ?? "var(--sky)";
-
-  const heroStats = {
-    overall:   article.stat_overall   ?? playerStats?.overall,
-    pace:      article.stat_pace      ?? playerStats?.pace,
-    shooting:  article.stat_shooting  ?? playerStats?.shooting,
-    passing:   article.stat_passing   ?? playerStats?.passing,
-    dribbling: article.stat_dribbling ?? playerStats?.dribbling,
-    defending: article.stat_defending ?? playerStats?.defending,
-    physical:  article.stat_physical  ?? playerStats?.physical,
-    position:  playerStats?.position,
-    club:      playerStats?.club,
-  };
-  const hasPlayerHero = article.player_name && (heroStats.overall || heroStats.pace);
 
   return (
     <ArticleLayoutEn
@@ -176,23 +114,18 @@ export default function EnRadarDetailClient({ slug }: { slug: string }) {
       youtubeQuery2={article.youtube_query_2}
       playerName={article.player_name}
       isPending={!hasEnglish}
-      heroVariant={article.hero_variant ?? (hasPlayerHero ? "player-cards" : "text-only")}
+      heroVariant={article.hero_variant ?? (playerCard ? "player-cards" : "text-only")}
       accentOverride={article.accent ?? "sky"}
       sectionsJson={Array.isArray(article.sections_json) ? article.sections_json : null}
     >
-      {hasPlayerHero && (
-        <V2RadarHeroCard
-          name={article.player_name!}
-          position={heroStats.position}
-          club={heroStats.club}
-          overall={heroStats.overall}
-          pace={heroStats.pace}
-          shooting={heroStats.shooting}
-          passing={heroStats.passing}
-          dribbling={heroStats.dribbling}
-          defending={heroStats.defending}
-          physical={heroStats.physical}
-          accent={accent}
+      {playerCard && (
+        <PlayerCard
+          player={playerCard}
+          size="full"
+          showScoutNote={false}
+          animated
+          tmLink={`https://www.transfermarkt.com/schnellsuche/ergebnis/schnellsuche?query=${encodeURIComponent(playerCard.name)}`}
+          gLink={`https://www.google.com/search?q=${encodeURIComponent(playerCard.name + " footballer")}`}
         />
       )}
     </ArticleLayoutEn>

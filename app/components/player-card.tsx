@@ -2,6 +2,7 @@
 
 import { motion } from "framer-motion";
 
+/* ─── Public types ───────────────────────────────────────────────── */
 export type PlayerCardData = {
   name: string;
   club: string;
@@ -16,7 +17,7 @@ export type PlayerCardData = {
   defending: number;
   physical: number;
   whyWatch?: string;
-  photo_url?: string;
+  photo_url?: string; // kept for API compat — intentionally unused
 };
 
 type PlayerCardProps = {
@@ -28,18 +29,29 @@ type PlayerCardProps = {
   animated?: boolean;
 };
 
-function statColor(val: number): string {
-  if (val >= 80) return "#00d4aa";
-  if (val >= 65) return "#22d3ee";
-  return "#4a7a9a";
+/* ─── Gradient palette (name-hash → consistent, varied colours) ──── */
+const GRADIENTS = [
+  "linear-gradient(160deg, oklch(0.24 0.09 155), oklch(0.12 0.05 155))",  // emerald
+  "linear-gradient(160deg, oklch(0.20 0.09 270), oklch(0.10 0.05 270))",  // purple
+  "linear-gradient(160deg, oklch(0.18 0.06 230), oklch(0.10 0.03 230))",  // slate-blue
+  "linear-gradient(160deg, oklch(0.22 0.10 18),  oklch(0.12 0.05 18))",   // rose
+  "linear-gradient(160deg, oklch(0.20 0.09 45),  oklch(0.10 0.05 45))",   // amber
+  "linear-gradient(160deg, oklch(0.20 0.08 200), oklch(0.10 0.04 200))",  // cyan
+  "linear-gradient(160deg, oklch(0.22 0.09 310), oklch(0.11 0.05 310))",  // pink-violet
+  "linear-gradient(160deg, oklch(0.18 0.07 130), oklch(0.10 0.04 130))",  // lime-dark
+];
+
+function nameHash(name: string): number {
+  let h = 0;
+  for (let i = 0; i < name.length; i++) h = (Math.imul(31, h) + name.charCodeAt(i)) | 0;
+  return Math.abs(h);
 }
 
-function statBarColor(val: number): string {
-  if (val >= 80) return "linear-gradient(90deg, #00d4aa, #22d3ee)";
-  if (val >= 65) return "linear-gradient(90deg, #22d3ee, #60a5fa)";
-  return "#1a3a5c";
+function gradient(name: string) {
+  return GRADIENTS[nameHash(name) % GRADIENTS.length];
 }
 
+/* ─── Stat helpers ───────────────────────────────────────────────── */
 const STATS = [
   { key: "pace",      label: "PAC" },
   { key: "shooting",  label: "SHO" },
@@ -49,189 +61,239 @@ const STATS = [
   { key: "physical",  label: "PHY" },
 ] as const;
 
-function PlayerPhoto({ url, name, size }: { url?: string; name: string; size: "full" | "mini" }) {
-  const dim = size === "full" ? 80 : 52;
-  const initials = name.split(" ").map((w) => w[0]).slice(0, 2).join("").toUpperCase();
-
-  if (!url) {
-    return (
-      <div style={{
-        width: dim, height: dim, borderRadius: "50%",
-        background: "linear-gradient(135deg, #0f2a4a, #071628)",
-        border: "2px solid #1a3a5c",
-        display: "flex", alignItems: "center", justifyContent: "center",
-        fontSize: size === "full" ? 20 : 14,
-        fontWeight: 900, color: "#00d4aa", flexShrink: 0,
-      }}>
-        {initials}
-      </div>
-    );
-  }
-
-  return (
-    <div style={{
-      width: dim, height: dim, borderRadius: "50%",
-      border: "2px solid #00d4aa33",
-      overflow: "hidden", flexShrink: 0,
-      background: "#0a1628",
-    }}>
-      <img
-        src={`/api/player-image?url=${encodeURIComponent(url)}`}
-        alt={name}
-        width={dim}
-        height={dim}
-        style={{ objectFit: "cover", objectPosition: "top center", width: dim, height: dim }}
-        onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }}
-      />
-    </div>
-  );
+function statColor(v: number) {
+  return v >= 80 ? "var(--emerald, #00d4aa)" : v >= 65 ? "var(--cyan, #22d3ee)" : "oklch(0.55 0.04 230)";
 }
 
-function FullCard({ player, showScoutNote, tmLink, gLink, animated }: Omit<PlayerCardProps, "size">) {
-  const card = (
-    <div style={{
-      width: "100%", maxWidth: "240px",
-      background: "#060f1e", borderRadius: "14px",
-      overflow: "hidden", border: "1px solid #1a3a5c",
-      fontFamily: "'Trebuchet MS', 'Segoe UI', sans-serif",
-    }}>
-      <div style={{
-        padding: "14px 14px 12px",
-        background: "linear-gradient(135deg, #0a1f3a 0%, #071628 100%)",
-        borderBottom: "1px solid #1a3a5c", position: "relative",
-      }}>
-        <div style={{ position: "absolute", inset: 0, background: "linear-gradient(135deg, rgba(0,212,170,0.07) 0%, transparent 60%)", pointerEvents: "none" }} />
-        <div style={{ position: "relative" }}>
-          <div style={{ display: "flex", alignItems: "flex-start", gap: "10px", marginBottom: "8px" }}>
-            <PlayerPhoto url={player.photo_url} name={player.name} size="full" />
-            <div>
-              <div style={{ fontSize: "40px", fontWeight: 900, color: "#00d4aa", lineHeight: 1, textShadow: "0 0 24px rgba(0,212,170,0.5)" }}>
-                {player.overall}
-              </div>
-              <div style={{ fontSize: "11px", fontWeight: 700, color: "#00d4aa", letterSpacing: "2px", textTransform: "uppercase" }}>
-                {player.position}
-              </div>
-              <div style={{ fontSize: "10px", color: "#2a5a7a", marginTop: "2px" }}>{player.age} yaş</div>
-            </div>
-          </div>
-          <div style={{ fontSize: "15px", fontWeight: 700, color: "#e0f0ff", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
-            {player.name}
-          </div>
-          <div style={{ fontSize: "11px", color: "#4a7a9a", marginTop: "2px" }}>{player.club}</div>
-          <div style={{ height: "2px", background: "linear-gradient(90deg, #00d4aa, #22d3ee, transparent)", marginTop: "10px" }} />
-        </div>
-      </div>
-
-      <div style={{ padding: "12px 14px", display: "grid", gridTemplateColumns: "1fr 1fr", gap: "8px 12px" }}>
-        {STATS.map(({ key, label }) => {
-          const val = player[key];
-          return (
-            <div key={key}>
-              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "3px" }}>
-                <span style={{ fontSize: "9px", fontWeight: 700, letterSpacing: "1.5px", color: "#2a5a7a", textTransform: "uppercase" }}>{label}</span>
-                <span style={{ fontSize: "16px", fontWeight: 900, color: statColor(val), lineHeight: 1 }}>{val}</span>
-              </div>
-              <div style={{ height: "2px", background: "#0f2035", borderRadius: "2px", overflow: "hidden" }}>
-                <motion.div
-                  initial={animated ? { width: 0 } : { width: `${val}%` }}
-                  animate={{ width: `${val}%` }}
-                  transition={{ duration: 0.8, delay: 0.1, ease: [0.22, 1, 0.36, 1] as [number, number, number, number] }}
-                  style={{ height: "100%", borderRadius: "2px", background: statBarColor(val) }}
-                />
-              </div>
-            </div>
-          );
-        })}
-      </div>
-
-      {showScoutNote && player.whyWatch && (
-        <div style={{ margin: "0 12px 12px", padding: "8px 10px", background: "rgba(0,212,170,0.05)", border: "1px solid rgba(0,212,170,0.15)", borderRadius: "8px" }}>
-          <div style={{ fontSize: "9px", fontWeight: 700, letterSpacing: "2px", color: "#00d4aa", textTransform: "uppercase", marginBottom: "4px" }}>Scout Notu</div>
-          <div style={{ fontSize: "11px", color: "#8ab0c0", lineHeight: 1.5 }}>{player.whyWatch}</div>
-        </div>
-      )}
-
-      <div style={{ padding: "6px 14px 12px", display: "flex", alignItems: "center", justifyContent: "space-between", borderTop: "1px solid #0f2035" }}>
-        <span style={{ fontSize: "9px", color: "#2a5a7a", letterSpacing: "1px", textTransform: "uppercase", fontWeight: 700 }}>{player.league}</span>
-        <div style={{ display: "flex", gap: "5px" }}>
-          {tmLink && <a href={tmLink} target="_blank" rel="noopener noreferrer" style={{ fontSize: "9px", fontWeight: 700, color: "#2a5a7a", background: "#0a1a2e", border: "1px solid #1a3050", borderRadius: "3px", padding: "2px 6px", textDecoration: "none" }}>TM</a>}
-          {gLink && <a href={gLink} target="_blank" rel="noopener noreferrer" style={{ fontSize: "9px", fontWeight: 700, color: "#2a5a7a", background: "#0a1a2e", border: "1px solid #1a3050", borderRadius: "3px", padding: "2px 6px", textDecoration: "none" }}>G</a>}
-        </div>
-      </div>
-    </div>
-  );
-
-  if (!animated) return card;
+/* ─── Human silhouette SVG ───────────────────────────────────────── */
+function Silhouette({ opacity = 0.13 }: { opacity?: number }) {
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 20, scale: 0.96 }}
-      animate={{ opacity: 1, y: 0, scale: 1 }}
-      transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] as [number, number, number, number] }}
+    <svg
+      viewBox="0 0 100 155"
+      fill={`oklch(1 0 0 / ${opacity})`}
+      xmlns="http://www.w3.org/2000/svg"
+      style={{ width: "100%", height: "100%", position: "absolute", inset: 0, pointerEvents: "none" }}
+      aria-hidden
     >
-      {card}
-    </motion.div>
+      {/* Head */}
+      <circle cx="50" cy="36" r="20" />
+      {/* Neck */}
+      <rect x="44" y="54" width="12" height="10" rx="4" />
+      {/* Shoulders / torso */}
+      <path d="M8 75 Q8 62 50 62 Q92 62 92 75 L88 120 L12 120 Z" />
+      {/* Legs */}
+      <rect x="20" y="118" width="24" height="37" rx="8" />
+      <rect x="56" y="118" width="24" height="37" rx="8" />
+    </svg>
   );
 }
 
-function MiniCard({ player, animated, tmLink, gLink }: Omit<PlayerCardProps, "size">) {
-  const card = (
+/* ─── FULL card ──────────────────────────────────────────────────── */
+function FullCard({ player, showScoutNote, tmLink, gLink, animated }: Omit<PlayerCardProps, "size">) {
+  const initials = player.name.split(" ").map((w) => w[0]).slice(0, 2).join("").toUpperCase();
+  const bg = gradient(player.name);
+
+  const inner = (
     <div style={{
-      width: "100%",
-      background: "#060f1e", borderRadius: "10px",
-      overflow: "hidden", border: "1px solid #1a3a5c",
-      fontFamily: "'Trebuchet MS', 'Segoe UI', sans-serif",
+      width: "100%", maxWidth: 220,
+      borderRadius: 12, overflow: "hidden",
+      background: bg,
+      border: "1px solid oklch(1 0 0 / 0.08)",
+      position: "relative",
+      fontFamily: "var(--font-mono-stack, 'IBM Plex Mono', monospace)",
     }}>
+      {/* Diagonal stripe texture */}
       <div style={{
-        padding: "10px 10px 8px",
-        background: "linear-gradient(135deg, #0a1f3a, #071628)",
-        borderBottom: "1px solid #1a3a5c", position: "relative",
+        position: "absolute", inset: 0, pointerEvents: "none",
+        backgroundImage: "repeating-linear-gradient(-45deg, oklch(1 0 0 / 0.04) 0 1px, transparent 1px 14px)",
+      }} />
+
+      {/* ── Top bar: position + overall ── */}
+      <div style={{
+        position: "relative", display: "flex", justifyContent: "space-between",
+        alignItems: "center", padding: "10px 12px 0",
       }}>
-        <div style={{ position: "absolute", inset: 0, background: "linear-gradient(135deg, rgba(0,212,170,0.06) 0%, transparent 60%)", pointerEvents: "none" }} />
-        <div style={{ position: "relative" }}>
-          <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "4px" }}>
-            <PlayerPhoto url={player.photo_url} name={player.name} size="mini" />
-            <div>
-              <div style={{ fontSize: "26px", fontWeight: 900, color: "#00d4aa", lineHeight: 1, textShadow: "0 0 16px rgba(0,212,170,0.4)" }}>{player.overall}</div>
-              <div style={{ fontSize: "9px", fontWeight: 700, color: "#00d4aa", letterSpacing: "2px", textTransform: "uppercase" }}>{player.position}</div>
-            </div>
-          </div>
-          <div style={{ fontSize: "11px", fontWeight: 700, color: "#e0f0ff", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{player.name}</div>
-          <div style={{ fontSize: "9px", color: "#4a7a9a", marginTop: "1px" }}>{player.club}</div>
-          <div style={{ height: "2px", background: "linear-gradient(90deg, #00d4aa, #22d3ee, transparent)", marginTop: "7px" }} />
+        <span style={{ fontSize: 9, fontWeight: 700, letterSpacing: "0.14em", color: "oklch(1 0 0 / 0.45)" }}>
+          {player.position}
+        </span>
+        <span style={{ fontSize: 30, fontWeight: 900, color: "oklch(1 0 0 / 0.90)", lineHeight: 1, letterSpacing: "-0.03em" }}>
+          {player.overall}
+        </span>
+      </div>
+
+      {/* ── Silhouette area ── */}
+      <div style={{ position: "relative", height: 160, overflow: "hidden" }}>
+        {/* Background initials */}
+        <div style={{
+          position: "absolute", inset: 0,
+          display: "flex", alignItems: "center", justifyContent: "center",
+          fontSize: 100, fontWeight: 900, letterSpacing: "-0.08em",
+          color: "oklch(1 0 0 / 0.07)",
+          fontFamily: "var(--font-display, 'Space Grotesk', sans-serif)",
+          userSelect: "none", lineHeight: 1,
+          transform: "translateY(10%)",
+        }}>
+          {initials}
+        </div>
+        {/* Humanoid silhouette */}
+        <Silhouette opacity={0.14} />
+      </div>
+
+      {/* ── Name + club gradient overlay ── */}
+      <div style={{
+        position: "relative",
+        padding: "6px 12px 4px",
+        background: "linear-gradient(to top, oklch(0 0 0 / 0.75) 0%, transparent 100%)",
+      }}>
+        <div style={{
+          fontSize: 13, fontWeight: 700, color: "oklch(1 0 0 / 0.92)", lineHeight: 1.15,
+          fontFamily: "var(--font-display, 'Space Grotesk', sans-serif)",
+          overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap",
+        }}>
+          {player.name}
+        </div>
+        <div style={{ fontSize: 8, color: "oklch(1 0 0 / 0.40)", letterSpacing: "0.07em", marginTop: 2 }}>
+          {player.club} · {player.league}
         </div>
       </div>
-      <div style={{ padding: "8px 10px 9px", display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: "5px" }}>
+
+      {/* ── Stat strip ── */}
+      <div style={{
+        display: "grid", gridTemplateColumns: "repeat(6, 1fr)",
+        padding: "7px 10px 9px",
+        background: "oklch(0 0 0 / 0.45)",
+        position: "relative",
+      }}>
         {STATS.map(({ key, label }) => {
           const val = player[key];
           return (
             <div key={key} style={{ textAlign: "center" }}>
-              <div style={{ fontSize: "14px", fontWeight: 900, color: statColor(val), lineHeight: 1 }}>{val}</div>
-              <div style={{ fontSize: "8px", color: "#2a5a7a", fontWeight: 700, letterSpacing: "1px", textTransform: "uppercase", marginTop: "2px" }}>{label}</div>
+              <div style={{ fontSize: 11, fontWeight: 900, color: statColor(val), lineHeight: 1 }}>{val}</div>
+              <div style={{ fontSize: 7, color: "oklch(1 0 0 / 0.28)", letterSpacing: "0.06em", marginTop: 1 }}>{label}</div>
             </div>
           );
         })}
       </div>
+
+      {/* Scout note (optional) */}
+      {showScoutNote && player.whyWatch && (
+        <div style={{
+          margin: "0 10px 10px",
+          padding: "8px 10px",
+          background: "oklch(1 0 0 / 0.04)",
+          border: "1px solid oklch(1 0 0 / 0.10)",
+          borderRadius: 6,
+          position: "relative",
+        }}>
+          <div style={{ fontSize: 8, fontWeight: 700, letterSpacing: "0.14em", color: "oklch(0.72 0.14 199)", textTransform: "uppercase", marginBottom: 4 }}>
+            Scout Notu
+          </div>
+          <div style={{ fontSize: 10, color: "oklch(1 0 0 / 0.55)", lineHeight: 1.55 }}>{player.whyWatch}</div>
+        </div>
+      )}
+
+      {/* TM / G links */}
       {(tmLink || gLink) && (
-        <div style={{ padding: "5px 10px 7px", display: "flex", justifyContent: "flex-end", gap: "4px", borderTop: "1px solid #0f2035" }}>
-          {tmLink && <a href={tmLink} target="_blank" rel="noopener noreferrer" style={{ fontSize: "8px", fontWeight: 700, color: "#2a5a7a", background: "#0a1a2e", border: "1px solid #1a3050", borderRadius: "3px", padding: "2px 5px", textDecoration: "none" }}>TM</a>}
-          {gLink && <a href={gLink} target="_blank" rel="noopener noreferrer" style={{ fontSize: "8px", fontWeight: 700, color: "#2a5a7a", background: "#0a1a2e", border: "1px solid #1a3050", borderRadius: "3px", padding: "2px 5px", textDecoration: "none" }}>G</a>}
+        <div style={{
+          padding: "5px 10px 8px", display: "flex", justifyContent: "flex-end", gap: 4,
+          borderTop: "1px solid oklch(1 0 0 / 0.06)", position: "relative",
+        }}>
+          {tmLink && <a href={tmLink} target="_blank" rel="noopener noreferrer" style={{ fontSize: 8, fontWeight: 700, color: "oklch(1 0 0 / 0.35)", background: "oklch(1 0 0 / 0.05)", border: "1px solid oklch(1 0 0 / 0.10)", borderRadius: 3, padding: "2px 6px", textDecoration: "none" }}>TM</a>}
+          {gLink && <a href={gLink} target="_blank" rel="noopener noreferrer" style={{ fontSize: 8, fontWeight: 700, color: "oklch(1 0 0 / 0.35)", background: "oklch(1 0 0 / 0.05)", border: "1px solid oklch(1 0 0 / 0.10)", borderRadius: 3, padding: "2px 6px", textDecoration: "none" }}>G</a>}
         </div>
       )}
     </div>
   );
 
-  if (!animated) return card;
+  if (!animated) return inner;
   return (
     <motion.div
-      initial={{ opacity: 0, scale: 0.92 }}
-      animate={{ opacity: 1, scale: 1 }}
-      transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] as [number, number, number, number] }}
+      initial={{ opacity: 0, y: 20, scale: 0.96 }}
+      animate={{ opacity: 1, y: 0, scale: 1 }}
+      transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
     >
-      {card}
+      {inner}
     </motion.div>
   );
 }
 
+/* ─── MINI card ──────────────────────────────────────────────────── */
+function MiniCard({ player, animated, tmLink, gLink }: Omit<PlayerCardProps, "size">) {
+  const initials = player.name.split(" ").map((w) => w[0]).slice(0, 2).join("").toUpperCase();
+  const bg = gradient(player.name);
+
+  const inner = (
+    <div style={{
+      width: "100%",
+      borderRadius: 10, overflow: "hidden",
+      background: bg,
+      border: "1px solid oklch(1 0 0 / 0.08)",
+      position: "relative",
+      fontFamily: "var(--font-mono-stack, 'IBM Plex Mono', monospace)",
+    }}>
+      <div style={{ position: "absolute", inset: 0, pointerEvents: "none", backgroundImage: "repeating-linear-gradient(-45deg, oklch(1 0 0 / 0.04) 0 1px, transparent 1px 12px)" }} />
+
+      {/* Top: position + overall */}
+      <div style={{ position: "relative", display: "flex", justifyContent: "space-between", alignItems: "center", padding: "8px 10px 0" }}>
+        <span style={{ fontSize: 8, fontWeight: 700, letterSpacing: "0.14em", color: "oklch(1 0 0 / 0.40)" }}>{player.position}</span>
+        <span style={{ fontSize: 22, fontWeight: 900, color: "oklch(1 0 0 / 0.90)", lineHeight: 1 }}>{player.overall}</span>
+      </div>
+
+      {/* Silhouette */}
+      <div style={{ position: "relative", height: 100, overflow: "hidden" }}>
+        <div style={{
+          position: "absolute", inset: 0, display: "flex", alignItems: "center", justifyContent: "center",
+          fontSize: 64, fontWeight: 900, letterSpacing: "-0.08em",
+          color: "oklch(1 0 0 / 0.07)",
+          fontFamily: "var(--font-display, 'Space Grotesk', sans-serif)",
+          userSelect: "none", lineHeight: 1, transform: "translateY(12%)",
+        }}>
+          {initials}
+        </div>
+        <Silhouette opacity={0.13} />
+      </div>
+
+      {/* Name + club */}
+      <div style={{ position: "relative", padding: "4px 10px 3px", background: "linear-gradient(to top, oklch(0 0 0 / 0.70) 0%, transparent 100%)" }}>
+        <div style={{ fontSize: 10, fontWeight: 700, color: "oklch(1 0 0 / 0.92)", lineHeight: 1.1, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", fontFamily: "var(--font-display, 'Space Grotesk', sans-serif)" }}>{player.name}</div>
+        <div style={{ fontSize: 7, color: "oklch(1 0 0 / 0.38)", letterSpacing: "0.06em", marginTop: 1 }}>{player.club}</div>
+      </div>
+
+      {/* Stat strip */}
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(6, 1fr)", padding: "6px 8px 8px", background: "oklch(0 0 0 / 0.45)", position: "relative" }}>
+        {STATS.map(({ key, label }) => {
+          const val = player[key];
+          return (
+            <div key={key} style={{ textAlign: "center" }}>
+              <div style={{ fontSize: 10, fontWeight: 900, color: statColor(val), lineHeight: 1 }}>{val}</div>
+              <div style={{ fontSize: 6, color: "oklch(1 0 0 / 0.25)", letterSpacing: "0.05em", marginTop: 1 }}>{label}</div>
+            </div>
+          );
+        })}
+      </div>
+
+      {(tmLink || gLink) && (
+        <div style={{ padding: "4px 8px 6px", display: "flex", justifyContent: "flex-end", gap: 3, borderTop: "1px solid oklch(1 0 0 / 0.06)", position: "relative" }}>
+          {tmLink && <a href={tmLink} target="_blank" rel="noopener noreferrer" style={{ fontSize: 7, fontWeight: 700, color: "oklch(1 0 0 / 0.30)", background: "oklch(1 0 0 / 0.05)", border: "1px solid oklch(1 0 0 / 0.10)", borderRadius: 3, padding: "2px 5px", textDecoration: "none" }}>TM</a>}
+          {gLink && <a href={gLink} target="_blank" rel="noopener noreferrer" style={{ fontSize: 7, fontWeight: 700, color: "oklch(1 0 0 / 0.30)", background: "oklch(1 0 0 / 0.05)", border: "1px solid oklch(1 0 0 / 0.10)", borderRadius: 3, padding: "2px 5px", textDecoration: "none" }}>G</a>}
+        </div>
+      )}
+    </div>
+  );
+
+  if (!animated) return inner;
+  return (
+    <motion.div
+      initial={{ opacity: 0, scale: 0.92 }}
+      animate={{ opacity: 1, scale: 1 }}
+      transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
+    >
+      {inner}
+    </motion.div>
+  );
+}
+
+/* ─── Export ─────────────────────────────────────────────────────── */
 export default function PlayerCard({ player, size = "full", showScoutNote, tmLink, gLink, animated = true }: PlayerCardProps) {
   if (size === "mini") return <MiniCard player={player} showScoutNote={showScoutNote} tmLink={tmLink} gLink={gLink} animated={animated} />;
   return <FullCard player={player} showScoutNote={showScoutNote} tmLink={tmLink} gLink={gLink} animated={animated} />;
