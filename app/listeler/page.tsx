@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { IconShield, IconTrendUp, IconStar } from "../components/icons";
 import SiteHeader from "../components/site-header";
 import SiteFooter from "../components/site-footer";
 import { supabase } from "@/lib/supabase";
@@ -11,16 +10,21 @@ type SupabaseContent = { id: string; title: string; slug: string; created_at: st
 
 const PAGE_SIZE = 9;
 
+const ACCENT_CYCLE = ["var(--cyan)", "var(--emerald)", "var(--sky)", "var(--rose)", "var(--amber)", "var(--accent)"];
+
 const STATIC_LISTS = [
-  { slug: "en-iyi-10-genc-stoper", title: "En İyi 10 Genç Stoper", description: "Avrupa liglerinde 23 yaş altı modern stoper profiline uyan oyuncuların detaylı analizi.", icon: <IconShield />, color: "var(--sg-primary)" },
-  { slug: "super-lig-gizli-isimler", title: "Süper Lig'in Gizli İsimleri", description: "Büyük kulüplerin radarına yeni yeni giren, veri tarafında öne çıkan isimler.", icon: <IconTrendUp />, color: "var(--sg-secondary)" },
-  { slug: "surpriz-isimler-2025", title: "Bu Sezonun Sürpriz İsimleri", description: "2025 sezonunda beklentilerin üzerine çıkan, istatistiksel olarak sıçrama yapan oyuncular.", icon: <IconStar />, color: "var(--sg-amber)" },
+  { slug: "en-iyi-10-genc-stoper", title: "En İyi 10 Genç Stoper", description: "Avrupa liglerinde 23 yaş altı modern stoper profiline uyan oyuncuların detaylı analizi.", accent: "var(--cyan)" },
+  { slug: "super-lig-gizli-isimler", title: "Süper Lig'in Gizli İsimleri", description: "Büyük kulüplerin radarına yeni yeni giren, veri tarafında öne çıkan isimler.", accent: "var(--emerald)" },
+  { slug: "surpriz-isimler-2025", title: "Bu Sezonun Sürpriz İsimleri", description: "2025 sezonunda beklentilerin üzerine çıkan, istatistiksel olarak sıçrama yapan oyuncular.", accent: "var(--sky)" },
 ];
+
+const FILTERS = ["TÜMÜ", "GENÇ", "TRANSFER", "TAKTİK", "TÜRKİYE"];
 
 export default function ListsPage() {
   const [dbLists, setDbLists] = useState<SupabaseContent[]>([]);
   const [loadingMore, setLoadingMore] = useState(false);
   const [hasMore, setHasMore] = useState(true);
+  const [activeFilter, setActiveFilter] = useState("TÜMÜ");
 
   useEffect(() => {
     supabase.from("contents").select("id,title,slug,created_at")
@@ -49,111 +53,71 @@ export default function ListsPage() {
       <SiteHeader activeNav="listeler" />
       <div style={{ paddingTop: "68px" }} />
 
-      {/* ── V2 Category Hero ── */}
-      <section className="grain relative overflow-hidden" style={{
-        background: "var(--sg-surface-low)",
-        borderBottom: "1px solid var(--sg-border)",
-      }}>
-        <div style={{
-          backgroundImage: "repeating-linear-gradient(-45deg, rgba(0,0,0,0.06) 0 1px, transparent 1px 12px)",
-          position: "absolute", inset: 0, pointerEvents: "none",
-        }} />
-        <div style={{
-          maxWidth: 1440, margin: "0 auto", padding: "72px 32px 56px",
-          display: "grid", gridTemplateColumns: "1fr 1fr", gap: 48, alignItems: "center",
-        }}>
-          {/* Left */}
-          <div>
-            <div className="eyebrow" style={{ color: "var(--emerald)", marginBottom: 14 }}>KÜRASYONLU LİSTELER</div>
-            <h1 className="display" style={{
-              fontSize: "clamp(3rem, 6vw, 5rem)", fontWeight: 700,
-              letterSpacing: "-0.04em", lineHeight: 0.92, margin: "0 0 20px",
-            }}>
-              Scout&apos;un<br />
-              <span style={{
-                background: "linear-gradient(120deg, var(--emerald) 0%, var(--accent) 100%)",
-                WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", backgroundClip: "text",
-              }}>Listeleri</span>
-            </h1>
-            <p style={{ fontSize: 18, lineHeight: 1.6, color: "var(--sg-text-secondary)", maxWidth: 440, margin: "0 0 28px" }}>
-              Liglere, pozisyonlara ve yaş gruplarına göre kürasyonlu listeler. Veri ve scout gözlemini birleştirir.
-            </p>
-            <div style={{ display: "flex", gap: 20 }}>
-              {[
-                { label: "50+", desc: "Oyuncu profili" },
-                { label: "12", desc: "Aktif liste" },
-                { label: "5", desc: "Lig kapsanıyor" },
-              ].map(({ label, desc }) => (
-                <div key={label}>
-                  <div className="display" style={{ fontSize: 28, fontWeight: 700, color: "var(--emerald)", letterSpacing: "-0.03em" }}>{label}</div>
-                  <div className="mono" style={{ fontSize: 10, letterSpacing: "0.14em", color: "var(--sg-text-muted)" }}>{desc.toUpperCase()}</div>
-                </div>
-              ))}
-            </div>
-          </div>
-          {/* Right — Rank Card Stack */}
-          <div style={{ display: "flex", justifyContent: "flex-end", gap: 0 }}>
-            <div style={{ display: "flex", flexDirection: "column", gap: 8, width: 280 }}>
-              {[
-                { rank: "#01", pos: "Forvet", tag: "HÜCUM", color: "var(--rose)" },
-                { rank: "#02", pos: "Orta Saha", tag: "KREATİF", color: "var(--accent)" },
-                { rank: "#03", pos: "Defans", tag: "MOBİL", color: "var(--emerald)" },
-                { rank: "#04", pos: "Bek", tag: "MODERN", color: "var(--sky)" },
-              ].map(({ rank, pos, tag, color }, i) => (
-                <div key={rank} style={{
-                  background: "var(--sg-surface)", border: "1px solid var(--sg-border)",
-                  borderLeft: `3px solid ${color}`,
-                  padding: "12px 16px", display: "flex", alignItems: "center", gap: 12,
-                  opacity: 1 - i * 0.12,
-                }}>
-                  <span className="mono" style={{ fontSize: 22, fontWeight: 700, color, letterSpacing: "-0.02em", minWidth: 44 }}>{rank}</span>
-                  <div>
-                    <div className="display" style={{ fontSize: 14, fontWeight: 600 }}>{pos}</div>
-                    <div className="mono" style={{ fontSize: 9, letterSpacing: "0.18em", color: "var(--sg-text-muted)" }}>{tag}</div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
+      {/* ── Page Header ── */}
+      <div style={{ maxWidth: 1440, margin: "0 auto", padding: "60px 32px 56px", display: "grid", gridTemplateColumns: "2fr 1fr", gap: 32, alignItems: "end" }}>
+        <div>
+          <div className="eyebrow" style={{ color: "var(--emerald)" }}>ARŞİV</div>
+          <h1 className="display" style={{
+            fontSize: "clamp(56px, 7vw, 84px)", fontWeight: 700,
+            letterSpacing: "-0.04em", lineHeight: 0.9, margin: "8px 0 0",
+          }}>
+            Listeler
+          </h1>
         </div>
-      </section>
+        <p style={{ fontSize: 18, color: "var(--sg-text-secondary)", lineHeight: 1.5, margin: 0 }}>
+          Kürasyonlu oyuncu listeleri. Her liste scout notları, istatistikler ve karşılaştırmalarla.
+        </p>
+      </div>
 
-      {/* ── Content Grid ── */}
-      <div style={{ maxWidth: 1440, margin: "0 auto", padding: "60px 32px 80px" }}>
+      <div style={{ maxWidth: 1440, margin: "0 auto", padding: "0 32px 80px" }}>
 
-        {/* DB Lists */}
+        {/* ── Filter Bar ── */}
+        <div style={{ display: "flex", gap: 8, marginBottom: 40, paddingBottom: 16, borderBottom: "1px solid var(--sg-border)" }}>
+          {FILTERS.map((f) => (
+            <button key={f} onClick={() => setActiveFilter(f)}
+              className={`chip${activeFilter === f ? " solid" : ""}`}
+              style={{ cursor: "pointer", fontSize: 10 }}>
+              {f}
+            </button>
+          ))}
+        </div>
+
+        {/* ── DB Lists ── */}
         {dbLists.length > 0 && (
           <section style={{ marginBottom: 64 }}>
-            <div style={{ marginBottom: 32 }}>
-              <div className="eyebrow" style={{ color: "var(--emerald)" }}>GÜNCEL LİSTELER</div>
-              <h2 className="display" style={{ fontSize: 28, fontWeight: 700, letterSpacing: "-0.03em", margin: "6px 0 0" }}>
-                Son Eklenenler
-              </h2>
-            </div>
+            <div className="eyebrow" style={{ color: "var(--emerald)", marginBottom: 20 }}>GÜNCEL LİSTELER</div>
             <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 16 }}>
-              {dbLists.map((item) => (
-                <Link key={item.id} href={`/listeler/${item.slug}`}
-                  className="lift" style={{
-                    background: "var(--sg-surface)", border: "1px solid var(--sg-border)",
-                    borderRadius: 4, overflow: "hidden", display: "flex", flexDirection: "column",
-                  }}>
-                  <div style={{ height: 2, background: "var(--emerald)" }} />
-                  <div style={{ padding: "20px 24px 24px", flex: 1, display: "flex", flexDirection: "column" }}>
-                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 14 }}>
-                      <span className="mono" style={{ fontSize: 9, letterSpacing: "0.2em", color: "var(--emerald)" }}>LİSTE</span>
-                      <span className="mono" style={{ fontSize: 9, letterSpacing: "0.14em", color: "var(--sg-text-muted)" }}>
-                        {new Date(item.created_at).toLocaleDateString("tr-TR", { day: "numeric", month: "short" })}
-                      </span>
+              {dbLists.map((item, idx) => {
+                const accent = ACCENT_CYCLE[idx % ACCENT_CYCLE.length];
+                return (
+                  <Link key={item.id} href={`/listeler/${item.slug}`}
+                    className="lift" style={{
+                      background: "var(--sg-surface)", border: "1px solid var(--sg-border)",
+                      borderRadius: 4, overflow: "hidden", cursor: "pointer", textDecoration: "none",
+                    }}>
+                    <div style={{ height: 2, background: accent }} />
+                    <div style={{ padding: 28 }}>
+                      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 24 }}>
+                        <span className="mono" style={{ fontSize: 10, letterSpacing: "0.18em", color: accent }}>LİSTE</span>
+                        <span className="mono" style={{ fontSize: 10, letterSpacing: "0.14em", color: "var(--sg-text-muted)" }}>
+                          {new Date(item.created_at).toLocaleDateString("tr-TR", { day: "numeric", month: "short" })}
+                        </span>
+                      </div>
+                      <h3 className="display" style={{
+                        fontSize: 22, fontWeight: 600, lineHeight: 1.1, letterSpacing: "-0.02em",
+                        margin: 0, textWrap: "balance", minHeight: 72, color: "var(--sg-text-primary)",
+                      }}>
+                        {item.title}
+                      </h3>
+                      <div style={{ marginTop: 20, paddingTop: 16, borderTop: "1px solid var(--sg-border)" }}>
+                        <span className="mono u-link" style={{ fontSize: 11, letterSpacing: "0.16em", color: accent }}>
+                          OKU →
+                        </span>
+                      </div>
                     </div>
-                    <h2 className="display" style={{ fontSize: 18, fontWeight: 600, lineHeight: 1.2, letterSpacing: "-0.02em", margin: "0 0 16px", textWrap: "balance", flex: 1 }}>
-                      {item.title}
-                    </h2>
-                    <div className="mono" style={{ fontSize: 10, letterSpacing: "0.14em", color: "var(--emerald)" }}>
-                      DETAYLARI GÖR →
-                    </div>
-                  </div>
-                </Link>
-              ))}
+                  </Link>
+                );
+              })}
             </div>
             {hasMore && (
               <div style={{ marginTop: 36, display: "flex", justifyContent: "center" }}>
@@ -165,38 +129,34 @@ export default function ListsPage() {
           </section>
         )}
 
-        {/* Static featured lists */}
+        {/* ── Static Featured Lists ── */}
         <section>
-          <div style={{ marginBottom: 32 }}>
-            <div className="eyebrow">ÖNE ÇIKAN LİSTELER</div>
-            <h2 className="display" style={{ fontSize: 28, fontWeight: 700, letterSpacing: "-0.03em", margin: "6px 0 0" }}>
-              Seçilmiş Koleksiyonlar
-            </h2>
-          </div>
+          <div className="eyebrow" style={{ marginBottom: 20 }}>ÖNE ÇIKAN LİSTELER</div>
           <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 16 }}>
             {STATIC_LISTS.map((list) => (
               <Link key={list.slug} href={`/listeler/${list.slug}`}
                 className="lift" style={{
                   background: "var(--sg-surface)", border: "1px solid var(--sg-border)",
-                  borderRadius: 4, overflow: "hidden", display: "flex", flexDirection: "column",
+                  borderRadius: 4, overflow: "hidden", cursor: "pointer", textDecoration: "none",
                 }}>
-                <div style={{ height: 2, background: list.color }} />
-                <div style={{ padding: "24px", flex: 1, display: "flex", flexDirection: "column" }}>
-                  <div style={{
-                    width: 40, height: 40, display: "flex", alignItems: "center", justifyContent: "center",
-                    background: `color-mix(in oklch, ${list.color} 15%, transparent)`,
-                    color: list.color, marginBottom: 20,
-                  }}>
-                    {list.icon}
+                <div style={{ height: 2, background: list.accent }} />
+                <div style={{ padding: 28 }}>
+                  <div className="mono" style={{ fontSize: 10, letterSpacing: "0.18em", color: list.accent, marginBottom: 24 }}>
+                    SEÇME LİSTE
                   </div>
-                  <h2 className="display" style={{ fontSize: 18, fontWeight: 600, lineHeight: 1.2, letterSpacing: "-0.02em", margin: "0 0 10px" }}>
+                  <h3 className="display" style={{
+                    fontSize: 22, fontWeight: 600, lineHeight: 1.1, letterSpacing: "-0.02em",
+                    margin: 0, textWrap: "balance", color: "var(--sg-text-primary)",
+                  }}>
                     {list.title}
-                  </h2>
-                  <p style={{ fontSize: 13, lineHeight: 1.5, color: "var(--sg-text-secondary)", flex: 1, margin: "0 0 16px" }}>
+                  </h3>
+                  <p style={{ fontSize: 14, color: "var(--sg-text-secondary)", marginTop: 12, lineHeight: 1.5 }}>
                     {list.description}
                   </p>
-                  <div className="mono" style={{ fontSize: 10, letterSpacing: "0.14em", color: list.color }}>
-                    DETAYLARI GÖR →
+                  <div style={{ marginTop: 20, paddingTop: 16, borderTop: "1px solid var(--sg-border)" }}>
+                    <span className="mono u-link" style={{ fontSize: 11, letterSpacing: "0.16em", color: list.accent }}>
+                      OKU →
+                    </span>
                   </div>
                 </div>
               </Link>
