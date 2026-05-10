@@ -20,6 +20,23 @@ const CATEGORIES = [
   { value: "taktik-lab", label: "Taktik Lab" },
 ];
 
+const HERO_VARIANTS = [
+  { value: "player-cards", label: "🃏 Oyuncu Kartı", desc: "Radar/Liste" },
+  { value: "cover-image", label: "🖼 Kapak Görseli", desc: "Genel" },
+  { value: "pitch-diagram", label: "⬡ Saha Diyagramı", desc: "Taktik Lab" },
+  { value: "stat-focus", label: "📊 Stat Odak", desc: "Radar" },
+  { value: "text-only", label: "✍ Sadece Metin", desc: "Minimal" },
+];
+
+const ACCENT_COLORS = [
+  { value: "emerald", label: "Yeşil", color: "oklch(0.71 0.19 155)" },
+  { value: "cyan", label: "Cyan", color: "oklch(0.75 0.14 199)" },
+  { value: "sky", label: "Mavi", color: "oklch(0.72 0.14 233)" },
+  { value: "rose", label: "Kırmızı", color: "oklch(0.66 0.21 13)" },
+  { value: "amber", label: "Altın", color: "oklch(0.78 0.17 67)" },
+  { value: "lime", label: "Lime", color: "oklch(0.80 0.19 126)" },
+];
+
 type FcPlayer = {
   name: string;
   overall: number;
@@ -102,6 +119,9 @@ function YeniIcerikForm() {
   const [playersListResults, setPlayersListResults] = useState<FcPlayer[]>([]);
   const [playersListSearching, setPlayersListSearching] = useState(false);
   const playersListTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const [heroVariant, setHeroVariant] = useState("text-only");
+  const [accentColor, setAccentColor] = useState("emerald");
 
   useEffect(() => {
     const c = searchParams.get("category");
@@ -203,6 +223,8 @@ function YeniIcerikForm() {
       stat_physical: statPhysical || null,
       stat_overall: statOverall || null,
       players_json: playersList.length > 0 ? JSON.stringify(playersList) : null,
+      hero_variant: heroVariant,
+      accent: accentColor,
       status: "bekliyor",
     });
 
@@ -290,6 +312,51 @@ function YeniIcerikForm() {
                   {cat.label}
                 </button>
               ))}
+            </div>
+          </div>
+
+          {/* V2 — Hero Variant + Accent */}
+          <div className="grid gap-5 sm:grid-cols-2">
+            <div>
+              <label className="mb-1.5 block text-xs font-semibold text-slate-300">Hero Stili</label>
+              <div className="flex flex-col gap-1.5">
+                {HERO_VARIANTS.map((v) => (
+                  <button
+                    key={v.value} type="button"
+                    onClick={() => setHeroVariant(v.value)}
+                    className={[
+                      "flex items-center gap-2 rounded-lg border px-3 py-2 text-xs transition text-left",
+                      heroVariant === v.value
+                        ? "border-emerald-500/60 bg-emerald-500/10 text-emerald-200"
+                        : "border-slate-700/80 bg-slate-900/60 text-slate-400 hover:text-slate-200",
+                    ].join(" ")}
+                  >
+                    <span className="font-medium">{v.label}</span>
+                    <span className="ml-auto text-[10px] opacity-50">{v.desc}</span>
+                  </button>
+                ))}
+              </div>
+            </div>
+            <div>
+              <label className="mb-1.5 block text-xs font-semibold text-slate-300">Renk Vurgusu</label>
+              <div className="flex flex-col gap-1.5">
+                {ACCENT_COLORS.map((a) => (
+                  <button
+                    key={a.value} type="button"
+                    onClick={() => setAccentColor(a.value)}
+                    className={[
+                      "flex items-center gap-2.5 rounded-lg border px-3 py-2 text-xs transition",
+                      accentColor === a.value
+                        ? "border-slate-500 bg-slate-800 text-slate-100"
+                        : "border-slate-700/80 bg-slate-900/60 text-slate-400 hover:text-slate-200",
+                    ].join(" ")}
+                  >
+                    <span className="h-3 w-3 rounded-full flex-shrink-0" style={{ background: a.color }} />
+                    <span>{a.label}</span>
+                    {accentColor === a.value && <span className="ml-auto text-emerald-400">✓</span>}
+                  </button>
+                ))}
+              </div>
             </div>
           </div>
 

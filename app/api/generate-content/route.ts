@@ -119,15 +119,19 @@ Respond with ONLY this JSON format, nothing else:
   "slug": "url-friendly-slug",
   "category": "radar or taktik-lab or listeler",
   "content": "HTML content. Use <h2>, <h3>, <p>, <ul>, <li>, <strong>. No markdown. Minimum 400 words.",
-  "players": ["Player Name 1", "Player Name 2"]
+  "players": ["Player Name 1", "Player Name 2"],
+  "hero_variant": "one of: player-cards | cover-image | pitch-diagram | stat-focus | text-only",
+  "accent": "one of: emerald | cyan | sky | rose | amber | lime"
 }
 
 Category guide — follow strictly:
-- radar: current player analysis, transfer news, weekly performance breakdown. "players": the 1 featured player's name.
-- taktik-lab: modern positional archetypes, tactical analysis, system breakdown. "players": example players referenced (max 3).
-- listeler: ranking and comparison lists. "players": ALL player names in the list (max 10). If category requested is "listeler", JSON "category" field MUST be "listeler".
+- radar: current player analysis, transfer news, weekly performance breakdown. "players": the 1 featured player's name. hero_variant: "player-cards" or "stat-focus".
+- taktik-lab: modern positional archetypes, tactical analysis, system breakdown. "players": example players referenced (max 3). hero_variant: "pitch-diagram".
+- listeler: ranking and comparison lists. "players": ALL player names in the list (max 10). If category requested is "listeler", JSON "category" field MUST be "listeler". hero_variant: "player-cards".
 
-"players" field is REQUIRED in every response. Do not leave it empty.`;
+"players" field is REQUIRED in every response. Do not leave it empty.
+"hero_variant" is REQUIRED — pick the most fitting option for the content type.
+"accent" colour should match the mood: emerald=general, cyan=technical/tactical, sky=player analysis, rose=controversial, amber=historical, lime=breakout/underdog.`;
 }
 
 function slugify(text: string): string {
@@ -193,6 +197,8 @@ async function generateWithClaude(
   category: string;
   content: string;
   players?: string[];
+  hero_variant?: string;
+  accent?: string;
 }> {
   const apiKey = process.env.ANTHROPIC_API_KEY;
   if (!apiKey) throw new Error("ANTHROPIC_API_KEY ortam değişkeni tanımlı değil");
@@ -283,7 +289,7 @@ async function generateWithClaude(
     throw new Error("Yanıtta geçerli JSON nesnesi bulunamadı");
   }
 
-  let parsed: { title?: string; slug?: string; category?: string; content?: string; players?: unknown };
+  let parsed: { title?: string; slug?: string; category?: string; content?: string; players?: unknown; hero_variant?: string; accent?: string };
   try {
     parsed = JSON.parse(jsonStr);
   } catch (parseErr) {
@@ -309,8 +315,16 @@ async function generateWithClaude(
     ? (parsed.category as string)
     : targetCategory;
 
-  console.log(`[generate-content] Başarıyla üretildi — başlık: "${title}", kategori: ${category}`);
-  return { title, slug, category, content, players };
+  const validHeroVariants = ["player-cards", "cover-image", "pitch-diagram", "stat-focus", "text-only"];
+  const hero_variant = validHeroVariants.includes(parsed.hero_variant ?? "")
+    ? parsed.hero_variant
+    : (targetCategory === "taktik-lab" ? "pitch-diagram" : "player-cards");
+
+  const validAccents = ["emerald", "cyan", "sky", "rose", "amber", "lime"];
+  const accent = validAccents.includes(parsed.accent ?? "") ? parsed.accent : "emerald";
+
+  console.log(`[generate-content] Başarıyla üretildi — başlık: "${title}", kategori: ${category}, hero: ${hero_variant}`);
+  return { title, slug, category, content, players, hero_variant, accent };
 }
 
 function isValidSlug(s: string): boolean {
@@ -391,6 +405,8 @@ export async function POST(request: Request) {
         content: "",
         content_en: generated.content,
         status: "bekliyor" as const,
+        hero_variant: generated.hero_variant ?? "text-only",
+        accent: generated.accent ?? "emerald",
         players_json:
           generated.category === "listeler" && generated.players?.length
             ? await buildPlayersJson(supabase, generated.players)
@@ -482,6 +498,8 @@ export async function POST(request: Request) {
         content: "",
         content_en: generated.content,
         status: "bekliyor" as const,
+        hero_variant: generated.hero_variant ?? "text-only",
+        accent: generated.accent ?? "emerald",
         players_json:
           generated.category === "listeler" && generated.players?.length
             ? await buildPlayersJson(supabase, generated.players)
@@ -592,7 +610,7 @@ export async function POST(request: Request) {
   }[] = [];
 
   for (const { topic, category } of pairs) {
-    let generated: { title: string; slug: string; category: string; content: string; players?: string[] };
+    let generated: { title: string; slug: string; category: string; content: string; players?: string[]; hero_variant?: string; accent?: string };
 
     try {
       const batchWebSearch = category === "radar";
@@ -612,6 +630,8 @@ export async function POST(request: Request) {
       content: "",
       content_en: generated.content,
       status: "bekliyor",
+      hero_variant: generated.hero_variant ?? "text-only",
+      accent: generated.accent ?? "emerald",
       players_json:
         generated.category === "listeler" && generated.players?.length
           ? await buildPlayersJson(supabase, generated.players)

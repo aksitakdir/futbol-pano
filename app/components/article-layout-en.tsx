@@ -96,6 +96,7 @@ type Props = {
   youtubeId?: string; coverImage?: string;
   youtubeQuery1?: string; youtubeQuery2?: string;
   newsQuery?: string; playerName?: string;
+  heroVariant?: string; accentOverride?: string;
   showNewsSection?: boolean; children?: React.ReactNode;
   excerptContent?: string; isPending?: boolean;
 };
@@ -103,17 +104,22 @@ type Props = {
 export default function ArticleLayoutEn({
   title, content, category, date, slug,
   activeNav, backHref, backLabel,
-  youtubeId: _youtubeId, coverImage: _coverImage, playerName: _playerName,
+  youtubeId: _youtubeId, coverImage, playerName: _playerName,
   excerptContent: _excerptContent, isPending: _isPending,
   youtubeQuery1, youtubeQuery2,
   newsQuery, showNewsSection = true, children,
+  heroVariant = "text-only", accentOverride,
 }: Props) {
   const [similar, setSimilar] = useState<SidebarItem[]>([]);
   const [youtubeVideos1, setYoutubeVideos1] = useState<YouTubeSearchItem[] | null>(null);
   const [youtubeVideos2, setYoutubeVideos2] = useState<YouTubeSearchItem[] | null>(null);
   const [newsItems, setNewsItems] = useState<NewsItem[] | null>(null);
 
-  const accent = CAT_ACCENT[category] ?? "var(--accent)";
+  const ACCENT_MAP: Record<string, string> = {
+    emerald: "var(--emerald)", cyan: "var(--cyan)", sky: "var(--sky)",
+    rose: "var(--rose)", amber: "var(--amber)", lime: "var(--lime)",
+  };
+  const accent = accentOverride ? (ACCENT_MAP[accentOverride] ?? CAT_ACCENT[category] ?? "var(--accent)") : (CAT_ACCENT[category] ?? "var(--accent)");
   const catLabel = CATEGORY_LABEL[category] ?? category;
   const tags = CATEGORY_TAGS[category] ?? [];
   const effectiveNewsQuery = showNewsSection ? (newsQuery?.trim() || getNewsQueryFromTitle(title)) : "";
@@ -139,6 +145,12 @@ export default function ArticleLayoutEn({
       .order("created_at", { ascending: false }).limit(4)
       .then(({ data }) => { if (data) setSimilar(data); });
   }, [category, slug]);
+
+  useEffect(() => {
+    if (!slug) return;
+    fetch("/api/view", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ slug }) })
+      .catch(() => {});
+  }, [slug]);
 
   useEffect(() => {
     const q = youtubeQuery1?.trim();
@@ -243,7 +255,31 @@ export default function ArticleLayoutEn({
             </div>
 
             <div style={{ display: "flex", justifyContent: "flex-end", alignItems: "flex-end" }}>
-              {children ? (
+              {heroVariant === "player-cards" && children ? (
+                <div style={{ width: "100%", maxWidth: 320 }}>{children}</div>
+              ) : heroVariant === "cover-image" && coverImage ? (
+                <div style={{ width: "100%", maxWidth: 380, borderRadius: 4, overflow: "hidden", border: "1px solid var(--sg-border)" }}>
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img src={coverImage} alt={title} style={{ width: "100%", display: "block", objectFit: "cover", aspectRatio: "16/10" }} />
+                </div>
+              ) : heroVariant === "pitch-diagram" ? (
+                <div style={{ width: "100%", maxWidth: 340 }}>
+                  <svg viewBox="0 0 340 240" style={{ width: "100%", height: "auto", display: "block" }}>
+                    <rect x="0" y="0" width="340" height="240" rx="4" fill="oklch(0.15 0.03 160)" stroke={accent} strokeWidth="1" strokeOpacity="0.4" />
+                    <rect x="20" y="20" width="300" height="200" rx="2" fill="none" stroke={accent} strokeWidth="1" strokeOpacity="0.5" />
+                    <line x1="170" y1="20" x2="170" y2="220" stroke={accent} strokeWidth="0.8" strokeOpacity="0.3" />
+                    <circle cx="170" cy="120" r="40" fill="none" stroke={accent} strokeWidth="0.8" strokeOpacity="0.35" />
+                    <circle cx="170" cy="120" r="3" fill={accent} />
+                    <rect x="130" y="20" width="80" height="30" rx="1" fill="none" stroke={accent} strokeWidth="0.8" strokeOpacity="0.4" />
+                    <rect x="150" y="20" width="40" height="12" rx="1" fill="none" stroke={accent} strokeWidth="0.8" strokeOpacity="0.4" />
+                    <rect x="130" y="190" width="80" height="30" rx="1" fill="none" stroke={accent} strokeWidth="0.8" strokeOpacity="0.4" />
+                    <rect x="150" y="208" width="40" height="12" rx="1" fill="none" stroke={accent} strokeWidth="0.8" strokeOpacity="0.4" />
+                    {[{x:170,y:55},{x:100,y:90},{x:240,y:90},{x:100,y:150},{x:240,y:150},{x:170,y:185},{x:60,y:120},{x:280,y:120}].map((p,i) => (
+                      <circle key={i} cx={p.x} cy={p.y} r="6" fill={accent} fillOpacity="0.7" stroke={accent} strokeWidth="1" />
+                    ))}
+                  </svg>
+                </div>
+              ) : heroVariant === "stat-focus" && children ? (
                 <div style={{ width: "100%", maxWidth: 320 }}>{children}</div>
               ) : (
                 <div style={{

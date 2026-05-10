@@ -322,3 +322,107 @@ button { font-family: inherit; cursor: pointer; }
 }
 .sg-glow-primary   { text-shadow: 0 0 12px oklch(0.78 0.16 165 / 0.5); }
 .sg-glow-secondary { text-shadow: 0 0 12px oklch(0.82 0.13 200 / 0.5); }
+
+/* ─────────────────────────────────────────────────────────────────
+   V2 Responsive — Mobile & Tablet Breakpoints
+───────────────────────────────────────────────────────────────── */
+
+/* Tablet: ≤ 1024px */
+@media (max-width: 1024px) {
+  /* Article editorial layout — stack sidebar below */
+  .article-v2-grid {
+    grid-template-columns: 1fr !important;
+  }
+  .article-v2-sidebar {
+    display: none !important;
+  }
+  /* Hero grid — single column */
+  .hero-2col-grid {
+    grid-template-columns: 1fr !important;
+  }
+  .hero-right-col {
+    display: none !important;
+  }
+}
+
+/* Mobile: ≤ 768px */
+@media (max-width: 768px) {
+  /* Nav pill bar — horizontal scroll */
+  .top-nav-pills {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+  }
+  .top-nav-pills::-webkit-scrollbar { display: none; }
+
+  /* Hero header padding */
+  .v2-hero-padding {
+    padding: 24px 16px 48px !important;
+  }
+
+  /* Category page header grid — 1 col */
+  .cat-header-grid {
+    grid-template-columns: 1fr !important;
+  }
+  .cat-header-right {
+    display: none !important;
+  }
+
+  /* Featured cover story — stack */
+  .featured-story-grid {
+    grid-template-columns: 1fr !important;
+  }
+  .featured-story-mosaic {
+    display: none !important;
+  }
+
+  /* Article grid — 1 col on mobile, 2 col on tablet */
+  .article-grid-4col {
+    grid-template-columns: repeat(2, 1fr) !important;
+  }
+  .article-grid-3col {
+    grid-template-columns: repeat(2, 1fr) !important;
+  }
+
+  /* Player card grid */
+  .player-card-mosaic {
+    grid-template-columns: repeat(2, 1fr) !important;
+  }
+
+  /* Section padding */
+  .v2-section-pad {
+    padding-left: 16px !important;
+    padding-right: 16px !important;
+  }
+
+  /* RecentStrip — tighter */
+  .recent-strip-item {
+    min-width: 240px !important;
+  }
+
+  /* Footer grid — single col */
+  .footer-grid {
+    grid-template-columns: 1fr !important;
+    gap: 24px !important;
+  }
+}
+
+/* Extra small: ≤ 480px */
+@media (max-width: 480px) {
+  .article-grid-4col {
+    grid-template-columns: 1fr !important;
+  }
+  .article-grid-3col {
+    grid-template-columns: 1fr !important;
+  }
+
+  /* TOC strip — hide on very small screens */
+  .toc-strip {
+    display: none !important;
+  }
+
+  /* Article hero title — smaller min size */
+  .article-v2-title {
+    font-size: clamp(28px, 8vw, 48px) !important;
+  }
+}
