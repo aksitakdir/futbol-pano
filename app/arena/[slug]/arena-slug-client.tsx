@@ -364,7 +364,7 @@ export default function ArenaSlugClient({ game, lang, canonicalUrl, initialChamp
             transition={{ duration: 0.3 }}
           >
             {/* Breadcrumb + controls + title */}
-            <div className="mx-auto w-full max-w-7xl px-4 pt-[88px] pb-2">
+            <div className="sg-site-container pt-[88px] pb-2">
               <Breadcrumb
                 items={[
                   { label: isEn ? "Arena" : "Oyna & Paylaş", href: isEn ? "/en/arena" : "/arena" },
@@ -373,7 +373,7 @@ export default function ArenaSlugClient({ game, lang, canonicalUrl, initialChamp
               />
             </div>
 
-            <div className="mx-auto flex w-full max-w-7xl flex-wrap items-center gap-3 px-4 pb-4">
+            <div className="sg-site-container flex flex-wrap items-center gap-3 pb-4">
               <Link
                 href={isEn ? "/en/arena" : "/arena"}
                 className="inline-flex items-center gap-2 px-4 py-2 text-xs font-semibold transition hover:opacity-80"

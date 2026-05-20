@@ -6,7 +6,7 @@ type Props = { params: Promise<{ slug: string }> };
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
-  return articleMetadata(slug, `/listeler/${slug}`, "tr");
+  return articleMetadata(slug, `/listeler/${slug}`, "en");
 }
 
 export default async function ListDetailPage({ params }: Props) {

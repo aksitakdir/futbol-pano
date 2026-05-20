@@ -1,15 +1,15 @@
 import Link from "next/link";
-import { getHubConfig, type HubId, type HubLocale } from "@/lib/hub-config";
+import { getHubConfig, type HubId } from "@/lib/hub-config";
 
 type Props = {
   hubId: HubId;
-  locale: HubLocale;
+  locale?: string;
 };
 
 /** Shown on category article pages when content belongs to a hub */
-export default function HubArticleBreadcrumb({ hubId, locale }: Props) {
-  const hub = getHubConfig(hubId, locale);
-  const label = locale === "tr" ? "← Hub'a dön" : "← Back to hub";
+export default function HubArticleBreadcrumb({ hubId }: Props) {
+  const hub = getHubConfig(hubId);
+  const label = "← Back to hub";
 
   return (
     <Link

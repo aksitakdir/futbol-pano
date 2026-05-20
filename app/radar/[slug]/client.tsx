@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { supabase } from "@/lib/supabase";
-import ArticleLayout from "../../components/article-layout";
+import ArticleLayoutEn from "../../components/article-layout-en";
 import RadarPlayerFocusPanel from "../../components/radar-player-focus-panel";
 import { type PlayerCardData } from "../../components/player-card";
 import { stripHtml } from "@/lib/utils";
@@ -16,8 +16,9 @@ type SectionBlock =
   | { type: "callout"; html: string };
 
 type ContentRow = {
-  id: string; title: string; slug: string; category: string;
-  content: string; created_at: string;
+  id: string; title: string; title_en?: string;
+  slug: string; category: string;
+  content: string; content_en?: string; created_at: string;
   youtube_id?: string; cover_image?: string;
   youtube_query_1?: string; youtube_query_2?: string;
   news_query?: string; player_name?: string;
@@ -29,16 +30,13 @@ type ContentRow = {
   hub_tags?: string[] | null;
 };
 
-const FC_SELECT =
-  "overall,pace,shooting,passing,dribbling,defending,physical,position,club,league,age,photo_url";
+const FC_SELECT = "overall,pace,shooting,passing,dribbling,defending,physical,position,club,league,age,photo_url";
 
 async function lookupFcPlayer(name: string): Promise<Partial<PlayerCardData> | null> {
-  const { data: exact } = await supabase.from("fc_players")
-    .select(FC_SELECT).ilike("name", name).limit(1).maybeSingle();
+  const { data: exact } = await supabase.from("fc_players").select(FC_SELECT).ilike("name", name).limit(1).maybeSingle();
   if (exact?.overall) return exact;
   const two = name.split(" ").slice(0, 2).join(" ");
-  const { data: fuzzy } = await supabase.from("fc_players")
-    .select(FC_SELECT).ilike("name", `%${two}%`).order("overall", { ascending: false }).limit(1).maybeSingle();
+  const { data: fuzzy } = await supabase.from("fc_players").select(FC_SELECT).ilike("name", `%${two}%`).order("overall", { ascending: false }).limit(1).maybeSingle();
   return fuzzy?.overall ? fuzzy : null;
 }
 
@@ -58,10 +56,7 @@ function ledeFromHtml(html: string, maxLen = 280): string {
   return `${plain.slice(0, maxLen - 1)}…`;
 }
 
-function radarHeroVariant(
-  hero_variant: string | undefined,
-  hasPlayerCard: boolean,
-): string {
+function radarHeroVariant(hero_variant: string | undefined, hasPlayerCard: boolean): string {
   if (!hasPlayerCard) return hero_variant ?? "text-only";
   const raw = hero_variant ?? "player-cards";
   if (raw === "cover-image" || raw === "pitch-diagram") return raw;
@@ -87,37 +82,18 @@ export default function RadarDetailClient({ slug }: { slug: string }) {
           const hasStored = !!(row.stat_overall || row.stat_pace);
           const fcRow = await lookupFcPlayer(row.player_name);
           const stats = hasStored
-            ? {
-                overall: row.stat_overall,
-                pace: row.stat_pace,
-                shooting: row.stat_shooting,
-                passing: row.stat_passing,
-                dribbling: row.stat_dribbling,
-                defending: row.stat_defending,
-                physical: row.stat_physical,
-                club: fcRow?.club,
-                league: fcRow?.league,
-                position: fcRow?.position,
-                age: fcRow?.age,
-                photo_url: fcRow?.photo_url,
-              }
+            ? { overall: row.stat_overall, pace: row.stat_pace, shooting: row.stat_shooting, passing: row.stat_passing, dribbling: row.stat_dribbling, defending: row.stat_defending, physical: row.stat_physical, club: fcRow?.club, league: fcRow?.league, position: fcRow?.position, age: fcRow?.age, photo_url: fcRow?.photo_url }
             : fcRow;
 
           if (stats?.overall) {
             setPlayerCard({
               name: row.player_name,
-              club: stats.club ?? "",
-              league: stats.league ?? "",
-              position: stats.position ?? "",
-              age: stats.age ?? "",
-              overall: stats.overall,
-              pace: stats.pace ?? 0,
-              shooting: stats.shooting ?? 0,
-              passing: stats.passing ?? 0,
-              dribbling: stats.dribbling ?? 0,
-              defending: stats.defending ?? 0,
-              physical: stats.physical ?? 0,
-              photo_url: stats.photo_url,
+              club: stats.club ?? "", league: stats.league ?? "",
+              position: stats.position ?? "", age: stats.age ?? "",
+              overall: stats.overall, pace: stats.pace ?? 0,
+              shooting: stats.shooting ?? 0, passing: stats.passing ?? 0,
+              dribbling: stats.dribbling ?? 0, defending: stats.defending ?? 0,
+              physical: stats.physical ?? 0, photo_url: stats.photo_url,
             });
           }
         }
@@ -127,38 +103,40 @@ export default function RadarDetailClient({ slug }: { slug: string }) {
 
   if (loading) return (
     <main className="flex min-h-screen items-center justify-center" style={{ background: "var(--sg-bg)" }}>
-      <span className="h-5 w-5 animate-spin rounded-full border-2"
-        style={{ borderColor: "var(--sg-primary)", borderTopColor: "transparent" }} />
+      <span className="h-5 w-5 animate-spin rounded-full border-2" style={{ borderColor: "var(--sg-primary)", borderTopColor: "transparent" }} />
     </main>
   );
 
   if (notFound || !article) return (
     <main className="flex min-h-screen flex-col items-center justify-center" style={{ background: "var(--sg-bg)", color: "var(--sg-text-primary)" }}>
-      <h1 className="mb-2 text-2xl font-extrabold">404</h1>
-      <p className="mb-6 text-sm" style={{ color: "var(--sg-text-muted)" }}>Bu radar yazısı bulunamadı.</p>
-      <Link href="/radar" style={{ color: "var(--sg-primary)", fontSize: 13 }}>← Radar&apos;a Dön</Link>
+      <h1 className="mb-2 text-2xl font-bold">404</h1>
+      <Link href="/radar" style={{ color: "var(--sg-primary)", fontSize: 13 }}>← Back to Radar</Link>
     </main>
   );
 
+  const hasEnglish = !!(article.title_en && article.content_en);
   const scoutQuote = firstPullquoteText(article.sections_json);
-  const description = playerCard ? ledeFromHtml(article.content) : "";
+  const bodyForLede = hasEnglish ? article.content_en! : article.content;
+  const description = playerCard ? ledeFromHtml(bodyForLede) : "";
 
   return (
-    <ArticleLayout
-      title={article.title}
-      content={article.content}
+    <ArticleLayoutEn
+      title={article.title_en || article.title}
+      content={hasEnglish ? article.content_en! : ""}
+      excerptContent={article.content_en || article.content}
       category={article.category}
       date={article.created_at}
       slug={article.slug}
       activeNav="radar"
       backHref="/radar"
-      backLabel="Radar'a Dön"
+      backLabel="Back to Radar"
       youtubeId={article.youtube_id}
       coverImage={article.cover_image}
+      newsQuery={article.news_query}
       youtubeQuery1={article.youtube_query_1}
       youtubeQuery2={article.youtube_query_2}
-      newsQuery={article.news_query}
       playerName={article.player_name}
+      isPending={!hasEnglish}
       heroVariant={radarHeroVariant(article.hero_variant, !!playerCard)}
       accentOverride={article.accent ?? "sky"}
       sectionsJson={Array.isArray(article.sections_json) ? article.sections_json : null}
@@ -167,11 +145,11 @@ export default function RadarDetailClient({ slug }: { slug: string }) {
       {playerCard ? (
         <RadarPlayerFocusPanel
           player={playerCard}
-          locale="tr"
+          locale="en"
           description={description || undefined}
           scoutQuote={scoutQuote}
         />
       ) : null}
-    </ArticleLayout>
+    </ArticleLayoutEn>
   );
 }

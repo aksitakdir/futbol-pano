@@ -22,28 +22,20 @@ const CAT_COLOR: Record<string, string> = {
   arena: "var(--sg-amber)",
 };
 
-const CAT_LABEL_TR: Record<string, string> = { listeler: "Listeler", radar: "Radar", "taktik-lab": "Taktik Lab" };
-const CAT_LABEL_EN: Record<string, string> = {
+const CAT_LABEL: Record<string, string> = {
   listeler: "Scouting Lists",
   radar: "Radar",
   "taktik-lab": "Tactics Lab",
 };
 
-function itemHref(category: string, slug: string, locale: "tr" | "en"): string {
-  const base = locale === "en" ? "/en" : "";
-  if (category === "listeler") return `${base}/listeler/${slug}`;
-  if (category === "radar") return `${base}/radar/${slug}`;
-  if (category === "taktik-lab") return `${base}/taktik-lab/${slug}`;
-  return locale === "en" ? `/en/listeler/${slug}` : `/listeler/${slug}`;
+function itemHref(category: string, slug: string): string {
+  if (category === "listeler") return `/listeler/${slug}`;
+  if (category === "radar") return `/radar/${slug}`;
+  if (category === "taktik-lab") return `/taktik-lab/${slug}`;
+  return `/listeler/${slug}`;
 }
 
-export default function HomeRecentCarousel({
-  items,
-  locale,
-}: {
-  items: HomeRecentItem[];
-  locale: "tr" | "en";
-}) {
+export default function HomeRecentCarousel({ items, locale }: { items: HomeRecentItem[]; locale?: string }) {
   const [page, setPage] = useState(0);
   const [perView, setPerView] = useState(3);
 
@@ -78,198 +70,56 @@ export default function HomeRecentCarousel({
   const goPrev = useCallback(() => setPage((p) => Math.max(0, p - 1)), []);
   const goNext = useCallback(() => setPage((p) => Math.min(pageCount - 1, p + 1)), [pageCount]);
 
-  const labels = locale === "en" ? CAT_LABEL_EN : CAT_LABEL_TR;
-  const archiveHref = locale === "en" ? "/en/listeler" : "/listeler";
-
   if (!items.length) return null;
 
   return (
-    <section style={{ maxWidth: 1440, margin: "0 auto", padding: "80px 32px 40px" }}>
+    <section className="sg-page-shell" style={{ paddingTop: 80, paddingBottom: 40 }}>
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", marginBottom: 24 }}>
         <div>
-          <div className="eyebrow" style={{ color: "var(--accent)" }}>
-            {locale === "en" ? "DISCOVER" : "KEŞFET"}
-          </div>
-          <h2 className="display" style={{ fontSize: 36, fontWeight: 700, letterSpacing: "-0.03em", margin: "6px 0 0" }}>
-            {locale === "en" ? "Latest Content" : "Son Eklenenler"}
-          </h2>
+          <div className="eyebrow" style={{ color: "var(--accent)" }}>DISCOVER</div>
+          <h2 className="display" style={{ fontSize: 36, fontWeight: 700, letterSpacing: "-0.03em", margin: "6px 0 0" }}>Latest Content</h2>
         </div>
-        <Link href={archiveHref} className="mono u-link" style={{ fontSize: 12, letterSpacing: "0.14em", color: "var(--sg-text-muted)" }}>
-          {locale === "en" ? "ARCHIVE →" : "ARŞİV →"}
-        </Link>
+        <Link href="/listeler" className="mono u-link" style={{ fontSize: 12, letterSpacing: "0.14em", color: "var(--sg-text-muted)" }}>ARCHIVE →</Link>
       </div>
 
-      <div style={{ display: "flex", alignItems: "stretch", gap: 12 }}>
-        <button
-          type="button"
-          aria-label={locale === "en" ? "Previous" : "Önceki"}
-          onClick={goPrev}
-          disabled={safePage <= 0}
-          className="btn hidden shrink-0 sm:flex"
-          style={{
-            alignSelf: "center",
-            padding: "10px 14px",
-            borderRadius: 999,
-            opacity: safePage <= 0 ? 0.35 : 1,
-            cursor: safePage <= 0 ? "default" : "pointer",
-          }}
-        >
-          ←
-        </button>
-
-        <div style={{ flex: 1, minWidth: 0, overflow: "hidden" }}>
-          <div
-            style={{
-              display: "flex",
-              transition: "transform 0.38s cubic-bezier(0.22, 1, 0.36, 1)",
-              transform: `translateX(-${safePage * 100}%)`,
-            }}
-          >
-            {pages.map((chunk, pi) => (
-              <div
-                key={pi}
-                style={{
-                  flex: "0 0 100%",
-                  display: "grid",
-                  gridTemplateColumns: `repeat(${Math.min(perView, chunk.length || 1)}, minmax(0, 1fr))`,
-                  gap: 16,
-                  paddingLeft: 2,
-                  paddingRight: 2,
-                }}
-              >
-                {chunk.map((item) => {
-                  const accentColor = CAT_COLOR[item.category] ?? "var(--accent)";
-                  const catLabel = labels[item.category] ?? item.category;
-                  const title = locale === "en" ? item.title_en || item.title : item.title;
-                  return (
-                    <Link
-                      key={item.id}
-                      href={itemHref(item.category, item.slug, locale)}
-                      className="lift"
-                      style={{
-                        background: "var(--sg-surface)",
-                        border: "1px solid var(--sg-border)",
-                        borderRadius: 4,
-                        overflow: "hidden",
-                        display: "flex",
-                        flexDirection: "column",
-                      }}
-                    >
-                      <div style={{ height: 2, background: accentColor }} />
-                      <div className="relative overflow-hidden" style={{ height: 160, background: "var(--sg-surface-low)" }}>
-                        <Image
-                          src={item.cover_image || getCategoryImage(item.category, item.slug)}
-                          alt=""
-                          fill
-                          className="object-cover"
-                          style={{ filter: "brightness(0.58) saturate(0.82)" }}
-                          sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-                        />
-                        <div
-                          style={{
-                            position: "absolute",
-                            bottom: 12,
-                            left: 16,
-                            right: 16,
-                            display: "flex",
-                            justifyContent: "space-between",
-                            alignItems: "center",
-                          }}
-                        >
-                          <span className="mono" style={{ fontSize: 10, letterSpacing: "0.18em", color: accentColor }}>
-                            {catLabel}
-                          </span>
-                          <span className="mono" style={{ fontSize: 10, letterSpacing: "0.14em", color: "var(--ink-400)" }}>
-                            {new Date(item.created_at).toLocaleDateString(locale === "en" ? "en-US" : "tr-TR", {
-                              day: "numeric",
-                              month: "short",
-                            })}
-                          </span>
-                        </div>
-                      </div>
-                      <div style={{ padding: "16px 20px 20px", flex: 1, display: "flex", flexDirection: "column" }}>
-                        <h3
-                          className="display"
-                          style={{
-                            fontSize: 17,
-                            fontWeight: 600,
-                            letterSpacing: "-0.02em",
-                            lineHeight: 1.2,
-                            margin: 0,
-                            textWrap: "balance",
-                          }}
-                        >
-                          {title}
-                        </h3>
-                        <div className="mono" style={{ fontSize: 10, letterSpacing: "0.16em", color: "var(--ink-400)", marginTop: 12 }}>
-                          {locale === "en" ? "READ →" : "OKU →"}
-                        </div>
-                      </div>
-                    </Link>
-                  );
-                })}
-              </div>
-            ))}
-          </div>
+      <div style={{ position: "relative" }}>
+        <div style={{ display: "grid", gridTemplateColumns: `repeat(${perView}, 1fr)`, gap: 20, minHeight: 340 }}>
+          {(pages[safePage] ?? []).map((item) => {
+            const accent = CAT_COLOR[item.category] ?? "var(--accent)";
+            const label = CAT_LABEL[item.category] ?? item.category;
+            const title = item.title_en || item.title;
+            const coverSrc = item.cover_image || getCategoryImage(item.category);
+            return (
+              <Link key={item.id} href={itemHref(item.category, item.slug)}
+                style={{ display: "flex", flexDirection: "column", textDecoration: "none", border: "1px solid var(--sg-border)", borderRadius: 6, overflow: "hidden", background: "var(--sg-surface)" }}
+                className="lift">
+                <div style={{ position: "relative", aspectRatio: "16/9", overflow: "hidden" }}>
+                  <Image src={coverSrc} alt={title} fill style={{ objectFit: "cover" }} sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw" />
+                  <div style={{ position: "absolute", inset: 0, background: "linear-gradient(to bottom, transparent 60%, rgba(0,0,0,0.55))" }} />
+                </div>
+                <div style={{ padding: "16px 20px 20px", flex: 1, display: "flex", flexDirection: "column" }}>
+                  <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 10 }}>
+                    <span className="mono" style={{ fontSize: 9, letterSpacing: "0.2em", color: accent }}>{label}</span>
+                    <span className="mono" style={{ fontSize: 9, color: "var(--sg-text-muted)" }}>
+                      {new Date(item.created_at).toLocaleDateString("en-US", { day: "numeric", month: "short" })}
+                    </span>
+                  </div>
+                  <h3 className="display" style={{ fontSize: 18, fontWeight: 600, lineHeight: 1.2, letterSpacing: "-0.02em", margin: 0, flex: 1, color: "var(--sg-text-primary)" }}>{title}</h3>
+                  <span className="mono u-link" style={{ fontSize: 11, letterSpacing: "0.16em", color: accent, marginTop: 14, display: "block" }}>READ →</span>
+                </div>
+              </Link>
+            );
+          })}
         </div>
 
-        <button
-          type="button"
-          aria-label={locale === "en" ? "Next" : "Sonraki"}
-          onClick={goNext}
-          disabled={safePage >= pageCount - 1}
-          className="btn hidden shrink-0 sm:flex"
-          style={{
-            alignSelf: "center",
-            padding: "10px 14px",
-            borderRadius: 999,
-            opacity: safePage >= pageCount - 1 ? 0.35 : 1,
-            cursor: safePage >= pageCount - 1 ? "default" : "pointer",
-          }}
-        >
-          →
-        </button>
+        {pageCount > 1 ? (
+          <div style={{ display: "flex", justifyContent: "center", alignItems: "center", gap: 12, marginTop: 28 }}>
+            <button type="button" onClick={goPrev} disabled={safePage === 0} aria-label="Previous" style={{ background: "none", border: "1px solid var(--sg-border)", color: "var(--sg-text-secondary)", borderRadius: 4, padding: "4px 12px", cursor: "pointer", opacity: safePage === 0 ? 0.3 : 1 }}>←</button>
+            <span className="mono" style={{ fontSize: 11, color: "var(--sg-text-muted)" }}>{safePage + 1} / {pageCount}</span>
+            <button type="button" onClick={goNext} disabled={safePage === pageCount - 1} aria-label="Next" style={{ background: "none", border: "1px solid var(--sg-border)", color: "var(--sg-text-secondary)", borderRadius: 4, padding: "4px 12px", cursor: "pointer", opacity: safePage === pageCount - 1 ? 0.3 : 1 }}>→</button>
+          </div>
+        ) : null}
       </div>
-
-      {/* Mobil oklar */}
-      <div className="mt-4 flex justify-center gap-3 sm:hidden">
-        <button type="button" onClick={goPrev} disabled={safePage <= 0} className="btn" style={{ padding: "8px 18px", borderRadius: 999 }}>
-          ←
-        </button>
-        <button
-          type="button"
-          onClick={goNext}
-          disabled={safePage >= pageCount - 1}
-          className="btn"
-          style={{ padding: "8px 18px", borderRadius: 999 }}
-        >
-          →
-        </button>
-      </div>
-
-      {/* Sayfa göstergesi — hero slider ile aynı ince çubuk dili */}
-      <div className="mt-8 flex flex-wrap items-center justify-center gap-2">
-        {pages.map((_, i) => (
-          <button
-            key={i}
-            type="button"
-            aria-label={`${locale === "en" ? "Page" : "Sayfa"} ${i + 1}`}
-            aria-current={i === safePage ? "true" : undefined}
-            onClick={() => setPage(i)}
-            style={{
-              width: i === safePage ? 32 : 12,
-              height: 3,
-              borderRadius: 2,
-              border: "none",
-              padding: 0,
-              background: i === safePage ? "var(--accent)" : "rgba(255,255,255,0.3)",
-              transition: "all 0.3s",
-              cursor: "pointer",
-            }}
-          />
-        ))}
-      </div>
-
     </section>
   );
 }

@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import { Space_Grotesk, Inter_Tight, IBM_Plex_Mono } from "next/font/google";
-import { headers } from "next/headers";
 import "./globals.css";
 import SmoothScrollProvider from "./components/smooth-scroll-provider";
 import { Analytics } from "@vercel/analytics/next";
@@ -29,20 +28,16 @@ export const metadata: Metadata = {
   metadataBase: new URL("https://scoutgamer.com"),
   alternates: {
     canonical: "https://scoutgamer.com",
-    languages: {
-      tr: "https://scoutgamer.com/tr",
-      en: "https://scoutgamer.com/en",
-    },
   },
   title: {
     default: "Scout Gamer",
     template: "%s | Scout Gamer",
   },
-  description: "Futbol × Oyun Kültürü. Avrupa'nın en parlak genç yeteneklerini keşfet.",
+  description: "Football × Game Culture. Discover Europe's brightest young talents.",
   openGraph: {
     type: "website",
     siteName: "Scout Gamer",
-    locale: "tr_TR",
+    locale: "en_US",
     url: "https://scoutgamer.com",
     images: [{ url: "https://scoutgamer.com/og-image.png", width: 1200, height: 630, alt: "Scout Gamer" }],
   },
@@ -53,16 +48,13 @@ export const metadata: Metadata = {
   },
 };
 
-export default async function RootLayout({
+export default function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const h = await headers();
-  const pathname = h.get("x-pathname") ?? "";
-  const lang = pathname.startsWith("/en") ? "en" : "tr";
   return (
-    <html lang={lang}>
+    <html lang="en">
       <body className={`${spaceGrotesk.variable} ${interTight.variable} ${ibmPlexMono.variable} antialiased`}>
         <SmoothScrollProvider>
           {children}

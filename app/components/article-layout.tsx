@@ -216,7 +216,7 @@ export default function ArticleLayout({
     }
     let cancelled = false;
     setNewsItems("pending");
-    fetch(`/api/news?query=${encodeURIComponent(q)}&locale=tr`)
+    fetch(`/api/news?query=${encodeURIComponent(q)}&locale=en`)
       .then((r) => (r.ok ? r.json() : []))
       .then((arr: NewsItem[]) => {
         if (!cancelled) setNewsItems(Array.isArray(arr) ? arr : []);
@@ -250,7 +250,7 @@ export default function ArticleLayout({
           background: `radial-gradient(circle, ${accent} 0%, transparent 65%)`, opacity: 0.12, pointerEvents: "none",
         }} />
 
-        <div style={{ maxWidth: 1440, margin: "0 auto", padding: "40px 32px 72px", position: "relative" }}>
+        <div className="sg-site-container" style={{ paddingTop: 40, paddingBottom: 72, position: "relative" }}>
           {/* Back + breadcrumb */}
           <button onClick={() => window.history.back()} className="mono" style={{
             background: "transparent", border: "none", color: "var(--sg-text-muted)",
@@ -260,7 +260,7 @@ export default function ArticleLayout({
           </button>
           {hubId ? (
             <div style={{ marginBottom: 36 }}>
-              <HubArticleBreadcrumb hubId={hubId} locale="tr" />
+              <HubArticleBreadcrumb hubId={hubId} />
             </div>
           ) : null}
 
@@ -466,7 +466,7 @@ export default function ArticleLayout({
                 {sectionsJson.map((sec, i) => {
                   if (sec.type === "intro") {
                     return (
-                      <ArticleHtmlWithPlayerEmbeds key={i} html={addDropCap(sec.html, accent)} locale="tr" />
+                      <ArticleHtmlWithPlayerEmbeds key={i} html={addDropCap(sec.html, accent)} locale="en" />
                     );
                   }
                   if (sec.type === "section") {
@@ -474,7 +474,7 @@ export default function ArticleLayout({
                     return (
                       <div key={i}>
                         <h2 id={headingId}>{sec.heading}</h2>
-                        <ArticleHtmlWithPlayerEmbeds html={sec.html} locale="tr" />
+                        <ArticleHtmlWithPlayerEmbeds html={sec.html} locale="en" />
                       </div>
                     );
                   }
@@ -494,7 +494,7 @@ export default function ArticleLayout({
                 })}
               </div>
             ) : contentLooksLikeHtml(content) ? (
-              <ArticleHtmlWithPlayerEmbeds html={processedHtml} locale="tr" />
+              <ArticleHtmlWithPlayerEmbeds html={processedHtml} locale="en" />
             ) : (
               <ReactMarkdown remarkPlugins={[remarkGfm]} rehypePlugins={[rehypeRaw]}>
                 {content}

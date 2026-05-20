@@ -38,8 +38,8 @@ const labelCls = "mb-1 block text-[11px] font-medium text-slate-400";
 const inputCls =
   "w-full rounded-lg border border-slate-700/80 bg-slate-800/70 px-3 py-2 text-sm text-slate-100 placeholder-slate-600 outline-none transition focus:border-emerald-500/60";
 
-function settingsKey(hubId: HubId, locale: "tr" | "en") {
-  return `hub_copy_${hubId}_${locale}`;
+function settingsKey(hubId: HubId) {
+  return `hub_copy_${hubId}_en`;
 }
 
 export default function AdminHubPage() {
@@ -52,7 +52,6 @@ export default function AdminHubPage() {
   const [completed, setCompleted] = useState<CompletedRow[]>([]);
 
   const [copyHub, setCopyHub] = useState<HubId>("transfer");
-  const [copyLocale, setCopyLocale] = useState<"tr" | "en">("tr");
   const [copy, setCopy] = useState<HubPillarCopy>({});
 
   const fetchAll = useCallback(async () => {
@@ -71,9 +70,9 @@ export default function AdminHubPage() {
   }, [fetchAll]);
 
   useEffect(() => {
-    const defaults = HUBS[copyHub][copyLocale];
+    const defaults = HUBS[copyHub].en;
     (async () => {
-      const { data } = await supabase.from("site_settings").select("value").eq("key", settingsKey(copyHub, copyLocale)).maybeSingle();
+      const { data } = await supabase.from("site_settings").select("value").eq("key", settingsKey(copyHub)).maybeSingle();
       const v = (data?.value ?? {}) as HubPillarCopy;
       setCopy({
         navLabel: v.navLabel ?? defaults.navLabel,
@@ -82,7 +81,7 @@ export default function AdminHubPage() {
         pillarDescription: v.pillarDescription ?? defaults.pillarDescription,
       });
     })();
-  }, [copyHub, copyLocale]);
+  }, [copyHub]);
 
   async function saveScenarios() {
     setSaving(true);
@@ -143,7 +142,7 @@ export default function AdminHubPage() {
   async function saveCopy() {
     setSaving(true);
     const { error } = await supabase.from("site_settings").upsert(
-      { key: settingsKey(copyHub, copyLocale), value: copy, updated_at: new Date().toISOString() },
+      { key: settingsKey(copyHub), value: copy, updated_at: new Date().toISOString() },
       { onConflict: "key" },
     );
     setMessage(error ? `Hata: ${error.message}` : "Sayfa metinleri kaydedildi.");
@@ -327,12 +326,8 @@ export default function AdminHubPage() {
           <section className="space-y-4 rounded-xl border border-slate-800/60 bg-slate-900/30 p-5">
             <div className="flex flex-wrap gap-3">
               <select className={inputCls} value={copyHub} onChange={(e) => setCopyHub(e.target.value as HubId)}>
-                <option value="transfer">Transfer</option>
-                <option value="wc-2026">DK 2026</option>
-              </select>
-              <select className={inputCls} value={copyLocale} onChange={(e) => setCopyLocale(e.target.value as "tr" | "en")}>
-                <option value="tr">Türkçe</option>
-                <option value="en">English</option>
+                <option value="transfer">Transfers</option>
+                <option value="wc-2026">WC 2026</option>
               </select>
             </div>
             {(["navLabel", "pillarEyebrow", "pillarTitle", "pillarDescription"] as const).map((field) => (

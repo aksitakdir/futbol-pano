@@ -44,6 +44,10 @@
   --sg-surface-top:  var(--ink-600);
   --sg-border:       oklch(0.24 0.018 240 / 0.5);
 
+  /* ── Site layout (header, footer, page shell — aynı sol hiza) ── */
+  --sg-layout-max: 1440px;
+  --sg-layout-pad-x: clamp(16px, 4vw, 32px);
+
   /* ── Semantic color aliases (backward compat) ── */
   --sg-primary:      var(--emerald);
   --sg-primary-dim:  oklch(0.70 0.14 165);
@@ -458,6 +462,19 @@ button { font-family: inherit; cursor: pointer; }
   line-height: 1.55;
   margin: 0 0 32px;
 }
+/* Hub hero CTA pill row — gap + margin (Tailwind flex gap yedek) */
+.hub-pillar-ctas {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  column-gap: 1.5rem;
+  row-gap: 0.875rem;
+}
+.hub-pillar-ctas > a.btn,
+.hub-pillar-ctas > .btn {
+  flex-shrink: 0;
+  margin: 0;
+}
 
 /* Canlı skor şeridi */
 .wc-live-scores {
@@ -783,14 +800,25 @@ button { font-family: inherit; cursor: pointer; }
   font-size: 11px; letter-spacing: 0.14em; color: var(--sg-text-muted); text-decoration: none;
 }
 .wc-squad-back:hover, .transfer-squad-back:hover { color: var(--accent); }
+/* ─── Site layout container (header / footer / içerik — sol hiza) ─ */
+.sg-site-container {
+  width: 100%;
+  max-width: var(--sg-layout-max);
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: var(--sg-layout-pad-x);
+  padding-right: var(--sg-layout-pad-x);
+  box-sizing: border-box;
+}
+
 /* ─── Site page shell (responsive padding) ───────────────────────── */
 .sg-page-shell {
   width: 100%;
-  max-width: 1440px;
+  max-width: var(--sg-layout-max);
   margin-left: auto;
   margin-right: auto;
-  padding-left: clamp(16px, 4vw, 32px);
-  padding-right: clamp(16px, 4vw, 32px);
+  padding-left: var(--sg-layout-pad-x);
+  padding-right: var(--sg-layout-pad-x);
   box-sizing: border-box;
 }
 .sg-page-shell--hero {
@@ -1080,7 +1108,11 @@ button { font-family: inherit; cursor: pointer; }
   .completed-transfers-list__item { grid-template-columns: 1fr; }
   .completed-transfers-list__meta { grid-column: 1; grid-row: auto; text-align: left; margin-top: 8px; }
 
-  .hub-pillar-ctas { flex-direction: column; }
+  .hub-pillar-ctas {
+    flex-direction: column;
+    column-gap: 0;
+    row-gap: 0.75rem;
+  }
   .hub-pillar-ctas .btn { width: 100%; justify-content: center; text-align: center; }
 
   .transfer-ab-options { grid-template-columns: 1fr; }

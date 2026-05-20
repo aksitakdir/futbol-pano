@@ -11,17 +11,18 @@ import HubEditorialSection from "./hub/hub-editorial-section";
 import HubFeaturedArenaBanner from "./hub/hub-featured-arena-banner";
 import CompletedTransfersSection from "./hub/completed-transfers-section";
 import HubTransferTeamArenas from "./hub/hub-transfer-team-arenas";
-import { getHubConfig, type HubId, type HubLocale } from "@/lib/hub-config";
+import { getHubConfig, type HubId } from "@/lib/hub-config";
 import { WC_2026_HERO_BG } from "@/lib/wc-2026-brand";
 import type { HubPillarCopy } from "@/lib/hub-types";
 
 type Props = {
   hubId: HubId;
-  locale: HubLocale;
+  /** @deprecated kept for backwards compat during migration — always EN */
+  locale?: string;
 };
 
-export default function HubPillarPage({ hubId, locale }: Props) {
-  const defaults = getHubConfig(hubId, locale);
+export default function HubPillarPage({ hubId }: Props) {
+  const defaults = getHubConfig(hubId);
   const [copy, setCopy] = useState<HubPillarCopy>({
     navLabel: defaults.navLabel,
     pillarEyebrow: defaults.pillarEyebrow,
@@ -30,29 +31,21 @@ export default function HubPillarPage({ hubId, locale }: Props) {
   });
 
   useEffect(() => {
-    fetch(`/api/hub-settings?hub=${hubId}&locale=${locale}`)
+    fetch(`/api/hub-settings?hub=${hubId}&locale=en`)
       .then((r) => r.json())
-      .then((d) => {
-        if (d.copy) setCopy(d.copy);
-      })
+      .then((d) => { if (d.copy) setCopy(d.copy); })
       .catch(() => {});
-  }, [hubId, locale]);
+  }, [hubId]);
 
   const hub = { ...defaults, ...copy };
   const isWc = hubId === "wc-2026";
   const themeClass = isWc ? "theme-wc-2026" : "theme-transfer";
-
-  const cta =
-    locale === "tr"
-      ? { kadrolar: "48 Takım Kadroları", completed: "Gerçekleşen Transferler" }
-      : { kadrolar: "48 Team Squads", completed: "Done Deals" };
-
-  const navKey = hubId === "wc-2026" ? "wc-2026" : "transfer";
   const accent = isWc ? "var(--wc-gold)" : "var(--transfer-cyan)";
+  const navKey = isWc ? "wc-2026" : "transfer";
 
   return (
     <main className={themeClass} style={{ background: "var(--sg-bg)", color: "var(--sg-text-primary)", minHeight: "100vh" }}>
-      <SiteHeader activeNav={navKey} forceEn={locale === "en"} />
+      <SiteHeader activeNav={navKey} />
       <div style={{ paddingTop: "68px" }} />
 
       <header
@@ -68,16 +61,12 @@ export default function HubPillarPage({ hubId, locale }: Props) {
           <p className="hub-pillar-description">{hub.pillarDescription}</p>
           <div className="hub-pillar-ctas flex flex-wrap items-center gap-x-6 gap-y-3">
             {isWc ? (
-              <Link
-                href={defaults.kadrolarPath}
-                className="btn btn-solid"
-                style={{ background: "var(--wc-magenta)", borderColor: "var(--wc-magenta)" }}
-              >
-                {cta.kadrolar} →
+              <Link href={defaults.kadrolarPath} className="btn btn-solid" style={{ background: "var(--wc-magenta)", borderColor: "var(--wc-magenta)" }}>
+                48 Team Squads →
               </Link>
             ) : (
               <Link href="#completed-transfers" className="btn btn-solid hub-pillar-cta">
-                {cta.completed} →
+                Done Deals →
               </Link>
             )}
           </div>
@@ -86,25 +75,23 @@ export default function HubPillarPage({ hubId, locale }: Props) {
 
       {!isWc ? (
         <>
-          <CompletedTransfersSection locale={locale} />
-          <HubTransferTeamArenas locale={locale} />
+          <CompletedTransfersSection locale="en" />
+          <HubTransferTeamArenas locale="en" />
         </>
       ) : null}
 
-      <HubEditorialSection hubId={hubId} locale={locale} accent={accent} />
+      <HubEditorialSection hubId={hubId} locale="en" accent={accent} />
 
       {isWc ? (
         <PageShell as="section" className="sg-page-shell--section" style={{ paddingTop: 0 }}>
-          <div className="eyebrow" style={{ marginBottom: 24 }}>
-            {locale === "tr" ? "48 TAKIM" : "48 TEAMS"}
-          </div>
-          <WcTeamGrid locale={locale} kadrolarBasePath={defaults.kadrolarPath} />
+          <div className="eyebrow" style={{ marginBottom: 24 }}>48 TEAMS</div>
+          <WcTeamGrid locale="en" kadrolarBasePath={defaults.kadrolarPath} />
         </PageShell>
       ) : null}
 
-      {isWc ? <HubFeaturedArenaBanner hubId={hubId} locale={locale} /> : null}
+      {isWc ? <HubFeaturedArenaBanner hubId={hubId} locale="en" /> : null}
 
-      <HubArenaStrip hubId={hubId} locale={locale} />
+      <HubArenaStrip hubId={hubId} locale="en" />
 
       <div style={{ paddingBottom: 80 }} />
 

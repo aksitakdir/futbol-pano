@@ -1,6 +1,6 @@
 export type HubId = "wc-2026" | "transfer";
 
-export type HubLocale = "tr" | "en";
+export type HubLocale = "en";
 
 export type HubNavKey = "wc-2026" | "transfer";
 
@@ -27,7 +27,6 @@ export type HubConfig = {
   tag: string;
   accent: string;
   navKey: HubNavKey;
-  tr: HubLocaleConfig;
   en: HubLocaleConfig;
 };
 
@@ -37,29 +36,17 @@ export const HUBS: Record<HubId, HubConfig> = {
     tag: "wc-2026",
     accent: "var(--amber)",
     navKey: "wc-2026",
-    tr: {
-      basePath: "/dunya-kupasi-2026",
-      navLabel: "DK 2026",
-      pillarTitle: "Dünya Kupası 2026",
-      pillarEyebrow: "TURNUVA MERKEZİ",
-      pillarDescription:
-        "Kadrolar, scout analizleri ve turnuva odaklı listeler. Haber değil, scout raporu.",
-      radarPath: "/dunya-kupasi-2026/radar",
-      listelerPath: "/dunya-kupasi-2026/listeler",
-      kadrolarPath: "/dunya-kupasi-2026/kadrolar",
-      taktikPath: "/taktik-lab",
-    },
     en: {
-      basePath: "/en/world-cup-2026",
+      basePath: "/world-cup-2026",
       navLabel: "WC 2026",
       pillarTitle: "World Cup 2026",
       pillarEyebrow: "TOURNAMENT HUB",
       pillarDescription:
         "Squads, scout analysis, and tournament lists — not headlines, scout reports.",
-      radarPath: "/en/world-cup-2026/radar",
-      listelerPath: "/en/world-cup-2026/lists",
-      kadrolarPath: "/en/world-cup-2026/squads",
-      taktikPath: "/en/taktik-lab",
+      radarPath: "/world-cup-2026/radar",
+      listelerPath: "/world-cup-2026/lists",
+      kadrolarPath: "/world-cup-2026/squads",
+      taktikPath: "/taktik-lab",
     },
   },
   transfer: {
@@ -67,49 +54,34 @@ export const HUBS: Record<HubId, HubConfig> = {
     tag: "transfer",
     accent: "var(--cyan)",
     navKey: "transfer",
-    tr: {
-      basePath: "/transfer",
-      navLabel: "TRANSFERLER",
-      pillarTitle: "Transferler",
-      pillarEyebrow: "TRANSFER MERKEZİ",
-      pillarDescription:
-        "Gerçekleşen hamleler, scout analizleri ve kulüp Arena oyunları — transfer gündemine scout bakışı.",
-      radarPath: "/transfer/radar",
-      listelerPath: "/transfer/listeler",
-      kadrolarPath: "/transfer",
-      taktikPath: "/taktik-lab",
-      transferPollPath: "/transfer/gidecek-mi",
-    },
     en: {
-      basePath: "/en/transfers",
+      basePath: "/transfers",
       navLabel: "TRANSFERS",
       pillarTitle: "Transfers",
       pillarEyebrow: "TRANSFER HUB",
       pillarDescription:
         "Done deals, scout analysis, and club Arena games — the transfer window through a scout lens.",
-      radarPath: "/en/transfers/radar",
-      listelerPath: "/en/transfers/lists",
-      kadrolarPath: "/en/transfers",
-      taktikPath: "/en/taktik-lab",
-      transferPollPath: "/en/transfers/will-they-go",
+      radarPath: "/transfers/radar",
+      listelerPath: "/transfers/lists",
+      kadrolarPath: "/transfers",
+      taktikPath: "/taktik-lab",
+      transferPollPath: "/transfers/will-they-go",
     },
   },
 };
 
-export function getHubConfig(hubId: HubId, locale: HubLocale): HubLocaleConfig & { id: HubId; tag: string; accent: string } {
+export function getHubConfig(hubId: HubId, _locale?: HubLocale): HubLocaleConfig & { id: HubId; tag: string; accent: string } {
   const hub = HUBS[hubId];
-  return { ...hub[locale], id: hub.id, tag: hub.tag, accent: hub.accent };
+  return { ...hub.en, id: hub.id, tag: hub.tag, accent: hub.accent };
 }
 
-export function categoryArticlePath(category: string, slug: string, locale: HubLocale): string {
-  const base = locale === "en" ? "/en" : "";
-  if (category === "listeler") return `${base}/listeler/${slug}`;
-  if (category === "radar") return `${base}/radar/${slug}`;
-  if (category === "taktik-lab") return `${base}/taktik-lab/${slug}`;
-  return `${base}/listeler/${slug}`;
+export function categoryArticlePath(category: string, slug: string): string {
+  if (category === "listeler") return `/listeler/${slug}`;
+  if (category === "radar") return `/radar/${slug}`;
+  if (category === "taktik-lab") return `/taktik-lab/${slug}`;
+  return `/listeler/${slug}`;
 }
 
-export const CAT_LABEL: Record<HubLocale, Record<string, string>> = {
-  tr: { listeler: "Listeler", radar: "Radar", "taktik-lab": "Taktik Lab" },
-  en: { listeler: "Lists", radar: "Radar", "taktik-lab": "Tactics Lab" },
+export const CAT_LABEL: Record<string, string> = {
+  listeler: "Lists", radar: "Radar", "taktik-lab": "Tactics Lab",
 };

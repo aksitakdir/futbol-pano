@@ -1,4 +1,4 @@
-import HubPillarPage from "../../components/hub-pillar-page";
+import HubPillarPage from "../components/hub-pillar-page";
 
 export const metadata = {
   title: "World Cup 2026 | Scout Gamer",

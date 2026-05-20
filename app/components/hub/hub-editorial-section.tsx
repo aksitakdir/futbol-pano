@@ -5,47 +5,32 @@ import EditorialContentFeed from "@/app/components/editorial-content-feed";
 import PageShell from "@/app/components/page-shell";
 import type { EditorialArticle } from "@/lib/editorial-article";
 import { supabase } from "@/lib/supabase";
-import type { HubId, HubLocale } from "@/lib/hub-config";
+import type { HubId } from "@/lib/hub-config";
 import { HUB_TAG } from "@/lib/hub-config";
 
 const PAGE_SIZE = 12;
 
 type Props = {
   hubId: HubId;
-  locale: HubLocale;
+  locale?: string;
   accent: string;
   category?: string;
   limit?: number;
-  /** Compact: no load more, smaller initial fetch */
   compact?: boolean;
 };
 
-export default function HubEditorialSection({
-  hubId,
-  locale,
-  accent,
-  category,
-  limit,
-  compact = false,
-}: Props) {
+export default function HubEditorialSection({ hubId, accent, category, limit, compact = false }: Props) {
   const tag = HUB_TAG[hubId];
   const [articles, setArticles] = useState<EditorialArticle[]>([]);
   const [loading, setLoading] = useState(true);
   const [loadingMore, setLoadingMore] = useState(false);
   const [hasMore, setHasMore] = useState(false);
 
-  const copy =
-    locale === "tr"
-      ? {
-          eyebrow: "SCOUT YAZILARI",
-          empty: "Henüz bu hub için etiketli yazı yok. Admin panelden hub_tags ekleyin.",
-          gridEyebrow: category === "radar" ? "TÜM ANALİZLER" : category ? "TÜM LİSTELER" : "TÜM YAZILAR",
-        }
-      : {
-          eyebrow: "SCOUT ARTICLES",
-          empty: "No hub-tagged articles yet. Add hub_tags in admin.",
-          gridEyebrow: category === "radar" ? "ALL ANALYSES" : category ? "ALL LISTS" : "ALL ARTICLES",
-        };
+  const copy = {
+    eyebrow: "SCOUT ARTICLES",
+    empty: "No hub-tagged articles yet. Add hub_tags in admin.",
+    gridEyebrow: category === "radar" ? "ALL ANALYSES" : category ? "ALL LISTS" : "ALL ARTICLES",
+  };
 
   const pageSize = limit ?? (compact ? 6 : PAGE_SIZE);
 
@@ -97,20 +82,14 @@ export default function HubEditorialSection({
       className={compact ? "sg-page-shell--section" : ""}
       style={{ paddingTop: compact ? undefined : "clamp(32px, 5vw, 48px)", paddingBottom: compact ? undefined : 0 }}
     >
-      <div className="eyebrow" style={{ marginBottom: compact ? 20 : 24, color: accent }}>
-        {copy.eyebrow}
-      </div>
+      <div className="eyebrow" style={{ marginBottom: compact ? 20 : 24, color: accent }}>{copy.eyebrow}</div>
       {loading ? (
         <div style={{ display: "flex", justifyContent: "center", padding: compact ? 32 : 64 }}>
-          <span
-            className="h-5 w-5 animate-spin rounded-full border-2"
-            style={{ borderColor: accent, borderTopColor: "transparent" }}
-          />
+          <span className="h-5 w-5 animate-spin rounded-full border-2" style={{ borderColor: accent, borderTopColor: "transparent" }} />
         </div>
       ) : (
         <EditorialContentFeed
           articles={articles}
-          locale={locale}
           accent={accent}
           emptyMessage={copy.empty}
           gridEyebrow={copy.gridEyebrow}

@@ -9,20 +9,16 @@ import ArenaGameGrid from "./arena-game-grid";
 export const revalidate = 3600;
 
 export const metadata: Metadata = {
-  title: "Arena — Turnuva Oyna & Paylaş | Scout Gamer",
+  title: "Arena — Play & Share Tournaments | Scout Gamer",
   description:
-    "Favori futbolcularını, teknik direktörleri ve efsaneleri turnuvada karşılaştır. Her açılışta yeni eşleşmeler — şampiyonunu seç, paylaş.",
+    "Pick your favourite footballers, managers and legends in a bracket tournament. New matchups every time — choose your champion and share.",
   alternates: {
     canonical: "https://scoutgamer.com/arena",
-    languages: {
-      tr: "https://scoutgamer.com/arena",
-      en: "https://scoutgamer.com/en/arena",
-    },
   },
   openGraph: {
-    title: "Arena — Turnuva Oyna & Paylaş | Scout Gamer",
+    title: "Arena — Play & Share | Scout Gamer",
     description:
-      "Favori futbolcularını, teknik direktörleri ve efsaneleri turnuvada karşılaştır. Şampiyonunu belirle ve paylaş.",
+      "Pick your favourite footballers and legends in a bracket tournament. Choose your champion and share.",
     url: "https://scoutgamer.com/arena",
     siteName: "Scout Gamer",
     type: "website",
@@ -30,7 +26,7 @@ export const metadata: Metadata = {
   twitter: {
     card: "summary_large_image",
     title: "Arena | Scout Gamer",
-    description: "Favori futbolcularını turnuvada karşılaştır. Şampiyonunu seç ve paylaş.",
+    description: "Pick your favourite footballers in a bracket tournament. Choose your champion and share.",
   },
 };
 
@@ -44,18 +40,17 @@ export default async function ArenaHomePage() {
 
   const games = (data as ArenaGame[]) ?? [];
 
-  // JSON-LD: ItemList of game pages
   const jsonLd = {
     "@context": "https://schema.org",
     "@type": "ItemList",
-    "name": "Scout Gamer Arena Turnuvaları",
-    "description": "Favori futbolcularını turnuvada karşılaştır",
+    "name": "Scout Gamer Arena Tournaments",
+    "description": "Pick your favourite footballers in a bracket tournament",
     "url": "https://scoutgamer.com/arena",
     "numberOfItems": games.length,
     "itemListElement": games.map((g, i) => ({
       "@type": "ListItem",
       "position": i + 1,
-      "name": g.title_tr,
+      "name": g.title_en || g.title_tr,
       "url": `https://scoutgamer.com/arena/${g.slug}`,
     })),
   };
@@ -78,7 +73,7 @@ export default async function ArenaHomePage() {
                   className="text-[10px] font-bold uppercase tracking-[0.3em]"
                   style={{ color: "var(--sg-amber)", fontFamily: "var(--font-headline)" }}
                 >
-                  Arena Turnuvası
+                  Arena Tournament
                 </span>
               </div>
               <h1
@@ -88,7 +83,7 @@ export default async function ArenaHomePage() {
                 Player <span style={{ color: "var(--sg-amber)" }}>Arena</span>
               </h1>
               <p className="text-base leading-relaxed max-w-xl" style={{ color: "var(--sg-text-secondary)" }}>
-                Bir bracket seç, kazananları işaretle, şampiyonunu paylaş. Her açılışta eşleşmeler yeniden karışır.
+                Pick a bracket, mark your winners, share your champion. Matchups shuffle every time.
               </p>
             </div>
           </CategoryHero>
@@ -101,12 +96,12 @@ export default async function ArenaHomePage() {
               className="text-[10px] font-bold uppercase tracking-[0.25em]"
               style={{ color: "var(--sg-amber)", fontFamily: "var(--font-headline)" }}
             >
-              Turnuva Formatları
+              Tournament Formats
             </p>
             <div className="h-px flex-1" style={{ background: "rgba(26,58,92,0.5)" }} />
           </div>
 
-          <ArenaGameGrid games={games} lang="tr" />
+          <ArenaGameGrid games={games} lang="en" />
         </div>
 
         <SiteFooter maxWidth="max-w-7xl" />

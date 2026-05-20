@@ -39,10 +39,10 @@ function readTime(text: string): number {
 }
 
 function categoryPath(category: string): string {
-  if (category === "listeler") return "/en/listeler";
-  if (category === "radar") return "/en/radar";
-  if (category === "taktik-lab") return "/en/taktik-lab";
-  return "/en";
+  if (category === "listeler") return "/listeler";
+  if (category === "radar") return "/radar";
+  if (category === "taktik-lab") return "/taktik-lab";
+  return "/";
 }
 
 function extractH2Headings(html: string): { text: string; id: string }[] {
@@ -248,7 +248,7 @@ export default function ArticleLayoutEn({
           background: `radial-gradient(circle, ${accent} 0%, transparent 65%)`, opacity: 0.12, pointerEvents: "none",
         }} />
 
-        <div style={{ maxWidth: 1440, margin: "0 auto", padding: "40px 32px 72px", position: "relative" }}>
+        <div className="sg-site-container" style={{ paddingTop: 40, paddingBottom: 72, position: "relative" }}>
           <button onClick={() => window.history.back()} className="mono" style={{
             background: "transparent", border: "none", color: "var(--sg-text-muted)",
             fontSize: 11, letterSpacing: "0.14em", padding: 0, marginBottom: hubId ? 12 : 48, cursor: "pointer",

@@ -1,10 +1,10 @@
 "use client";
 
 import Link from "next/link";
-import SiteHeader from "../../../components/site-header";
-import SiteFooter from "../../../components/site-footer";
-import WcTeamGrid from "../../../components/wc/wc-team-grid";
-import PageShell from "../../../components/page-shell";
+import SiteHeader from "../../components/site-header";
+import SiteFooter from "../../components/site-footer";
+import WcTeamGrid from "../../components/wc/wc-team-grid";
+import PageShell from "../../components/page-shell";
 import { getHubConfig } from "@/lib/hub-config";
 import { WC_2026_TEAM_COUNT } from "@/lib/wc-2026-teams";
 
@@ -13,7 +13,7 @@ export default function SquadsIndexPage() {
 
   return (
     <main className="theme-wc-2026" style={{ background: "var(--sg-bg)", color: "var(--sg-text-primary)", minHeight: "100vh" }}>
-      <SiteHeader activeNav="wc-2026" forceEn />
+      <SiteHeader activeNav="wc-2026" />
       <div style={{ paddingTop: "68px" }} />
       <PageShell className="sg-page-shell--section">
         <Link href={hub.basePath} className="mono wc-squad-back">
