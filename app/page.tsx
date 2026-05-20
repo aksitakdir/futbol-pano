@@ -303,7 +303,7 @@ export default function HomePage() {
               initial={false} animate={{ opacity: i === activeSlide ? 1 : 0 }}
               transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
               style={{ pointerEvents: i === activeSlide ? "auto" : "none" }}>
-              <div className="sg-site-container pb-16">
+              <div className="sg-hero-text-block pb-16">
                 {item.kind === "content" ? (
                   <div className="page-enter" key={`text-${i}`}>
                     <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 24 }}>
@@ -311,10 +311,10 @@ export default function HomePage() {
                         {CAT_LABEL[item.slide.category] ?? item.slide.category}
                       </span>
                     </div>
-                    <h1 className="display" style={{ fontSize: "clamp(2.8rem, 6.5vw, 5.5rem)", fontWeight: 700, letterSpacing: "-0.04em", lineHeight: 1.08, margin: "0 0 20px", paddingBottom: "0.14em", textWrap: "balance", maxWidth: 900, background: "linear-gradient(135deg, var(--accent) 0%, var(--accent-2) 60%, var(--accent-3) 100%)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", backgroundClip: "text" }}>
+                    <h1 className="display" style={{ fontSize: "clamp(2.4rem, 5.5vw, 4.8rem)", fontWeight: 700, letterSpacing: "-0.04em", lineHeight: 1.08, margin: "0 0 20px", paddingBottom: "0.14em", textWrap: "balance", maxWidth: 640, background: "linear-gradient(135deg, var(--accent) 0%, var(--accent-2) 60%, var(--accent-3) 100%)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", backgroundClip: "text" }}>
                       {item.slide.title_en || item.slide.title}
                     </h1>
-                    <p className="hidden sm:block line-clamp-3" style={{ fontSize: 18, lineHeight: 1.5, color: "var(--ink-200)", maxWidth: 540, marginBottom: 32 }}>
+                    <p className="hidden sm:block line-clamp-3" style={{ fontSize: 17, lineHeight: 1.6, color: "var(--ink-200)", maxWidth: 480, marginBottom: 36 }}>
                       {(() => {
                         const raw = item.slide.content_en || item.slide.content;
                         const clean = raw.replace(/<[^>]+>/g, " ").replace(/[#*_\n]/g, " ").replace(/\s+/g, " ").trim();
@@ -333,10 +333,10 @@ export default function HomePage() {
                     <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 24 }}>
                       <span className="chip solid" style={{ background: "var(--amber)", borderColor: "var(--amber)", color: "var(--ink-900)" }}>Arena</span>
                     </div>
-                    <h1 className="display" style={{ fontSize: "clamp(2.8rem, 6.5vw, 5.5rem)", fontWeight: 700, letterSpacing: "-0.04em", lineHeight: 1.08, margin: "0 0 20px", paddingBottom: "0.14em", textWrap: "balance", maxWidth: 900, background: "linear-gradient(135deg, var(--amber) 0%, var(--accent) 100%)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", backgroundClip: "text" }}>
+                    <h1 className="display" style={{ fontSize: "clamp(2.4rem, 5.5vw, 4.8rem)", fontWeight: 700, letterSpacing: "-0.04em", lineHeight: 1.08, margin: "0 0 20px", paddingBottom: "0.14em", textWrap: "balance", maxWidth: 640, background: "linear-gradient(135deg, var(--amber) 0%, var(--accent) 100%)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", backgroundClip: "text" }}>
                       {item.title}
                     </h1>
-                    <p style={{ fontSize: 18, lineHeight: 1.5, color: "var(--ink-200)", maxWidth: 540, marginBottom: 32 }}>{item.teaser}</p>
+                    <p style={{ fontSize: 17, lineHeight: 1.6, color: "var(--ink-200)", maxWidth: 480, marginBottom: 36 }}>{item.teaser}</p>
                     <Link href={item.href} className="btn btn-solid" style={{ background: "var(--amber)", borderColor: "var(--amber)" }}>Play →</Link>
                   </div>
                 )}
@@ -344,7 +344,7 @@ export default function HomePage() {
             </motion.div>
           ))}
 
-          <div className="absolute bottom-8 left-8 md:left-12 z-20 flex items-center justify-between" style={{ right: 32, maxWidth: 1376, margin: "0 auto" }}>
+          <div className="absolute bottom-8 z-20 sg-hero-text-block flex items-center justify-between" style={{ left: 0, right: 0 }}>
             <div style={{ display: "flex", gap: 6 }}>
               {slides.map((_, i) => (
                 <button key={i} onClick={() => goTo(i)} style={{ width: i === activeSlide ? 32 : 12, height: 3, borderRadius: 2, border: "none", padding: 0, background: i === activeSlide ? "var(--accent)" : "rgba(255,255,255,0.3)", transition: "all 0.3s", cursor: "pointer" }} />
@@ -364,7 +364,7 @@ export default function HomePage() {
 
       {/* ── Radar Player of the Week ── */}
       <section style={{ background: "var(--sg-surface-low)", borderTop: "1px solid var(--sg-border)", borderBottom: "1px solid var(--sg-border)" }}>
-        <div className="sg-page-shell" style={{ paddingTop: 60, paddingBottom: 60 }}>
+        <div className="sg-editorial-shell" style={{ paddingTop: 80, paddingBottom: 80 }}>
           <div style={{ marginBottom: 32 }}>
             <div className="eyebrow" style={{ color: "var(--accent)" }}>FEATURED PROFILE</div>
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", marginTop: 8 }}>
@@ -415,7 +415,7 @@ export default function HomePage() {
       </section>
 
       {/* ── Players to Watch ── */}
-      <section className="sg-page-shell" style={{ paddingTop: 60, paddingBottom: 60 }}>
+      <section className="sg-editorial-shell" style={{ paddingTop: 80, paddingBottom: 80 }}>
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", marginBottom: 32 }}>
           <div>
             <div className="eyebrow">PLAYERS TO WATCH</div>
@@ -445,7 +445,7 @@ export default function HomePage() {
 
       {/* ── Editor's Picks ── */}
       {gundemItems.length > 0 && (
-        <section className="sg-page-shell" style={{ paddingTop: 60, paddingBottom: 60 }}>
+        <section className="sg-page-shell" style={{ paddingTop: 80, paddingBottom: 80 }}>
           <div style={{ marginBottom: 32 }}>
             <div className="eyebrow">EDITOR&apos;S PICK</div>
             <h2 className="display" style={{ fontSize: 36, fontWeight: 700, letterSpacing: "-0.03em", margin: "6px 0 0" }}>Featured Articles</h2>
@@ -457,7 +457,7 @@ export default function HomePage() {
               const pills = editorPickHighlights.get(item.slug);
               return (
                 <Link key={`${item.id}-picks`} href={`${categoryPath(item.category)}/${item.slug}`}
-                  className="lift" style={{ background: "var(--sg-surface)", border: "1px solid var(--sg-border)", borderRadius: 4, padding: 24, display: "flex", flexDirection: "column", justifyContent: "space-between", minHeight: 240 }}>
+                  className="lift" style={{ background: "var(--sg-surface)", border: "1px solid var(--sg-border)", borderRadius: 16, padding: 28, display: "flex", flexDirection: "column", justifyContent: "space-between", minHeight: 240 }}>
                   <div>
                     <div className="mono" style={{ fontSize: 10, letterSpacing: "0.18em", color: accentColor, marginBottom: 14 }}>{catLabel}</div>
                     <h3 className="display" style={{ fontSize: 20, fontWeight: 600, lineHeight: 1.15, letterSpacing: "-0.02em", margin: "0 0 12px", textWrap: "balance" }}>
@@ -480,19 +480,21 @@ export default function HomePage() {
       )}
 
       {/* ── Radar CTA Banner ── */}
-      <section className="sg-page-shell" style={{ paddingBottom: 80 }}>
-        <div className="grain" style={{ position: "relative", overflow: "hidden", padding: "64px 48px", borderRadius: 6, background: "linear-gradient(120deg, var(--sg-surface) 0%, var(--sg-surface-high) 50%, color-mix(in oklch, var(--accent) 30%, var(--sg-surface)) 100%)", border: "1px solid var(--sg-border)", display: "grid", gridTemplateColumns: "2fr 1fr", gap: 32, alignItems: "center" }}>
-          <div>
-            <div className="eyebrow" style={{ color: "var(--accent)", marginBottom: 12 }}>WEEKLY RADAR</div>
-            <h2 className="display" style={{ fontSize: "clamp(2rem, 4vw, 3.5rem)", fontWeight: 700, letterSpacing: "-0.04em", margin: "0 0 16px", lineHeight: 1 }}>
-              One rising talent, every week.
-            </h2>
-            <p style={{ fontSize: 18, color: "var(--sg-text-secondary)", maxWidth: 480, lineHeight: 1.5, margin: 0 }}>
-              Emerging players, tracked with a tactical eye and match statistics.
-            </p>
-          </div>
-          <div style={{ display: "flex", justifyContent: "flex-end" }}>
-            <Link href="/radar" className="btn btn-solid" style={{ padding: "14px 24px" }}>GO TO RADAR →</Link>
+      <section className="sg-editorial-shell" style={{ paddingBottom: 96 }}>
+        <div className="grain" style={{ position: "relative", overflow: "hidden", padding: "clamp(40px, 5vw, 72px) clamp(32px, 4vw, 60px)", borderRadius: 20, background: "linear-gradient(120deg, var(--sg-surface) 0%, var(--sg-surface-high) 50%, color-mix(in oklch, var(--accent) 30%, var(--sg-surface)) 100%)", border: "1px solid var(--sg-border)", display: "grid", gridTemplateColumns: "1fr", gap: 32, alignItems: "center" }}>
+          <div style={{ display: "flex", flexDirection: "column", gap: 24 }}>
+            <div>
+              <div className="eyebrow" style={{ color: "var(--accent)", marginBottom: 12 }}>WEEKLY RADAR</div>
+              <h2 className="display" style={{ fontSize: "clamp(2rem, 4vw, 3.5rem)", fontWeight: 700, letterSpacing: "-0.04em", margin: "0 0 16px", lineHeight: 1 }}>
+                One rising talent, every week.
+              </h2>
+              <p style={{ fontSize: 18, color: "var(--sg-text-secondary)", maxWidth: 480, lineHeight: 1.5, margin: 0 }}>
+                Emerging players, tracked with a tactical eye and match statistics.
+              </p>
+            </div>
+            <div>
+              <Link href="/radar" className="btn btn-solid" style={{ padding: "14px 28px" }}>GO TO RADAR →</Link>
+            </div>
           </div>
         </div>
       </section>

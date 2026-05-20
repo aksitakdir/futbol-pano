@@ -57,7 +57,7 @@ export default function TaktikLabPage() {
       <SiteHeader activeNav="taktik-lab" />
       <div style={{ paddingTop: "68px" }} />
 
-      <div className="sg-page-shell sg-page-shell--hero" style={{ display: "grid", gridTemplateColumns: "2fr 1fr", gap: 32, alignItems: "end" }}>
+      <div className="sg-hero-text-block sg-page-shell--hero" style={{ display: "grid", gridTemplateColumns: "2fr 1fr", gap: 32, alignItems: "end" }}>
         <div>
           <div className="eyebrow" style={{ color: "var(--sky)" }}>POSITION ARCHETYPES</div>
           <h1 className="display" style={{ fontSize: "clamp(56px, 7vw, 84px)", fontWeight: 700, letterSpacing: "-0.04em", lineHeight: 0.9, margin: "8px 0 0" }}>
@@ -71,7 +71,7 @@ export default function TaktikLabPage() {
 
       <div className="sg-page-shell" style={{ paddingBottom: 80 }}>
         {!loading && featured && (
-          <Link href={`/taktik-lab/${featured.slug}`} className="lift" style={{ display: "block", position: "relative", overflow: "hidden", background: "linear-gradient(135deg, oklch(0.18 0.02 20) 0%, oklch(0.12 0.012 250) 70%)", border: "1px solid var(--sg-border)", borderRadius: 6, marginBottom: 64, minHeight: 320, textDecoration: "none" }}>
+          <Link href={`/taktik-lab/${featured.slug}`} className="lift" style={{ display: "block", position: "relative", overflow: "hidden", background: "linear-gradient(135deg, oklch(0.18 0.02 20) 0%, oklch(0.12 0.012 250) 70%)", border: "1px solid var(--sg-border)", borderRadius: 16, marginBottom: 64, minHeight: 320, textDecoration: "none" }}>
             <div style={{ position: "absolute", top: 0, left: 0, right: 0, height: 3, background: "var(--sky)" }} />
             <div style={{ position: "absolute", top: -160, right: -120, width: 480, height: 480, borderRadius: "50%", background: "radial-gradient(circle, var(--sky) 0%, transparent 65%)", opacity: 0.15, pointerEvents: "none" }} />
             <div style={{ position: "absolute", inset: 0, opacity: 0.04, pointerEvents: "none", backgroundImage: "repeating-linear-gradient(-45deg, rgba(255,255,255,0.5) 0 1px, transparent 1px 22px)" }} />
@@ -121,7 +121,7 @@ export default function TaktikLabPage() {
                 const pills = highlightsBySlug.get(item.slug) ?? [];
                 return (
                   <Link key={item.id} href={`/taktik-lab/${item.slug}`}
-                    className="lift" style={{ background: "var(--sg-surface)", border: "1px solid var(--sg-border)", borderRadius: 4, overflow: "hidden", cursor: "pointer", textDecoration: "none", display: "flex", flexDirection: "column", minHeight: 220 }}>
+                    className="lift" style={{ background: "var(--sg-surface)", border: "1px solid var(--sg-border)", borderRadius: 12, overflow: "hidden", cursor: "pointer", textDecoration: "none", display: "flex", flexDirection: "column", minHeight: 220 }}>
                     <div style={{ height: 2, background: accent }} />
                     <div style={{ padding: 28, flex: 1, display: "flex", flexDirection: "column" }}>
                       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16 }}>
@@ -156,7 +156,7 @@ export default function TaktikLabPage() {
               const pillTags = fromContent && fromContent.length > 0 ? fromContent.slice(0, 4) : arch.exemplars;
               return (
                 <Link key={arch.slug} href={`/taktik-lab/${arch.slug}`}
-                  className="lift" style={{ position: "relative", cursor: "pointer", background: "var(--sg-surface)", border: "1px solid var(--sg-border)", borderRadius: 4, padding: 32, minHeight: 280, display: "flex", flexDirection: "column", justifyContent: "space-between", gap: 24, overflow: "hidden", textDecoration: "none" }}>
+                  className="lift" style={{ position: "relative", cursor: "pointer", background: "var(--sg-surface)", border: "1px solid var(--sg-border)", borderRadius: 12, padding: 32, minHeight: 280, display: "flex", flexDirection: "column", justifyContent: "space-between", gap: 24, overflow: "hidden", textDecoration: "none" }}>
                   <div style={{ position: "absolute", top: 0, left: 0, right: 0, height: 2, background: c }} />
                   <div style={{ position: "absolute", right: -40, top: -40, width: 200, height: 200, borderRadius: "50%", background: `radial-gradient(circle, ${c} 0%, transparent 70%)`, opacity: 0.15 }} />
                   <div>

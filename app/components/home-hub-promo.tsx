@@ -23,7 +23,7 @@ export default function HomeHubPromo({ wcArticles, transferArticles }: Props) {
 
   return (
     <section style={{ borderTop: "1px solid var(--sg-border)", background: "var(--sg-surface-low)" }}>
-      <div className="sg-page-shell" style={{ paddingTop: 56, paddingBottom: 56 }}>
+      <div className="sg-editorial-shell" style={{ paddingTop: 72, paddingBottom: 72 }}>
         <div className="eyebrow" style={{ marginBottom: 28 }}>TOURNAMENT & TRANSFERS</div>
         <div className="grid grid-cols-1 gap-8 lg:grid-cols-2">
           <HubCard
@@ -53,9 +53,9 @@ function HubCard({ accent, title, description, hubHref, cta, articles }: {
   hubHref: string; cta: string; articles: HubArticlePreview[];
 }) {
   return (
-    <div style={{ border: "1px solid var(--sg-border)", borderRadius: 6, padding: 28, background: "var(--sg-surface)", position: "relative", overflow: "hidden" }}>
+    <div style={{ border: "1px solid var(--sg-border)", borderRadius: 20, padding: "clamp(24px, 3vw, 36px)", background: "var(--sg-surface)", position: "relative", overflow: "hidden" }}>
       <div style={{ position: "absolute", top: 0, left: 0, right: 0, height: 3, background: accent }} />
-      <h2 className="display" style={{ fontSize: 28, fontWeight: 700, letterSpacing: "-0.03em", margin: "0 0 12px" }}>{title}</h2>
+      <h2 className="display" style={{ fontSize: "clamp(22px, 2.5vw, 30px)", fontWeight: 700, letterSpacing: "-0.03em", margin: "0 0 12px" }}>{title}</h2>
       <p style={{ fontSize: 15, lineHeight: 1.55, color: "var(--sg-text-secondary)", margin: "0 0 20px" }}>{description}</p>
       {articles.length > 0 ? (
         <ul style={{ listStyle: "none", margin: "0 0 20px", padding: 0 }}>

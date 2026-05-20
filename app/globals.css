@@ -44,9 +44,9 @@
   --sg-surface-top:  var(--ink-600);
   --sg-border:       oklch(0.24 0.018 240 / 0.5);
 
-  /* ── Site layout (header, footer, page shell — aynı sol hiza) ── */
+  /* ── Site layout (header, footer, page shell) ── */
   --sg-layout-max: 1440px;
-  --sg-layout-pad-x: clamp(16px, 4vw, 32px);
+  --sg-layout-pad-x: clamp(20px, 5.5vw, 80px);
 
   /* ── Semantic color aliases (backward compat) ── */
   --sg-primary:      var(--emerald);
@@ -432,7 +432,7 @@ button { font-family: inherit; cursor: pointer; }
 
 /* Hub pillar başlık — gradient metinde kesilme yok */
 .hub-pillar-title {
-  font-size: clamp(48px, 7vw, 80px);
+  font-size: clamp(40px, 6vw, 72px);
   font-weight: 700;
   letter-spacing: -0.04em;
   line-height: 1.08;
@@ -440,6 +440,7 @@ button { font-family: inherit; cursor: pointer; }
   margin: 8px 0 20px;
   overflow: visible;
   text-wrap: balance;
+  max-width: 800px;
 }
 .hub-pillar-title--wc {
   background: linear-gradient(135deg, var(--wc-gold) 0%, var(--wc-magenta) 45%, var(--wc-teal) 100%);
@@ -456,11 +457,11 @@ button { font-family: inherit; cursor: pointer; }
   color: transparent;
 }
 .hub-pillar-description {
-  font-size: 18px;
+  font-size: clamp(16px, 1.8vw, 19px);
   color: var(--sg-text-secondary);
-  max-width: 560px;
-  line-height: 1.55;
-  margin: 0 0 32px;
+  max-width: 520px;
+  line-height: 1.65;
+  margin: 0 0 36px;
 }
 /* Hub hero CTA pill row — gap + margin (Tailwind flex gap yedek) */
 .hub-pillar-ctas {
@@ -800,7 +801,8 @@ button { font-family: inherit; cursor: pointer; }
   font-size: 11px; letter-spacing: 0.14em; color: var(--sg-text-muted); text-decoration: none;
 }
 .wc-squad-back:hover, .transfer-squad-back:hover { color: var(--accent); }
-/* ─── Site layout container (header / footer / içerik — sol hiza) ─ */
+/* ─── Layout level 1: nav / footer ─────────────────────────────── */
+/* Same as page shell, used for header/footer to match content edge */
 .sg-site-container {
   width: 100%;
   max-width: var(--sg-layout-max);
@@ -811,7 +813,7 @@ button { font-family: inherit; cursor: pointer; }
   box-sizing: border-box;
 }
 
-/* ─── Site page shell (responsive padding) ───────────────────────── */
+/* ─── Layout level 2: standard page sections ────────────────────── */
 .sg-page-shell {
   width: 100%;
   max-width: var(--sg-layout-max);
@@ -821,25 +823,57 @@ button { font-family: inherit; cursor: pointer; }
   padding-right: var(--sg-layout-pad-x);
   box-sizing: border-box;
 }
+
+/* ─── Layout level 3: hero text — more inset than nav ───────────── */
+/* Creates visual break: hero content is NOT on the same left axis  */
+/* as the nav logo, producing modern editorial "rhythm"             */
+.sg-hero-text-block {
+  width: 100%;
+  max-width: var(--sg-layout-max);
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: clamp(32px, 9vw, 140px);
+  padding-right: clamp(28px, 5vw, 80px);
+  box-sizing: border-box;
+}
+
+/* ─── Layout level 4: editorial / feature sections — centered ───── */
+/* Narrower max-width: content floats with margin on wide screens   */
+.sg-editorial-shell {
+  width: 100%;
+  max-width: min(100%, 1200px);
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: var(--sg-layout-pad-x);
+  padding-right: var(--sg-layout-pad-x);
+  box-sizing: border-box;
+}
 .sg-page-shell--hero {
-  padding-top: clamp(32px, 5vw, 56px);
-  padding-bottom: clamp(28px, 4vw, 48px);
+  padding-top: clamp(40px, 6vw, 72px);
+  padding-bottom: clamp(36px, 5vw, 64px);
 }
 .sg-page-shell--section {
-  padding-top: clamp(28px, 4vw, 40px);
-  padding-bottom: clamp(48px, 6vw, 80px);
+  padding-top: clamp(40px, 5.5vw, 72px);
+  padding-bottom: clamp(56px, 7vw, 96px);
 }
 .sg-page-header-grid {
   display: grid;
-  grid-template-columns: 2fr 1fr;
-  gap: clamp(16px, 3vw, 32px);
-  align-items: end;
+  grid-template-columns: 1fr;
+  gap: clamp(16px, 2.5vw, 24px);
+  align-items: start;
+}
+@media (min-width: 768px) {
+  .sg-page-header-grid {
+    grid-template-columns: 3fr 1fr;
+    align-items: end;
+  }
 }
 .sg-page-header-grid__desc {
-  font-size: 18px;
+  font-size: clamp(16px, 2vw, 19px);
   color: var(--sg-text-secondary);
-  line-height: 1.5;
+  line-height: 1.6;
   margin: 0;
+  max-width: 60ch;
 }
 
 /* ─── WC kadro roster (ayrı kartlar, okunabilir tipografi) ─────── */

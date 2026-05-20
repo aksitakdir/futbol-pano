@@ -65,7 +65,7 @@ export default async function ArenaHomePage() {
         <SiteHeader activeNav="arena" maxWidth="max-w-7xl" />
 
         <div className="pt-[72px]">
-          <CategoryHero accent="var(--sg-amber)">
+          <CategoryHero accent="var(--sg-amber)" heroInset>
             <div className="max-w-3xl">
               <div className="flex items-center gap-3 mb-5">
                 <div className="h-[2px] w-12" style={{ background: "var(--sg-amber)" }} />
@@ -89,7 +89,7 @@ export default async function ArenaHomePage() {
           </CategoryHero>
         </div>
 
-        <div className="max-w-7xl mx-auto px-8 pt-16 pb-20">
+        <div className="sg-page-shell" style={{ paddingTop: 64, paddingBottom: 80 }}>
           <div className="flex items-center gap-3 mb-6">
             <div className="h-px flex-1" style={{ background: "rgba(26,58,92,0.5)" }} />
             <p

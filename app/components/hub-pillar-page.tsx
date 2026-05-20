@@ -52,7 +52,7 @@ export default function HubPillarPage({ hubId }: Props) {
         className={`hub-pillar-hero grain${isWc ? " hub-pillar-hero--wc" : " hub-pillar-hero--transfer"}`}
         style={isWc ? { background: WC_2026_HERO_BG } : undefined}
       >
-        <PageShell className="sg-page-shell--hero" style={{ position: "relative" }}>
+        <PageShell shellClass="sg-hero-text-block" className="sg-page-shell--hero" style={{ position: "relative" }}>
           {isWc ? <span className="wc-hero-glow" aria-hidden /> : null}
           <div className={`eyebrow ${isWc ? "wc-eyebrow" : "transfer-eyebrow"}`}>{hub.pillarEyebrow}</div>
           <h1 className={`display hub-pillar-title${isWc ? " hub-pillar-title--wc" : " hub-pillar-title--transfer"}`}>

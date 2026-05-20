@@ -73,7 +73,7 @@ export default function HomeRecentCarousel({ items, locale }: { items: HomeRecen
   if (!items.length) return null;
 
   return (
-    <section className="sg-page-shell" style={{ paddingTop: 80, paddingBottom: 40 }}>
+    <section className="sg-page-shell" style={{ paddingTop: 80, paddingBottom: 64 }}>
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", marginBottom: 24 }}>
         <div>
           <div className="eyebrow" style={{ color: "var(--accent)" }}>DISCOVER</div>
@@ -91,13 +91,13 @@ export default function HomeRecentCarousel({ items, locale }: { items: HomeRecen
               const coverSrc = item.cover_image || getCategoryImage(item.category, item.slug);
             return (
               <Link key={item.id} href={itemHref(item.category, item.slug)}
-                style={{ display: "flex", flexDirection: "column", textDecoration: "none", border: "1px solid var(--sg-border)", borderRadius: 6, overflow: "hidden", background: "var(--sg-surface)" }}
+                style={{ display: "flex", flexDirection: "column", textDecoration: "none", border: "1px solid var(--sg-border)", borderRadius: 14, overflow: "hidden", background: "var(--sg-surface)" }}
                 className="lift">
                 <div style={{ position: "relative", aspectRatio: "16/9", overflow: "hidden" }}>
                   <Image src={coverSrc} alt={title} fill style={{ objectFit: "cover" }} sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw" />
                   <div style={{ position: "absolute", inset: 0, background: "linear-gradient(to bottom, transparent 60%, rgba(0,0,0,0.55))" }} />
                 </div>
-                <div style={{ padding: "16px 20px 20px", flex: 1, display: "flex", flexDirection: "column" }}>
+                <div style={{ padding: "20px 24px 24px", flex: 1, display: "flex", flexDirection: "column" }}>
                   <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 10 }}>
                     <span className="mono" style={{ fontSize: 9, letterSpacing: "0.2em", color: accent }}>{label}</span>
                     <span className="mono" style={{ fontSize: 9, color: "var(--sg-text-muted)" }}>

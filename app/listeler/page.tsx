@@ -88,7 +88,7 @@ export default function ListelerPage() {
       <SiteHeader activeNav="listeler" />
       <div style={{ paddingTop: "68px" }} />
 
-      <div className="sg-page-shell sg-page-shell--hero" style={{ display: "grid", gridTemplateColumns: "2fr 1fr", gap: 32, alignItems: "end" }}>
+      <div className="sg-hero-text-block sg-page-shell--hero" style={{ display: "grid", gridTemplateColumns: "2fr 1fr", gap: 32, alignItems: "end" }}>
         <div>
           <div className="eyebrow" style={{ color: "var(--emerald)" }}>ARCHIVE</div>
           <h1 className="display" style={{ fontSize: "clamp(56px, 7vw, 84px)", fontWeight: 700, letterSpacing: "-0.04em", lineHeight: 0.9, margin: "8px 0 0" }}>
@@ -112,7 +112,7 @@ export default function ListelerPage() {
         ) : null}
 
         {!loading && featured ? (
-          <Link href={`/listeler/${featured.slug}`} className="lift" style={{ display: "block", position: "relative", overflow: "hidden", background: "linear-gradient(135deg, oklch(0.17 0.04 155) 0%, oklch(0.12 0.018 200) 72%)", border: "1px solid var(--sg-border)", borderRadius: 6, marginBottom: recentDbLists.length > 0 ? 48 : hasMore ? 36 : 48, minHeight: 320, textDecoration: "none" }}>
+          <Link href={`/listeler/${featured.slug}`} className="lift" style={{ display: "block", position: "relative", overflow: "hidden", background: "linear-gradient(135deg, oklch(0.17 0.04 155) 0%, oklch(0.12 0.018 200) 72%)", border: "1px solid var(--sg-border)", borderRadius: 16, marginBottom: recentDbLists.length > 0 ? 48 : hasMore ? 36 : 48, minHeight: 320, textDecoration: "none" }}>
             <div style={{ position: "absolute", top: 0, left: 0, right: 0, height: 3, background: LIST_COVER_ACCENT }} />
             <div style={{ position: "absolute", bottom: -160, right: -100, width: 440, height: 440, borderRadius: "50%", background: "radial-gradient(circle, var(--emerald) 0%, transparent 65%)", opacity: 0.14, pointerEvents: "none" }} />
             <svg viewBox="0 0 140 120" preserveAspectRatio="xMidYMid slice" style={{ position: "absolute", right: 0, top: 0, height: "100%", width: "44%", opacity: 0.28, pointerEvents: "none" }}>
@@ -162,7 +162,7 @@ export default function ListelerPage() {
                     const pills = highlightsBySlug.get(item.slug) ?? [];
                     return (
                       <Link key={item.id} href={`/listeler/${item.slug}`}
-                        className="lift" style={{ background: "var(--sg-surface)", border: "1px solid var(--sg-border)", borderRadius: 4, overflow: "hidden", cursor: "pointer", textDecoration: "none", display: "flex", flexDirection: "column", minHeight: 220 }}>
+                        className="lift" style={{ background: "var(--sg-surface)", border: "1px solid var(--sg-border)", borderRadius: 12, overflow: "hidden", cursor: "pointer", textDecoration: "none", display: "flex", flexDirection: "column", minHeight: 220 }}>
                         <div style={{ height: 2, background: accent }} />
                         <div style={{ padding: 28, flex: 1, display: "flex", flexDirection: "column" }}>
                           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16 }}>
@@ -202,7 +202,7 @@ export default function ListelerPage() {
           <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 16 }}>
             {STATIC_LISTS.map((list) => (
               <Link key={list.slug} href={`/listeler/${list.slug}`}
-                className="lift" style={{ background: "var(--sg-surface)", border: "1px solid var(--sg-border)", borderRadius: 4, overflow: "hidden", cursor: "pointer", textDecoration: "none" }}>
+                className="lift" style={{ background: "var(--sg-surface)", border: "1px solid var(--sg-border)", borderRadius: 12, overflow: "hidden", cursor: "pointer", textDecoration: "none" }}>
                 <div style={{ height: 2, background: list.accent }} />
                 <div style={{ padding: 28 }}>
                   <div className="mono" style={{ fontSize: 10, letterSpacing: "0.18em", color: list.accent, marginBottom: 24 }}>CURATED LIST</div>

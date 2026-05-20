@@ -84,7 +84,7 @@ export default function RadarPage() {
       <SiteHeader activeNav="radar" />
       <div style={{ paddingTop: "68px" }} />
 
-      <div className="sg-page-shell sg-page-shell--hero" style={{ display: "grid", gridTemplateColumns: "2fr 1fr", gap: 32, alignItems: "end" }}>
+      <div className="sg-hero-text-block sg-page-shell--hero" style={{ display: "grid", gridTemplateColumns: "2fr 1fr", gap: 32, alignItems: "end" }}>
         <div>
           <div className="eyebrow" style={{ color: "var(--accent)" }}>WEEKLY ANALYSIS</div>
           <h1 className="display" style={{ fontSize: "clamp(56px, 7vw, 84px)", fontWeight: 700, letterSpacing: "-0.04em", lineHeight: 0.9, margin: "8px 0 0" }}>
@@ -106,7 +106,7 @@ export default function RadarPage() {
         ) : (
           <>
             {featured && (
-              <Link href={`/radar/${featured.slug}`} className="lift" style={{ display: "block", position: "relative", overflow: "hidden", background: "linear-gradient(135deg, oklch(0.16 0.02 150) 0%, oklch(0.12 0.012 220) 70%)", border: "1px solid var(--sg-border)", borderRadius: 6, marginBottom: 48, minHeight: 340, textDecoration: "none" }}>
+              <Link href={`/radar/${featured.slug}`} className="lift" style={{ display: "block", position: "relative", overflow: "hidden", background: "linear-gradient(135deg, oklch(0.16 0.02 150) 0%, oklch(0.12 0.012 220) 70%)", border: "1px solid var(--sg-border)", borderRadius: 16, marginBottom: 48, minHeight: 340, textDecoration: "none" }}>
                 <div style={{ position: "absolute", top: 0, left: 0, right: 0, height: 3, background: "var(--accent)" }} />
                 <div style={{ position: "absolute", bottom: -180, left: -100, width: 480, height: 480, borderRadius: "50%", background: "radial-gradient(circle, var(--accent) 0%, transparent 65%)", opacity: 0.15, pointerEvents: "none" }} />
                 <div style={{ position: "absolute", inset: 0, opacity: 0.04, pointerEvents: "none", backgroundImage: "repeating-linear-gradient(90deg, rgba(255,255,255,0.5) 0 1px, transparent 1px 22px)" }} />
@@ -159,7 +159,7 @@ export default function RadarPage() {
                     const pills = highlightsBySlug.get(article.slug) ?? [];
                     return (
                       <Link key={article.id} href={`/radar/${article.slug}`}
-                        className="lift" style={{ background: "var(--sg-surface)", border: "1px solid var(--sg-border)", borderRadius: 4, overflow: "hidden", display: "flex", flexDirection: "column", textDecoration: "none", minHeight: 220 }}>
+                        className="lift" style={{ background: "var(--sg-surface)", border: "1px solid var(--sg-border)", borderRadius: 12, overflow: "hidden", display: "flex", flexDirection: "column", textDecoration: "none", minHeight: 220 }}>
                         <div style={{ height: 2, background: accent }} />
                         <div style={{ padding: "20px 20px 24px", flex: 1, display: "flex", flexDirection: "column" }}>
                           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 14 }}>
