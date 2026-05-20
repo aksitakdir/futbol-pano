@@ -1,18 +1,11 @@
 import type { Metadata } from "next";
-import type { ReactNode } from "react";
 
 export const metadata: Metadata = {
-  title: "Radar",
-  description: "Avrupa'nın en parlak genç yeteneklerini keşfet. Her hafta güncellenen oyuncu analizleri ve scout raporları.",
-  openGraph: {
-    title: "Radar | Scout Gamer",
-    description: "Avrupa'nın en parlak genç yeteneklerini keşfet. Her hafta güncellenen oyuncu analizleri ve scout raporları.",
-    url: "https://scoutgamer.com/radar",
-    type: "website",
-  },
+  title: "Radar | Scout Gamer",
+  description: "Player-focused scout analysis — young talent profiles, positional breakdowns, and watchlist reports.",
   alternates: { canonical: "https://scoutgamer.com/radar" },
 };
 
-export default function RadarLayout({ children }: { children: ReactNode }) {
-  return <>{children}</>;
+export default function RadarLayout({ children }: { children: React.ReactNode }) {
+  return children;
 }

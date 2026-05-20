@@ -9,7 +9,6 @@ import { supabase } from "@/lib/supabase";
 import { stripHtml } from "@/lib/utils";
 import { extractArticleHighlights, HIGHLIGHT_CARD_ACCENTS_CYCLE } from "@/lib/content-highlight-tags";
 
-export const metadata = { title: "Tactics Lab | Scout Gamer" };
 
 type Content = {
   id: string; title: string; title_en?: string; slug: string;

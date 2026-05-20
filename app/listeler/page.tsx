@@ -9,7 +9,6 @@ import { supabase } from "@/lib/supabase";
 import { stripHtml, estimateReadMinutes } from "@/lib/utils";
 import { extractArticleHighlights, HIGHLIGHT_CARD_ACCENTS_CYCLE } from "@/lib/content-highlight-tags";
 
-export const metadata = { title: "Scouting Lists | Scout Gamer" };
 
 type Content = {
   id: string; title: string; title_en?: string; slug: string;
