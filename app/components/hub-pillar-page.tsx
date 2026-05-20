@@ -8,12 +8,9 @@ import PageShell from "./page-shell";
 import WcTeamGrid from "./wc/wc-team-grid";
 import HubArenaStrip from "./hub/hub-arena-strip";
 import HubEditorialSection from "./hub/hub-editorial-section";
-import WcLiveScoresBar from "./hub/wc-live-scores-bar";
 import HubFeaturedArenaBanner from "./hub/hub-featured-arena-banner";
-import TransferScenariosSection from "./hub/transfer-scenarios-section";
 import CompletedTransfersSection from "./hub/completed-transfers-section";
 import HubTransferTeamArenas from "./hub/hub-transfer-team-arenas";
-import HubCategoryLinks from "./hub/hub-category-links";
 import { getHubConfig, type HubId, type HubLocale } from "@/lib/hub-config";
 import { WC_2026_HERO_BG } from "@/lib/wc-2026-brand";
 import type { HubPillarCopy } from "@/lib/hub-types";
@@ -47,20 +44,8 @@ export default function HubPillarPage({ hubId, locale }: Props) {
 
   const cta =
     locale === "tr"
-      ? {
-          radar: "Radar",
-          listeler: "Listeler",
-          kadrolar: "48 Takım Kadroları",
-          taktik: "Taktik Lab",
-          scenarios: "Transfer ihtimalleri",
-        }
-      : {
-          radar: "Radar",
-          listeler: "Lists",
-          kadrolar: "48 Team Squads",
-          taktik: "Tactics Lab",
-          scenarios: "Transfer scenarios",
-        };
+      ? { kadrolar: "48 Takım Kadroları", completed: "Gerçekleşen Transferler" }
+      : { kadrolar: "48 Team Squads", completed: "Done Deals" };
 
   const navKey = hubId === "wc-2026" ? "wc-2026" : "transfer";
   const accent = isWc ? "var(--wc-gold)" : "var(--transfer-cyan)";
@@ -81,13 +66,7 @@ export default function HubPillarPage({ hubId, locale }: Props) {
             {hub.pillarTitle}
           </h1>
           <p className="hub-pillar-description">{hub.pillarDescription}</p>
-          <div className="hub-pillar-ctas">
-            <Link href={defaults.radarPath} className="btn btn-solid hub-pillar-cta">
-              {cta.radar} →
-            </Link>
-            <Link href={defaults.listelerPath} className="btn">
-              {cta.listeler} →
-            </Link>
+          <div className="hub-pillar-ctas flex flex-wrap items-center gap-x-6 gap-y-3">
             {isWc ? (
               <Link
                 href={defaults.kadrolarPath}
@@ -97,22 +76,16 @@ export default function HubPillarPage({ hubId, locale }: Props) {
                 {cta.kadrolar} →
               </Link>
             ) : (
-              <Link href="#transfer-scenarios" className="btn btn-solid hub-pillar-cta">
-                {cta.scenarios} →
+              <Link href="#completed-transfers" className="btn btn-solid hub-pillar-cta">
+                {cta.completed} →
               </Link>
             )}
-            <Link href={defaults.taktikPath} className="btn">
-              {cta.taktik} →
-            </Link>
           </div>
         </PageShell>
       </header>
 
-      {isWc ? <WcLiveScoresBar locale={locale} /> : null}
-
       {!isWc ? (
         <>
-          <TransferScenariosSection locale={locale} />
           <CompletedTransfersSection locale={locale} />
           <HubTransferTeamArenas locale={locale} />
         </>
@@ -132,8 +105,6 @@ export default function HubPillarPage({ hubId, locale }: Props) {
       {isWc ? <HubFeaturedArenaBanner hubId={hubId} locale={locale} /> : null}
 
       <HubArenaStrip hubId={hubId} locale={locale} />
-
-      <HubCategoryLinks locale={locale} />
 
       <div style={{ paddingBottom: 80 }} />
 

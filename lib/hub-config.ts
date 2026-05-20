@@ -69,11 +69,11 @@ export const HUBS: Record<HubId, HubConfig> = {
     navKey: "transfer",
     tr: {
       basePath: "/transfer",
-      navLabel: "BONSERVİS RADARI",
-      pillarTitle: "Kime, Nereye?",
-      pillarEyebrow: "TRANSFER RADARI",
+      navLabel: "TRANSFER HABERLERİ",
+      pillarTitle: "Transferler",
+      pillarEyebrow: "TRANSFER MERKEZİ",
       pillarDescription:
-        "Olası ihtimaller, gerçekleşen hamleler ve kulüp Arena oyunları — scout odaklı transfer merkezi.",
+        "Gerçekleşen hamleler, scout analizleri ve kulüp Arena oyunları — transfer gündemine scout bakışı.",
       radarPath: "/transfer/radar",
       listelerPath: "/transfer/listeler",
       kadrolarPath: "/transfer",
@@ -82,11 +82,11 @@ export const HUBS: Record<HubId, HubConfig> = {
     },
     en: {
       basePath: "/en/transfers",
-      navLabel: "TRANSFER RADAR",
-      pillarTitle: "Who Moves Next?",
-      pillarEyebrow: "TRANSFER RADAR",
+      navLabel: "TRANSFER NEWS",
+      pillarTitle: "Transfers",
+      pillarEyebrow: "TRANSFER HUB",
       pillarDescription:
-        "Likelihood rankings, done deals, and club Arena games — scout-first transfer hub.",
+        "Done deals, scout analysis, and club Arena games — the transfer window through a scout lens.",
       radarPath: "/en/transfers/radar",
       listelerPath: "/en/transfers/lists",
       kadrolarPath: "/en/transfers",

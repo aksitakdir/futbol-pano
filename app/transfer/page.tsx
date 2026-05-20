@@ -1,8 +1,8 @@
 import HubPillarPage from "../components/hub-pillar-page";
 
 export const metadata = {
-  title: "Bonservis Radarı — Kime, Nereye? | Scout Gamer",
-  description: "Olası transfer ihtimalleri, gerçekleşen hamleler ve kulüp Arena oyunları.",
+  title: "Transfer Haberleri | Scout Gamer",
+  description: "Gerçekleşen hamleler, scout analizleri ve kulüp Arena oyunları — transfer gündemine scout bakışı.",
 };
 
 export default function TransferPage() {

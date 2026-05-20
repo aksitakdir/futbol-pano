@@ -53,7 +53,7 @@ export default function CompletedTransfersSection({ locale }: Props) {
         };
 
   return (
-    <PageShell as="section" className="sg-page-shell--section completed-transfers-section">
+    <PageShell as="section" id="completed-transfers" className="sg-page-shell--section completed-transfers-section">
       <div className="eyebrow transfer-eyebrow">{copy.eyebrow}</div>
       <h2 className="display completed-transfers-section__title">{copy.title}</h2>
       <p className="completed-transfers-section__sub">{copy.sub}</p>
