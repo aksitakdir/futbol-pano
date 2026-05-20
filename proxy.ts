@@ -39,7 +39,7 @@ export function proxy(request: NextRequest) {
     const authHeader = request.headers.get("authorization") ?? "";
     if (authHeader.startsWith("Basic ")) {
       try {
-        const decoded = Buffer.from(authHeader.slice(6), "base64").toString("utf-8");
+        const decoded = atob(authHeader.slice(6));
         const [user, ...passParts] = decoded.split(":");
         const pass = passParts.join(":");
         if (
