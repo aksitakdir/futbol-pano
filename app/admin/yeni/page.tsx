@@ -11,82 +11,59 @@ import HubTagsField from "@/app/components/hub-tags-field";
 
 function isContentEmpty(html: string): boolean {
   if (!html?.trim()) return true;
-  const text = html.replace(/<[^>]+>/g, "").trim();
-  return text === "";
+  return html.replace(/<[^>]+>/g, "").trim() === "";
 }
 
 const CATEGORIES = [
-  { value: "listeler", label: "Listeler" },
+  { value: "listeler", label: "Lists" },
   { value: "radar", label: "Radar" },
-  { value: "taktik-lab", label: "Taktik Lab" },
+  { value: "taktik-lab", label: "Tactics Lab" },
 ];
 
 const HERO_VARIANTS = [
-  { value: "player-cards", label: "🃏 Oyuncu Kartı", desc: "Radar/Liste" },
-  { value: "cover-image", label: "🖼 Kapak Görseli", desc: "Genel" },
-  { value: "pitch-diagram", label: "⬡ Saha Diyagramı", desc: "Taktik Lab" },
-  { value: "stat-focus", label: "📊 Stat Odak", desc: "Radar" },
-  { value: "text-only", label: "✍ Sadece Metin", desc: "Minimal" },
+  { value: "player-cards", label: "🃏 Player Card", desc: "Radar/Lists" },
+  { value: "cover-image", label: "🖼 Cover Image", desc: "General" },
+  { value: "pitch-diagram", label: "⬡ Pitch Diagram", desc: "Tactics Lab" },
+  { value: "stat-focus", label: "📊 Stat Focus", desc: "Radar" },
+  { value: "text-only", label: "✍ Text Only", desc: "Minimal" },
 ];
 
 const ACCENT_COLORS = [
-  { value: "emerald", label: "Yeşil", color: "oklch(0.71 0.19 155)" },
+  { value: "emerald", label: "Green", color: "oklch(0.71 0.19 155)" },
   { value: "cyan", label: "Cyan", color: "oklch(0.75 0.14 199)" },
-  { value: "sky", label: "Mavi", color: "oklch(0.72 0.14 233)" },
-  { value: "rose", label: "Kırmızı", color: "oklch(0.66 0.21 13)" },
-  { value: "amber", label: "Altın", color: "oklch(0.78 0.17 67)" },
+  { value: "sky", label: "Blue", color: "oklch(0.72 0.14 233)" },
+  { value: "rose", label: "Red", color: "oklch(0.66 0.21 13)" },
+  { value: "amber", label: "Gold", color: "oklch(0.78 0.17 67)" },
   { value: "lime", label: "Lime", color: "oklch(0.80 0.19 126)" },
 ];
 
 type FcPlayer = {
-  name: string;
-  overall: number;
-  position: string;
-  club: string;
-  league?: string;
-  nationality?: string;
-  age?: number;
-  pace: number;
-  shooting: number;
-  passing: number;
-  dribbling: number;
-  defending: number;
-  physical: number;
-  photo_url?: string;
+  name: string; overall: number; position: string; club: string;
+  league?: string; nationality?: string; age?: number;
+  pace: number; shooting: number; passing: number;
+  dribbling: number; defending: number; physical: number; photo_url?: string;
 };
 
-function StatInput({
-  label, value, onChange,
-}: {
-  label: string;
-  value: number | "";
-  onChange: (v: number | "") => void;
-}) {
+function StatInput({ label, value, onChange }: { label: string; value: number | ""; onChange: (v: number | "") => void }) {
   return (
     <div>
       <label className="mb-1 block text-[11px] font-semibold text-slate-400">{label}</label>
-      <input
-        type="number" min="1" max="99"
-        value={value}
+      <input type="number" min="1" max="99" value={value}
         onChange={(e) => onChange(e.target.value ? Number(e.target.value) : "")}
         className="w-full rounded-lg border border-slate-700 bg-slate-800/60 px-3 py-2 text-sm text-slate-100 focus:border-emerald-500 focus:outline-none"
-        placeholder="1-99"
-      />
+        placeholder="1-99" />
     </div>
   );
 }
 
-function YeniIcerikForm() {
+function NewArticleForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
 
   const [title, setTitle] = useState("");
-  const [titleEn, setTitleEn] = useState("");
   const [slug, setSlug] = useState("");
   const [category, setCategory] = useState("listeler");
   const [content, setContent] = useState("");
-  const [contentEn, setContentEn] = useState("");
-  const [activeLang, setActiveLang] = useState<"tr" | "en">("tr");
   const [youtubeId, setYoutubeId] = useState("");
   const [coverImage, setCoverImage] = useState("");
   const [imageUploading, setImageUploading] = useState(false);
@@ -97,7 +74,6 @@ function YeniIcerikForm() {
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
 
-  // Stat alanları
   const [statPace, setStatPace] = useState<number | "">("");
   const [statShooting, setStatShooting] = useState<number | "">("");
   const [statPassing, setStatPassing] = useState<number | "">("");
@@ -106,16 +82,13 @@ function YeniIcerikForm() {
   const [statPhysical, setStatPhysical] = useState<number | "">("");
   const [statOverall, setStatOverall] = useState<number | "">("");
 
-  // Oyuncu arama
   const [playerSearch, setPlayerSearch] = useState("");
   const [playerResults, setPlayerResults] = useState<FcPlayer[]>([]);
   const [playerSearching, setPlayerSearching] = useState(false);
   const [playerMatched, setPlayerMatched] = useState<FcPlayer | null>(null);
   const searchTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  const [playersList, setPlayersList] = useState<
-    Array<{ name: string; overall: number; position: string; club: string; photo_url?: string; scout_note: string }>
-  >([]);
+  const [playersList, setPlayersList] = useState<Array<{ name: string; overall: number; position: string; club: string; photo_url?: string; scout_note: string }>>([]);
   const [playersListSearch, setPlayersListSearch] = useState("");
   const [playersListResults, setPlayersListResults] = useState<FcPlayer[]>([]);
   const [playersListSearching, setPlayersListSearching] = useState(false);
@@ -127,90 +100,63 @@ function YeniIcerikForm() {
 
   useEffect(() => {
     const c = searchParams.get("category");
-    if (c === "radar" || c === "listeler" || c === "taktik-lab") {
-      setCategory(c);
-    }
+    if (c === "radar" || c === "listeler" || c === "taktik-lab") setCategory(c);
   }, [searchParams]);
 
-  // Oyuncu arama — debounced
   useEffect(() => {
-    if (!playerSearch.trim() || playerSearch.length < 2) {
-      setPlayerResults([]);
-      return;
-    }
+    if (!playerSearch.trim() || playerSearch.length < 2) { setPlayerResults([]); return; }
     if (searchTimeout.current) clearTimeout(searchTimeout.current);
     searchTimeout.current = setTimeout(async () => {
       setPlayerSearching(true);
-      const { data } = await supabase
-        .from("fc_players")
+      const { data } = await supabase.from("fc_players")
         .select("name,overall,position,club,league,nationality,age,pace,shooting,passing,dribbling,defending,physical")
-        .ilike("name", `%${playerSearch.trim()}%`)
-        .order("overall", { ascending: false })
-        .limit(8);
+        .ilike("name", `%${playerSearch.trim()}%`).order("overall", { ascending: false }).limit(8);
       setPlayerResults((data as FcPlayer[]) ?? []);
       setPlayerSearching(false);
     }, 350);
   }, [playerSearch]);
 
   useEffect(() => {
-    if (!playersListSearch.trim() || playersListSearch.length < 2) {
-      setPlayersListResults([]);
-      return;
-    }
+    if (!playersListSearch.trim() || playersListSearch.length < 2) { setPlayersListResults([]); return; }
     if (playersListTimeout.current) clearTimeout(playersListTimeout.current);
     playersListTimeout.current = setTimeout(async () => {
       setPlayersListSearching(true);
-      const { data } = await supabase
-        .from("fc_players")
+      const { data } = await supabase.from("fc_players")
         .select("name,overall,position,club,pace,shooting,passing,dribbling,defending,physical,photo_url")
-        .ilike("name", `%${playersListSearch.trim()}%`)
-        .order("overall", { ascending: false })
-        .limit(8);
+        .ilike("name", `%${playersListSearch.trim()}%`).order("overall", { ascending: false }).limit(8);
       setPlayersListResults((data as FcPlayer[]) ?? []);
       setPlayersListSearching(false);
     }, 350);
   }, [playersListSearch]);
 
   function applyPlayer(p: FcPlayer) {
-    setPlayerMatched(p);
-    setPlayerName(p.name);
-    setPlayerSearch(p.name);
-    setStatPace(p.pace || "");
-    setStatShooting(p.shooting || "");
-    setStatPassing(p.passing || "");
-    setStatDribbling(p.dribbling || "");
-    setStatDefending(p.defending || "");
-    setStatPhysical(p.physical || "");
-    setStatOverall(p.overall || "");
-    setPlayerResults([]);
+    setPlayerMatched(p); setPlayerName(p.name); setPlayerSearch(p.name);
+    setStatPace(p.pace || ""); setStatShooting(p.shooting || ""); setStatPassing(p.passing || "");
+    setStatDribbling(p.dribbling || ""); setStatDefending(p.defending || ""); setStatPhysical(p.physical || "");
+    setStatOverall(p.overall || ""); setPlayerResults([]);
   }
 
   function clearPlayer() {
-    setPlayerMatched(null);
-    setPlayerSearch("");
-    setPlayerName("");
+    setPlayerMatched(null); setPlayerSearch(""); setPlayerName("");
     setStatPace(""); setStatShooting(""); setStatPassing("");
-    setStatDribbling(""); setStatDefending(""); setStatPhysical("");
-    setStatOverall("");
+    setStatDribbling(""); setStatDefending(""); setStatPhysical(""); setStatOverall("");
   }
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setError("");
-
-    if (!title.trim() || !slug.trim() || !content.trim()) {
-      setError("Başlık, slug ve içerik zorunludur");
+    if (!title.trim() || !slug.trim() || isContentEmpty(content)) {
+      setError("Title, slug and content are required");
       return;
     }
-
     setSaving(true);
     const { error: insertError } = await supabase.from("contents").insert({
       title: title.trim(),
-      title_en: titleEn.trim() || null,
+      title_en: title.trim(),
       slug: slug.trim(),
       category,
       content: content.trim(),
-      content_en: contentEn.trim() || null,
+      content_en: content.trim(),
       youtube_id: youtubeId.trim(),
       cover_image: coverImage.trim(),
       youtube_query_1: youtubeQuery1.trim(),
@@ -230,19 +176,15 @@ function YeniIcerikForm() {
       hub_tags: hubTags.length > 0 ? hubTags : [],
       status: "bekliyor",
     });
-
     if (insertError) {
-      setError("Kayıt sırasında hata oluştu: " + insertError.message);
+      setError("Save failed: " + insertError.message);
       setSaving(false);
       return;
     }
-
     router.push(category === "radar" ? "/admin/radar" : "/admin/icerikler");
   }
 
   const backHref = category === "radar" ? "/admin/radar" : "/admin/icerikler";
-  const backLabel = category === "radar" ? "← Radar listesine" : "← İçeriklere dön";
-
   const statsFilled = [statPace, statShooting, statPassing, statDribbling, statDefending, statPhysical].filter(v => v !== "").length;
 
   return (
@@ -250,68 +192,39 @@ function YeniIcerikForm() {
       <div className="mx-auto max-w-3xl">
         <div className="mb-5 flex items-center justify-between">
           <div>
-            <h1 className="text-xl font-bold">Yeni İçerik Ekle</h1>
-            <p className="text-xs text-slate-400">
-              İçerik kaydedildiğinde &quot;bekliyor&quot; durumunda admin paneline düşecektir
-            </p>
+            <h1 className="text-xl font-bold">New Article</h1>
+            <p className="text-xs text-slate-400">Saved articles are set to &quot;pending&quot; status</p>
           </div>
-          <Link
-            href={backHref}
-            className="rounded-lg border border-slate-700/60 px-3 py-1.5 text-xs font-medium text-slate-400 transition hover:border-slate-600 hover:text-slate-200"
-          >
-            {backLabel}
+          <Link href={backHref} className="rounded-lg border border-slate-700/60 px-3 py-1.5 text-xs font-medium text-slate-400 transition hover:border-slate-600 hover:text-slate-200">
+            ← Back
           </Link>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-5">
-          {/* Başlık */}
+          {/* Title */}
           <div>
-            <div className="flex gap-2 mb-2">
-              <button type="button" onClick={() => setActiveLang("tr")}
-                className={`px-4 py-1.5 text-xs font-bold uppercase tracking-wider transition ${activeLang === "tr" ? "bg-emerald-500 text-slate-950" : "border border-slate-700 text-slate-400 hover:text-slate-200"}`}>
-                🇹🇷 Türkçe
-              </button>
-              <button type="button" onClick={() => setActiveLang("en")}
-                className={`px-4 py-1.5 text-xs font-bold uppercase tracking-wider transition ${activeLang === "en" ? "bg-sky-500 text-slate-950" : "border border-slate-700 text-slate-400 hover:text-slate-200"}`}>
-                🇬🇧 EN
-              </button>
-            </div>
-            <label className="mb-1.5 block text-xs font-semibold text-slate-300">Başlık</label>
-            <input
-              type="text"
-              value={activeLang === "tr" ? title : titleEn}
-              onChange={(e) => activeLang === "tr" ? setTitle(e.target.value) : setTitleEn(e.target.value)}
-              placeholder={activeLang === "tr" ? "Örn: En İyi 10 Genç Kanat" : "E.g: Top 10 Young Wingers"}
-              className="w-full rounded-lg border border-slate-700/80 bg-slate-900/70 px-4 py-2.5 text-sm text-slate-100 placeholder-slate-500 outline-none transition focus:border-emerald-500/60"
-            />
+            <label className="mb-1.5 block text-xs font-semibold text-slate-300">Title</label>
+            <input type="text" value={title} onChange={(e) => setTitle(e.target.value)}
+              placeholder="E.g: Top 10 Young Wingers"
+              className="w-full rounded-lg border border-slate-700/80 bg-slate-900/70 px-4 py-2.5 text-sm text-slate-100 placeholder-slate-500 outline-none transition focus:border-emerald-500/60" />
           </div>
 
           {/* Slug */}
           <div>
             <label className="mb-1.5 block text-xs font-semibold text-slate-300">Slug</label>
-            <input
-              type="text" value={slug}
-              onChange={(e) => setSlug(e.target.value)}
-              placeholder="Örn: en-iyi-10-genc-kanat"
-              className="w-full rounded-lg border border-slate-700/80 bg-slate-900/70 px-4 py-2.5 text-sm text-slate-100 placeholder-slate-500 outline-none transition focus:border-emerald-500/60 focus:ring-1 focus:ring-emerald-500/40"
-            />
+            <input type="text" value={slug} onChange={(e) => setSlug(e.target.value)}
+              placeholder="e.g: top-10-young-wingers"
+              className="w-full rounded-lg border border-slate-700/80 bg-slate-900/70 px-4 py-2.5 text-sm text-slate-100 placeholder-slate-500 outline-none transition focus:border-emerald-500/60 focus:ring-1 focus:ring-emerald-500/40" />
           </div>
 
-          {/* Kategori */}
+          {/* Category */}
           <div>
-            <label className="mb-1.5 block text-xs font-semibold text-slate-300">Kategori</label>
+            <label className="mb-1.5 block text-xs font-semibold text-slate-300">Category</label>
             <div className="flex gap-2">
               {CATEGORIES.map((cat) => (
-                <button
-                  key={cat.value} type="button"
-                  onClick={() => setCategory(cat.value)}
-                  className={[
-                    "rounded-lg border px-4 py-2 text-xs font-semibold transition",
-                    category === cat.value
-                      ? "border-emerald-500/60 bg-emerald-500/15 text-emerald-300"
-                      : "border-slate-700/80 bg-slate-900/70 text-slate-400 hover:border-slate-600 hover:text-slate-200",
-                  ].join(" ")}
-                >
+                <button key={cat.value} type="button" onClick={() => setCategory(cat.value)}
+                  className={["rounded-lg border px-4 py-2 text-xs font-semibold transition",
+                    category === cat.value ? "border-emerald-500/60 bg-emerald-500/15 text-emerald-300" : "border-slate-700/80 bg-slate-900/70 text-slate-400 hover:border-slate-600 hover:text-slate-200"].join(" ")}>
                   {cat.label}
                 </button>
               ))}
@@ -320,22 +233,15 @@ function YeniIcerikForm() {
 
           <HubTagsField value={hubTags} onChange={setHubTags} />
 
-          {/* V2 — Hero Variant + Accent */}
+          {/* Hero Style + Accent Color */}
           <div className="grid gap-5 sm:grid-cols-2">
             <div>
-              <label className="mb-1.5 block text-xs font-semibold text-slate-300">Hero Stili</label>
+              <label className="mb-1.5 block text-xs font-semibold text-slate-300">Hero Style</label>
               <div className="flex flex-col gap-1.5">
                 {HERO_VARIANTS.map((v) => (
-                  <button
-                    key={v.value} type="button"
-                    onClick={() => setHeroVariant(v.value)}
-                    className={[
-                      "flex items-center gap-2 rounded-lg border px-3 py-2 text-xs transition text-left",
-                      heroVariant === v.value
-                        ? "border-emerald-500/60 bg-emerald-500/10 text-emerald-200"
-                        : "border-slate-700/80 bg-slate-900/60 text-slate-400 hover:text-slate-200",
-                    ].join(" ")}
-                  >
+                  <button key={v.value} type="button" onClick={() => setHeroVariant(v.value)}
+                    className={["flex items-center gap-2 rounded-lg border px-3 py-2 text-xs transition text-left",
+                      heroVariant === v.value ? "border-emerald-500/60 bg-emerald-500/10 text-emerald-200" : "border-slate-700/80 bg-slate-900/60 text-slate-400 hover:text-slate-200"].join(" ")}>
                     <span className="font-medium">{v.label}</span>
                     <span className="ml-auto text-[10px] opacity-50">{v.desc}</span>
                   </button>
@@ -343,19 +249,12 @@ function YeniIcerikForm() {
               </div>
             </div>
             <div>
-              <label className="mb-1.5 block text-xs font-semibold text-slate-300">Renk Vurgusu</label>
+              <label className="mb-1.5 block text-xs font-semibold text-slate-300">Accent Color</label>
               <div className="flex flex-col gap-1.5">
                 {ACCENT_COLORS.map((a) => (
-                  <button
-                    key={a.value} type="button"
-                    onClick={() => setAccentColor(a.value)}
-                    className={[
-                      "flex items-center gap-2.5 rounded-lg border px-3 py-2 text-xs transition",
-                      accentColor === a.value
-                        ? "border-slate-500 bg-slate-800 text-slate-100"
-                        : "border-slate-700/80 bg-slate-900/60 text-slate-400 hover:text-slate-200",
-                    ].join(" ")}
-                  >
+                  <button key={a.value} type="button" onClick={() => setAccentColor(a.value)}
+                    className={["flex items-center gap-2.5 rounded-lg border px-3 py-2 text-xs transition",
+                      accentColor === a.value ? "border-slate-500 bg-slate-800 text-slate-100" : "border-slate-700/80 bg-slate-900/60 text-slate-400 hover:text-slate-200"].join(" ")}>
                     <span className="h-3 w-3 rounded-full flex-shrink-0" style={{ background: a.color }} />
                     <span>{a.label}</span>
                     {accentColor === a.value && <span className="ml-auto text-emerald-400">✓</span>}
@@ -365,29 +264,23 @@ function YeniIcerikForm() {
             </div>
           </div>
 
-          {/* YouTube + Kapak */}
+          {/* YouTube + Cover Image */}
           <div className="grid gap-5 sm:grid-cols-2">
             <div>
               <label className="mb-1.5 block text-xs font-semibold text-slate-300">YouTube Video ID</label>
-              <input
-                type="text" value={youtubeId}
-                onChange={(e) => setYoutubeId(e.target.value)}
-                placeholder="örn: dQw4w9WgXcQ"
-                className="w-full rounded-lg border border-slate-700/80 bg-slate-900/70 px-4 py-2.5 text-sm text-slate-100 placeholder-slate-500 outline-none transition focus:border-emerald-500/60 focus:ring-1 focus:ring-emerald-500/40"
-              />
+              <input type="text" value={youtubeId} onChange={(e) => setYoutubeId(e.target.value)}
+                placeholder="e.g: dQw4w9WgXcQ"
+                className="w-full rounded-lg border border-slate-700/80 bg-slate-900/70 px-4 py-2.5 text-sm text-slate-100 placeholder-slate-500 outline-none transition focus:border-emerald-500/60 focus:ring-1 focus:ring-emerald-500/40" />
             </div>
             <div>
-              <label className="mb-1.5 block text-xs font-semibold text-slate-300">Kapak Görseli</label>
+              <label className="mb-1.5 block text-xs font-semibold text-slate-300">Cover Image</label>
               <div className="space-y-2">
-                <input
-                  type="text" value={coverImage}
-                  onChange={(e) => setCoverImage(e.target.value)}
-                  placeholder="URL yapıştır ya da aşağıdan yükle"
-                  className="w-full rounded-lg border border-slate-700/80 bg-slate-900/70 px-4 py-2.5 text-sm text-slate-100 placeholder-slate-500 outline-none transition focus:border-emerald-500/60"
-                />
+                <input type="text" value={coverImage} onChange={(e) => setCoverImage(e.target.value)}
+                  placeholder="Paste URL or upload below"
+                  className="w-full rounded-lg border border-slate-700/80 bg-slate-900/70 px-4 py-2.5 text-sm text-slate-100 placeholder-slate-500 outline-none transition focus:border-emerald-500/60" />
                 <div className="flex items-center gap-2">
                   <label className="cursor-pointer rounded-lg border border-slate-700/60 bg-slate-800/60 px-3 py-2 text-xs font-semibold text-slate-300 transition hover:border-emerald-500/40 hover:text-emerald-300">
-                    {imageUploading ? "Yükleniyor..." : "📁 Görsel Yükle"}
+                    {imageUploading ? "Uploading..." : "📁 Upload Image"}
                     <input type="file" accept="image/*" className="hidden"
                       onChange={async (e) => {
                         const file = e.target.files?.[0];
@@ -400,101 +293,66 @@ function YeniIcerikForm() {
                           if (error) throw error;
                           const { data: urlData } = supabase.storage.from("content-images").getPublicUrl(data.path);
                           setCoverImage(urlData.publicUrl);
-                        } catch (err) {
-                          console.error("Görsel yükleme hatası:", err);
-                        }
+                        } catch (err) { console.error("Image upload error:", err); }
                         setImageUploading(false);
-                      }}
-                    />
+                      }} />
                   </label>
-                  {coverImage && (
-                    <Image src={coverImage} alt="" width={64} height={40} unoptimized className="h-10 w-16 rounded object-cover border border-slate-700/60" />
-                  )}
+                  {coverImage && <Image src={coverImage} alt="" width={64} height={40} unoptimized className="h-10 w-16 rounded object-cover border border-slate-700/60" />}
                 </div>
               </div>
             </div>
           </div>
 
-          {/* YouTube sorguları */}
+          {/* YouTube queries */}
           <div className="grid gap-5 sm:grid-cols-2">
             <div>
-              <label className="mb-1.5 block text-xs font-semibold text-slate-300">YouTube Arama 1</label>
-              <input
-                type="text" value={youtubeQuery1}
-                onChange={(e) => setYoutubeQuery1(e.target.value)}
-                placeholder="örn: Arda Güler highlights 2025"
-                className="w-full rounded-lg border border-slate-700/80 bg-slate-900/70 px-4 py-2.5 text-sm text-slate-100 placeholder-slate-500 outline-none transition focus:border-emerald-500/60 focus:ring-1 focus:ring-emerald-500/40"
-              />
+              <label className="mb-1.5 block text-xs font-semibold text-slate-300">YouTube Search 1</label>
+              <input type="text" value={youtubeQuery1} onChange={(e) => setYoutubeQuery1(e.target.value)}
+                placeholder="e.g: Arda Güler highlights 2025"
+                className="w-full rounded-lg border border-slate-700/80 bg-slate-900/70 px-4 py-2.5 text-sm text-slate-100 placeholder-slate-500 outline-none transition focus:border-emerald-500/60 focus:ring-1 focus:ring-emerald-500/40" />
             </div>
             <div>
-              <label className="mb-1.5 block text-xs font-semibold text-slate-300">YouTube Arama 2</label>
-              <input
-                type="text" value={youtubeQuery2}
-                onChange={(e) => setYoutubeQuery2(e.target.value)}
-                placeholder="opsiyonel"
-                className="w-full rounded-lg border border-slate-700/80 bg-slate-900/70 px-4 py-2.5 text-sm text-slate-100 placeholder-slate-500 outline-none transition focus:border-emerald-500/60 focus:ring-1 focus:ring-emerald-500/40"
-              />
+              <label className="mb-1.5 block text-xs font-semibold text-slate-300">YouTube Search 2</label>
+              <input type="text" value={youtubeQuery2} onChange={(e) => setYoutubeQuery2(e.target.value)}
+                placeholder="optional"
+                className="w-full rounded-lg border border-slate-700/80 bg-slate-900/70 px-4 py-2.5 text-sm text-slate-100 placeholder-slate-500 outline-none transition focus:border-emerald-500/60 focus:ring-1 focus:ring-emerald-500/40" />
             </div>
           </div>
 
-          {/* Haber keyword */}
+          {/* News keyword */}
           <div>
-            <label className="mb-1.5 block text-xs font-semibold text-slate-300">Haber Arama Keyword</label>
-            <input
-              type="text" value={newsQuery}
-              onChange={(e) => setNewsQuery(e.target.value)}
-              placeholder="örn: Arda Güler (boş bırakılırsa başlıktan otomatik çıkarılır)"
-              className="w-full rounded-lg border border-slate-700/80 bg-slate-900/70 px-4 py-2.5 text-sm text-slate-100 placeholder-slate-500 outline-none transition focus:border-emerald-500/60 focus:ring-1 focus:ring-emerald-500/40"
-            />
+            <label className="mb-1.5 block text-xs font-semibold text-slate-300">News Search Keyword</label>
+            <input type="text" value={newsQuery} onChange={(e) => setNewsQuery(e.target.value)}
+              placeholder="e.g: Arda Güler (auto-extracted from title if empty)"
+              className="w-full rounded-lg border border-slate-700/80 bg-slate-900/70 px-4 py-2.5 text-sm text-slate-100 placeholder-slate-500 outline-none transition focus:border-emerald-500/60 focus:ring-1 focus:ring-emerald-500/40" />
           </div>
 
+          {/* Players List (Lists category) */}
           {category === "listeler" && (
             <div className="rounded-xl border border-slate-700/60 bg-slate-900/40 p-5">
               <div className="mb-4">
-                <p className="text-xs font-semibold uppercase tracking-[0.18em] text-sky-300/80">Oyuncu Listesi</p>
-                <p className="mt-0.5 text-[11px] text-slate-500">Liste içeriği için birden fazla oyuncu ekle</p>
+                <p className="text-xs font-semibold uppercase tracking-[0.18em] text-sky-300/80">Player List</p>
+                <p className="mt-0.5 text-[11px] text-slate-500">Add multiple players for list articles</p>
               </div>
               <div className="relative mb-4">
-                <input
-                  type="text"
-                  value={playersListSearch}
-                  onChange={(e) => setPlayersListSearch(e.target.value)}
-                  placeholder="Oyuncu adı yaz, seç ve listeye ekle..."
-                  className="w-full rounded-lg border border-slate-700/80 bg-slate-900/70 px-4 py-2.5 text-sm text-slate-100 placeholder-slate-500 outline-none transition focus:border-sky-500/60"
-                />
-                {playersListSearching && (
-                  <div className="absolute right-3 top-3 h-4 w-4 animate-spin rounded-full border-2 border-sky-400 border-t-transparent" />
-                )}
+                <input type="text" value={playersListSearch} onChange={(e) => setPlayersListSearch(e.target.value)}
+                  placeholder="Type player name, select and add to list..."
+                  className="w-full rounded-lg border border-slate-700/80 bg-slate-900/70 px-4 py-2.5 text-sm text-slate-100 placeholder-slate-500 outline-none transition focus:border-sky-500/60" />
+                {playersListSearching && <div className="absolute right-3 top-3 h-4 w-4 animate-spin rounded-full border-2 border-sky-400 border-t-transparent" />}
                 {playersListResults.length > 0 && (
                   <div className="absolute z-20 mt-1 w-full overflow-hidden rounded-xl border border-slate-700 bg-slate-900 shadow-xl">
                     {playersListResults.map((p) => (
-                      <button
-                        key={p.name + p.club}
-                        type="button"
+                      <button key={p.name + p.club} type="button"
                         onClick={() => {
                           if (!playersList.find((pl) => pl.name === p.name)) {
-                            setPlayersList((prev) => [
-                              ...prev,
-                              {
-                                name: p.name,
-                                overall: p.overall,
-                                position: p.position,
-                                club: p.club,
-                                photo_url: p.photo_url,
-                                scout_note: "",
-                              },
-                            ]);
+                            setPlayersList((prev) => [...prev, { name: p.name, overall: p.overall, position: p.position, club: p.club, photo_url: p.photo_url, scout_note: "" }]);
                           }
-                          setPlayersListSearch("");
-                          setPlayersListResults([]);
+                          setPlayersListSearch(""); setPlayersListResults([]);
                         }}
-                        className="flex w-full items-center justify-between px-4 py-2.5 text-left text-sm transition hover:bg-slate-800/80"
-                      >
+                        className="flex w-full items-center justify-between px-4 py-2.5 text-left text-sm transition hover:bg-slate-800/80">
                         <div>
                           <span className="font-semibold text-slate-100">{p.name}</span>
-                          <span className="ml-2 text-[11px] text-slate-400">
-                            {p.club} · {p.position}
-                          </span>
+                          <span className="ml-2 text-[11px] text-slate-400">{p.club} · {p.position}</span>
                         </div>
                         <span className="text-sm font-bold text-emerald-400">{p.overall}</span>
                       </button>
@@ -509,83 +367,42 @@ function YeniIcerikForm() {
                       <span className="w-6 text-center text-sm font-bold text-emerald-400">{p.overall}</span>
                       <div className="min-w-0 flex-1">
                         <p className="text-xs font-semibold text-slate-100">{p.name}</p>
-                        <p className="text-[10px] text-slate-400">
-                          {p.club} · {p.position}
-                        </p>
+                        <p className="text-[10px] text-slate-400">{p.club} · {p.position}</p>
                       </div>
-                      <input
-                        type="text"
-                        value={p.scout_note}
-                        onChange={(e) =>
-                          setPlayersList((prev) =>
-                            prev.map((pl, j) => (j === i ? { ...pl, scout_note: e.target.value } : pl)),
-                          )
-                        }
-                        placeholder="Scout notu..."
-                        className="flex-1 rounded-md border border-slate-700/60 bg-slate-900/60 px-2 py-1 text-[11px] text-slate-100 placeholder-slate-500 outline-none focus:border-sky-500/40"
-                      />
-                      <button
-                        type="button"
-                        onClick={() => setPlayersList((prev) => prev.filter((_, j) => j !== i))}
-                        className="text-[11px] text-rose-400 hover:text-rose-300"
-                      >
-                        ✕
-                      </button>
+                      <input type="text" value={p.scout_note}
+                        onChange={(e) => setPlayersList((prev) => prev.map((pl, j) => (j === i ? { ...pl, scout_note: e.target.value } : pl)))}
+                        placeholder="Scout note..."
+                        className="flex-1 rounded-md border border-slate-700/60 bg-slate-900/60 px-2 py-1 text-[11px] text-slate-100 placeholder-slate-500 outline-none focus:border-sky-500/40" />
+                      <button type="button" onClick={() => setPlayersList((prev) => prev.filter((_, j) => j !== i))} className="text-[11px] text-rose-400 hover:text-rose-300">✕</button>
                     </div>
                   ))}
-                  <p className="text-[11px] text-slate-500">{playersList.length} oyuncu eklendi</p>
+                  <p className="text-[11px] text-slate-500">{playersList.length} players added</p>
                 </div>
               )}
             </div>
           )}
 
-          {/* ─── Oyuncu Kartı Bölümü ─────────────────────────────────────────── */}
+          {/* Player Card */}
           <div className="rounded-xl border border-slate-700/60 bg-slate-900/40 p-5">
             <div className="mb-4 flex items-center justify-between">
               <div>
-                <p className="text-xs font-semibold uppercase tracking-[0.18em] text-emerald-300/80">
-                  Oyuncu Kartı
-                </p>
-                <p className="mt-0.5 text-[11px] text-slate-500">
-                  EA FC 26 veritabanından otomatik doldurulur — istersen düzenle
-                </p>
+                <p className="text-xs font-semibold uppercase tracking-[0.18em] text-emerald-300/80">Player Card</p>
+                <p className="mt-0.5 text-[11px] text-slate-500">Auto-filled from EA FC 26 database — override if needed</p>
               </div>
-              {playerMatched && (
-                <button
-                  type="button" onClick={clearPlayer}
-                  className="text-[11px] text-rose-400 hover:text-rose-300"
-                >
-                  Temizle
-                </button>
-              )}
+              {playerMatched && <button type="button" onClick={clearPlayer} className="text-[11px] text-rose-400 hover:text-rose-300">Clear</button>}
             </div>
-
-            {/* Oyuncu arama */}
             <div className="relative mb-4">
-              <label className="mb-1.5 block text-xs font-semibold text-slate-300">
-                Odak Oyuncu
-              </label>
-              <input
-                type="text"
-                value={playerSearch}
+              <label className="mb-1.5 block text-xs font-semibold text-slate-300">Focus Player</label>
+              <input type="text" value={playerSearch}
                 onChange={(e) => { setPlayerSearch(e.target.value); setPlayerMatched(null); }}
-                placeholder="Oyuncu adı yazın — EA FC 26'dan otomatik bulur"
-                className="w-full rounded-lg border border-slate-700/80 bg-slate-900/70 px-4 py-2.5 text-sm text-slate-100 placeholder-slate-500 outline-none transition focus:border-emerald-500/60 focus:ring-1 focus:ring-emerald-500/40"
-              />
-              {playerSearching && (
-                <div className="absolute right-3 top-9 h-4 w-4 animate-spin rounded-full border-2 border-emerald-400 border-t-transparent" />
-              )}
-
-              {/* Arama sonuçları dropdown */}
+                placeholder="Type player name — auto-matches from EA FC 26"
+                className="w-full rounded-lg border border-slate-700/80 bg-slate-900/70 px-4 py-2.5 text-sm text-slate-100 placeholder-slate-500 outline-none transition focus:border-emerald-500/60 focus:ring-1 focus:ring-emerald-500/40" />
+              {playerSearching && <div className="absolute right-3 top-9 h-4 w-4 animate-spin rounded-full border-2 border-emerald-400 border-t-transparent" />}
               {playerResults.length > 0 && (
                 <div className="absolute z-20 mt-1 w-full rounded-xl border border-slate-700 bg-slate-900 shadow-xl overflow-hidden">
                   {playerResults.map((p) => (
-                    <button
-                      key={p.name + p.club}
-                      type="button"
-                      onClick={() => applyPlayer(p)}
-                      className="flex w-full items-center justify-between px-4 py-2.5 text-left text-sm hover:bg-slate-800/80 transition"
-                    >
+                    <button key={p.name + p.club} type="button" onClick={() => applyPlayer(p)}
+                      className="flex w-full items-center justify-between px-4 py-2.5 text-left text-sm hover:bg-slate-800/80 transition">
                       <div>
                         <span className="font-semibold text-slate-100">{p.name}</span>
                         <span className="ml-2 text-[11px] text-slate-400">{p.club} · {p.position}</span>
@@ -596,68 +413,50 @@ function YeniIcerikForm() {
                 </div>
               )}
             </div>
-
-            {/* Eşleşen oyuncu özeti */}
             {playerMatched && (
               <div className="mb-4 flex items-center gap-3 rounded-lg border border-emerald-500/20 bg-emerald-500/5 px-4 py-2.5">
                 <div className="flex-1 min-w-0">
                   <p className="text-sm font-bold text-emerald-300">{playerMatched.name}</p>
-                  <p className="text-[11px] text-slate-400">
-                    {playerMatched.club} · {playerMatched.league ?? "—"} · {playerMatched.age != null ? `${playerMatched.age} yaş` : "—"}
-                  </p>
+                  <p className="text-[11px] text-slate-400">{playerMatched.club} · {playerMatched.league ?? "—"} · {playerMatched.age != null ? `${playerMatched.age} yrs` : "—"}</p>
                 </div>
                 <span className="text-2xl font-black text-emerald-400">{playerMatched.overall}</span>
               </div>
             )}
-
-            {/* Stat grid */}
             <div className="grid grid-cols-3 gap-3 sm:grid-cols-6">
-              <StatInput label="PAC — Hız" value={statPace} onChange={setStatPace} />
-              <StatInput label="SHO — Şut" value={statShooting} onChange={setStatShooting} />
-              <StatInput label="PAS — Pas" value={statPassing} onChange={setStatPassing} />
-              <StatInput label="DRI — Dribling" value={statDribbling} onChange={setStatDribbling} />
-              <StatInput label="DEF — Defans" value={statDefending} onChange={setStatDefending} />
-              <StatInput label="PHY — Fizik" value={statPhysical} onChange={setStatPhysical} />
+              <StatInput label="PAC" value={statPace} onChange={setStatPace} />
+              <StatInput label="SHO" value={statShooting} onChange={setStatShooting} />
+              <StatInput label="PAS" value={statPassing} onChange={setStatPassing} />
+              <StatInput label="DRI" value={statDribbling} onChange={setStatDribbling} />
+              <StatInput label="DEF" value={statDefending} onChange={setStatDefending} />
+              <StatInput label="PHY" value={statPhysical} onChange={setStatPhysical} />
             </div>
-
             <div className="mt-3 flex items-center gap-3">
               <div className="flex-1">
                 <label className="mb-1 block text-[11px] font-semibold text-slate-400">Overall</label>
-                <input
-                  type="number" min="1" max="99"
-                  value={statOverall}
+                <input type="number" min="1" max="99" value={statOverall}
                   onChange={(e) => setStatOverall(e.target.value ? Number(e.target.value) : "")}
                   className="w-24 rounded-lg border border-emerald-700/50 bg-slate-800/60 px-3 py-2 text-sm font-bold text-emerald-300 focus:border-emerald-500 focus:outline-none"
-                  placeholder="Overall"
-                />
+                  placeholder="OVR" />
               </div>
-              {statsFilled > 0 && (
-                <p className="text-[11px] text-emerald-400/70 mt-4">{statsFilled}/6 stat dolduruldu</p>
-              )}
+              {statsFilled > 0 && <p className="text-[11px] text-emerald-400/70 mt-4">{statsFilled}/6 stats filled</p>}
             </div>
           </div>
 
-          {/* İçerik editörü */}
+          {/* Content editor */}
           <div>
-            <label className="mb-1.5 block text-xs font-semibold text-slate-300">İçerik</label>
-            {activeLang === "tr" ? (
-              <RichTextEditor value={content} onChange={setContent} placeholder="İçerik yazın..." />
-            ) : (
-              <RichTextEditor value={contentEn} onChange={setContentEn} placeholder="Write content in English..." />
-            )}
+            <label className="mb-1.5 block text-xs font-semibold text-slate-300">Content</label>
+            <RichTextEditor value={content} onChange={setContent} placeholder="Write content in English..." />
             <p className="mt-2 text-[10px] text-sky-500/90 leading-relaxed">
-              Gövde içinde kart:{" "}
-              <code className="rounded bg-slate-800 px-1 py-0.5 text-[9px] text-sky-300">{`<!-- scout-player:Oyuncu Tam Adı -->`}</code>
+              Embed player card in body:{" "}
+              <code className="rounded bg-slate-800 px-1 py-0.5 text-[9px] text-sky-300">{`<!-- scout-player:Player Full Name -->`}</code>
             </p>
           </div>
 
           {error && <p className="text-xs text-rose-400">{error}</p>}
 
-          <button
-            type="submit" disabled={saving}
-            className="rounded-lg bg-emerald-500 px-6 py-2.5 text-sm font-semibold text-slate-950 transition hover:bg-emerald-400 disabled:opacity-50"
-          >
-            {saving ? "Kaydediliyor..." : "Kaydet ve Beklet"}
+          <button type="submit" disabled={saving}
+            className="rounded-lg bg-emerald-500 px-6 py-2.5 text-sm font-semibold text-slate-950 transition hover:bg-emerald-400 disabled:opacity-50">
+            {saving ? "Saving..." : "Save as Draft"}
           </button>
         </form>
       </div>
@@ -665,16 +464,10 @@ function YeniIcerikForm() {
   );
 }
 
-export default function YeniIcerikPage() {
+export default function NewArticlePage() {
   return (
-    <Suspense
-      fallback={
-        <AdminLayout>
-          <div className="flex justify-center py-20 text-sm text-slate-400">Yükleniyor…</div>
-        </AdminLayout>
-      }
-    >
-      <YeniIcerikForm />
+    <Suspense fallback={<AdminLayout><div className="flex justify-center py-20 text-sm text-slate-400">Loading…</div></AdminLayout>}>
+      <NewArticleForm />
     </Suspense>
   );
 }

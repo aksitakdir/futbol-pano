@@ -3,8 +3,8 @@
 import { HUBS, type HubId } from "@/lib/hub-config";
 
 const HUB_OPTIONS: { id: HubId; label: string; desc: string }[] = [
-  { id: "wc-2026", label: "Dünya Kupası 2026", desc: "DK hub ve alt sayfalarında listelenir" },
-  { id: "transfer", label: "Transfer Merkezi", desc: "Transfer hub ve alt sayfalarında listelenir" },
+  { id: "wc-2026", label: "World Cup 2026", desc: "Shown on WC 2026 hub and sub-pages" },
+  { id: "transfer", label: "Transfers Hub", desc: "Shown on Transfers hub and sub-pages" },
 ];
 
 type Props = {
@@ -24,7 +24,7 @@ export default function HubTagsField({ value, onChange }: Props) {
 
   return (
     <div>
-      <label className="mb-1.5 block text-xs font-semibold text-slate-300">Kampanya hub&apos;ları</label>
+      <label className="mb-1.5 block text-xs font-semibold text-slate-300">Content Hubs</label>
       <div className="flex flex-col gap-2">
         {HUB_OPTIONS.map((opt) => {
           const checked = value.includes(HUBS[opt.id].tag);
