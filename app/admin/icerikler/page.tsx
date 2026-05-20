@@ -15,9 +15,11 @@ function contentPreviewSnippet(raw: string, maxLen = 180): string {
 type ContentRow = {
   id: string;
   title: string;
+  title_en?: string;
   slug: string;
   category: string;
   content: string;
+  content_en?: string;
   status: string;
   created_at: string;
 };
@@ -661,8 +663,8 @@ export default function IceriklerPage() {
                       >
                         <svg className={["mt-0.5 h-3.5 w-3.5 shrink-0 text-slate-500 transition-transform", isOpen ? "rotate-90" : ""].join(" ")} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5"><path d="M9 5l7 7-7 7" /></svg>
                         <div className="min-w-0 flex-1">
-                          <span className="line-clamp-2 text-sm font-semibold text-slate-100 transition hover:text-emerald-300" title={item.title}>
-                            {item.title}
+                          <span className="line-clamp-2 text-sm font-semibold text-slate-100 transition hover:text-emerald-300" title={item.title_en || item.title}>
+                            {item.title_en || item.title}
                           </span>
                           {preview ? (
                             <p className="mt-1 line-clamp-2 text-left text-[11px] leading-snug text-slate-500" title={stripHtml(item.content).replace(/\s+/g, " ").trim().slice(0, 400)}>
@@ -750,8 +752,8 @@ export default function IceriklerPage() {
                     <div className="flex items-start gap-3">
                       <input type="checkbox" checked={isChecked} onChange={() => toggleSelect(item.id)} className="mt-1 h-3.5 w-3.5 shrink-0 cursor-pointer rounded border-slate-600 bg-slate-900 accent-emerald-500" />
                       <div className="min-w-0 flex-1">
-                        <button type="button" onClick={() => setExpandedId(isOpen ? null : item.id)} className="text-left text-sm font-semibold text-slate-100" title={item.title}>
-                          <span className="line-clamp-3">{item.title}</span>
+                        <button type="button" onClick={() => setExpandedId(isOpen ? null : item.id)} className="text-left text-sm font-semibold text-slate-100" title={item.title_en || item.title}>
+                          <span className="line-clamp-3">{item.title_en || item.title}</span>
                         </button>
                         {preview ? (
                           <p className="mt-1 line-clamp-2 text-xs text-slate-500">{preview}</p>
@@ -806,7 +808,7 @@ export default function IceriklerPage() {
                   {isOpen && (
                     <div className="border-t border-slate-700/40 bg-slate-900/30 px-4 py-4 lg:pl-14">
                       <p className="mb-2 text-[10px] font-semibold uppercase tracking-widest text-slate-500">İçerik önizlemesi</p>
-                      <p className="mb-3 text-xs font-medium text-slate-200" title={item.title}>{item.title}</p>
+                      <p className="mb-3 text-xs font-medium text-slate-200" title={item.title_en || item.title}>{item.title_en || item.title}</p>
                       <div className="max-h-[min(28rem,calc(100vh-16rem))] overflow-y-auto rounded-lg border border-slate-700/50 bg-slate-950/50 p-4 text-[13px] leading-relaxed text-slate-300">
                         {item.content ? (
                           <div className="whitespace-pre-wrap break-words [word-break:break-word]">
