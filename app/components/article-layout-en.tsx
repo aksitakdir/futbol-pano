@@ -150,9 +150,9 @@ export default function ArticleLayoutEn({
 
   const youtubeEmbedId = useMemo(() => normalizeYoutubeId(youtubeId), [youtubeId]);
 
-  const shareUrl = typeof window !== "undefined" ? window.location.href : `https://scoutgamer.com${categoryPath(category)}/${slug}`;
-  const xShareUrl = `https://x.com/intent/tweet?text=${encodeURIComponent(title + " | Scout Gamer")}&url=${encodeURIComponent(shareUrl)}`;
-  const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(title + " " + shareUrl)}`;
+  const canonicalUrl = `https://scoutgamer.com${categoryPath(category)}/${slug}`;
+  const xShareUrl = `https://x.com/intent/tweet?text=${encodeURIComponent(title + " | Scout Gamer")}&url=${encodeURIComponent(canonicalUrl)}`;
+  const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(title + " " + canonicalUrl)}`;
 
   const sidebarHubPromo =
     category === "taktik-lab"
@@ -591,7 +591,7 @@ export default function ArticleLayoutEn({
               <span className="mono" style={{ fontSize: 10, letterSpacing: "0.18em", color: "var(--sg-text-muted)", alignSelf: "center" }}>SHARE</span>
               <a href={xShareUrl} target="_blank" rel="noopener noreferrer" className="btn" style={{ fontSize: 10 }}>X / TWITTER</a>
               <a href={whatsappUrl} target="_blank" rel="noopener noreferrer" className="btn" style={{ fontSize: 10 }}>WHATSAPP</a>
-              <button className="btn" style={{ fontSize: 10 }} onClick={() => navigator.clipboard?.writeText(shareUrl)}>↗ COPY</button>
+              <button className="btn" style={{ fontSize: 10 }} onClick={() => navigator.clipboard?.writeText(window.location.href)}>↗ COPY</button>
             </div>
           </div>
 
@@ -610,7 +610,7 @@ export default function ArticleLayoutEn({
                 style={{ fontSize: 11, fontWeight: 600, color: "var(--sg-text-primary)", textDecoration: "none", padding: "8px 12px", background: "var(--sg-surface-high)", borderRadius: 4 }}>
                 𝕏 Share on X
               </a>
-              <button type="button" onClick={() => navigator.clipboard?.writeText(shareUrl)}
+              <button type="button" onClick={() => navigator.clipboard?.writeText(window.location.href)}
                 style={{ fontSize: 11, fontWeight: 600, color: "var(--sg-text-primary)", padding: "8px 12px", background: "var(--sg-surface-high)", borderRadius: 4, border: "none", cursor: "pointer", textAlign: "left" }}>
                 🔗 Copy link
               </button>

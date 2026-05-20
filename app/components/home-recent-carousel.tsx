@@ -88,7 +88,7 @@ export default function HomeRecentCarousel({ items, locale }: { items: HomeRecen
             const accent = CAT_COLOR[item.category] ?? "var(--accent)";
             const label = CAT_LABEL[item.category] ?? item.category;
             const title = item.title_en || item.title;
-            const coverSrc = item.cover_image || getCategoryImage(item.category);
+              const coverSrc = item.cover_image || getCategoryImage(item.category, item.slug);
             return (
               <Link key={item.id} href={itemHref(item.category, item.slug)}
                 style={{ display: "flex", flexDirection: "column", textDecoration: "none", border: "1px solid var(--sg-border)", borderRadius: 6, overflow: "hidden", background: "var(--sg-surface)" }}
