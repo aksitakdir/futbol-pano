@@ -7,8 +7,12 @@ import remarkGfm from "remark-gfm";
 import rehypeRaw from "rehype-raw";
 import SiteHeader from "./site-header";
 import SiteFooter from "./site-footer";
+import ArticleHtmlWithPlayerEmbeds from "./article-html-with-player-embeds";
 import { supabase } from "@/lib/supabase";
 import { stripHtml, contentLooksLikeHtml } from "@/lib/utils";
+import { normalizeYoutubeId } from "@/lib/youtube-id";
+import HubArticleBreadcrumb from "./hub/hub-article-breadcrumb";
+import type { HubId } from "@/lib/hub-config";
 
 type SidebarItem = { id: string; title: string; title_en?: string; slug: string; category: string; created_at: string; };
 export type YouTubeSearchItem = { title: string; thumbnail: string; videoId: string; channelTitle: string; };
@@ -106,21 +110,23 @@ type Props = {
   sectionsJson?: SectionItem[] | null;
   showNewsSection?: boolean; children?: React.ReactNode;
   excerptContent?: string; isPending?: boolean;
+  hubId?: HubId;
 };
 
 export default function ArticleLayoutEn({
   title, content, category, date, slug,
   activeNav, backHref, backLabel,
-  youtubeId: _youtubeId, coverImage, playerName: _playerName,
+  youtubeId, coverImage, playerName: _playerName,
   excerptContent: _excerptContent, isPending: _isPending,
   youtubeQuery1, youtubeQuery2,
   newsQuery, showNewsSection = true, children,
   heroVariant = "text-only", accentOverride, sectionsJson,
+  hubId,
 }: Props) {
   const [similar, setSimilar] = useState<SidebarItem[]>([]);
   const [youtubeVideos1, setYoutubeVideos1] = useState<YouTubeSearchItem[] | null>(null);
   const [youtubeVideos2, setYoutubeVideos2] = useState<YouTubeSearchItem[] | null>(null);
-  const [newsItems, setNewsItems] = useState<NewsItem[] | null>(null);
+  const [newsItems, setNewsItems] = useState<NewsItem[] | null | "pending">(null);
 
   const ACCENT_MAP: Record<string, string> = {
     emerald: "var(--emerald)", cyan: "var(--cyan)", sky: "var(--sky)",
@@ -142,9 +148,28 @@ export default function ArticleLayoutEn({
     return { processedHtml: withDrop, toc: extractH2Headings(content) };
   }, [content, accent]);
 
+  const youtubeEmbedId = useMemo(() => normalizeYoutubeId(youtubeId), [youtubeId]);
+
   const shareUrl = typeof window !== "undefined" ? window.location.href : `https://scoutgamer.com${categoryPath(category)}/${slug}`;
   const xShareUrl = `https://x.com/intent/tweet?text=${encodeURIComponent(title + " | Scout Gamer")}&url=${encodeURIComponent(shareUrl)}`;
   const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(title + " " + shareUrl)}`;
+
+  const sidebarHubPromo =
+    category === "taktik-lab"
+      ? {
+          eyebrow: "✦ TACTICS LAB",
+          title: "Archetypes & structures.",
+          description: "Roles and tactical angles in the modern game.",
+          href: "/en/taktik-lab",
+          cta: "GO TO TACTICS LAB →",
+        }
+      : {
+          eyebrow: "✦ WEEKLY RADAR",
+          title: "A new talent every week.",
+          description: "Rising talents seen through tactical and gaming-data lenses.",
+          href: "/en/radar",
+          cta: "GO TO RADAR →",
+        };
 
   useEffect(() => {
     supabase.from("contents").select("id,title,title_en,slug,category,created_at")
@@ -183,13 +208,23 @@ export default function ArticleLayoutEn({
 
   useEffect(() => {
     const q = effectiveNewsQuery?.trim();
-    if (!q) { setNewsItems(null); return; }
+    if (!q) {
+      setNewsItems(null);
+      return;
+    }
     let cancelled = false;
-    fetch(`/api/news?query=${encodeURIComponent(q)}`)
-      .then(r => r.ok ? r.json() : [])
-      .then((arr: NewsItem[]) => { if (!cancelled) setNewsItems(Array.isArray(arr) && arr.length > 0 ? arr : null); })
-      .catch(() => { if (!cancelled) setNewsItems(null); });
-    return () => { cancelled = true; };
+    setNewsItems("pending");
+    fetch(`/api/news?query=${encodeURIComponent(q)}&locale=en`)
+      .then((r) => (r.ok ? r.json() : []))
+      .then((arr: NewsItem[]) => {
+        if (!cancelled) setNewsItems(Array.isArray(arr) ? arr : []);
+      })
+      .catch(() => {
+        if (!cancelled) setNewsItems([]);
+      });
+    return () => {
+      cancelled = true;
+    };
   }, [effectiveNewsQuery]);
 
   return (
@@ -216,11 +251,64 @@ export default function ArticleLayoutEn({
         <div style={{ maxWidth: 1440, margin: "0 auto", padding: "40px 32px 72px", position: "relative" }}>
           <button onClick={() => window.history.back()} className="mono" style={{
             background: "transparent", border: "none", color: "var(--sg-text-muted)",
-            fontSize: 11, letterSpacing: "0.14em", padding: 0, marginBottom: 48, cursor: "pointer",
+            fontSize: 11, letterSpacing: "0.14em", padding: 0, marginBottom: hubId ? 12 : 48, cursor: "pointer",
           }}>
             ← {backLabel}
           </button>
+          {hubId ? (
+            <div style={{ marginBottom: 36 }}>
+              <HubArticleBreadcrumb hubId={hubId} locale="en" />
+            </div>
+          ) : null}
 
+          {heroVariant === "radar-player-focus" && children ? (
+            <div>
+              <div style={{ display: "flex", alignItems: "center", gap: 12, flexWrap: "wrap", marginBottom: 28 }}>
+                <span className="chip solid" style={{ background: accent, borderColor: accent, color: "var(--ink-900)", fontSize: 10 }}>
+                  {catLabel.toUpperCase()}
+                </span>
+                <span className="mono" style={{ fontSize: 10, letterSpacing: "0.18em", color: accent }}>•</span>
+                <span className="mono" style={{ fontSize: 10, letterSpacing: "0.14em", color: "var(--sg-text-muted)" }}>
+                  PLAYER OF THE WEEK
+                </span>
+                <span className="mono" style={{ fontSize: 10, letterSpacing: "0.18em", color: "var(--sg-text-muted)" }}>
+                  {formattedDate}
+                </span>
+              </div>
+
+              <h1 className="display" style={{
+                fontSize: "clamp(40px, 5.5vw, 80px)", fontWeight: 700,
+                letterSpacing: "-0.04em", margin: 0, lineHeight: 0.92,
+                textWrap: "balance", color: "var(--sg-text-primary)",
+              }}>
+                <span className="grad-text">{title}</span>
+              </h1>
+
+              <div style={{
+                display: "flex", gap: 20, marginTop: 36, alignItems: "center",
+                paddingTop: 24, borderTop: "1px solid var(--sg-border)", maxWidth: 720,
+              }}>
+                <div>
+                  <div className="mono" style={{ fontSize: 9, letterSpacing: "0.18em", color: "var(--sg-text-muted)" }}>PUBLISHED</div>
+                  <div className="mono" style={{ fontSize: 13, color: "var(--sg-text-primary)", marginTop: 2, letterSpacing: "0.04em" }}>{formattedDate}</div>
+                </div>
+                <div style={{ width: 1, height: 32, background: "var(--sg-border)" }} />
+                <div>
+                  <div className="mono" style={{ fontSize: 9, letterSpacing: "0.18em", color: "var(--sg-text-muted)" }}>TIME</div>
+                  <div className="mono" style={{ fontSize: 13, color: "var(--sg-text-primary)", marginTop: 2, letterSpacing: "0.04em" }}>{minutes} MIN READ</div>
+                </div>
+                <div style={{ width: 1, height: 32, background: "var(--sg-border)" }} />
+                <div>
+                  <div className="mono" style={{ fontSize: 9, letterSpacing: "0.18em", color: "var(--sg-text-muted)" }}>EDITOR</div>
+                  <div className="mono" style={{ fontSize: 13, color: "var(--sg-text-primary)", marginTop: 2, letterSpacing: "0.04em" }}>SCOUT GAMER</div>
+                </div>
+              </div>
+
+              <div style={{ marginTop: 48, paddingTop: 40, borderTop: "1px solid var(--sg-border)" }}>
+                {children}
+              </div>
+            </div>
+          ) : (
           <div style={{ display: "grid", gridTemplateColumns: "1.5fr 1fr", gap: 56, alignItems: "end" }}>
             <div>
               <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 28 }}>
@@ -308,8 +396,37 @@ export default function ArticleLayoutEn({
               )}
             </div>
           </div>
+          )}
         </div>
       </header>
+
+      {youtubeEmbedId && (
+        <section style={{ background: "var(--sg-bg)", borderBottom: "1px solid var(--sg-border)" }}>
+          <div style={{ maxWidth: 960, margin: "0 auto", padding: "28px 32px 40px" }}>
+            <div className="mono" style={{ fontSize: 10, letterSpacing: "0.18em", color: accent, marginBottom: 14 }}>
+              FEATURED VIDEO
+            </div>
+            <div style={{
+              position: "relative",
+              width: "100%",
+              aspectRatio: "16 / 9",
+              borderRadius: 6,
+              overflow: "hidden",
+              border: "1px solid var(--sg-border)",
+              background: "var(--sg-surface-low)",
+            }}>
+              <iframe
+                src={`https://www.youtube-nocookie.com/embed/${youtubeEmbedId}`}
+                title={`${title} — YouTube`}
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                referrerPolicy="strict-origin-when-cross-origin"
+                allowFullScreen
+                style={{ position: "absolute", inset: 0, width: "100%", height: "100%", border: "none" }}
+              />
+            </div>
+          </div>
+        </section>
+      )}
 
       {/* ── TOC Strip ── */}
       {toc.length > 1 && (
@@ -342,14 +459,16 @@ export default function ArticleLayoutEn({
               <div>
                 {sectionsJson.map((sec, i) => {
                   if (sec.type === "intro") {
-                    return <div key={i} dangerouslySetInnerHTML={{ __html: addDropCap(sec.html, accent) }} />;
+                    return (
+                      <ArticleHtmlWithPlayerEmbeds key={i} html={addDropCap(sec.html, accent)} locale="en" />
+                    );
                   }
                   if (sec.type === "section") {
                     const headingId = sec.heading.toLowerCase().replace(/[^a-z0-9]/g, "-").replace(/-+/g, "-").slice(0, 40);
                     return (
                       <div key={i}>
                         <h2 id={headingId}>{sec.heading}</h2>
-                        <div dangerouslySetInnerHTML={{ __html: sec.html }} />
+                        <ArticleHtmlWithPlayerEmbeds html={sec.html} locale="en" />
                       </div>
                     );
                   }
@@ -362,14 +481,16 @@ export default function ArticleLayoutEn({
                   }
                   if (sec.type === "callout") {
                     return (
-                      <div key={i} className="callout" dangerouslySetInnerHTML={{ __html: sec.html }} />
+                      <div key={i} className="callout">
+                        <ArticleHtmlWithPlayerEmbeds html={sec.html} locale="en" />
+                      </div>
                     );
                   }
                   return null;
                 })}
               </div>
             ) : contentLooksLikeHtml(content) ? (
-              <div dangerouslySetInnerHTML={{ __html: processedHtml }} />
+              <ArticleHtmlWithPlayerEmbeds html={processedHtml} locale="en" />
             ) : (
               <ReactMarkdown remarkPlugins={[remarkGfm]} rehypePlugins={[rehypeRaw]}>
                 {content}
@@ -428,26 +549,36 @@ export default function ArticleLayoutEn({
             </div>
           )}
 
-          {showNewsSection && newsItems && newsItems.length > 0 && (
+          {showNewsSection && effectiveNewsQuery.trim() && newsItems !== null && (
             <div style={{ marginTop: 48, paddingTop: 48, borderTop: "1px solid var(--sg-border)" }}>
               <div className="eyebrow" style={{ color: accent, marginBottom: 20 }}>LATEST NEWS</div>
-              {newsItems.map((item, i) => (
-                <a key={i} href={item.link} target="_blank" rel="noopener noreferrer"
-                  style={{
-                    display: "flex", alignItems: "center", gap: 16, padding: "14px 0",
-                    borderBottom: i < newsItems.length - 1 ? "1px solid var(--sg-border)" : "none",
-                    textDecoration: "none",
-                  }}>
-                  <span className="mono" style={{ fontSize: 10, letterSpacing: "0.12em", color: accent, minWidth: 72, flexShrink: 0 }}>
-                    {item.source || "—"}
-                  </span>
-                  <span style={{ flex: 1, fontSize: 14, fontWeight: 500, color: "var(--sg-text-primary)",
-                    overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
-                    {item.title}
-                  </span>
-                  {item.date && <span className="mono" style={{ fontSize: 10, color: "var(--sg-text-muted)", flexShrink: 0 }}>{item.date}</span>}
-                </a>
-              ))}
+              {newsItems === "pending" ? (
+                <p className="mono" style={{ fontSize: 11, color: "var(--sg-text-muted)" }}>Loading…</p>
+              ) : newsItems.length === 0 ? (
+                <p className="mono" style={{ fontSize: 11, color: "var(--sg-text-muted)", lineHeight: 1.5 }}>
+                  No RSS headlines matched this query right now. You can adjust the News search keyword in the editor.
+                </p>
+              ) : (
+                <div style={{ display: "flex", flexDirection: "column", gap: 0 }}>
+                  {newsItems.map((item, i) => (
+                    <a key={i} href={item.link} target="_blank" rel="noopener noreferrer"
+                      style={{
+                        display: "flex", alignItems: "center", gap: 16, padding: "14px 0",
+                        borderBottom: i < newsItems.length - 1 ? "1px solid var(--sg-border)" : "none",
+                        textDecoration: "none",
+                      }}>
+                      <span className="mono" style={{ fontSize: 10, letterSpacing: "0.12em", color: accent, minWidth: 72, flexShrink: 0 }}>
+                        {item.source || "—"}
+                      </span>
+                      <span style={{ flex: 1, fontSize: 14, fontWeight: 500, color: "var(--sg-text-primary)",
+                        overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                        {item.title}
+                      </span>
+                      {item.date && <span className="mono" style={{ fontSize: 10, color: "var(--sg-text-muted)", flexShrink: 0 }}>{item.date}</span>}
+                    </a>
+                  ))}
+                </div>
+              )}
             </div>
           )}
 
@@ -472,6 +603,20 @@ export default function ArticleLayoutEn({
         </article>
 
         <aside style={{ position: "sticky", top: 100 }}>
+          <div style={{ marginBottom: 32, padding: "20px 20px", background: "var(--sg-surface)", borderRadius: 6, border: "1px solid var(--sg-border)" }}>
+            <div className="mono" style={{ fontSize: 9, letterSpacing: "0.2em", color: "var(--sg-text-muted)", marginBottom: 14 }}>SHARE</div>
+            <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+              <a href={xShareUrl} target="_blank" rel="noopener noreferrer"
+                style={{ fontSize: 11, fontWeight: 600, color: "var(--sg-text-primary)", textDecoration: "none", padding: "8px 12px", background: "var(--sg-surface-high)", borderRadius: 4 }}>
+                𝕏 Share on X
+              </a>
+              <button type="button" onClick={() => navigator.clipboard?.writeText(shareUrl)}
+                style={{ fontSize: 11, fontWeight: 600, color: "var(--sg-text-primary)", padding: "8px 12px", background: "var(--sg-surface-high)", borderRadius: 4, border: "none", cursor: "pointer", textAlign: "left" }}>
+                🔗 Copy link
+              </button>
+            </div>
+          </div>
+
           {similar.length > 0 && (
             <div style={{ marginBottom: 32 }}>
               <div className="eyebrow" style={{ marginBottom: 16 }}>RELATED</div>
@@ -505,16 +650,16 @@ export default function ArticleLayoutEn({
           }}>
             <div style={{ position: "absolute", top: 0, left: 0, right: 0, height: 2, background: accent }} />
             <div className="mono" style={{ fontSize: 10, letterSpacing: "0.2em", color: accent, marginBottom: 12 }}>
-              ✦ WEEKLY RADAR
+              {sidebarHubPromo.eyebrow}
             </div>
             <div className="display" style={{ fontSize: 20, fontWeight: 700, letterSpacing: "-0.02em", marginBottom: 8 }}>
-              A new talent every week.
+              {sidebarHubPromo.title}
             </div>
             <p style={{ fontSize: 13, color: "var(--sg-text-secondary)", lineHeight: 1.5, marginBottom: 16 }}>
-              Rising talents seen through tactical and gaming-data lenses.
+              {sidebarHubPromo.description}
             </p>
-            <Link href="/en/radar" className="btn btn-solid" style={{ background: accent, borderColor: accent, fontSize: 10, display: "inline-block" }}>
-              GO TO RADAR →
+            <Link href={sidebarHubPromo.href} className="btn btn-solid" style={{ background: accent, borderColor: accent, fontSize: 10, display: "inline-block" }}>
+              {sidebarHubPromo.cta}
             </Link>
           </div>
         </aside>

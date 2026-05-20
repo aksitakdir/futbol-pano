@@ -2,7 +2,9 @@
 
 import Link from "next/link";
 import { motion } from "framer-motion";
+import { ContentHighlightPills } from "../components/content-highlight-pills";
 import { arenaPath, CARD_COLOR_MAP, type ArenaGame } from "@/lib/arena-brackets";
+import { extractArticleHighlights } from "@/lib/content-highlight-tags";
 
 const easeOut = [0.22, 1, 0.36, 1] as [number, number, number, number];
 const stagger = { hidden: {}, visible: { transition: { staggerChildren: 0.1, delayChildren: 0.15 } } };
@@ -34,6 +36,11 @@ export default function ArenaGameGrid({ games, lang = "tr" }: Props) {
         const href = isEn ? arenaPath(g.slug) + "?lang=en" : arenaPath(g.slug);
         const cardTitle = isEn ? g.title_en : g.title_tr;
         const cardDesc = isEn ? g.description_en : g.description_tr;
+        const pills = extractArticleHighlights([cardTitle, cardDesc].filter(Boolean).join("\n\n"), {
+          max: 4,
+          seed: g.slug,
+          titleHint: cardTitle,
+        });
 
         return (
           <motion.div key={g.slug} variants={fadeUp}>
@@ -53,11 +60,20 @@ export default function ArenaGameGrid({ games, lang = "tr" }: Props) {
                 >
                   {cardTitle}
                 </h2>
-                <p className="mb-6 flex-1 text-sm leading-relaxed" style={{ color: "var(--sg-text-secondary)" }}>
+                <p className="mb-4 text-sm leading-relaxed" style={{ color: "var(--sg-text-secondary)" }}>
                   {cardDesc}
                 </p>
+                {pills.length > 0 ? (
+                  <div className="mb-4">
+                    <ContentHighlightPills
+                      tags={pills}
+                      accent={accent}
+                      label={isEn ? "HIGHLIGHTS" : "METİN VURGULARI"}
+                    />
+                  </div>
+                ) : null}
                 <div
-                  className="inline-flex w-full items-center justify-center py-3 text-sm font-bold transition hover:brightness-110"
+                  className="mt-auto inline-flex w-full items-center justify-center py-3 text-sm font-bold transition hover:brightness-110"
                   style={{
                     background: accent,
                     color: "#060f1e",

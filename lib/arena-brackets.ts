@@ -6,7 +6,7 @@
 // ─── Supabase types ───────────────────────────────────────────────────────────
 
 export type ArenaGameStatus = "published" | "draft";
-export type ArenaGameType = "random_16" | "fixed_8";
+export type ArenaGameType = "random_16" | "random_32" | "random_64" | "fixed_8";
 export type ArenaCardColor = "primary" | "secondary" | "tertiary" | "amber" | "rose";
 
 export type ArenaParticipant = {
@@ -31,6 +31,8 @@ export type ArenaGame = {
   card_color: ArenaCardColor;
   participants: ArenaParticipant[];
   game_type: ArenaGameType;
+  hub_tags?: string[];
+  team_slug?: string | null;
   created_at: string;
 };
 
@@ -52,10 +54,91 @@ export const CARD_COLOR_OPTIONS: { value: ArenaCardColor; label: string; css: st
   { value: "rose",      label: "Rose (Pembe)",     css: "var(--sg-rose, #fb7185)" },
 ];
 
+/** Tek bir arena oyununun detay URL'i (`?lang=en` ile İngilizce istemci metni). */
+export function arenaPath(slug: string): string {
+  const s = String(slug ?? "")
+    .trim()
+    .replace(/^\/+|\/+$/g, "");
+  return `/arena/${s}`;
+}
+
 // ─── Path helper ──────────────────────────────────────────────────────────────
 
-export function arenaPath(slug: string): string {
-  return `/arena/${slug}`;
+export function bracketParticipantCount(gameType: ArenaGameType): number {
+  switch (gameType) {
+    case "fixed_8":
+      return 8;
+    case "random_64":
+      return 64;
+    case "random_32":
+      return 32;
+    default:
+      return 16;
+  }
+}
+
+/**
+ * UI tur isimleri için bracket boyutu (fixed_8 → 16 oyunculu turnuva ile aynı tur yapısı).
+ */
+export function bracketLabelSize(gameType: ArenaGameType, normalizedRandomCount: number): number {
+  if (gameType === "fixed_8") return 16;
+  return normalizedRandomCount;
+}
+
+/** Son X / Quarter… tur etiketleri */
+export function arenaRoundNames(bracketSize: 16 | 32 | 64, lang: "tr" | "en"): string[] {
+  const TR: Record<16 | 32 | 64, string[]> = {
+    64: ["Son 64", "Son 32", "Son 16", "Çeyrek Final", "Yarı Final", "Final"],
+    32: ["Son 32", "Son 16", "Çeyrek Final", "Yarı Final", "Final"],
+    16: ["Son 16", "Çeyrek Final", "Yarı Final", "Final"],
+  };
+  const EN: Record<16 | 32 | 64, string[]> = {
+    64: ["Round of 64", "Round of 32", "Round of 16", "Quarter-Final", "Semi-Final", "Final"],
+    32: ["Round of 32", "Round of 16", "Quarter-Final", "Semi-Final", "Final"],
+    16: ["Round of 16", "Quarter-Final", "Semi-Final", "Final"],
+  };
+  return lang === "en" ? EN[bracketSize] : TR[bracketSize];
+}
+
+export function arenaNextRoundHeading(roundNames: string[], roundIndex: number, lang: "tr" | "en"): string {
+  const next = roundNames[roundIndex + 1];
+  if (!next) return "";
+  return lang === "en" ? `${next} begins!` : `${next} başlıyor!`;
+}
+
+/** Oyuncu sayısına göre tur başlıkları (2’nin kuvveti; 8–64). */
+export function arenaRoundNamesForCount(n: number, lang: "tr" | "en"): string[] {
+  if (n >= 64) return arenaRoundNames(64, lang);
+  if (n >= 32) return arenaRoundNames(32, lang);
+  if (n >= 16) return arenaRoundNames(16, lang);
+  if (n >= 8) {
+    return lang === "en"
+      ? ["Quarter-Final", "Semi-Final", "Final"]
+      : ["Çeyrek Final", "Yarı Final", "Final"];
+  }
+  if (n >= 4) {
+    return lang === "en" ? ["Semi-Final", "Final"] : ["Yarı Final", "Final"];
+  }
+  return lang === "en" ? ["Final"] : ["Final"];
+}
+
+export type ArenaParticipantInput = {
+  name?: string;
+  subtitle?: string;
+  photo_url?: string;
+  vs?: string;
+};
+
+/** Tekilleştirilmiş bracket listesi (fixed_8: en fazla 8 satır; random*: 2’nin kuvvetine kırpılır). */
+export function normalizeArenaParticipants(participants: ArenaParticipantInput[], gameType: ArenaGameType): ArenaParticipantInput[] {
+  const cap = bracketParticipantCount(gameType);
+  const filtered = participants.filter((p) => String(p.name ?? "").trim());
+  if (gameType === "fixed_8") return filtered.slice(0, 8);
+  const raw = filtered.slice(0, cap);
+  if (raw.length < 2) return raw;
+  let pow2 = 1;
+  while (pow2 * 2 <= raw.length) pow2 *= 2;
+  return raw.slice(0, pow2);
 }
 
 // ─── Legacy backward-compat types ────────────────────────────────────────────

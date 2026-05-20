@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { supabase } from "@/lib/supabase";
 import ArticleLayout from "../../components/article-layout";
+import { primaryHubId } from "@/lib/hub-from-tags";
 
 type SectionBlock =
   | { type: "intro"; html: string }
@@ -19,6 +20,7 @@ type ContentRow = {
   news_query?: string; player_name?: string;
   hero_variant?: string; accent?: string;
   sections_json?: SectionBlock[] | null;
+  hub_tags?: string[] | null;
 };
 
 export default function TaktikLabDetailClient({ slug }: { slug: string }) {
@@ -71,6 +73,7 @@ export default function TaktikLabDetailClient({ slug }: { slug: string }) {
       heroVariant={article.hero_variant ?? "pitch-diagram"}
       accentOverride={article.accent ?? "cyan"}
       sectionsJson={Array.isArray(article.sections_json) ? article.sections_json : null}
+      hubId={primaryHubId(article.hub_tags)}
     />
   );
 }

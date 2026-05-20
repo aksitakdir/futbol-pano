@@ -1,11 +1,13 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import Link from "next/link";
 import SiteHeader from "../../components/site-header";
 import SiteFooter from "../../components/site-footer";
+import { ContentHighlightPills } from "../../components/content-highlight-pills";
 import { supabase } from "@/lib/supabase";
 import { stripHtml } from "@/lib/utils";
+import { extractArticleHighlights, HIGHLIGHT_CARD_ACCENTS_CYCLE } from "@/lib/content-highlight-tags";
 
 type Content = {
   id: string; title: string; title_en?: string; slug: string;
@@ -27,6 +29,16 @@ export default function EnTaktikLabPage() {
   const [dbContents, setDbContents] = useState<Content[]>([]);
   const [loading, setLoading] = useState(true);
 
+  const highlightsBySlug = useMemo(() => {
+    const m = new Map<string, string[]>();
+    for (const item of dbContents) {
+      const body = item.content_en || item.content;
+      const ttl = item.title_en || item.title;
+      m.set(item.slug, extractArticleHighlights(body, { max: 4, seed: item.slug, titleHint: ttl }));
+    }
+    return m;
+  }, [dbContents]);
+
   useEffect(() => {
     supabase.from("contents")
       .select("id,title,title_en,slug,content,content_en,created_at")
@@ -37,6 +49,7 @@ export default function EnTaktikLabPage() {
 
   const featured = dbContents[0];
   const recentRest = dbContents.slice(1);
+  const featuredHighlights = featured ? highlightsBySlug.get(featured.slug) : undefined;
 
   return (
     <main style={{ background: "var(--sg-bg)", color: "var(--sg-text-primary)", minHeight: "100vh" }}>
@@ -113,6 +126,15 @@ export default function EnTaktikLabPage() {
               <p style={{ fontSize: 16, color: "var(--sg-text-secondary)", lineHeight: 1.55, marginTop: 18, maxWidth: 580 }}>
                 {stripHtml(featured.content_en || featured.content).replace(/\s+/g, " ").trim().slice(0, 200)}…
               </p>
+              {featuredHighlights?.length ? (
+                <div style={{ marginTop: 22 }}>
+                  <ContentHighlightPills
+                    tags={featuredHighlights.slice(0, 4)}
+                    accent="var(--sky)"
+                    label="HIGHLIGHTS"
+                  />
+                </div>
+              ) : null}
               <div style={{ marginTop: 24 }}>
                 <span className="btn btn-solid" style={{ background: "var(--sky)", borderColor: "var(--sky)" }}>READ ANALYSIS →</span>
               </div>
@@ -124,30 +146,44 @@ export default function EnTaktikLabPage() {
           <section style={{ marginBottom: 80 }}>
             <div className="eyebrow" style={{ marginBottom: 20 }}>RECENT ANALYSES</div>
             <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 16 }}>
-              {recentRest.map((item) => (
+              {recentRest.map((item, i) => {
+                const accent = HIGHLIGHT_CARD_ACCENTS_CYCLE[(i + 1) % HIGHLIGHT_CARD_ACCENTS_CYCLE.length]!;
+                const pills = highlightsBySlug.get(item.slug) ?? [];
+                const hasEn = !!item.title_en;
+                return (
                 <Link key={item.id} href={`/en/taktik-lab/${item.slug}`}
                   className="lift" style={{
                     background: "var(--sg-surface)", border: "1px solid var(--sg-border)",
-                    borderRadius: 4, padding: 28, minHeight: 220,
-                    display: "flex", flexDirection: "column", justifyContent: "space-between",
-                    textDecoration: "none",
+                    borderRadius: 4, overflow: "hidden", cursor: "pointer", textDecoration: "none",
+                    display: "flex", flexDirection: "column", minHeight: 220,
                   }}>
-                  <div>
-                    <div className="mono" style={{ fontSize: 10, letterSpacing: "0.18em", color: "var(--sky)" }}>
-                      TACTICS · {new Date(item.created_at).toLocaleDateString("en-US", { day: "numeric", month: "short" })}
+                  <div style={{ height: 2, background: accent }} />
+                  <div style={{ padding: 28, flex: 1, display: "flex", flexDirection: "column" }}>
+                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16 }}>
+                      <span className="mono" style={{ fontSize: 10, letterSpacing: "0.18em", color: accent }}>
+                        TACTICS{!hasEn ? " · DRAFT" : ""}
+                      </span>
+                      <span className="mono" style={{ fontSize: 10, letterSpacing: "0.14em", color: "var(--sg-text-muted)" }}>
+                        {new Date(item.created_at).toLocaleDateString("en-US", { day: "numeric", month: "short" })}
+                      </span>
                     </div>
                     <h3 className="display" style={{
-                      fontSize: 22, fontWeight: 700, lineHeight: 1.1, letterSpacing: "-0.02em",
-                      margin: "14px 0 0", textWrap: "balance", color: "var(--sg-text-primary)",
+                      fontSize: 22, fontWeight: 600, lineHeight: 1.1, letterSpacing: "-0.02em",
+                      margin: 0, textWrap: "balance", color: "var(--sg-text-primary)", flex: 1,
                     }}>
                       {item.title_en || item.title}
                     </h3>
-                  </div>
-                  <div className="mono" style={{ fontSize: 10, letterSpacing: "0.16em", color: "var(--sg-text-muted)", marginTop: 16 }}>
-                    READ →
+                    <div style={{ marginTop: "auto", paddingTop: 16, borderTop: "1px solid var(--sg-border)" }}>
+                      {pills.length > 0 ? (
+                        <ContentHighlightPills tags={pills.slice(0, 4)} accent={accent} label="HIGHLIGHTS" />
+                      ) : null}
+                      <span className="mono u-link" style={{ fontSize: 11, letterSpacing: "0.16em", color: accent, display: "block", marginTop: pills.length ? 12 : 0 }}>
+                        READ →
+                      </span>
+                    </div>
                   </div>
                 </Link>
-              ))}
+              );})}
             </div>
           </section>
         )}
@@ -157,6 +193,8 @@ export default function EnTaktikLabPage() {
           <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 16 }}>
             {ARCHETYPES.map((arch) => {
               const c = arch.color;
+              const fromContent = highlightsBySlug.get(arch.slug);
+              const pillTags = fromContent && fromContent.length > 0 ? fromContent.slice(0, 4) : arch.exemplars;
               return (
                 <Link key={arch.slug} href={`/en/taktik-lab/${arch.slug}`}
                   className="lift" style={{
@@ -191,8 +229,8 @@ export default function EnTaktikLabPage() {
                       BEST PRACTITIONERS
                     </div>
                     <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
-                      {arch.exemplars.map(ex => (
-                        <span key={ex} className="chip" style={{ borderColor: c, color: c, fontSize: 10 }}>{ex}</span>
+                      {pillTags.map((ex, pi) => (
+                        <span key={`${ex}-${pi}`} className="chip" style={{ borderColor: c, color: c, fontSize: 10, background: "transparent" }}>{ex}</span>
                       ))}
                     </div>
                   </div>

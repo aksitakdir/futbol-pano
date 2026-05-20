@@ -1,12 +1,14 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import Link from "next/link";
 import SiteHeader from "../components/site-header";
 import SiteFooter from "../components/site-footer";
 import PlayerCard, { type PlayerCardData } from "../components/player-card";
+import { ContentHighlightPills } from "../components/content-highlight-pills";
 import { supabase } from "@/lib/supabase";
 import { stripHtml, estimateReadMinutes } from "@/lib/utils";
+import { extractArticleHighlights, HIGHLIGHT_CARD_ACCENTS_CYCLE } from "@/lib/content-highlight-tags";
 
 type SupabaseContent = { id: string; title: string; slug: string; content: string; created_at: string; };
 
@@ -23,6 +25,14 @@ export default function RadarPage() {
   const [loadingMore, setLoadingMore] = useState(false);
   const [hasMore, setHasMore] = useState(true);
   const [heroPlayers, setHeroPlayers] = useState<Partial<PlayerCardData>[]>([]);
+
+  const highlightsBySlug = useMemo(() => {
+    const m = new Map<string, string[]>();
+    for (const a of articles) {
+      m.set(a.slug, extractArticleHighlights(a.content, { max: 4, seed: a.slug, titleHint: a.title }));
+    }
+    return m;
+  }, [articles]);
 
   useEffect(() => {
     supabase.from("contents").select("id,title,slug,content,created_at")
@@ -61,6 +71,7 @@ export default function RadarPage() {
 
   const featured = articles[0];
   const rest = articles.slice(1);
+  const featuredHighlights = featured ? highlightsBySlug.get(featured.slug) : undefined;
 
   return (
     <main style={{ background: "var(--sg-bg)", color: "var(--sg-text-primary)", minHeight: "100vh" }}>
@@ -68,7 +79,7 @@ export default function RadarPage() {
       <div style={{ paddingTop: "68px" }} />
 
       {/* ── Page Header ── */}
-      <div style={{ maxWidth: 1440, margin: "0 auto", padding: "60px 32px 56px", display: "grid", gridTemplateColumns: "2fr 1fr", gap: 32, alignItems: "end" }}>
+      <div className="sg-page-shell sg-page-shell--hero cat-header-grid v2-section-pad" style={{ display: "grid", gridTemplateColumns: "2fr 1fr", gap: 32, alignItems: "end" }}>
         <div>
           <div className="eyebrow" style={{ color: "var(--accent)" }}>HAFTALIK ANALİZ</div>
           <h1 className="display" style={{
@@ -83,7 +94,7 @@ export default function RadarPage() {
         </p>
       </div>
 
-      <div style={{ maxWidth: 1440, margin: "0 auto", padding: "0 32px 80px" }}>
+      <div className="sg-page-shell v2-section-pad" style={{ paddingBottom: 80 }}>
 
         {loading ? (
           <div style={{ display: "flex", justifyContent: "center", padding: "80px 0" }}>
@@ -134,6 +145,15 @@ export default function RadarPage() {
                     <p style={{ fontSize: 16, color: "var(--sg-text-secondary)", lineHeight: 1.55, marginTop: 20, maxWidth: 540 }}>
                       {summary(featured.content, 180)}
                     </p>
+                    {featuredHighlights?.length ? (
+                      <div style={{ marginTop: 18 }}>
+                        <ContentHighlightPills
+                          tags={featuredHighlights.slice(0, 4)}
+                          accent="var(--accent)"
+                          label="METİN VURGULARI"
+                        />
+                      </div>
+                    ) : null}
                     <div style={{ marginTop: 24, display: "flex", gap: 12, alignItems: "center" }}>
                       <span className="btn btn-solid">YAZIYI OKU →</span>
                       <span className="mono" style={{ fontSize: 10, letterSpacing: "0.16em", color: "var(--sg-text-muted)" }}>
@@ -144,13 +164,13 @@ export default function RadarPage() {
 
                   {/* 2×2 player card grid */}
                   {heroPlayers.length >= 2 && (
-                    <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: 10 }}>
+                    <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: 10, justifyItems: "center" }}>
                       {heroPlayers.slice(0, 4).map((p, i) => (
                         <div key={i} style={{
                           transform: `translateY(${i % 2 === 0 ? -8 : 8}px)`,
                           boxShadow: "0 16px 32px rgba(0,0,0,0.35)",
                         }}>
-                          <PlayerCard player={p as PlayerCardData} size="mini" animated={false} showScoutNote={false} />
+                          <PlayerCard player={p as PlayerCardData} compact animated={false} showScoutNote={false} />
                         </div>
                       ))}
                     </div>
@@ -163,33 +183,40 @@ export default function RadarPage() {
             {rest.length > 0 && (
               <>
                 <div className="eyebrow" style={{ marginBottom: 16 }}>TÜM ANALİZLER</div>
-                <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 16, marginBottom: 48 }}>
-                  {rest.map((article) => {
+                <div className="editorial-feed-grid article-grid-4col" style={{ marginBottom: 48 }}>
+                  {rest.map((article, idx) => {
                     const readMins = estimateReadMinutes(article.content);
+                    const accent = HIGHLIGHT_CARD_ACCENTS_CYCLE[idx % HIGHLIGHT_CARD_ACCENTS_CYCLE.length]!;
+                    const pills = highlightsBySlug.get(article.slug) ?? [];
                     return (
                       <Link key={article.id} href={`/radar/${article.slug}`}
                         className="lift" style={{
                           background: "var(--sg-surface)", border: "1px solid var(--sg-border)",
                           borderRadius: 4, overflow: "hidden", display: "flex", flexDirection: "column",
-                          textDecoration: "none",
+                          textDecoration: "none", minHeight: 220,
                         }}>
-                        <div style={{ height: 2, background: "var(--accent)" }} />
+                        <div style={{ height: 2, background: accent }} />
                         <div style={{ padding: "20px 20px 24px", flex: 1, display: "flex", flexDirection: "column" }}>
                           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 14 }}>
-                            <span className="mono" style={{ fontSize: 9, letterSpacing: "0.2em", color: "var(--accent)" }}>RADAR</span>
+                            <span className="mono" style={{ fontSize: 9, letterSpacing: "0.2em", color: accent }}>RADAR</span>
                             <span className="mono" style={{ fontSize: 9, letterSpacing: "0.14em", color: "var(--sg-text-muted)" }}>
                               {new Date(article.created_at).toLocaleDateString("tr-TR", { day: "numeric", month: "short" })} · {readMins} DK
                             </span>
                           </div>
                           <h2 className="display" style={{
                             fontSize: 18, fontWeight: 600, lineHeight: 1.2,
-                            letterSpacing: "-0.02em", margin: "0 0 auto", textWrap: "balance",
-                            color: "var(--sg-text-primary)",
+                            letterSpacing: "-0.02em", margin: 0, textWrap: "balance",
+                            color: "var(--sg-text-primary)", flex: 1,
                           }}>
                             {article.title}
                           </h2>
-                          <div className="mono" style={{ fontSize: 10, letterSpacing: "0.14em", color: "var(--accent)", marginTop: 16 }}>
-                            OKU →
+                          <div style={{ marginTop: "auto", paddingTop: 16, borderTop: "1px solid var(--sg-border)" }}>
+                            {pills.length > 0 ? (
+                              <ContentHighlightPills tags={pills.slice(0, 4)} accent={accent} label="METİN VURGULARI" />
+                            ) : null}
+                            <span className="mono u-link" style={{ fontSize: 11, letterSpacing: "0.16em", color: accent, display: "block", marginTop: pills.length ? 12 : 0 }}>
+                              OKU →
+                            </span>
                           </div>
                         </div>
                       </Link>

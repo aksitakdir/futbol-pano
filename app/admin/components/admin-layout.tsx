@@ -73,6 +73,26 @@ const NAV_ITEMS = [
     ),
   },
   {
+    href: "/admin/hub",
+    label: "Hub V2",
+    icon: (
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+        <circle cx="12" cy="12" r="10" />
+        <path d="M2 12h20M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10 15.3 15.3 0 01-4-10 15.3 15.3 0 014-10z" />
+      </svg>
+    ),
+  },
+  {
+    href: "/admin/kadrolar",
+    label: "DK Kadroları",
+    icon: (
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+        <circle cx="12" cy="8" r="4" />
+        <path d="M4 20c0-4 4-6 8-6s8 2 8 6" />
+      </svg>
+    ),
+  },
+  {
     href: "/admin/arena",
     label: "Arena Oyunları",
     icon: (
@@ -193,16 +213,19 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   }
 
   return (
-    <div className="flex min-h-screen bg-slate-950 text-slate-100">
+    <div className="flex h-[100dvh] min-h-0 w-full flex-col bg-slate-950 text-slate-100 lg:flex-row">
       {/* Sidebar — desktop */}
-      <aside className="hidden w-56 shrink-0 flex-col border-r border-slate-800/60 bg-slate-900/50 lg:flex">
-        <div className="flex items-center gap-2 border-b border-slate-800/60 px-5 py-4">
-          <div className="h-7 w-7 rounded-lg bg-gradient-to-tr from-emerald-400 to-cyan-500" />
+      <aside className="hidden min-h-0 w-56 shrink-0 flex-col border-r border-slate-800/60 bg-slate-900/50 lg:flex">
+        <Link
+          href="/admin"
+          className="flex items-center gap-2 border-b border-slate-800/60 px-5 py-4 transition hover:bg-slate-800/30"
+        >
+          <div className="h-7 w-7 shrink-0 rounded-lg bg-gradient-to-tr from-emerald-400 to-cyan-500" />
           <span className="bg-gradient-to-r from-emerald-400 to-sky-500 bg-clip-text text-xs font-semibold tracking-widest text-transparent">
             ADMIN
           </span>
-        </div>
-        <nav className="flex flex-1 flex-col gap-0.5 px-3 py-4">
+        </Link>
+        <nav className="flex min-h-0 flex-1 flex-col gap-0.5 overflow-y-auto overscroll-contain px-3 py-4">
           {NAV_ITEMS.map((n) => (
             <Link
               key={n.href}
@@ -219,11 +242,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
             </Link>
           ))}
         </nav>
-        <div className="border-t border-slate-800/60 px-3 py-3">
-          <Link href="/" className="mb-2 flex items-center gap-2 rounded-lg px-3 py-2 text-[13px] text-slate-500 transition hover:text-slate-300">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6" /><polyline points="15 3 21 3 21 9" /><line x1="10" y1="14" x2="21" y2="3" /></svg>
-            Siteyi Görüntüle
-          </Link>
+        <div className="shrink-0 border-t border-slate-800/60 px-3 py-3">
           <button
             onClick={handleLogout}
             className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-[13px] text-slate-500 transition hover:text-rose-400"
@@ -234,26 +253,49 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         </div>
       </aside>
 
-      {/* Mobile header */}
-      <div className="flex flex-1 flex-col">
-        <header className="flex items-center justify-between border-b border-slate-800/60 bg-slate-900/50 px-4 py-3 lg:hidden">
-          <div className="flex items-center gap-2">
-            <div className="h-6 w-6 rounded-lg bg-gradient-to-tr from-emerald-400 to-cyan-500" />
+      {/* Main column */}
+      <div className="flex min-h-0 min-w-0 flex-1 flex-col">
+        {/* Mobil üst bar — logo sol, site + menü sağ */}
+        <header className="flex shrink-0 items-center justify-between gap-3 border-b border-slate-800/60 bg-slate-900/50 px-4 py-3 lg:hidden">
+          <Link href="/admin" className="flex min-w-0 items-center gap-2">
+            <div className="h-6 w-6 shrink-0 rounded-lg bg-gradient-to-tr from-emerald-400 to-cyan-500" />
             <span className="bg-gradient-to-r from-emerald-400 to-sky-500 bg-clip-text text-xs font-semibold tracking-widest text-transparent">
               ADMIN
             </span>
+          </Link>
+          <div className="flex shrink-0 items-center gap-2">
+            <Link
+              href="/"
+              className="flex items-center gap-1.5 rounded-lg border border-slate-700/50 px-2.5 py-1.5 text-[11px] font-medium text-slate-400 transition hover:border-emerald-500/40 hover:text-emerald-300"
+            >
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6" /><polyline points="15 3 21 3 21 9" /><line x1="10" y1="14" x2="21" y2="3" /></svg>
+              Site
+            </Link>
+            <button
+              type="button"
+              onClick={() => setSidebarOpen(!sidebarOpen)}
+              className="rounded-lg border border-slate-700/60 p-2 text-slate-400"
+              aria-label="Menü"
+            >
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="3" y1="12" x2="21" y2="12" /><line x1="3" y1="6" x2="21" y2="6" /><line x1="3" y1="18" x2="21" y2="18" /></svg>
+            </button>
           </div>
-          <button
-            onClick={() => setSidebarOpen(!sidebarOpen)}
-            className="rounded-lg border border-slate-700/60 p-2 text-slate-400"
-          >
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="3" y1="12" x2="21" y2="12" /><line x1="3" y1="6" x2="21" y2="6" /><line x1="3" y1="18" x2="21" y2="18" /></svg>
-          </button>
         </header>
+
+        {/* Masaüstü — siteye çıkış sağ üst */}
+        <div className="hidden shrink-0 items-center justify-end border-b border-slate-800/60 bg-slate-900/40 px-6 py-2.5 lg:flex">
+          <Link
+            href="/"
+            className="flex items-center gap-2 rounded-lg border border-slate-700/50 px-3 py-1.5 text-[12px] font-medium text-slate-400 transition hover:border-emerald-500/40 hover:text-emerald-300"
+          >
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6" /><polyline points="15 3 21 3 21 9" /><line x1="10" y1="14" x2="21" y2="3" /></svg>
+            Siteyi Görüntüle
+          </Link>
+        </div>
 
         {/* Mobile nav dropdown */}
         {sidebarOpen && (
-          <div className="border-b border-slate-800/60 bg-slate-900/80 px-4 py-3 lg:hidden">
+          <div className="max-h-[min(70vh,520px)] shrink-0 overflow-y-auto overscroll-contain border-b border-slate-800/60 bg-slate-900/80 px-4 py-3 lg:hidden">
             <nav className="flex flex-col gap-1">
               {NAV_ITEMS.map((n) => (
                 <Link
@@ -270,11 +312,11 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                 </Link>
               ))}
               <hr className="my-1 border-slate-800/60" />
-              <Link href="/" className="flex items-center gap-2 rounded-lg px-3 py-2 text-[13px] text-slate-500">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6" /><polyline points="15 3 21 3 21 9" /><line x1="10" y1="14" x2="21" y2="3" /></svg>
-                Siteyi Görüntüle
-              </Link>
-              <button onClick={handleLogout} className="flex items-center gap-2 rounded-lg px-3 py-2 text-[13px] text-slate-500 hover:text-rose-400">
+              <button
+                type="button"
+                onClick={handleLogout}
+                className="flex items-center gap-2 rounded-lg px-3 py-2 text-[13px] text-slate-500 hover:text-rose-400"
+              >
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4" /><polyline points="16 17 21 12 16 7" /><line x1="21" y1="12" x2="9" y2="12" /></svg>
                 Çıkış Yap
               </button>
@@ -282,7 +324,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
           </div>
         )}
 
-        <main className="flex-1 overflow-y-auto p-4 lg:p-6">
+        <main className="min-h-0 flex-1 overflow-y-auto overflow-x-hidden overscroll-contain p-4 lg:p-6">
           {children}
         </main>
       </div>

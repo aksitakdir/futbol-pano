@@ -202,6 +202,8 @@ async function updateFormPlayers(
   const formPlayersUserPrompt =
     "Web'i tarayarak güncel maç ve istatistik kaynaklarına dayanarak 2025-26 sezonunda form grafiği yükselen genç oyuncuları belirle. " +
     "Büyük 5 lig, Portekiz, Hollanda, Brezilya, Arjantin, Türkiye ve diğer önemli liglerden çeşitli seçim yap.\n\n" +
+    "Her oyuncu için club ve league alanları oyuncunun ŞU ANKI kulübü ve bu kulübün oynadığı üst düzey lig olmalı (eski/kiralık kulüp yazma). " +
+    "Örneğin oyuncu Real Madrid'deyse lig La Liga olmalı.\n\n" +
     "Tüm metin alanları Türkçe olsun. position alanları Türkçe olsun: Forward→Forvet, Midfielder→Orta Saha, Winger→Kanat, Defender→Defans, Goalkeeper→Kaleci, Attacking Midfielder→Ofansif Orta Saha, Defensive Midfielder→Defansif Orta Saha.\n\n" +
     "Aşağıdaki formatta TAM OLARAK 20 oyuncu listesi döndür. Başka hiçbir şey yazma, sadece JSON array:\n" +
     "[\n" +
@@ -277,7 +279,8 @@ export async function GET(request: NextRequest) {
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL ?? "";
   const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ?? "";
 
-  const [contentResult, playerResult, formResult] = await Promise.allSettled([
+  const originHub = origin;
+  const [contentResult, playerResult, formResult, hubResult] = await Promise.allSettled([
     fetch(`${origin}/api/generate-content`, {
       method: "POST",
       headers: { "content-type": "application/json" },
@@ -285,6 +288,9 @@ export async function GET(request: NextRequest) {
     }).then((r) => r.json()),
     updateFeaturedPlayerPool(supabaseUrl, supabaseKey, apiKey),
     updateFormPlayers(supabaseUrl, supabaseKey, apiKey),
+    fetch(`${originHub}/api/cron/hub-sync`, {
+      headers: { Authorization: `Bearer ${cronSecret}` },
+    }).then((r) => r.json()),
   ]);
 
   return NextResponse.json({
@@ -302,5 +308,9 @@ export async function GET(request: NextRequest) {
       formResult.status === "fulfilled"
         ? { count: formResult.value }
         : { error: (formResult.reason as Error)?.message ?? "unknown" },
+    hub:
+      hubResult.status === "fulfilled"
+        ? hubResult.value
+        : { error: (hubResult.reason as Error)?.message ?? "unknown" },
   });
 }

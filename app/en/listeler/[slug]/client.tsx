@@ -9,6 +9,8 @@ import { stripHtml, contentLooksLikeHtml } from "@/lib/utils";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import rehypeRaw from "rehype-raw";
+import PlayerCard, { type PlayerCardData } from "../../../components/player-card";
+import ArticleHtmlWithPlayerEmbeds from "../../../components/article-html-with-player-embeds";
 
 /* ─── Types ──────────────────────────────────────────────────────── */
 type ContentRow = {
@@ -32,28 +34,6 @@ type PlayerWithStats = PlayerJsonEntry & {
   league?: string; age?: number;
 };
 
-/* ─── Position → gradient ────────────────────────────────────────── */
-function posGradient(pos: string): string {
-  const p = pos?.split(" ")[0]?.toUpperCase() ?? "";
-  const map: Record<string, [string, string]> = {
-    GK:  ["oklch(0.22 0.04 260)", "oklch(0.11 0.02 260)"],
-    CB:  ["oklch(0.20 0.06 240)", "oklch(0.10 0.03 240)"],
-    LB:  ["oklch(0.18 0.06 220)", "oklch(0.10 0.03 220)"],
-    RB:  ["oklch(0.18 0.06 220)", "oklch(0.10 0.03 220)"],
-    CDM: ["oklch(0.20 0.07 200)", "oklch(0.10 0.04 200)"],
-    CM:  ["oklch(0.18 0.08 180)", "oklch(0.10 0.04 180)"],
-    CAM: ["oklch(0.24 0.09 150)", "oklch(0.12 0.05 150)"],
-    LM:  ["oklch(0.20 0.07 130)", "oklch(0.12 0.04 130)"],
-    RM:  ["oklch(0.20 0.07 130)", "oklch(0.12 0.04 130)"],
-    LW:  ["oklch(0.24 0.10 130)", "oklch(0.12 0.05 130)"],
-    RW:  ["oklch(0.24 0.10 130)", "oklch(0.12 0.05 130)"],
-    ST:  ["oklch(0.22 0.10 20)",  "oklch(0.12 0.05 20)"],
-    CF:  ["oklch(0.22 0.09 30)",  "oklch(0.12 0.05 30)"],
-  };
-  const [from, to] = map[p] ?? ["oklch(0.18 0.06 240)", "oklch(0.10 0.03 240)"];
-  return `linear-gradient(160deg, ${from} 0%, ${to} 100%)`;
-}
-
 function statColor(val?: number) {
   if (!val) return "var(--sg-text-muted)";
   if (val >= 80) return "var(--emerald)";
@@ -65,79 +45,23 @@ const STAT_LABELS = ["PAC", "SHO", "PAS", "DRI", "DEF", "PHY"] as const;
 const STAT_KEYS   = ["pace", "shooting", "passing", "dribbling", "defending", "physical"] as const;
 function readTime(t: string) { return Math.max(1, Math.ceil(t.trim().split(/\s+/).length / 200)); }
 
-/* ─── V2 Silhouette Card ─────────────────────────────────────────── */
-function V2SilhouetteCard({ player }: { player: PlayerWithStats }) {
-  const initials = player.name.split(" ").map((w) => w[0]).slice(0, 2).join("").toUpperCase();
-  const hasStats = !!(player.pace || player.shooting);
-
-  return (
-    <div style={{
-      position: "relative", width: "100%", aspectRatio: "2/3",
-      borderRadius: 8, overflow: "hidden",
-      background: posGradient(player.position),
-      border: "1px solid oklch(1 0 0 / 0.08)", flexShrink: 0,
-    }}>
-      <div style={{
-        position: "absolute", inset: 0,
-        backgroundImage: "repeating-linear-gradient(-45deg, oklch(1 0 0 / 0.04) 0 1px, transparent 1px 12px)",
-        pointerEvents: "none",
-      }} />
-      <div style={{
-        position: "absolute", bottom: hasStats ? 44 : 28, right: -6,
-        fontFamily: "var(--font-display)", fontSize: 96, fontWeight: 900,
-        letterSpacing: "-0.07em", lineHeight: 1,
-        color: "oklch(1 0 0 / 0.07)", userSelect: "none", pointerEvents: "none",
-      }}>
-        {initials}
-      </div>
-      {/* Silhouette — gradient initials, no external photo fetch */}
-      <div style={{
-        position: "absolute", top: "50%", left: "50%",
-        transform: "translate(-50%, -62%)",
-        fontFamily: "var(--font-display)", fontSize: 64, fontWeight: 900,
-        color: "oklch(1 0 0 / 0.18)", letterSpacing: "-0.04em", lineHeight: 1,
-      }}>
-        {initials}
-      </div>
-      <div style={{
-        position: "absolute", top: 10, right: 10,
-        fontFamily: "var(--font-mono-stack)", fontSize: 28, fontWeight: 900,
-        color: "oklch(1 0 0 / 0.90)", lineHeight: 1, textShadow: "0 2px 10px oklch(0 0 0 / 0.6)",
-      }}>
-        {player.overall || "—"}
-      </div>
-      <div style={{
-        position: "absolute", top: 10, left: 8,
-        fontFamily: "var(--font-mono-stack)", fontSize: 8, fontWeight: 700,
-        letterSpacing: "0.14em", color: "oklch(1 0 0 / 0.60)",
-        background: "oklch(0 0 0 / 0.32)", padding: "3px 6px", borderRadius: 3,
-      }}>
-        {player.position}
-      </div>
-      <div style={{
-        position: "absolute", bottom: 0, left: 0, right: 0,
-        background: "linear-gradient(to top, oklch(0 0 0 / 0.80) 0%, transparent 100%)",
-        padding: hasStats ? "48px 10px 4px" : "32px 10px 10px",
-      }}>
-        <div style={{ fontSize: 11, fontWeight: 700, color: "oklch(1 0 0 / 0.92)", lineHeight: 1.15 }}>{player.name}</div>
-        <div style={{ fontSize: 9, color: "oklch(1 0 0 / 0.44)", letterSpacing: "0.04em", marginTop: 2 }}>{player.club}</div>
-      </div>
-      {hasStats && (
-        <div style={{
-          position: "absolute", bottom: 0, left: 0, right: 0,
-          background: "oklch(0 0 0 / 0.55)",
-          display: "grid", gridTemplateColumns: "repeat(6, 1fr)", padding: "6px 6px 8px",
-        }}>
-          {STAT_KEYS.map((key, i) => (
-            <div key={key} style={{ textAlign: "center" }}>
-              <div style={{ fontSize: 10, fontWeight: 900, color: statColor(player[key]), lineHeight: 1 }}>{player[key] ?? "—"}</div>
-              <div style={{ fontSize: 7, color: "oklch(1 0 0 / 0.30)", letterSpacing: "0.05em", marginTop: 1 }}>{STAT_LABELS[i]}</div>
-            </div>
-          ))}
-        </div>
-      )}
-    </div>
-  );
+function playerRowToCardData(p: PlayerWithStats): PlayerCardData {
+  return {
+    name: p.name,
+    club: p.club,
+    league: p.league ?? "",
+    position: p.position,
+    age: p.age ?? "—",
+    overall: p.overall ?? 0,
+    pace: p.pace ?? 0,
+    shooting: p.shooting ?? 0,
+    passing: p.passing ?? 0,
+    dribbling: p.dribbling ?? 0,
+    defending: p.defending ?? 0,
+    physical: p.physical ?? 0,
+    whyWatch: p.scout_note,
+    photo_url: p.photo_url,
+  };
 }
 
 /* ─── Numbered entry ─────────────────────────────────────────────── */
@@ -158,15 +82,29 @@ function NumberedPlayerEntry({ player, rank, accent }: { player: PlayerWithStats
         {ordinal}
       </div>
 
-      <div style={{ display: "grid", gridTemplateColumns: isEven ? "1fr 180px" : "180px 1fr", gap: 40, alignItems: "start", position: "relative" }}>
+      <div style={{ display: "grid", gridTemplateColumns: isEven ? "1fr minmax(0, 200px)" : "minmax(0, 200px) 1fr", gap: 40, alignItems: "start", position: "relative" }}>
         {isEven ? (
           <>
             <PlayerInfo player={player} rank={rank} accent={accent} hasStats={hasStats} />
-            <V2SilhouetteCard player={player} />
+            <PlayerCard
+              player={playerRowToCardData(player)}
+              compact
+              animated={false}
+              showScoutNote={false}
+              tmLink={`https://www.transfermarkt.com/schnellsuche/ergebnis/schnellsuche?query=${encodeURIComponent(player.name)}`}
+              gLink={`https://www.google.com/search?q=${encodeURIComponent(`${player.name} footballer`)}`}
+            />
           </>
         ) : (
           <>
-            <V2SilhouetteCard player={player} />
+            <PlayerCard
+              player={playerRowToCardData(player)}
+              compact
+              animated={false}
+              showScoutNote={false}
+              tmLink={`https://www.transfermarkt.com/schnellsuche/ergebnis/schnellsuche?query=${encodeURIComponent(player.name)}`}
+              gLink={`https://www.google.com/search?q=${encodeURIComponent(`${player.name} footballer`)}`}
+            />
             <PlayerInfo player={player} rank={rank} accent={accent} hasStats={hasStats} />
           </>
         )}
@@ -380,7 +318,7 @@ function EnListLayout({ row }: { row: ContentRow }) {
           {displayContent && (
             <div className="article-v2" style={{ fontSize: 18, lineHeight: 1.65, color: "var(--sg-text-secondary)", marginBottom: 56 }}>
               {isHtml ? (
-                <div dangerouslySetInnerHTML={{ __html: displayContent }} />
+                <ArticleHtmlWithPlayerEmbeds html={displayContent} locale="en" />
               ) : (
                 <ReactMarkdown remarkPlugins={[remarkGfm]} rehypePlugins={[rehypeRaw]}>{displayContent}</ReactMarkdown>
               )}

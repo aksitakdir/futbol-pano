@@ -123,14 +123,18 @@ const NAV_SECTIONS = (isEn: boolean) => [
     heading: isEn ? "SECTIONS" : "BÖLÜMLER",
     links: isEn
       ? [
-          { href: "/en/listeler", label: "LISTS" },
+          { href: "/en/world-cup-2026", label: "WC 2026" },
+          { href: "/en/transfers", label: "TRANSFERS" },
           { href: "/en/radar", label: "RADAR" },
+          { href: "/en/listeler", label: "LISTS" },
           { href: "/en/taktik-lab", label: "TACTICS LAB" },
           { href: "/en/arena", label: "ARENA" },
         ]
       : [
-          { href: "/listeler", label: "LİSTELER" },
+          { href: "/dunya-kupasi-2026", label: "DK 2026" },
+          { href: "/transfer", label: "TRANSFER" },
           { href: "/radar", label: "RADAR" },
+          { href: "/listeler", label: "LİSTELER" },
           { href: "/taktik-lab", label: "TAKTİK LAB" },
           { href: "/arena", label: "ARENA" },
         ],
@@ -239,9 +243,6 @@ export default function SiteFooter({ maxWidth = "max-w-7xl" }: Props) {
             style={{ borderTop: "1px solid var(--sg-border)" }}>
             <span className="mono" style={{ fontSize: 10, letterSpacing: "0.12em", color: "var(--sg-text-muted)" }}>
               © 2026 SCOUTGAMER.COM · TÜM HAKLARI SAKLIDIR
-            </span>
-            <span className="mono" style={{ fontSize: 10, letterSpacing: "0.12em", color: "var(--sg-text-muted)" }}>
-              v2.0 · BUILT WITH SUPABASE × CLAUDE
             </span>
           </div>
         </div>

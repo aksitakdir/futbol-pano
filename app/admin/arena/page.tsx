@@ -6,6 +6,7 @@ import { supabase } from "@/lib/supabase";
 import AdminLayout from "../components/admin-layout";
 import {
   CARD_COLOR_OPTIONS,
+  bracketParticipantCount,
   type ArenaGame,
   type ArenaGameStatus,
   type ArenaGameType,
@@ -26,6 +27,13 @@ function toSlug(s: string): string {
 
 // ─── Empty form state ─────────────────────────────────────────────────────────
 
+type ParticipantRow = { name: string; detail: string };
+
+function emptyParticipantRows(gameType: ArenaGameType): ParticipantRow[] {
+  const n = bracketParticipantCount(gameType);
+  return Array.from({ length: n }, () => ({ name: "", detail: "" }));
+}
+
 type FormState = {
   slug: string;
   status: ArenaGameStatus;
@@ -39,7 +47,9 @@ type FormState = {
   hero_teaser_en: string;
   card_color: ArenaCardColor;
   game_type: ArenaGameType;
-  participantsText: string; // raw textarea — one entry per line
+  participantRows: ParticipantRow[];
+  hub_tags: string[];
+  team_slug: string;
 };
 
 const EMPTY_FORM: FormState = {
@@ -55,15 +65,28 @@ const EMPTY_FORM: FormState = {
   hero_teaser_en: "",
   card_color: "primary",
   game_type: "random_16",
-  participantsText: "",
+  participantRows: emptyParticipantRows("random_16"),
+  hub_tags: [],
+  team_slug: "",
 };
 
+/** Oyun tipi değişince satır sayısını koruyarak kırp / doldur */
+function resizeParticipantRows(rows: ParticipantRow[], gameType: ArenaGameType): ParticipantRow[] {
+  const n = bracketParticipantCount(gameType);
+  const next = rows.slice(0, n).map((r) => ({ ...r }));
+  while (next.length < n) next.push({ name: "", detail: "" });
+  return next;
+}
+
 function gameToForm(g: ArenaGame): FormState {
-  const text = g.participants
-    .map((p) =>
-      g.game_type === "fixed_8" ? `${p.name} | ${p.vs ?? ""}` : `${p.name}${p.subtitle ? ` | ${p.subtitle}` : ""}`,
-    )
-    .join("\n");
+  const n = bracketParticipantCount(g.game_type);
+  const participantRows: ParticipantRow[] = [];
+  for (let i = 0; i < n; i++) {
+    const p = g.participants[i];
+    if (!p) participantRows.push({ name: "", detail: "" });
+    else if (g.game_type === "fixed_8") participantRows.push({ name: p.name ?? "", detail: p.vs ?? "" });
+    else participantRows.push({ name: p.name ?? "", detail: p.subtitle ?? "" });
+  }
   return {
     slug: g.slug,
     status: g.status,
@@ -77,22 +100,26 @@ function gameToForm(g: ArenaGame): FormState {
     hero_teaser_en: g.hero_teaser_en,
     card_color: g.card_color,
     game_type: g.game_type,
-    participantsText: text,
+    participantRows,
+    hub_tags: Array.isArray(g.hub_tags) ? g.hub_tags : [],
+    team_slug: g.team_slug ?? "",
   };
 }
 
-function formToParticipants(form: FormState): ArenaParticipant[] {
-  return form.participantsText
-    .split("\n")
-    .map((line) => line.trim())
-    .filter(Boolean)
-    .map((line) => {
-      const parts = line.split("|").map((p) => p.trim());
-      if (form.game_type === "fixed_8") {
-        return { name: parts[0] ?? "", vs: parts[1] ?? "" };
-      }
-      return { name: parts[0] ?? "", subtitle: parts[1] };
-    });
+function rowsToParticipants(rows: ParticipantRow[], gameType: ArenaGameType): ArenaParticipant[] {
+  const out: ArenaParticipant[] = [];
+  for (const r of rows) {
+    const name = r.name.trim();
+    const detail = r.detail.trim();
+    if (!name) continue;
+    if (gameType === "fixed_8") out.push({ name, vs: detail });
+    else out.push({ name, ...(detail ? { subtitle: detail } : {}) });
+  }
+  return out;
+}
+
+function countFilledParticipants(rows: ParticipantRow[]): number {
+  return rows.filter((r) => r.name.trim()).length;
 }
 
 // ─── Component ────────────────────────────────────────────────────────────────
@@ -145,6 +172,21 @@ export default function AdminArenaPage() {
     setForm((f) => ({ ...f, [key]: value }));
   }
 
+  function handleParticipantRow(index: number, field: keyof ParticipantRow, value: string) {
+    setForm((f) => ({
+      ...f,
+      participantRows: f.participantRows.map((row, i) => (i === index ? { ...row, [field]: value } : row)),
+    }));
+  }
+
+  function handleGameTypeChange(gt: ArenaGameType) {
+    setForm((f) => ({
+      ...f,
+      game_type: gt,
+      participantRows: resizeParticipantRows(f.participantRows, gt),
+    }));
+  }
+
   async function handleSave(e: React.FormEvent) {
     e.preventDefault();
     if (!form.title_tr || !form.slug) {
@@ -166,7 +208,9 @@ export default function AdminArenaPage() {
       hero_teaser_en: form.hero_teaser_en,
       card_color: form.card_color,
       game_type: form.game_type,
-      participants: formToParticipants(form),
+      participants: rowsToParticipants(form.participantRows, form.game_type),
+      hub_tags: form.hub_tags.length > 0 ? form.hub_tags : [],
+      team_slug: form.team_slug.trim() || null,
     };
 
     let error;
@@ -303,11 +347,12 @@ export default function AdminArenaPage() {
         )}
 
         {/* Form overlay */}
+        {/* Form — tam ekran mobilde; masaüstünde sidebar (w-56) dışında kalır */}
         {showForm && (
-          <div className="fixed inset-0 z-50 flex items-start justify-center overflow-y-auto bg-slate-950/90 px-4 py-8 backdrop-blur-sm">
+          <div className="fixed inset-0 z-40 flex items-start justify-center overflow-y-auto bg-slate-950/85 px-4 py-8 backdrop-blur-sm lg:inset-y-0 lg:left-56 lg:right-0 lg:top-0 lg:px-6">
             <form
               onSubmit={handleSave}
-              className="w-full max-w-2xl rounded-2xl border border-slate-800/60 bg-slate-900 p-6 shadow-2xl"
+              className="mb-8 w-full max-w-3xl rounded-2xl border border-slate-800/60 bg-slate-900 p-6 shadow-2xl"
             >
               <div className="mb-5 flex items-center justify-between">
                 <h2 className="text-base font-bold">{editingId ? "Oyunu Düzenle" : "Yeni Arena Oyunu"}</h2>
@@ -431,7 +476,7 @@ export default function AdminArenaPage() {
                       className={inputCls}
                       value={form.hero_teaser_tr}
                       onChange={(e) => handleField("hero_teaser_tr", e.target.value)}
-                      placeholder="16 isim, tek şampiyon. Sen seç."
+                      placeholder="Tek şampiyon. Sen seç."
                     />
                   </div>
                   <div>
@@ -440,7 +485,39 @@ export default function AdminArenaPage() {
                       className={inputCls}
                       value={form.hero_teaser_en}
                       onChange={(e) => handleField("hero_teaser_en", e.target.value)}
-                      placeholder="16 names, one champion. You decide."
+                      placeholder="One champion. You decide."
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <label className={labelCls}>Kampanya hub</label>
+                  <div className="mt-2 flex flex-wrap gap-4">
+                    {(["wc-2026", "transfer"] as const).map((tag) => (
+                      <label key={tag} className="flex items-center gap-2 text-xs text-slate-300">
+                        <input
+                          type="checkbox"
+                          checked={form.hub_tags.includes(tag)}
+                          onChange={() => {
+                            setForm((f) => ({
+                              ...f,
+                              hub_tags: f.hub_tags.includes(tag)
+                                ? f.hub_tags.filter((t) => t !== tag)
+                                : [...f.hub_tags, tag],
+                            }));
+                          }}
+                        />
+                        {tag}
+                      </label>
+                    ))}
+                  </div>
+                  <div className="mt-3">
+                    <label className={labelCls}>Takım slug (transfer anketi)</label>
+                    <input
+                      className={inputCls}
+                      value={form.team_slug}
+                      onChange={(e) => handleField("team_slug", e.target.value)}
+                      placeholder="örn. galatasaray"
                     />
                   </div>
                 </div>
@@ -452,9 +529,11 @@ export default function AdminArenaPage() {
                     <select
                       className={inputCls}
                       value={form.game_type}
-                      onChange={(e) => handleField("game_type", e.target.value as ArenaGameType)}
+                      onChange={(e) => handleGameTypeChange(e.target.value as ArenaGameType)}
                     >
                       <option value="random_16">random_16 (16 oyuncu, karışık)</option>
+                      <option value="random_32">random_32 (32 oyuncu, karışık)</option>
+                      <option value="random_64">random_64 (64 oyuncu, karışık)</option>
                       <option value="fixed_8">fixed_8 (8 sabit eşleşme)</option>
                     </select>
                   </div>
@@ -472,27 +551,54 @@ export default function AdminArenaPage() {
                   </div>
                 </div>
 
-                {/* Participants */}
+                {/* Katılımcılar — satır başına iki input */}
                 <div>
                   <label className={labelCls}>
-                    Katılımcılar
-                    {form.game_type === "fixed_8"
-                      ? " — her satır: Takım A | Takım B  (8 satır)"
-                      : " — her satır: İsim | Kulüp  (16 satır)"}
+                    Katılımcılar ({bracketParticipantCount(form.game_type)} satır)
                   </label>
-                  <textarea
-                    className={`${inputCls} font-mono text-xs`}
-                    rows={10}
-                    value={form.participantsText}
-                    onChange={(e) => handleField("participantsText", e.target.value)}
-                    placeholder={
-                      form.game_type === "fixed_8"
-                        ? "Manchester City | Real Madrid\nArsenal | Barcelona\n..."
-                        : "L. Yamal | Barcelona\nArda Güler | Real Madrid\n..."
-                    }
-                  />
-                  <p className="mt-1 text-[10px] text-slate-500">
-                    {formToParticipants(form).length} katılımcı girişi
+                  <p className="mb-2 text-[10px] text-slate-500">
+                    {form.game_type === "fixed_8"
+                      ? "Her satırda iki takım girin (A | B). Boş satırlar kayıtta yok sayılır."
+                      : "Her satırda oyuncu adı ve kulüp / alt başlık girin. Boş satırlar yok sayılır."}
+                  </p>
+                  <div className="rounded-lg border border-slate-800/60 bg-slate-950/40 p-3">
+                    <div className="mb-2 hidden grid-cols-[2rem_minmax(0,1fr)_minmax(0,1fr)] gap-2 text-[10px] font-semibold uppercase tracking-wider text-slate-500 sm:grid">
+                      <span className="text-center">#</span>
+                      <span>{form.game_type === "fixed_8" ? "Takım A" : "İsim"}</span>
+                      <span>{form.game_type === "fixed_8" ? "Takım B" : "Kulüp / alt başlık"}</span>
+                    </div>
+                    <div className="max-h-[min(560px,60vh)] space-y-2 overflow-y-auto overscroll-contain pr-1">
+                      {form.participantRows.map((row, i) => (
+                        <div
+                          key={`${form.game_type}-${i}`}
+                          className="grid grid-cols-1 gap-2 rounded-lg border border-slate-800/40 bg-slate-900/50 p-2 sm:grid-cols-[2rem_minmax(0,1fr)_minmax(0,1fr)] sm:items-center sm:border-0 sm:bg-transparent sm:p-0"
+                        >
+                          <span className="hidden text-center text-[11px] text-slate-600 sm:inline">{i + 1}</span>
+                          <div className="sm:contents">
+                            <input
+                              type="text"
+                              className={inputCls}
+                              value={row.name}
+                              onChange={(e) => handleParticipantRow(i, "name", e.target.value)}
+                              placeholder={form.game_type === "fixed_8" ? `Takım A (${i + 1})` : `Oyuncu (${i + 1})`}
+                              aria-label={form.game_type === "fixed_8" ? `Takım A ${i + 1}` : `İsim ${i + 1}`}
+                            />
+                            <input
+                              type="text"
+                              className={inputCls}
+                              value={row.detail}
+                              onChange={(e) => handleParticipantRow(i, "detail", e.target.value)}
+                              placeholder={form.game_type === "fixed_8" ? "Takım B" : "Kulüp"}
+                              aria-label={form.game_type === "fixed_8" ? `Takım B ${i + 1}` : `Kulüp ${i + 1}`}
+                            />
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                  <p className="mt-2 text-[10px] text-slate-500">
+                    <strong className="font-semibold text-slate-400">{countFilledParticipants(form.participantRows)}</strong>{" "}
+                    katılımcı · Toplam {bracketParticipantCount(form.game_type)} slot
                   </p>
                 </div>
               </div>

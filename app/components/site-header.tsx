@@ -6,6 +6,8 @@ import { createPortal } from "react-dom";
 import Link from "next/link";
 import { useRouter, usePathname } from "next/navigation";
 import { supabase } from "@/lib/supabase";
+import { translatePathBetweenLocales } from "@/lib/locale-path";
+import { HUBS } from "@/lib/hub-config";
 
 type Props = { activeNav?: string; maxWidth?: string; forceEn?: boolean; };
 type SearchResult = { id: string; title: string; title_en?: string; slug: string; category: string; };
@@ -31,11 +33,11 @@ function Wordmark({ isEn }: { isEn: boolean }) {
   return (
     <Link href={isEn ? "/en" : "/tr"} className="flex items-center gap-2.5 leading-none">
       <div style={{
-        width: 30, height: 30, borderRadius: 6, flexShrink: 0,
+        width: 34, height: 30, borderRadius: 6, flexShrink: 0,
         background: "linear-gradient(135deg, var(--accent), var(--accent-2), var(--accent-3))",
         display: "flex", alignItems: "center", justifyContent: "center",
       }}>
-        <span style={{ fontFamily: "var(--font-display)", fontSize: 17, fontWeight: 700, color: "var(--ink-900)" }}>S</span>
+        <span style={{ fontFamily: "var(--font-display)", fontSize: 12, fontWeight: 700, letterSpacing: "-0.04em", color: "var(--ink-900)" }}>SG</span>
       </div>
       <div>
         <div style={{ fontFamily: "var(--font-display)", fontSize: 17, fontWeight: 700, letterSpacing: "-0.025em", lineHeight: 1, color: "var(--sg-text-primary)" }}>
@@ -73,27 +75,23 @@ export default function SiteHeader({ activeNav, maxWidth = "max-w-7xl", forceEn 
   const NAV_ITEMS = isEn
     ? [
         { href: "/en", label: "HOME", key: "home" },
-        { href: "/en/listeler", label: "LISTS", key: "listeler" },
+        { href: HUBS["wc-2026"].en.basePath, label: HUBS["wc-2026"].en.navLabel, key: "wc-2026" },
+        { href: HUBS.transfer.en.basePath, label: HUBS.transfer.en.navLabel, key: "transfer" },
         { href: "/en/radar", label: "RADAR", key: "radar" },
-        { href: "/en/taktik-lab", label: "TACTICS LAB", key: "taktik-lab" },
+        { href: "/en/listeler", label: "LISTS", key: "listeler" },
         { href: "/en/arena", label: "ARENA", key: "arena" },
       ]
     : [
         { href: "/tr", label: "ANA SAYFA", key: "home" },
-        { href: "/listeler", label: "LİSTELER", key: "listeler" },
+        { href: HUBS["wc-2026"].tr.basePath, label: HUBS["wc-2026"].tr.navLabel, key: "wc-2026" },
+        { href: HUBS.transfer.tr.basePath, label: HUBS.transfer.tr.navLabel, key: "transfer" },
         { href: "/radar", label: "RADAR", key: "radar" },
-        { href: "/taktik-lab", label: "TAKTİK LAB", key: "taktik-lab" },
+        { href: "/listeler", label: "LİSTELER", key: "listeler" },
         { href: "/arena", label: "ARENA", key: "arena" },
       ];
 
   function toggleLang() {
-    if (isEn) {
-      const trPath = pathname.replace(/^\/en/, "") || "/";
-      router.push(trPath === "/" ? "/tr" : trPath);
-    } else {
-      const enPath = pathname === "/tr" ? "" : pathname;
-      router.push("/en" + enPath);
-    }
+    router.push(translatePathBetweenLocales(pathname, !isEn));
   }
 
   const currentKey = activeNav ?? NAV_ITEMS.find((n) => navHrefMatches(pathname, n.href))?.key ?? "";
@@ -270,16 +268,6 @@ export default function SiteHeader({ activeNav, maxWidth = "max-w-7xl", forceEn 
       <div className="flex items-center gap-3 px-4 pb-8 pt-3" style={{ borderTop: "1px solid var(--sg-border)" }}>
         <div className="mono flex flex-1 overflow-hidden"
           style={{ border: "1px solid var(--sg-border)", borderRadius: 999, fontSize: 11, letterSpacing: "0.14em" }}>
-          <button type="button" onClick={() => { if (isEn) { toggleLang(); setOpen(false); } }}
-            className="flex-1 py-2.5 text-center transition"
-            style={{
-              background: !isEn ? "var(--accent)" : "transparent",
-              color: !isEn ? "var(--ink-900)" : "var(--sg-text-muted)",
-              fontWeight: !isEn ? 700 : 400,
-            }}>
-            TR
-          </button>
-          <span style={{ width: 1, background: "var(--sg-border)", flexShrink: 0 }} />
           <button type="button" onClick={() => { if (!isEn) { toggleLang(); setOpen(false); } }}
             className="flex-1 py-2.5 text-center transition"
             style={{
@@ -288,6 +276,16 @@ export default function SiteHeader({ activeNav, maxWidth = "max-w-7xl", forceEn 
               fontWeight: isEn ? 700 : 400,
             }}>
             EN
+          </button>
+          <span style={{ width: 1, background: "var(--sg-border)", flexShrink: 0 }} />
+          <button type="button" onClick={() => { if (isEn) { toggleLang(); setOpen(false); } }}
+            className="flex-1 py-2.5 text-center transition"
+            style={{
+              background: !isEn ? "var(--accent)" : "transparent",
+              color: !isEn ? "var(--ink-900)" : "var(--sg-text-muted)",
+              fontWeight: !isEn ? 700 : 400,
+            }}>
+            TR
           </button>
         </div>
       </div>
@@ -330,20 +328,9 @@ export default function SiteHeader({ activeNav, maxWidth = "max-w-7xl", forceEn 
 
           {/* Desktop right controls */}
           <div className="hidden md:flex items-center gap-2">
-            {/* Language toggle — EN | TR pill pair */}
+            {/* Dil — EN (sol, varsayılan rotaya uygun) | TR (sağ) */}
             <div className="mono flex items-center overflow-hidden"
               style={{ border: "1px solid var(--sg-surface-top)", borderRadius: 999, fontSize: 10, letterSpacing: "0.14em" }}>
-              <Link href={isEn ? pathname.replace(/^\/en/, "") || "/tr" : "#"}
-                onClick={e => { if (!isEn) e.preventDefault(); else { e.preventDefault(); toggleLang(); } }}
-                className="transition-all px-3 py-1.5"
-                style={{
-                  background: !isEn ? "var(--accent)" : "transparent",
-                  color: !isEn ? "var(--ink-900)" : "var(--sg-text-muted)",
-                  fontWeight: !isEn ? 700 : 400,
-                }}>
-                TR
-              </Link>
-              <span style={{ width: 1, height: 14, background: "var(--sg-surface-top)", flexShrink: 0 }} />
               <Link href={isEn ? "#" : "/en" + (pathname === "/tr" ? "" : pathname)}
                 onClick={e => { if (isEn) e.preventDefault(); else { e.preventDefault(); toggleLang(); } }}
                 className="transition-all px-3 py-1.5"
@@ -353,6 +340,17 @@ export default function SiteHeader({ activeNav, maxWidth = "max-w-7xl", forceEn 
                   fontWeight: isEn ? 700 : 400,
                 }}>
                 EN
+              </Link>
+              <span style={{ width: 1, height: 14, background: "var(--sg-surface-top)", flexShrink: 0 }} />
+              <Link href={isEn ? pathname.replace(/^\/en/, "") || "/tr" : "#"}
+                onClick={e => { if (!isEn) e.preventDefault(); else { e.preventDefault(); toggleLang(); } }}
+                className="transition-all px-3 py-1.5"
+                style={{
+                  background: !isEn ? "var(--accent)" : "transparent",
+                  color: !isEn ? "var(--ink-900)" : "var(--sg-text-muted)",
+                  fontWeight: !isEn ? 700 : 400,
+                }}>
+                TR
               </Link>
             </div>
 

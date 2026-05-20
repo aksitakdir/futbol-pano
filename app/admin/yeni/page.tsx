@@ -7,6 +7,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { supabase } from "@/lib/supabase";
 import RichTextEditor from "@/app/components/rich-text-editor";
 import AdminLayout from "../components/admin-layout";
+import HubTagsField from "@/app/components/hub-tags-field";
 
 function isContentEmpty(html: string): boolean {
   if (!html?.trim()) return true;
@@ -122,6 +123,7 @@ function YeniIcerikForm() {
 
   const [heroVariant, setHeroVariant] = useState("text-only");
   const [accentColor, setAccentColor] = useState("emerald");
+  const [hubTags, setHubTags] = useState<string[]>([]);
 
   useEffect(() => {
     const c = searchParams.get("category");
@@ -225,6 +227,7 @@ function YeniIcerikForm() {
       players_json: playersList.length > 0 ? JSON.stringify(playersList) : null,
       hero_variant: heroVariant,
       accent: accentColor,
+      hub_tags: hubTags.length > 0 ? hubTags : [],
       status: "bekliyor",
     });
 
@@ -314,6 +317,8 @@ function YeniIcerikForm() {
               ))}
             </div>
           </div>
+
+          <HubTagsField value={hubTags} onChange={setHubTags} />
 
           {/* V2 — Hero Variant + Accent */}
           <div className="grid gap-5 sm:grid-cols-2">
@@ -640,6 +645,10 @@ function YeniIcerikForm() {
             ) : (
               <RichTextEditor value={contentEn} onChange={setContentEn} placeholder="Write content in English..." />
             )}
+            <p className="mt-2 text-[10px] text-sky-500/90 leading-relaxed">
+              Gövde içinde kart:{" "}
+              <code className="rounded bg-slate-800 px-1 py-0.5 text-[9px] text-sky-300">{`<!-- scout-player:Oyuncu Tam Adı -->`}</code>
+            </p>
           </div>
 
           {error && <p className="text-xs text-rose-400">{error}</p>}

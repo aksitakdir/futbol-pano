@@ -284,7 +284,7 @@ export default function SectionsEditor({ value, onChange }: Props) {
       {/* Blocks */}
       {value.length === 0 && (
         <div className="rounded-xl border border-dashed border-slate-700 py-10 text-center">
-          <p className="text-sm text-slate-500">Henüz blok yok — aşağıdan ekle</p>
+          <p className="text-sm text-slate-500">Henüz blok yok — «Blok Ekle» ile üstteki menüden seç</p>
           <p className="text-[11px] text-slate-600 mt-1">Giriş paragrafı ile başla</p>
         </div>
       )}
@@ -313,7 +313,7 @@ export default function SectionsEditor({ value, onChange }: Props) {
         </button>
 
         {addOpen && (
-          <div className="absolute left-0 right-0 z-20 mt-1 overflow-hidden rounded-xl border border-slate-700 bg-slate-900 shadow-2xl">
+          <div className="absolute bottom-full left-0 right-0 z-20 mb-1 overflow-hidden rounded-xl border border-slate-700 bg-slate-900 shadow-2xl">
             {BLOCK_TYPES.map((bt) => (
               <button
                 key={bt.type}

@@ -8,6 +8,7 @@ import { supabase } from "@/lib/supabase";
 import RichTextEditor from "@/app/components/rich-text-editor";
 import AdminLayout from "../../components/admin-layout";
 import SectionsEditor, { type SectionBlock } from "../../components/sections-editor";
+import HubTagsField from "@/app/components/hub-tags-field";
 
 function isContentEmpty(html: string): boolean {
   if (!html?.trim()) return true;
@@ -131,6 +132,7 @@ export default function DuzenlePage() {
 
   const [heroVariant, setHeroVariant] = useState("text-only");
   const [accentColor, setAccentColor] = useState("emerald");
+  const [hubTags, setHubTags] = useState<string[]>([]);
 
   // Sections JSON (blok editörü)
   const [sectionsBlocks, setSectionsBlocks] = useState<SectionBlock[]>([]);
@@ -188,11 +190,19 @@ export default function DuzenlePage() {
         setPlayersList([]);
       }
 
-      const row = data as { title_en?: string | null; content_en?: string | null; hero_variant?: string | null; accent?: string | null; sections_json?: SectionBlock[] | null };
+      const row = data as {
+        title_en?: string | null;
+        content_en?: string | null;
+        hero_variant?: string | null;
+        accent?: string | null;
+        sections_json?: SectionBlock[] | null;
+        hub_tags?: string[] | null;
+      };
       setTitleEn(row.title_en ?? "");
       setContentEn(row.content_en ?? "");
       setHeroVariant(row.hero_variant ?? "text-only");
       setAccentColor(row.accent ?? "emerald");
+      setHubTags(Array.isArray(row.hub_tags) ? row.hub_tags : []);
 
       // Blok editörü — mevcut sections_json'ı yükle
       if (Array.isArray(row.sections_json) && row.sections_json.length > 0) {
@@ -306,6 +316,7 @@ export default function DuzenlePage() {
       hero_variant: heroVariant,
       accent: accentColor,
       sections_json: sectionsBlocks.length > 0 ? sectionsBlocks : null,
+      hub_tags: hubTags.length > 0 ? hubTags : [],
     };
 
     if (publish) updateData.status = "yayinda";
@@ -414,6 +425,8 @@ export default function DuzenlePage() {
               ))}
             </div>
           </div>
+
+          <HubTagsField value={hubTags} onChange={setHubTags} />
 
           {/* V2 — Hero Variant + Accent */}
           <div className="grid gap-5 sm:grid-cols-2">
@@ -768,12 +781,18 @@ export default function DuzenlePage() {
                 <p className="mt-2 text-[10px] text-slate-600">
                   Ham HTML editörü. <strong className="text-slate-500">Blok Editörü</strong> sekmesine geçerek lead, spot alıntı ve callout blokları görsel olarak ekleyebilirsin.
                 </p>
+                <p className="mt-1.5 text-[10px] text-sky-500/90 leading-relaxed">
+                  Metnin istediğin yerinde EA FC kartı: tek satır olarak{" "}
+                  <code className="rounded bg-slate-800 px-1 py-0.5 text-[9px] text-sky-300">{`<!-- scout-player:Oyuncu Tam Adı -->`}</code>{" "}
+                  yazın (Veritabanındaki isme yakın; Radar/Listeler/Taktik HTML ve blok HTML alanlarında geçerli).
+                </p>
               </div>
             ) : (
               <div>
                 <p className="text-[11px] text-slate-500 mb-4">
                   Her blok ayrı bir bölüm olarak render edilir. Kaydettiğinde <code className="text-sky-400">sections_json</code> kolonu güncellenir
-                  ve makale bu yapıyı kullanır (Rich Text yerine).
+                  ve makale bu yapıyı kullanır (Rich Text yerine). HTML bloklarına{" "}
+                  <code className="text-sky-400/90">{`<!-- scout-player:İsim -->`}</code> ekleyerek kart gömebilirsin.
                 </p>
                 <SectionsEditor value={sectionsBlocks} onChange={setSectionsBlocks} />
               </div>

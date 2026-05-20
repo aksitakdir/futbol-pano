@@ -73,6 +73,10 @@ const SEO_VALUE_STYLE: Record<string, string> = {
   Düşük: "bg-slate-500/20 text-slate-300 border-slate-500/40",
 };
 
+/** İşlem butonları — kategori/durum rozetleri ile uyumlu pill stil */
+const ACTION_BTN =
+  "inline-flex h-7 shrink-0 items-center justify-center rounded-full border px-2.5 text-[10px] font-semibold tracking-wide transition disabled:pointer-events-none disabled:opacity-45";
+
 export default function IceriklerPage() {
   const [allContents, setAllContents] = useState<ContentRow[]>([]);
   const [loading, setLoading] = useState(false);
@@ -306,7 +310,7 @@ export default function IceriklerPage() {
     <AdminLayout>
       <div className="mx-auto max-w-6xl">
         {/* Sticky üst araç çubuğu — kaydırırken daima erişilebilir */}
-        <div className="sticky top-0 z-30 -mx-1 mb-4 rounded-xl border border-slate-800/60 bg-slate-950/90 px-3 py-3 shadow-[0_8px_30px_rgba(0,0,0,0.35)] backdrop-blur-md sm:-mx-0 sm:px-4">
+        <div className="sticky top-0 z-30 -mx-1 mb-4 rounded-xl border border-slate-700/60 bg-slate-950/90 px-3 py-3 shadow-[0_8px_30px_rgba(0,0,0,0.35)] backdrop-blur-md sm:-mx-0 sm:px-4">
           <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
           <div>
             <h1 className="text-xl font-bold">İçerik Yönetimi</h1>
@@ -341,7 +345,7 @@ export default function IceriklerPage() {
         </div>
 
         {/* İçerik Kontrol Merkezi */}
-        <div className="mb-6 rounded-2xl border border-slate-800/70 bg-slate-900/40 p-4 shadow-lg sm:p-6">
+        <div className="mb-6 rounded-xl border border-slate-700/70 bg-slate-900/40 p-4 sm:p-6">
           <div className="mb-4 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
             <div>
               <h2 className="text-sm font-bold text-slate-100">İçerik Kontrol Merkezi</h2>
@@ -356,7 +360,7 @@ export default function IceriklerPage() {
           </div>
 
           {/* Başlık Keşfet */}
-          <div className="mb-6 rounded-xl border border-slate-800/60 bg-slate-950/50 p-4">
+          <div className="mb-6 rounded-xl border border-slate-700/60 bg-slate-900/40 p-4">
             <h3 className="mb-3 text-xs font-bold uppercase tracking-wider text-emerald-400/90">Başlık Keşfet</h3>
             <input
               type="text"
@@ -420,10 +424,10 @@ export default function IceriklerPage() {
                       }
                     }}
                     className={[
-                      "flex flex-col rounded-xl border bg-slate-950/60 p-3 text-left transition cursor-pointer",
+                      "flex flex-col rounded-xl border bg-slate-900/40 p-3 text-left transition cursor-pointer",
                       selectedSuggestIdx === i
                         ? "border-emerald-500/50 ring-1 ring-emerald-500/30"
-                        : "border-slate-800/70 hover:border-slate-700",
+                        : "border-slate-700/70 hover:border-slate-600",
                     ].join(" ")}
                   >
                     <button
@@ -467,7 +471,7 @@ export default function IceriklerPage() {
           )}
 
           {/* İçerik Üret */}
-          <div className="rounded-xl border border-slate-800/60 bg-slate-950/40 p-4">
+          <div className="rounded-xl border border-slate-700/60 bg-slate-900/40 p-4">
             <h3 className="mb-2 text-xs font-bold uppercase tracking-wider text-violet-400/90">İçerik Üret</h3>
             <p className="mb-3 text-[11px] text-slate-500">
               Bir kartı seçip <strong className="text-slate-400">Üret</strong> ile onaylayın; veya başlığa / &quot;Bu Başlıkla Üret&quot;e tıklayarak doğrudan başlatın.
@@ -501,7 +505,7 @@ export default function IceriklerPage() {
         {/* Trends popup */}
         {trendsOpen && (
           <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4">
-            <div className="w-full max-w-lg rounded-2xl border border-slate-800/80 bg-slate-950 p-6 shadow-2xl">
+            <div className="w-full max-w-lg rounded-xl border border-slate-700/80 bg-slate-900/95 p-6 shadow-2xl">
               <div className="mb-4 flex items-center justify-between">
                 <h2 className="text-sm font-bold">Güncel Futbol Trendleri (TR)</h2>
                 <button onClick={() => setTrendsOpen(false)} className="text-slate-500 transition hover:text-slate-300">
@@ -527,7 +531,7 @@ export default function IceriklerPage() {
                               setCcKeyword(t.title);
                               setTrendsOpen(false);
                             }}
-                            className="flex w-full items-center justify-between rounded-lg border border-slate-800/60 bg-slate-900/40 px-3 py-2 text-left transition hover:border-sky-500/40 hover:bg-slate-900/70"
+                            className="flex w-full items-center justify-between rounded-lg border border-slate-700/60 bg-slate-900/40 px-3 py-2 text-left transition hover:border-sky-500/40 hover:bg-slate-900/70"
                           >
                             <span className="text-xs font-medium text-slate-200">{t.title}</span>
                             {t.traffic && <span className="shrink-0 text-[10px] text-slate-500">{t.traffic}</span>}
@@ -550,7 +554,7 @@ export default function IceriklerPage() {
                               setCcKeyword(t);
                               setTrendsOpen(false);
                             }}
-                            className="rounded-full border border-slate-800/60 bg-slate-900/40 px-2.5 py-1 text-[11px] text-slate-400 transition hover:border-sky-500/40 hover:text-sky-200"
+                            className="rounded-full border border-slate-700/60 bg-slate-900/40 px-2.5 py-1 text-[11px] text-slate-400 transition hover:border-sky-500/40 hover:text-sky-200"
                           >
                             {t}
                           </button>
@@ -564,24 +568,30 @@ export default function IceriklerPage() {
           </div>
         )}
 
-        {/* Tabs */}
-        <div className="mb-5 flex gap-1 rounded-xl border border-slate-800/60 bg-slate-900/40 p-1">
+        {/* Tabs — Analytics ile alt çizgili sekme stili */}
+        <div className="mb-5 flex flex-wrap gap-1 border-b border-slate-700/60">
           {TABS.map((t) => (
             <button
               key={t.key}
-              onClick={() => { setTab(t.key); setSelected(new Set()); }}
+              type="button"
+              onClick={() => {
+                setTab(t.key);
+                setSelected(new Set());
+              }}
               className={[
-                "flex flex-1 items-center justify-center gap-1.5 rounded-lg px-3 py-2.5 text-xs font-semibold transition",
+                "-mb-px flex flex-1 min-w-[6.5rem] items-center justify-center gap-2 border-b-2 px-3 py-2.5 text-xs font-semibold uppercase tracking-[0.12em] transition sm:min-w-0 sm:flex-initial sm:px-4",
                 tab === t.key
-                  ? "bg-emerald-500/15 text-emerald-300"
-                  : "text-slate-400 hover:text-slate-200",
+                  ? "border-emerald-400 text-emerald-300"
+                  : "border-transparent text-slate-500 hover:text-slate-300",
               ].join(" ")}
             >
               {t.label}
-              <span className={[
-                "inline-flex h-5 min-w-[20px] items-center justify-center rounded-full px-1.5 text-[10px] font-bold",
-                tab === t.key ? "bg-emerald-500/25 text-emerald-200" : "bg-slate-800 text-slate-400",
-              ].join(" ")}>
+              <span
+                className={[
+                  "inline-flex h-5 min-w-[22px] items-center justify-center rounded-full px-1.5 text-[10px] font-bold tabular-nums",
+                  tab === t.key ? "bg-emerald-500/25 text-emerald-200" : "bg-slate-800 text-slate-400",
+                ].join(" ")}
+              >
                 {counts[t.key]}
               </span>
             </button>
@@ -608,16 +618,16 @@ export default function IceriklerPage() {
             Yükleniyor...
           </div>
         ) : filtered.length === 0 ? (
-          <div className="rounded-2xl border border-slate-800/60 bg-slate-900/30 px-6 py-16 text-center">
+          <div className="rounded-xl border border-slate-700/60 bg-slate-900/30 px-6 py-16 text-center">
             <p className="text-sm text-slate-400">
               {search.trim() ? `"${search}" ile eşleşen içerik bulunamadı` : emptyMessages[tab]}
             </p>
           </div>
         ) : (
-          <div className="overflow-x-auto rounded-xl border border-slate-800/60">
+          <div className="overflow-x-auto rounded-xl border border-slate-700/60">
             {/* Desktop: sabit genişlikli işlem sütunu + min-w-0 ile başlık kırılır */}
             {/* Table header — liste kayarken sütun başlıkları görünür kalsın */}
-            <div className="grid min-w-[56rem] grid-cols-[40px_minmax(0,1fr)_100px_100px_92px_230px] items-center gap-2 border-b border-slate-800/40 bg-slate-900/90 px-4 py-3 text-[10px] font-semibold uppercase tracking-widest text-slate-500 max-lg:hidden">
+            <div className="grid min-w-[56rem] grid-cols-[40px_minmax(0,1fr)_100px_100px_92px_200px] items-center gap-2 border-b border-slate-700/40 bg-slate-900/40 px-4 py-3 text-[10px] font-semibold uppercase tracking-[0.18em] text-slate-500 max-lg:hidden">
               <div className="flex items-center justify-center">
                 <input type="checkbox" checked={allChecked} onChange={toggleSelectAll} className="h-3.5 w-3.5 cursor-pointer rounded border-slate-600 bg-slate-900 accent-emerald-500" />
               </div>
@@ -625,7 +635,7 @@ export default function IceriklerPage() {
               <div>Kategori</div>
               <div>Durum</div>
               <div>Tarih</div>
-              <div className="border-l border-slate-800/50 pl-2 text-right">İşlemler</div>
+              <div className="border-l border-slate-700/50 pl-2 text-right">İşlemler</div>
             </div>
 
             {filtered.map((item) => {
@@ -637,13 +647,13 @@ export default function IceriklerPage() {
               const preview = contentPreviewSnippet(item.content);
 
               return (
-                <div key={item.id} className={["border-b border-slate-800/40 last:border-b-0 transition", isChecked ? "bg-emerald-500/[0.03]" : ""].join(" ")}>
+                <div key={item.id} className={["border-b border-slate-700/40 last:border-b-0 transition", isChecked ? "bg-emerald-500/[0.03]" : ""].join(" ")}>
                   {/* Desktop row */}
-                  <div className="grid min-w-[56rem] grid-cols-[40px_minmax(0,1fr)_100px_100px_92px_230px] items-start gap-2 px-4 py-3 max-lg:hidden">
-                    <div className="flex items-center justify-center pt-1">
+                  <div className="grid min-w-[56rem] grid-cols-[40px_minmax(0,1fr)_100px_100px_92px_200px] items-center gap-2 px-4 py-3 max-lg:hidden">
+                    <div className="flex items-center justify-center">
                       <input type="checkbox" checked={isChecked} onChange={() => toggleSelect(item.id)} className="h-3.5 w-3.5 cursor-pointer rounded border-slate-600 bg-slate-900 accent-emerald-500" />
                     </div>
-                    <div className="min-w-0">
+                    <div className="min-w-0 py-0.5">
                       <button
                         type="button"
                         onClick={() => setExpandedId(isOpen ? null : item.id)}
@@ -664,33 +674,68 @@ export default function IceriklerPage() {
                         </div>
                       </button>
                     </div>
-                    <div className="flex flex-col gap-1 pt-1">
+                    <div className="flex flex-col justify-center gap-1">
                       <span className={`inline-flex w-fit max-w-full items-center rounded-full border px-2 py-0.5 text-[10px] font-semibold ${catColor}`}>{CATEGORY_LABEL[item.category] ?? item.category}</span>
                     </div>
-                    <div className="pt-1">
+                    <div className="flex items-center">
                       <span className={`inline-flex w-fit items-center rounded-full border px-2 py-0.5 text-[10px] font-semibold ${status.cls}`}>{status.label}</span>
                     </div>
-                    <span className="whitespace-nowrap pt-1.5 text-[11px] text-slate-400">{new Date(item.created_at).toLocaleDateString("tr-TR", { day: "numeric", month: "short", year: "numeric" })}</span>
-                    <div className="sticky right-0 z-[1] flex min-h-[4.5rem] flex-col justify-center gap-1.5 border-l border-slate-800/50 bg-slate-950/95 py-2 pl-2 pr-1 shadow-[-12px_0_24px_-8px_rgba(0,0,0,0.5)]">
-                      <div className="flex flex-wrap justify-end gap-1">
-                        <Link href={`/admin/duzenle/${item.id}`} className="rounded-md border border-slate-700/60 bg-slate-900/90 px-2 py-1.5 text-[11px] font-semibold text-amber-300 transition hover:border-amber-500/50">Düzenle</Link>
+                    <div className="flex items-center">
+                      <span className="whitespace-nowrap text-[11px] text-slate-400">{new Date(item.created_at).toLocaleDateString("tr-TR", { day: "numeric", month: "short", year: "numeric" })}</span>
+                    </div>
+                    <div className="flex flex-col items-end justify-center gap-1.5 border-l border-slate-700/50 bg-slate-900/70 py-2 pl-3 pr-2">
+                      <div className="flex flex-col items-end gap-1.5">
+                        <Link
+                          href={`/admin/duzenle/${item.id}`}
+                          className={`${ACTION_BTN} border-emerald-500/40 bg-emerald-500/10 text-emerald-300 hover:border-emerald-500/60 hover:bg-emerald-500/18`}
+                        >
+                          Düzenle
+                        </Link>
                         {item.status === "bekliyor" && (
                           <>
-                            <button type="button" onClick={() => updateStatus(item.id, "yayinda")} disabled={isActioning} className="rounded-md bg-emerald-500/15 px-2 py-1.5 text-[11px] font-semibold text-emerald-300 transition hover:bg-emerald-500/25 disabled:opacity-50">Yayınla</button>
-                            <button type="button" onClick={() => updateStatus(item.id, "reddedildi")} disabled={isActioning} className="rounded-md bg-rose-500/15 px-2 py-1.5 text-[11px] font-semibold text-rose-300 transition hover:bg-rose-500/25 disabled:opacity-50">Reddet</button>
+                            <button
+                              type="button"
+                              onClick={() => updateStatus(item.id, "yayinda")}
+                              disabled={isActioning}
+                              className={`${ACTION_BTN} border-emerald-500/50 bg-emerald-500/15 text-emerald-200 hover:bg-emerald-500/25`}
+                            >
+                              Yayınla
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => updateStatus(item.id, "reddedildi")}
+                              disabled={isActioning}
+                              className={`${ACTION_BTN} border-rose-500/45 bg-rose-500/10 text-rose-300 hover:bg-rose-500/18`}
+                            >
+                              Reddet
+                            </button>
                           </>
                         )}
                         {item.status === "yayinda" && (
-                          <button type="button" onClick={() => updateStatus(item.id, "bekliyor")} disabled={isActioning} className="rounded-md bg-rose-500/15 px-2 py-1.5 text-[11px] font-semibold text-rose-300 transition hover:bg-rose-500/25 disabled:opacity-50">Kaldır</button>
+                          <button
+                            type="button"
+                            onClick={() => updateStatus(item.id, "bekliyor")}
+                            disabled={isActioning}
+                            className={`${ACTION_BTN} border-rose-500/45 bg-rose-500/10 text-rose-300 hover:bg-rose-500/18`}
+                          >
+                            Kaldır
+                          </button>
                         )}
                         {item.status === "reddedildi" && (
                           <>
-                            <button type="button" onClick={() => updateStatus(item.id, "bekliyor")} disabled={isActioning} className="rounded-md bg-amber-500/15 px-2 py-1.5 text-[11px] font-semibold text-amber-300 transition hover:bg-amber-500/25 disabled:opacity-50">Geri Al</button>
+                            <button
+                              type="button"
+                              onClick={() => updateStatus(item.id, "bekliyor")}
+                              disabled={isActioning}
+                              className={`${ACTION_BTN} border-amber-500/45 bg-amber-500/10 text-amber-300 hover:bg-amber-500/18`}
+                            >
+                              Geri Al
+                            </button>
                             <button
                               type="button"
                               onClick={() => deleteItem(item.id)}
                               disabled={isActioning}
-                              className="rounded-md bg-rose-900/30 px-2 py-1.5 text-[11px] font-semibold text-rose-400 transition hover:bg-rose-500/25 disabled:opacity-50"
+                              className={`${ACTION_BTN} border-rose-500/50 bg-rose-500/15 text-rose-200 hover:bg-rose-500/25`}
                             >
                               Sil
                             </button>
@@ -718,26 +763,37 @@ export default function IceriklerPage() {
                         </div>
                       </div>
                     </div>
-                    <div className="flex flex-wrap gap-1.5 pl-6">
-                      <Link href={`/admin/duzenle/${item.id}`} className="rounded-md border border-slate-700/60 bg-slate-900/70 px-2.5 py-1.5 text-[11px] font-semibold text-amber-300">Düzenle</Link>
-                      <button onClick={() => setExpandedId(isOpen ? null : item.id)} className="rounded-md border border-slate-700/60 bg-slate-900/70 px-2.5 py-1.5 text-[11px] font-semibold text-slate-300">{isOpen ? "Kapat" : "Önizle"}</button>
+                    <div className="flex flex-wrap items-center gap-1.5 pl-6">
+                      <Link
+                        href={`/admin/duzenle/${item.id}`}
+                        className={`${ACTION_BTN} border-emerald-500/40 bg-emerald-500/10 text-emerald-300 hover:border-emerald-500/60 hover:bg-emerald-500/18`}
+                      >
+                        Düzenle
+                      </Link>
+                      <button
+                        type="button"
+                        onClick={() => setExpandedId(isOpen ? null : item.id)}
+                        className={`${ACTION_BTN} border-slate-600/80 bg-slate-800/50 text-slate-300 hover:border-slate-500 hover:bg-slate-800`}
+                      >
+                        {isOpen ? "Kapat" : "Önizle"}
+                      </button>
                       {item.status === "bekliyor" && (
                         <>
-                          <button onClick={() => updateStatus(item.id, "yayinda")} disabled={isActioning} className="rounded-md bg-emerald-500/15 px-2.5 py-1.5 text-[11px] font-semibold text-emerald-300 disabled:opacity-50">Yayınla</button>
-                          <button onClick={() => updateStatus(item.id, "reddedildi")} disabled={isActioning} className="rounded-md bg-rose-500/15 px-2.5 py-1.5 text-[11px] font-semibold text-rose-300 disabled:opacity-50">Reddet</button>
+                          <button type="button" onClick={() => updateStatus(item.id, "yayinda")} disabled={isActioning} className={`${ACTION_BTN} border-emerald-500/50 bg-emerald-500/15 text-emerald-200 hover:bg-emerald-500/25`}>Yayınla</button>
+                          <button type="button" onClick={() => updateStatus(item.id, "reddedildi")} disabled={isActioning} className={`${ACTION_BTN} border-rose-500/45 bg-rose-500/10 text-rose-300 hover:bg-rose-500/18`}>Reddet</button>
                         </>
                       )}
                       {item.status === "yayinda" && (
-                        <button onClick={() => updateStatus(item.id, "bekliyor")} disabled={isActioning} className="rounded-md bg-rose-500/15 px-2.5 py-1.5 text-[11px] font-semibold text-rose-300 disabled:opacity-50">Kaldır</button>
+                        <button type="button" onClick={() => updateStatus(item.id, "bekliyor")} disabled={isActioning} className={`${ACTION_BTN} border-rose-500/45 bg-rose-500/10 text-rose-300 hover:bg-rose-500/18`}>Kaldır</button>
                       )}
                       {item.status === "reddedildi" && (
                         <>
-                          <button onClick={() => updateStatus(item.id, "bekliyor")} disabled={isActioning} className="rounded-md bg-amber-500/15 px-2.5 py-1.5 text-[11px] font-semibold text-amber-300 disabled:opacity-50">Geri Al</button>
+                          <button type="button" onClick={() => updateStatus(item.id, "bekliyor")} disabled={isActioning} className={`${ACTION_BTN} border-amber-500/45 bg-amber-500/10 text-amber-300 hover:bg-amber-500/18`}>Geri Al</button>
                           <button
                             type="button"
                             onClick={() => deleteItem(item.id)}
                             disabled={isActioning}
-                            className="rounded-md bg-rose-900/30 px-2.5 py-1.5 text-[11px] font-semibold text-rose-400 transition hover:bg-rose-500/25 disabled:opacity-50"
+                            className={`${ACTION_BTN} border-rose-500/50 bg-rose-500/15 text-rose-200 hover:bg-rose-500/25`}
                           >
                             Sil
                           </button>
@@ -748,10 +804,10 @@ export default function IceriklerPage() {
 
                   {/* Accordion preview */}
                   {isOpen && (
-                    <div className="border-t border-slate-800/40 bg-slate-900/30 px-4 py-4 lg:pl-14">
+                    <div className="border-t border-slate-700/40 bg-slate-900/30 px-4 py-4 lg:pl-14">
                       <p className="mb-2 text-[10px] font-semibold uppercase tracking-widest text-slate-500">İçerik önizlemesi</p>
                       <p className="mb-3 text-xs font-medium text-slate-200" title={item.title}>{item.title}</p>
-                      <div className="max-h-[min(28rem,calc(100vh-16rem))] overflow-y-auto rounded-lg border border-slate-800/50 bg-slate-950/50 p-4 text-[13px] leading-relaxed text-slate-300">
+                      <div className="max-h-[min(28rem,calc(100vh-16rem))] overflow-y-auto rounded-lg border border-slate-700/50 bg-slate-950/50 p-4 text-[13px] leading-relaxed text-slate-300">
                         {item.content ? (
                           <div className="whitespace-pre-wrap break-words [word-break:break-word]">
                             {item.content}

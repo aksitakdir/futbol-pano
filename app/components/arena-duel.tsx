@@ -4,6 +4,13 @@ import { useState, useMemo, useCallback, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { recordVoteAndGetLeaderboard } from "@/app/arena/actions";
 import type { LeaderboardEntry } from "@/app/arena/actions";
+import type { ArenaGameType } from "@/lib/arena-brackets";
+import {
+  bracketLabelSize,
+  normalizeArenaParticipants,
+  arenaRoundNamesForCount,
+  arenaNextRoundHeading,
+} from "@/lib/arena-brackets";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -26,7 +33,7 @@ type Phase = "playing" | "round_transition" | "champion";
 
 export type ArenaDuelProps = {
   participants: ParticipantData[];
-  gameType: "random_16" | "fixed_8";
+  gameType: ArenaGameType;
   title: string;
   lang?: "tr" | "en";
   canonicalUrl?: string;
@@ -35,10 +42,6 @@ export type ArenaDuelProps = {
 
 // ─── Constants ────────────────────────────────────────────────────────────────
 
-const ROUND_NAMES_TR = ["Son 16", "Çeyrek Final", "Yarı Final", "Final"];
-const ROUND_NAMES_EN = ["Round of 16", "Quarter-Final", "Semi-Final", "Final"];
-const NEXT_ROUND_TR = ["Çeyrek Final Başlıyor!", "Yarı Final Başlıyor!", "Final Başlıyor!"];
-const NEXT_ROUND_EN = ["Quarter-Finals Begin!", "Semi-Finals Begin!", "The Final Is Here!"];
 const MATCH_LABEL_TR = "Maç";
 const MATCH_LABEL_EN = "Match";
 
@@ -53,7 +56,7 @@ function shuffle<T>(arr: T[]): T[] {
   return a;
 }
 
-function buildInitialMatches(participants: ParticipantData[], gameType: string): Match[] {
+function buildInitialMatches(participants: ParticipantData[], gameType: ArenaGameType): Match[] {
   if (gameType === "fixed_8") {
     return participants.map((p) => ({
       left: { name: p.name, subtitle: p.subtitle, photo_url: p.photo_url },
@@ -245,15 +248,22 @@ function PlayerCard({ participant, side, onSelect, isLoser, isSelected, disabled
 
 export default function ArenaDuel({ participants, gameType, title, lang = "tr", canonicalUrl, gameSlug }: ArenaDuelProps) {
   const isEn = lang === "en";
-  const roundNames = isEn ? ROUND_NAMES_EN : ROUND_NAMES_TR;
-  const nextRoundLabels = isEn ? NEXT_ROUND_EN : NEXT_ROUND_TR;
   const matchLabel = isEn ? MATCH_LABEL_EN : MATCH_LABEL_TR;
 
-  // Build initial matches once (stable via useMemo + empty deps)
+  const normalizedParticipants = useMemo(
+    () => normalizeArenaParticipants(participants, gameType) as ParticipantData[],
+    [participants, gameType],
+  );
+
+  const labelN = bracketLabelSize(gameType, normalizedParticipants.length);
+  const roundNames = useMemo(() => arenaRoundNamesForCount(labelN, lang), [labelN, lang]);
+
+  const effectiveBracketN = gameType === "fixed_8" ? 16 : normalizedParticipants.length;
+  const totalMatchesAll = Math.max(1, effectiveBracketN - 1);
+
   const initialMatches = useMemo(
-    () => buildInitialMatches(participants, gameType),
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [],
+    () => buildInitialMatches(normalizedParticipants, gameType),
+    [normalizedParticipants, gameType],
   );
 
   // All rounds accumulated as we play
@@ -277,10 +287,9 @@ export default function ArenaDuel({ participants, gameType, title, lang = "tr", 
   const currentMatch = currentRound[matchIndex];
   const totalMatchesInRound = currentRound.length;
 
-  // Global progress (0–15 total matches across all rounds: 8+4+2+1)
+  // Global progress across all rounds (e.g. 8+4+2+1 for 16 bracket)
   const matchesBefore = rounds.slice(0, roundIndex).reduce((s, r) => s + r.length, 0);
   const globalMatchNum = matchesBefore + matchIndex + 1;
-  const totalMatchesAll = 15;
   const progressPct = ((globalMatchNum - 1) / totalMatchesAll) * 100;
 
   const handleSelect = useCallback(
@@ -334,7 +343,7 @@ export default function ArenaDuel({ participants, gameType, title, lang = "tr", 
   );
 
   const handleRestart = useCallback(() => {
-    const fresh = buildInitialMatches(participants, gameType);
+    const fresh = buildInitialMatches(normalizedParticipants, gameType);
     setRounds([fresh]);
     setRoundIndex(0);
     setMatchIndex(0);
@@ -343,7 +352,7 @@ export default function ArenaDuel({ participants, gameType, title, lang = "tr", 
     setSelectedSide(null);
     setChampion(null);
     setMatchKey((k) => k + 1);
-  }, [participants, gameType]);
+  }, [normalizedParticipants, gameType]);
 
   const handleShare = useCallback(() => {
     if (!champion) return;
@@ -575,7 +584,7 @@ export default function ArenaDuel({ participants, gameType, title, lang = "tr", 
               backgroundClip: "text",
             }}
           >
-            {nextRoundLabels[roundIndex] ?? ""}
+            {arenaNextRoundHeading(roundNames, roundIndex, lang)}
           </h2>
 
           <motion.div

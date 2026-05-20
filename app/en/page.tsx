@@ -7,9 +7,13 @@ import SiteHeader from "../components/site-header";
 import SiteFooter from "../components/site-footer";
 import { PlayerScoutLinks } from "../components/player-scout-links";
 import PlayerCard, { type PlayerCardData } from "../components/player-card";
+import PlayerRatingBars from "../components/player-rating-bars";
 import { supabase } from "@/lib/supabase";
-import { getCategoryImage } from "@/lib/category-images";
 import { arenaPath, type ArenaGame } from "@/lib/arena-brackets";
+import HomeRecentCarousel from "../components/home-recent-carousel";
+import HomeHubPromo from "../components/home-hub-promo";
+import { ContentHighlightPills } from "../components/content-highlight-pills";
+import { extractArticleHighlights } from "@/lib/content-highlight-tags";
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 type SlideContent = {
@@ -99,26 +103,70 @@ function mergeWithArena(content: { slide: SlideContent; slideKey: string }[], ar
 }
 
 async function fetchFcPlayer(name: string, club?: string) {
-  const { data: exact } = await supabase.from("fc_players")
-    .select("overall,pace,shooting,passing,dribbling,defending,physical,photo_url,position,club,league,age")
-    .ilike("name", name).limit(1).maybeSingle();
+  const sel =
+    "overall,pace,shooting,passing,dribbling,defending,physical,photo_url,position,club,league,age";
+  const trimmed = name.trim();
+  const words = trimmed.split(/\s+/).filter(Boolean);
+  const clubQ = club?.trim();
+
+  if (clubQ) {
+    const { data: fullClub } = await supabase
+      .from("fc_players")
+      .select(sel)
+      .ilike("name", trimmed)
+      .ilike("club", `%${clubQ}%`)
+      .order("overall", { ascending: false })
+      .limit(1)
+      .maybeSingle();
+    if (fullClub?.overall) return fullClub;
+
+    if (words.length >= 2) {
+      const two = words.slice(0, 2).join(" ");
+      const { data: twoClub } = await supabase
+        .from("fc_players")
+        .select(sel)
+        .ilike("name", `%${two}%`)
+        .ilike("club", `%${clubQ}%`)
+        .order("overall", { ascending: false })
+        .limit(1)
+        .maybeSingle();
+      if (twoClub?.overall) return twoClub;
+    }
+
+    const one = words[0];
+    if (one) {
+      const { data: oneClub } = await supabase
+        .from("fc_players")
+        .select(sel)
+        .ilike("name", `%${one}%`)
+        .ilike("club", `%${clubQ}%`)
+        .order("overall", { ascending: false })
+        .limit(1)
+        .maybeSingle();
+      if (oneClub?.overall) return oneClub;
+    }
+  }
+
+  const { data: exact } = await supabase
+    .from("fc_players")
+    .select(sel)
+    .ilike("name", trimmed)
+    .limit(1)
+    .maybeSingle();
   if (exact?.overall) return exact;
-  const words = name.split(" ");
+
   if (words.length >= 2) {
     const two = words.slice(0, 2).join(" ");
-    const { data: twoMatch } = await supabase.from("fc_players")
-      .select("overall,pace,shooting,passing,dribbling,defending,physical,photo_url,position,club,league,age")
-      .ilike("name", `%${two}%`).order("overall", { ascending: false }).limit(1).maybeSingle();
+    const { data: twoMatch } = await supabase
+      .from("fc_players")
+      .select(sel)
+      .ilike("name", `%${two}%`)
+      .order("overall", { ascending: false })
+      .limit(1)
+      .maybeSingle();
     if (twoMatch?.overall) return twoMatch;
   }
-  if (club) {
-    const one = words[0];
-    const { data: clubMatch } = await supabase.from("fc_players")
-      .select("overall,pace,shooting,passing,dribbling,defending,physical,photo_url,position,club,league,age")
-      .ilike("name", `%${one}%`).ilike("club", `%${club}%`)
-      .order("overall", { ascending: false }).limit(1).maybeSingle();
-    if (clubMatch?.overall) return clubMatch;
-  }
+
   return null;
 }
 
@@ -133,11 +181,23 @@ export default function EnHome() {
   const [featuredLoading, setFeaturedLoading] = useState(true);
   const [formPlayers, setFormPlayers] = useState<FormPlayerWithStats[]>([]);
   const [formLoading, setFormLoading] = useState(true);
+  const [wcHubPreview, setWcHubPreview] = useState<{ title: string; title_en?: string; slug: string; category: string }[]>([]);
+  const [transferHubPreview, setTransferHubPreview] = useState<{ title: string; title_en?: string; slug: string; category: string }[]>([]);
 
   const gundemItems = useMemo(
-    () => (recentItems.length ? shuffleInPlace([...recentItems]).slice(0, 3) : []),
+    () => (recentItems.length ? shuffleInPlace([...recentItems]).slice(0, 6) : []),
     [recentItems],
   );
+
+  const editorPickHighlights = useMemo(() => {
+    const m = new Map<string, string[]>();
+    for (const item of gundemItems) {
+      const body = item.content_en || item.content;
+      const ttl = item.title_en || item.title;
+      m.set(item.slug, extractArticleHighlights(body, { max: 4, seed: item.slug, titleHint: ttl }));
+    }
+    return m;
+  }, [gundemItems]);
 
   // Slider
   useEffect(() => {
@@ -170,8 +230,32 @@ export default function EnHome() {
       .select("id,title,title_en,slug,category,content,content_en,created_at,cover_image")
       .eq("status", "yayinda")
       .order("created_at", { ascending: false })
-      .limit(6)
+      .limit(12)
       .then(({ data }) => { if (data?.length) setRecentItems(data); });
+  }, []);
+
+  useEffect(() => {
+    void Promise.all([
+      supabase
+        .from("contents")
+        .select("title,title_en,slug,category")
+        .eq("status", "yayinda")
+        .contains("hub_tags", ["wc-2026"])
+        .order("created_at", { ascending: false })
+        .limit(3),
+      supabase
+        .from("contents")
+        .select("title,title_en,slug,category")
+        .eq("status", "yayinda")
+        .contains("hub_tags", ["transfer"])
+        .order("created_at", { ascending: false })
+        .limit(3),
+    ]).then(([wcRes, trRes]) => {
+      const mapRow = (rows: { title: string; title_en?: string; slug: string; category: string }[]) =>
+        rows.map((r) => ({ title: r.title_en?.trim() || r.title, slug: r.slug, category: r.category }));
+      if (wcRes.data?.length) setWcHubPreview(mapRow(wcRes.data as { title: string; title_en?: string; slug: string; category: string }[]));
+      if (trRes.data?.length) setTransferHubPreview(mapRow(trRes.data as { title: string; title_en?: string; slug: string; category: string }[]));
+    });
   }, []);
 
   // Featured player
@@ -222,11 +306,24 @@ export default function EnHome() {
         }
       }
       if (list.length) {
-        const { data: stats } = await supabase.from("fc_players").select("name,overall,position,pace,shooting,passing,dribbling,defending,physical,photo_url").in("name", list.map(p => p.name));
-        const sm = new Map(((stats ?? []) as { name: string }[]).map(s => [s.name.toLowerCase(), s]));
+        const { data: stats } = await supabase
+          .from("fc_players")
+          .select(
+            "name,overall,position,pace,shooting,passing,dribbling,defending,physical,photo_url,club,league,age",
+          )
+          .in("name", list.map((p) => p.name));
+        const sm = new Map(((stats ?? []) as { name: string }[]).map((s) => [s.name.toLowerCase(), s]));
         const withStats = list.map((p) => {
           const s = sm.get(p.name.toLowerCase());
-          return s ? { ...p, ...(s as Partial<PlayerCardData>), age: String((s as { age?: unknown }).age ?? p.age) } : p;
+          if (!s) return p;
+          const row = s as Partial<PlayerCardData> & { club?: string; league?: string; age?: unknown };
+          return {
+            ...p,
+            ...row,
+            club: row.club?.trim() || p.club,
+            league: row.league?.trim() || p.league,
+            age: row.age != null && row.age !== "" ? String(row.age) : p.age,
+          };
         });
         const statPlayers = withStats.filter((p) => ((p as FormPlayerWithStats).overall ?? 0) > 0);
         setFormPlayers(shuffleInPlace(statPlayers).slice(0, 10) as FormPlayerWithStats[]);
@@ -255,12 +352,22 @@ export default function EnHome() {
 
   const radarCard: PlayerCardData | null = featuredPlayer && featuredStats
     ? {
-        name: featuredPlayer.name, club: featuredPlayer.club, league: featuredPlayer.league,
-        position: featuredPlayer.position, age: featuredPlayer.age,
-        overall: featuredStats.overall ?? 0, pace: featuredStats.pace ?? 0,
-        shooting: featuredStats.shooting ?? 0, passing: featuredStats.passing ?? 0,
-        dribbling: featuredStats.dribbling ?? 0, defending: featuredStats.defending ?? 0,
-        physical: featuredStats.physical ?? 0, whyWatch: featuredPlayer.whyWatch,
+        name: featuredPlayer.name,
+        club: (featuredStats.club as string | undefined)?.trim() || featuredPlayer.club,
+        league: (featuredStats.league as string | undefined)?.trim() || featuredPlayer.league,
+        position: (featuredStats.position as string | undefined)?.trim() || featuredPlayer.position,
+        age:
+          featuredStats.age != null && featuredStats.age !== ""
+            ? String(featuredStats.age)
+            : featuredPlayer.age,
+        overall: featuredStats.overall ?? 0,
+        pace: featuredStats.pace ?? 0,
+        shooting: featuredStats.shooting ?? 0,
+        passing: featuredStats.passing ?? 0,
+        dribbling: featuredStats.dribbling ?? 0,
+        defending: featuredStats.defending ?? 0,
+        physical: featuredStats.physical ?? 0,
+        whyWatch: featuredPlayer.whyWatch,
         photo_url: featuredStats.photo_url as string | undefined,
       }
     : null;
@@ -279,7 +386,7 @@ export default function EnHome() {
                 key={(slides[activeSlide] as HeroContentSlide).slide.cover_image}
                 src={(slides[activeSlide] as HeroContentSlide).slide.cover_image!}
                 alt="" className="w-full h-full object-cover"
-                style={{ filter: "brightness(0.28) saturate(0.7)" }}
+                style={{ filter: "brightness(0.48) saturate(0.85)" }}
               />
             ) : (
               <div className="absolute inset-0" style={{ background: "linear-gradient(120deg, var(--ink-800) 0%, var(--ink-900) 100%)" }} />
@@ -318,7 +425,7 @@ export default function EnHome() {
                     </div>
                     <h1 className="display" style={{
                       fontSize: "clamp(2.8rem, 6.5vw, 5.5rem)", fontWeight: 700,
-                      letterSpacing: "-0.04em", lineHeight: 0.95, margin: "0 0 20px",
+                      letterSpacing: "-0.04em", lineHeight: 1.08, margin: "0 0 20px", paddingBottom: "0.14em",
                       textWrap: "balance", maxWidth: 900,
                       background: "linear-gradient(135deg, var(--accent) 0%, var(--accent-2) 60%, var(--accent-3) 100%)",
                       WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", backgroundClip: "text",
@@ -353,7 +460,7 @@ export default function EnHome() {
                     </div>
                     <h1 className="display" style={{
                       fontSize: "clamp(2.8rem, 6.5vw, 5.5rem)", fontWeight: 700,
-                      letterSpacing: "-0.04em", lineHeight: 0.95, margin: "0 0 20px",
+                      letterSpacing: "-0.04em", lineHeight: 1.08, margin: "0 0 20px", paddingBottom: "0.14em",
                       textWrap: "balance", maxWidth: 900,
                       background: "linear-gradient(135deg, var(--amber) 0%, var(--accent) 100%)",
                       WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", backgroundClip: "text",
@@ -390,66 +497,9 @@ export default function EnHome() {
         </section>
       )}
 
-      {/* ── Latest Content — horizontal scroll strip ── */}
-      {recentItems.length > 0 && (
-        <section style={{ maxWidth: 1440, margin: "0 auto", padding: "80px 32px 40px" }}>
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", marginBottom: 24 }}>
-            <div>
-              <div className="eyebrow" style={{ color: "var(--accent)" }}>DISCOVER</div>
-              <h2 className="display" style={{ fontSize: 36, fontWeight: 700, letterSpacing: "-0.03em", margin: "6px 0 0" }}>
-                Latest Content
-              </h2>
-            </div>
-            <Link href="/en/listeler" className="mono u-link" style={{ fontSize: 12, letterSpacing: "0.14em", color: "var(--sg-text-muted)" }}>
-              ARCHIVE →
-            </Link>
-          </div>
-          <div className="h-scroll" style={{ paddingBottom: 16 }}>
-            <div style={{ display: "grid", gridAutoFlow: "column", gridAutoColumns: "minmax(280px, 1fr)", gap: 16, minWidth: "100%" }}>
-              {recentItems.map((item) => {
-                const accentColor = CAT_COLOR[item.category] ?? "var(--accent)";
-                const catLabel = CAT_LABEL[item.category] ?? item.category;
-                return (
-                  <Link key={item.id} href={`${categoryPath(item.category)}/${item.slug}`}
-                    className="lift" style={{
-                      background: "var(--sg-surface)", border: "1px solid var(--sg-border)",
-                      borderRadius: 4, overflow: "hidden", display: "flex", flexDirection: "column",
-                    }}>
-                    <div style={{ height: 2, background: accentColor }} />
-                    <div className="relative overflow-hidden" style={{ height: 160, background: "var(--sg-surface-low)" }}>
-                      <img
-                        src={item.cover_image || getCategoryImage(item.category, item.slug)}
-                        alt="" className="w-full h-full object-cover"
-                        style={{ filter: "brightness(0.4) saturate(0.6)" }}
-                        onError={(e) => { (e.target as HTMLImageElement).style.opacity = "0"; }}
-                      />
-                      <div style={{ position: "absolute", bottom: 12, left: 16, right: 16, display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                        <span className="mono" style={{ fontSize: 10, letterSpacing: "0.18em", color: accentColor }}>
-                          {catLabel}
-                        </span>
-                        <span className="mono" style={{ fontSize: 10, letterSpacing: "0.14em", color: "var(--ink-400)" }}>
-                          {new Date(item.created_at).toLocaleDateString("en-US", { day: "numeric", month: "short" })}
-                        </span>
-                      </div>
-                    </div>
-                    <div style={{ padding: "16px 20px 20px", flex: 1, display: "flex", flexDirection: "column" }}>
-                      <h3 className="display" style={{
-                        fontSize: 17, fontWeight: 600, letterSpacing: "-0.02em",
-                        lineHeight: 1.2, margin: 0, textWrap: "balance",
-                      }}>
-                        {item.title_en || item.title}
-                      </h3>
-                      <div className="mono" style={{ fontSize: 10, letterSpacing: "0.16em", color: "var(--ink-400)", marginTop: 12 }}>
-                        READ →
-                      </div>
-                    </div>
-                  </Link>
-                );
-              })}
-            </div>
-          </div>
-        </section>
-      )}
+      {recentItems.length > 0 && <HomeRecentCarousel items={recentItems} locale="en" />}
+
+      <HomeHubPromo locale="en" wcArticles={wcHubPreview} transferArticles={transferHubPreview} />
 
       {/* ── Radar Player of the Week ── */}
       <section style={{ background: "var(--sg-surface-low)", borderTop: "1px solid var(--sg-border)", borderBottom: "1px solid var(--sg-border)" }}>
@@ -472,42 +522,49 @@ export default function EnHome() {
               <span className="mono" style={{ fontSize: 12, letterSpacing: "0.14em" }}>LOADING...</span>
             </div>
           ) : radarCard ? (
-            <div style={{ display: "grid", gridTemplateColumns: "1fr 1.4fr", gap: 48, alignItems: "start" }}>
-              <PlayerCard player={radarCard} size="full" showScoutNote={true} animated={true}
+            <div className="grid grid-cols-1 items-start gap-10 lg:grid-cols-[minmax(0,280px)_1fr] lg:gap-12">
+              <PlayerCard player={radarCard} showScoutNote={true} animated={true}
                 tmLink={`https://www.transfermarkt.com/schnellsuche/ergebnis/schnellsuche?query=${encodeURIComponent(radarCard.name)}`}
                 gLink={`https://www.google.com/search?q=${encodeURIComponent(radarCard.name + " footballer")}`}
               />
               <div>
-                <div style={{ display: "flex", flexWrap: "wrap", alignItems: "center", gap: 12, marginBottom: 16 }}>
+                <div className="eyebrow" style={{ color: "var(--accent)", marginBottom: 10 }}>FOCUS PLAYER</div>
+                <div style={{ display: "flex", flexWrap: "wrap", alignItems: "center", gap: 12, marginBottom: 12 }}>
                   <h3 className="display grad-text" style={{ fontSize: 48, fontWeight: 700, letterSpacing: "-0.03em", margin: 0 }}>
                     {radarCard.name}
                   </h3>
                   <PlayerScoutLinks playerName={radarCard.name} />
                 </div>
+                <p className="mono" style={{
+                  fontSize: 11,
+                  letterSpacing: "0.1em",
+                  color: "var(--sg-text-muted)",
+                  marginBottom: 24,
+                  lineHeight: 1.5,
+                }}>
+                  {[radarCard.club, radarCard.league, radarCard.position, `${radarCard.age} YRS`].filter(Boolean).join(" · ")}
+                </p>
                 {featuredPlayer?.description && (
-                  <p style={{ fontSize: 18, lineHeight: 1.6, color: "var(--sg-text-secondary)", maxWidth: 560, marginBottom: 32 }}>
+                  <p style={{ fontSize: 17, lineHeight: 1.6, color: "var(--sg-text-secondary)", maxWidth: 560, marginBottom: 28 }}>
                     {featuredPlayer.description}
                   </p>
                 )}
-                <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 12 }}>
-                  {[
-                    { label: "AGE", value: radarCard.age },
-                    { label: "CLUB", value: radarCard.club },
-                    { label: "POSITION", value: radarCard.position },
-                    { label: "LEAGUE", value: radarCard.league },
-                    { label: "GOALS", value: featuredPlayer?.goals ?? "—", hi: true },
-                    { label: "ASSISTS", value: featuredPlayer?.assists ?? "—", hi: true },
-                  ].map(({ label, value, hi }) => (
-                    <div key={label} style={{
-                      padding: "16px 20px", background: "var(--sg-surface)",
-                      border: "1px solid var(--sg-border)", borderLeft: `3px solid ${hi ? "var(--accent)" : "var(--accent-2)"}`,
-                    }}>
-                      <div className="eyebrow" style={{ marginBottom: 4 }}>{label}</div>
-                      <div className="display" style={{ fontSize: 20, fontWeight: 700, color: hi ? "var(--accent)" : "var(--sg-text-primary)" }}>
-                        {String(value) || "—"}
-                      </div>
+                <PlayerRatingBars player={radarCard} locale="en" />
+                <div style={{
+                  marginTop: 28,
+                  paddingTop: 24,
+                  borderTop: "1px solid var(--sg-border)",
+                  display: "flex",
+                  flexWrap: "wrap",
+                  gap: 24,
+                  alignItems: "flex-end",
+                }}>
+                  <div>
+                    <div className="eyebrow" style={{ marginBottom: 6 }}>OVERALL</div>
+                    <div className="display tabular-nums" style={{ fontSize: 42, fontWeight: 800, color: "var(--accent)", lineHeight: 1 }}>
+                      {radarCard.overall}
                     </div>
-                  ))}
+                  </div>
                 </div>
               </div>
             </div>
@@ -541,8 +598,10 @@ export default function EnHome() {
             PLAYERS COMING SOON.
           </p>
         ) : (
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: 16 }}
-            className="sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
+          <div
+            className="grid gap-4 justify-items-stretch"
+            style={{ gridTemplateColumns: "repeat(auto-fill, minmax(min(100%, 190px), 1fr))" }}
+          >
             {formPlayers.map((player, i) => (
               <PlayerCard key={`${player.name}-en-${i}`}
                 player={{
@@ -554,7 +613,7 @@ export default function EnHome() {
                   physical: player.physical ?? 0,
                   photo_url: player.photo_url as string | undefined,
                 }}
-                size="mini" animated={false}
+                compact animated={false}
                 tmLink={`https://www.transfermarkt.com/schnellsuche/ergebnis/schnellsuche?query=${encodeURIComponent(player.name)}`}
                 gLink={`https://www.google.com/search?q=${encodeURIComponent(player.name + " footballer")}`}
               />
@@ -563,7 +622,7 @@ export default function EnHome() {
         )}
       </section>
 
-      {/* ── Editor's Picks (3-col) ── */}
+      {/* ── Editor's Picks — 6 cards, tags from body ── */}
       {gundemItems.length > 0 && (
         <section style={{ maxWidth: 1440, margin: "0 auto", padding: "60px 32px" }}>
           <div style={{ marginBottom: 32 }}>
@@ -572,16 +631,17 @@ export default function EnHome() {
               Featured Articles
             </h2>
           </div>
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 16 }}>
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {gundemItems.map((item) => {
               const accentColor = CAT_COLOR[item.category] ?? "var(--accent)";
               const catLabel = CAT_LABEL[item.category] ?? item.category;
+              const pills = editorPickHighlights.get(item.slug);
               return (
                 <Link key={`${item.id}-en-picks`} href={`${categoryPath(item.category)}/${item.slug}`}
                   className="lift" style={{
                     background: "var(--sg-surface)", border: "1px solid var(--sg-border)",
                     borderRadius: 4, padding: 24, display: "flex", flexDirection: "column",
-                    justifyContent: "space-between", minHeight: 220,
+                    justifyContent: "space-between", minHeight: 240,
                   }}>
                   <div>
                     <div className="mono" style={{ fontSize: 10, letterSpacing: "0.18em", color: accentColor, marginBottom: 14 }}>
@@ -593,8 +653,13 @@ export default function EnHome() {
                     }}>
                       {item.title_en || item.title}
                     </h3>
+                    {pills?.length ? (
+                      <div style={{ marginTop: 4 }}>
+                        <ContentHighlightPills tags={pills.slice(0, 4)} accent={accentColor} label="FROM CONTENT" />
+                      </div>
+                    ) : null}
                   </div>
-                  <div className="mono" style={{ fontSize: 10, letterSpacing: "0.14em", color: "var(--ink-400)" }}>
+                  <div className="mono" style={{ fontSize: 10, letterSpacing: "0.14em", color: "var(--ink-400)", marginTop: 16 }}>
                     {new Date(item.created_at).toLocaleDateString("en-US", { day: "numeric", month: "short" })} · READ →
                   </div>
                 </Link>

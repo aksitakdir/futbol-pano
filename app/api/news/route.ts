@@ -47,11 +47,12 @@ function parseRssItems(xml: string, maxItems: number): NewsItem[] {
   return items;
 }
 
-function formatDate(rfc822: string): string {
+function formatDate(rfc822: string, locale: string): string {
   try {
     const d = new Date(rfc822);
     if (Number.isNaN(d.getTime())) return rfc822;
-    return d.toLocaleDateString("en-US", {
+    const loc = locale === "tr" ? "tr-TR" : "en-US";
+    return d.toLocaleDateString(loc, {
       day: "numeric",
       month: "short",
       year: "numeric",
@@ -70,7 +71,14 @@ export async function GET(request: NextRequest) {
     );
   }
 
-  const url = `https://news.google.com/rss/search?q=${encodeURIComponent(query.trim())}+footballer&hl=en&gl=US&ceid=US:en`;
+  const locale = request.nextUrl.searchParams.get("locale") === "tr" ? "tr" : "en";
+  const suffix = locale === "tr" ? "futbol" : "soccer";
+  const hl = locale === "tr" ? "tr" : "en";
+  const gl = locale === "tr" ? "TR" : "US";
+  const ceid = locale === "tr" ? "TR:tr" : "US:en";
+
+  const q = `${query.trim()} ${suffix}`;
+  const url = `https://news.google.com/rss/search?q=${encodeURIComponent(q)}&hl=${hl}&gl=${gl}&ceid=${ceid}`;
 
   const res = await fetch(url, { next: { revalidate: 900 } });
   if (!res.ok) {
@@ -81,9 +89,8 @@ export async function GET(request: NextRequest) {
   }
 
   const xml = await res.text();
-  const raw = parseRssItems(xml, 10);
+  const raw = parseRssItems(xml, 14);
 
-  // Son 30 gün filtresi
   const thirtyDaysAgo = Date.now() - 30 * 24 * 60 * 60 * 1000;
   const filtered = raw.filter((r) => {
     if (!r.date) return false;
@@ -92,9 +99,10 @@ export async function GET(request: NextRequest) {
     return d.getTime() >= thirtyDaysAgo;
   });
 
-  const items: NewsItem[] = filtered.slice(0, 4).map((r) => ({
+  const pool = filtered.length > 0 ? filtered : raw;
+  const items: NewsItem[] = pool.slice(0, 4).map((r) => ({
     ...r,
-    date: formatDate(r.date),
+    date: formatDate(r.date, locale),
   }));
 
   return NextResponse.json(items);

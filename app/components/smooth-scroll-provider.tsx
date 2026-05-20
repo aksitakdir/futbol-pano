@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect } from "react";
+import { usePathname } from "next/navigation";
 import Lenis from "lenis";
 
 export default function SmoothScrollProvider({
@@ -8,15 +9,22 @@ export default function SmoothScrollProvider({
 }: {
   children: React.ReactNode;
 }) {
+  const pathname = usePathname();
+  const isAdmin = pathname?.startsWith("/admin") ?? false;
+
   useEffect(() => {
+    if (isAdmin) return;
+
     const lenis = new Lenis({
-      duration: 1.2,        // Scroll süresi — 1.2s premium his için ideal
-      easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)), // Expo easing
-      smoothWheel: true,    // Mouse wheel smooth
-      touchMultiplier: 1.5, // Mobil dokunma hassasiyeti
+      duration: 1.2,
+      easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+      smoothWheel: true,
+      touchMultiplier: 1.5,
     });
 
+    let alive = true;
     function raf(time: number) {
+      if (!alive) return;
       lenis.raf(time);
       requestAnimationFrame(raf);
     }
@@ -24,9 +32,10 @@ export default function SmoothScrollProvider({
     requestAnimationFrame(raf);
 
     return () => {
+      alive = false;
       lenis.destroy();
     };
-  }, []);
+  }, [isAdmin]);
 
   return <>{children}</>;
 }
