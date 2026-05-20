@@ -63,16 +63,19 @@ type TitleSuggestion = {
 type CcMode = "trend" | "general" | "historical" | "chronological";
 
 const CC_MODES: { key: CcMode; label: string }[] = [
-  { key: "trend", label: "Güncel & Trend" },
-  { key: "general", label: "Genel Güncel" },
-  { key: "historical", label: "Tarihsel" },
-  { key: "chronological", label: "Kronolojik" },
+  { key: "trend", label: "Trending" },
+  { key: "general", label: "General" },
+  { key: "historical", label: "Historical" },
+  { key: "chronological", label: "Chronological" },
 ];
 
 const SEO_VALUE_STYLE: Record<string, string> = {
   Yüksek: "bg-emerald-500/20 text-emerald-200 border-emerald-500/40",
+  High: "bg-emerald-500/20 text-emerald-200 border-emerald-500/40",
   Orta: "bg-amber-500/20 text-amber-200 border-amber-500/40",
+  Medium: "bg-amber-500/20 text-amber-200 border-amber-500/40",
   Düşük: "bg-slate-500/20 text-slate-300 border-slate-500/40",
+  Low: "bg-slate-500/20 text-slate-300 border-slate-500/40",
 };
 
 /** İşlem butonları — kategori/durum rozetleri ile uyumlu pill stil */
@@ -117,7 +120,7 @@ export default function IceriklerPage() {
   async function handleSuggestTitles() {
     const kw = ccKeyword.trim();
     if (!kw) {
-      setSuggestError("Önce bir konu veya keyword girin.");
+      setSuggestError("Enter a topic or keyword first.");
       return;
     }
     setSuggestLoading(true);
@@ -132,13 +135,13 @@ export default function IceriklerPage() {
       });
       const data = await res.json();
       if (!res.ok) {
-        setSuggestError(data.error || "Başlık önerisi alınamadı.");
+        setSuggestError(data.error || "Could not get title suggestions.");
         return;
       }
       const list = (data.suggestions ?? []) as TitleSuggestion[];
       setSuggestions(list.slice(0, 8));
     } catch {
-      setSuggestError("Ağ hatası — sunucuya ulaşılamadı.");
+      setSuggestError("Network error — server unreachable.");
     }
     setSuggestLoading(false);
   }
@@ -146,7 +149,7 @@ export default function IceriklerPage() {
   async function generateFromSuggestion(s: TitleSuggestion) {
     if (!["radar", "taktik-lab", "listeler"].includes(s.category)) {
       setHubNoticeOk(false);
-      setHubNotice("Geçersiz kategori — başlığı yeniden önerin.");
+      setHubNotice("Invalid category — please re-suggest the title.");
       setTimeout(() => setHubNotice(""), 8000);
       return;
     }
@@ -172,13 +175,13 @@ export default function IceriklerPage() {
         setSelected(new Set());
         await fetchAll();
       } else {
-        const err = data.results?.[0]?.error || data.error || "Bilinmeyen hata";
+        const err = data.results?.[0]?.error || data.error || "Unknown error";
         setHubNoticeOk(false);
-        setHubNotice(`Hata: ${err}`);
+        setHubNotice(`Error: ${err}`);
       }
     } catch {
       setHubNoticeOk(false);
-      setHubNotice("Ağ hatası — sunucuya ulaşılamadı.");
+      setHubNotice("Network error — server unreachable.");
     }
     setContentGenerating(false);
     setTimeout(() => setHubNotice(""), 12000);
@@ -187,7 +190,7 @@ export default function IceriklerPage() {
   function handleProduceSelected() {
     if (selectedSuggestIdx === null || !suggestions[selectedSuggestIdx]) {
       setHubNoticeOk(false);
-      setHubNotice("Önce başlık önerin; bir kart seçin veya başlığa tıklayın.");
+      setHubNotice("Suggest titles first; then select a card or click a title.");
       setTimeout(() => setHubNotice(""), 8000);
       return;
     }
@@ -251,7 +254,7 @@ export default function IceriklerPage() {
   }
 
   async function deleteItem(id: string) {
-    if (!confirm("Bu içerik kalıcı olarak silinecek. Emin misin?")) return;
+    if (!confirm("This article will be permanently deleted. Are you sure?")) return;
     setActionLoading((prev) => new Set(prev).add(id));
     const { error } = await supabase.from("contents").delete().eq("id", id);
     if (!error) {
@@ -278,7 +281,7 @@ export default function IceriklerPage() {
   async function bulkDelete() {
     const ids = Array.from(selected);
     if (ids.length === 0) return;
-    if (!confirm(`${ids.length} içerik kalıcı olarak silinecek. Emin misin?`)) return;
+    if (!confirm(`${ids.length} articles will be permanently deleted. Are you sure?`)) return;
     setActionLoading(new Set(ids));
     const { error } = await supabase.from("contents").delete().in("id", ids);
     if (error) {
@@ -315,15 +318,15 @@ export default function IceriklerPage() {
         <div className="sticky top-0 z-30 -mx-1 mb-4 rounded-xl border border-slate-700/60 bg-slate-950/90 px-3 py-3 shadow-[0_8px_30px_rgba(0,0,0,0.35)] backdrop-blur-md sm:-mx-0 sm:px-4">
           <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
           <div>
-            <h1 className="text-xl font-bold">İçerik Yönetimi</h1>
-            <p className="text-xs text-slate-400">Tüm yayınları görüntüle, düzenle ve yönet</p>
+            <h1 className="text-xl font-bold">Content Management</h1>
+            <p className="text-xs text-slate-400">View, edit and manage all publications</p>
           </div>
           <div className="flex flex-wrap items-center gap-2">
             <div className="relative">
               <svg className="pointer-events-none absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-slate-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2"><circle cx="11" cy="11" r="8" /><line x1="21" y1="21" x2="16.65" y2="16.65" /></svg>
               <input
                 type="text"
-                placeholder="Ara..."
+                placeholder="Search..."
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
                 className="w-44 rounded-lg border border-slate-700/80 bg-slate-800/70 py-2 pl-9 pr-3 text-xs text-slate-100 placeholder-slate-500 outline-none transition focus:border-emerald-500/60"
@@ -334,13 +337,13 @@ export default function IceriklerPage() {
               onClick={handleFetchTrends}
               className="rounded-lg border border-sky-500/40 bg-sky-500/10 px-3 py-2 text-xs font-semibold text-sky-300 transition hover:bg-sky-500/20"
             >
-              Güncel Trendler
+              Latest Trends
             </button>
             <Link
               href="/admin/yeni"
               className="rounded-lg bg-emerald-500 px-4 py-2 text-xs font-semibold text-slate-950 transition hover:bg-emerald-400"
             >
-              + Yeni İçerik
+              + New Article
             </Link>
           </div>
           </div>
@@ -350,25 +353,25 @@ export default function IceriklerPage() {
         <div className="mb-6 rounded-xl border border-slate-700/70 bg-slate-900/40 p-4 sm:p-6">
           <div className="mb-4 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
             <div>
-              <h2 className="text-sm font-bold text-slate-100">İçerik Kontrol Merkezi</h2>
-              <p className="text-[11px] text-slate-500">Başlık keşfi, trendler ve hedefli içerik üretimi</p>
+              <h2 className="text-sm font-bold text-slate-100">Content Control Center</h2>
+              <p className="text-[11px] text-slate-500">Title discovery, trends and targeted content production</p>
             </div>
             {contentGenerating && (
               <span className="inline-flex items-center gap-2 rounded-lg border border-violet-500/30 bg-violet-500/10 px-3 py-1.5 text-[11px] font-semibold text-violet-200">
                 <span className="h-3.5 w-3.5 animate-spin rounded-full border-2 border-violet-400 border-t-transparent" />
-                İçerik üretiliyor…
+                Generating content...
               </span>
             )}
           </div>
 
           {/* Başlık Keşfet */}
           <div className="mb-6 rounded-xl border border-slate-700/60 bg-slate-900/40 p-4">
-            <h3 className="mb-3 text-xs font-bold uppercase tracking-wider text-emerald-400/90">Başlık Keşfet</h3>
+            <h3 className="mb-3 text-xs font-bold uppercase tracking-wider text-emerald-400/90">Title Discovery</h3>
             <input
               type="text"
               value={ccKeyword}
               onChange={(e) => setCcKeyword(e.target.value)}
-              placeholder="Konu veya keyword gir..."
+              placeholder="Enter a topic or keyword..."
               disabled={contentGenerating}
               className="mb-3 w-full rounded-lg border border-slate-700/80 bg-slate-900/80 px-3 py-2.5 text-sm text-slate-100 placeholder-slate-500 outline-none transition focus:border-emerald-500/50 disabled:opacity-50"
             />
@@ -399,10 +402,10 @@ export default function IceriklerPage() {
               {suggestLoading ? (
                 <span className="inline-flex items-center gap-2">
                   <span className="h-3 w-3 animate-spin rounded-full border-2 border-slate-900 border-t-transparent" />
-                  Öneriliyor…
+                  Suggesting...
                 </span>
               ) : (
-                "Başlık Öner"
+                "Suggest Titles"
               )}
             </button>
             {suggestError && <p className="mt-2 text-xs text-rose-400">{suggestError}</p>}
@@ -411,7 +414,7 @@ export default function IceriklerPage() {
           {/* Önerilen başlıklar */}
           {suggestions.length > 0 && (
             <div className="mb-6">
-              <p className="mb-2 text-[10px] font-semibold uppercase tracking-widest text-slate-500">Önerilen başlıklar</p>
+              <p className="mb-2 text-[10px] font-semibold uppercase tracking-widest text-slate-500">Suggested titles</p>
               <div className="grid gap-3 sm:grid-cols-2">
                 {suggestions.map((s, i) => (
                   <div
@@ -464,7 +467,7 @@ export default function IceriklerPage() {
                       }}
                       className="mt-auto inline-flex w-fit items-center gap-1 text-[11px] font-bold text-violet-300 transition hover:text-violet-200 disabled:opacity-50"
                     >
-                      Bu Başlıkla Üret →
+                      Generate with this title →
                     </button>
                   </div>
                 ))}
@@ -474,9 +477,9 @@ export default function IceriklerPage() {
 
           {/* İçerik Üret */}
           <div className="rounded-xl border border-slate-700/60 bg-slate-900/40 p-4">
-            <h3 className="mb-2 text-xs font-bold uppercase tracking-wider text-violet-400/90">İçerik Üret</h3>
+            <h3 className="mb-2 text-xs font-bold uppercase tracking-wider text-violet-400/90">Generate Content</h3>
             <p className="mb-3 text-[11px] text-slate-500">
-              Bir kartı seçip <strong className="text-slate-400">Üret</strong> ile onaylayın; veya başlığa / &quot;Bu Başlıkla Üret&quot;e tıklayarak doğrudan başlatın.
+              Select a card and click <strong className="text-slate-400">Generate</strong>; or click a title / &quot;Generate with this title&quot; to start directly.
             </p>
             <button
               type="button"
@@ -487,10 +490,10 @@ export default function IceriklerPage() {
               {contentGenerating ? (
                 <span className="inline-flex items-center gap-2">
                   <span className="h-3 w-3 animate-spin rounded-full border-2 border-violet-300 border-t-transparent" />
-                  Üretiliyor…
+                  Generating...
                 </span>
               ) : (
-                "Üret"
+                "Generate"
               )}
             </button>
           </div>
@@ -509,7 +512,7 @@ export default function IceriklerPage() {
           <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4">
             <div className="w-full max-w-lg rounded-xl border border-slate-700/80 bg-slate-900/95 p-6 shadow-2xl">
               <div className="mb-4 flex items-center justify-between">
-                <h2 className="text-sm font-bold">Güncel Futbol Trendleri (TR)</h2>
+                <h2 className="text-sm font-bold">Football Trends</h2>
                 <button onClick={() => setTrendsOpen(false)} className="text-slate-500 transition hover:text-slate-300">
                   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" /></svg>
                 </button>
@@ -517,13 +520,13 @@ export default function IceriklerPage() {
               {trendsLoading ? (
                 <div className="flex items-center gap-2 py-8 text-sm text-slate-400 justify-center">
                   <span className="h-4 w-4 animate-spin rounded-full border-2 border-sky-400 border-t-transparent" />
-                  Trendler yükleniyor...
+                  Loading trends...
                 </div>
               ) : (
                 <>
                   {trends.length > 0 ? (
                     <div className="mb-4">
-                      <p className="mb-2 text-[10px] font-semibold uppercase tracking-widest text-emerald-400">Futbol / Spor Trendleri</p>
+                      <p className="mb-2 text-[10px] font-semibold uppercase tracking-widest text-emerald-400">Football / Sports Trends</p>
                       <div className="space-y-1.5">
                         {trends.map((t, i) => (
                           <button
@@ -542,11 +545,11 @@ export default function IceriklerPage() {
                       </div>
                     </div>
                   ) : (
-                    <p className="mb-4 text-xs text-slate-500">Şu an futbol ile ilgili trend bulunamadı.</p>
+                    <p className="mb-4 text-xs text-slate-500">No football-related trends found right now.</p>
                   )}
                   {trendsSample.length > 0 && (
                     <div>
-                      <p className="mb-2 text-[10px] font-semibold uppercase tracking-widest text-slate-500">Tüm Trendler (İlk 10)</p>
+                      <p className="mb-2 text-[10px] font-semibold uppercase tracking-widest text-slate-500">All Trends (First 10)</p>
                       <div className="flex flex-wrap gap-1.5">
                         {trendsSample.map((t, i) => (
                           <button
@@ -603,13 +606,13 @@ export default function IceriklerPage() {
         {/* Bulk actions */}
         {selected.size > 0 && (
           <div className="mb-4 flex flex-wrap items-center gap-3 rounded-xl border border-emerald-500/30 bg-emerald-500/5 px-4 py-3">
-            <span className="text-xs font-semibold text-emerald-300">{selected.size} içerik seçili</span>
+            <span className="text-xs font-semibold text-emerald-300">{selected.size} selected</span>
             <div className="flex flex-wrap gap-2">
               <button onClick={() => bulkUpdateStatus("yayinda")} className="rounded-lg bg-emerald-500/15 px-3 py-1.5 text-[11px] font-semibold text-emerald-300 transition hover:bg-emerald-500/25">Publish Selected</button>
               <button onClick={() => bulkUpdateStatus("bekliyor")} className="rounded-lg bg-amber-500/15 px-3 py-1.5 text-[11px] font-semibold text-amber-300 transition hover:bg-amber-500/25">Set Pending</button>
               <button onClick={bulkDelete} className="rounded-lg bg-rose-500/15 px-3 py-1.5 text-[11px] font-semibold text-rose-300 transition hover:bg-rose-500/25">Delete Selected</button>
             </div>
-            <button onClick={() => setSelected(new Set())} className="ml-auto text-[11px] text-slate-400 transition hover:text-slate-200">Seçimi kaldır</button>
+            <button onClick={() => setSelected(new Set())} className="ml-auto text-[11px] text-slate-400 transition hover:text-slate-200">Clear selection</button>
           </div>
         )}
 
@@ -622,7 +625,7 @@ export default function IceriklerPage() {
         ) : filtered.length === 0 ? (
           <div className="rounded-xl border border-slate-700/60 bg-slate-900/30 px-6 py-16 text-center">
             <p className="text-sm text-slate-400">
-              {search.trim() ? `"${search}" ile eşleşen içerik bulunamadı` : emptyMessages[tab]}
+              {search.trim() ? `No results matching "${search}"` : emptyMessages[tab]}
             </p>
           </div>
         ) : (
@@ -633,11 +636,11 @@ export default function IceriklerPage() {
               <div className="flex items-center justify-center">
                 <input type="checkbox" checked={allChecked} onChange={toggleSelectAll} className="h-3.5 w-3.5 cursor-pointer rounded border-slate-600 bg-slate-900 accent-emerald-500" />
               </div>
-              <div>Başlık · özet</div>
-              <div>Kategori</div>
-              <div>Durum</div>
-              <div>Tarih</div>
-              <div className="border-l border-slate-700/50 pl-2 text-right">İşlemler</div>
+              <div>Title · summary</div>
+              <div>Category</div>
+              <div>Status</div>
+              <div>Date</div>
+              <div className="border-l border-slate-700/50 pl-2 text-right">Actions</div>
             </div>
 
             {filtered.map((item) => {
@@ -671,7 +674,7 @@ export default function IceriklerPage() {
                               {preview}
                             </p>
                           ) : (
-                            <p className="mt-1 text-[11px] italic text-slate-600">Özet yok</p>
+                            <p className="mt-1 text-[11px] italic text-slate-600">No summary</p>
                           )}
                         </div>
                       </button>
@@ -683,7 +686,7 @@ export default function IceriklerPage() {
                       <span className={`inline-flex w-fit items-center rounded-full border px-2 py-0.5 text-[10px] font-semibold ${status.cls}`}>{status.label}</span>
                     </div>
                     <div className="flex items-center">
-                      <span className="whitespace-nowrap text-[11px] text-slate-400">{new Date(item.created_at).toLocaleDateString("tr-TR", { day: "numeric", month: "short", year: "numeric" })}</span>
+                      <span className="whitespace-nowrap text-[11px] text-slate-400">{new Date(item.created_at).toLocaleDateString("en-US", { day: "numeric", month: "short", year: "numeric" })}</span>
                     </div>
                     <div className="flex flex-col items-end justify-center gap-1.5 border-l border-slate-700/50 bg-slate-900/70 py-2 pl-3 pr-2">
                       <div className="flex flex-col items-end gap-1.5">
@@ -691,7 +694,7 @@ export default function IceriklerPage() {
                           href={`/admin/duzenle/${item.id}`}
                           className={`${ACTION_BTN} border-emerald-500/40 bg-emerald-500/10 text-emerald-300 hover:border-emerald-500/60 hover:bg-emerald-500/18`}
                         >
-                          Düzenle
+                          Edit
                         </Link>
                         {item.status === "bekliyor" && (
                           <>
@@ -701,7 +704,7 @@ export default function IceriklerPage() {
                               disabled={isActioning}
                               className={`${ACTION_BTN} border-emerald-500/50 bg-emerald-500/15 text-emerald-200 hover:bg-emerald-500/25`}
                             >
-                              Yayınla
+                              Publish
                             </button>
                             <button
                               type="button"
@@ -709,7 +712,7 @@ export default function IceriklerPage() {
                               disabled={isActioning}
                               className={`${ACTION_BTN} border-rose-500/45 bg-rose-500/10 text-rose-300 hover:bg-rose-500/18`}
                             >
-                              Reddet
+                              Reject
                             </button>
                           </>
                         )}
@@ -720,7 +723,7 @@ export default function IceriklerPage() {
                             disabled={isActioning}
                             className={`${ACTION_BTN} border-rose-500/45 bg-rose-500/10 text-rose-300 hover:bg-rose-500/18`}
                           >
-                            Kaldır
+                            Unpublish
                           </button>
                         )}
                         {item.status === "reddedildi" && (
@@ -731,7 +734,7 @@ export default function IceriklerPage() {
                               disabled={isActioning}
                               className={`${ACTION_BTN} border-amber-500/45 bg-amber-500/10 text-amber-300 hover:bg-amber-500/18`}
                             >
-                              Geri Al
+                              Restore
                             </button>
                             <button
                               type="button"
@@ -739,7 +742,7 @@ export default function IceriklerPage() {
                               disabled={isActioning}
                               className={`${ACTION_BTN} border-rose-500/50 bg-rose-500/15 text-rose-200 hover:bg-rose-500/25`}
                             >
-                              Sil
+                              Delete
                             </button>
                           </>
                         )}
@@ -761,7 +764,7 @@ export default function IceriklerPage() {
                         <div className="mt-1.5 flex flex-wrap items-center gap-1.5">
                           <span className={`inline-flex items-center rounded-full border px-2 py-0.5 text-[10px] font-semibold ${catColor}`}>{CATEGORY_LABEL[item.category] ?? item.category}</span>
                           <span className={`inline-flex items-center rounded-full border px-2 py-0.5 text-[10px] font-semibold ${status.cls}`}>{status.label}</span>
-                          <span className="text-[10px] text-slate-500">{new Date(item.created_at).toLocaleDateString("tr-TR", { day: "numeric", month: "short" })}</span>
+                          <span className="text-[10px] text-slate-500">{new Date(item.created_at).toLocaleDateString("en-US", { day: "numeric", month: "short" })}</span>
                         </div>
                       </div>
                     </div>
@@ -770,14 +773,14 @@ export default function IceriklerPage() {
                         href={`/admin/duzenle/${item.id}`}
                         className={`${ACTION_BTN} border-emerald-500/40 bg-emerald-500/10 text-emerald-300 hover:border-emerald-500/60 hover:bg-emerald-500/18`}
                       >
-                        Düzenle
+                        Edit
                       </Link>
                       <button
                         type="button"
                         onClick={() => setExpandedId(isOpen ? null : item.id)}
                         className={`${ACTION_BTN} border-slate-600/80 bg-slate-800/50 text-slate-300 hover:border-slate-500 hover:bg-slate-800`}
                       >
-                        {isOpen ? "Kapat" : "Önizle"}
+                        {isOpen ? "Close" : "Preview"}
                       </button>
                       {item.status === "bekliyor" && (
                         <>
@@ -807,7 +810,7 @@ export default function IceriklerPage() {
                   {/* Accordion preview */}
                   {isOpen && (
                     <div className="border-t border-slate-700/40 bg-slate-900/30 px-4 py-4 lg:pl-14">
-                      <p className="mb-2 text-[10px] font-semibold uppercase tracking-widest text-slate-500">İçerik önizlemesi</p>
+                      <p className="mb-2 text-[10px] font-semibold uppercase tracking-widest text-slate-500">Content preview</p>
                       <p className="mb-3 text-xs font-medium text-slate-200" title={item.title_en || item.title}>{item.title_en || item.title}</p>
                       <div className="max-h-[min(28rem,calc(100vh-16rem))] overflow-y-auto rounded-lg border border-slate-700/50 bg-slate-950/50 p-4 text-[13px] leading-relaxed text-slate-300">
                         {item.content ? (
@@ -815,7 +818,7 @@ export default function IceriklerPage() {
                             {item.content}
                           </div>
                         ) : (
-                          "— İçerik yok —"
+                          "— No content —"
                         )}
                       </div>
                     </div>

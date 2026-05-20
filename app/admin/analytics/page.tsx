@@ -31,9 +31,9 @@ type ArenaVote = {
 };
 
 const CATEGORY_LABEL: Record<string, string> = {
-  listeler: "Listeler",
+  listeler: "Lists",
   radar: "Radar",
-  "taktik-lab": "Taktik Lab",
+  "taktik-lab": "Tactics Lab",
 };
 
 const CATEGORY_COLOR: Record<string, string> = {
@@ -113,12 +113,12 @@ export default function AnalyticsPage() {
       });
       const data = (await res.json()) as { migrated?: number; failed?: number; total?: number; error?: string };
       if (data.error) {
-        setMigrateResult(`Hata: ${data.error}`);
+        setMigrateResult(`Error: ${data.error}`);
       } else {
-        setMigrateResult(`✓ ${data.migrated ?? 0} içerik migrate edildi, ${data.failed ?? 0} hata (toplam: ${data.total ?? 0})`);
+        setMigrateResult(`✓ ${data.migrated ?? 0} articles migrated, ${data.failed ?? 0} errors (total: ${data.total ?? 0})`);
       }
     } catch {
-      setMigrateResult("Bağlantı hatası");
+      setMigrateResult("Connection error");
     }
     setMigrating(false);
   }
@@ -128,7 +128,7 @@ export default function AnalyticsPage() {
       <AdminLayout>
         <div className="flex items-center justify-center gap-2 py-20 text-sm text-slate-400">
           <span className="h-4 w-4 animate-spin rounded-full border-2 border-emerald-400 border-t-transparent" />
-          Yükleniyor...
+          Loading...
         </div>
       </AdminLayout>
     );
@@ -140,7 +140,7 @@ export default function AnalyticsPage() {
         <div className="flex items-center justify-between">
           <div>
             <h1 className="text-xl font-bold">Analytics</h1>
-            <p className="mt-0.5 text-xs text-slate-400">İçerik performansı, Arena ve üretim istatistikleri</p>
+            <p className="mt-0.5 text-xs text-slate-400">Content performance, Arena and production statistics</p>
           </div>
           <Link
             href="/admin"
@@ -151,10 +151,10 @@ export default function AnalyticsPage() {
         </div>
 
         <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
-          <AdminStatCard label="Yayında" value={published.length} sub="toplam içerik" color="emerald" />
-          <AdminStatCard label="Toplam Görüntüleme" value={totalViews.toLocaleString()} sub="tüm içerikler" color="sky" />
-          <AdminStatCard label="Bekleyen İçerik" value={pending.length} sub="onay bekliyor" color="amber" />
-          <AdminStatCard label="Arena Maçı" value={arenaGames.length} sub={`${arenaVotes.length} oy`} color="rose" />
+          <AdminStatCard label="Published" value={published.length} sub="total articles" color="emerald" />
+          <AdminStatCard label="Total Views" value={totalViews.toLocaleString()} sub="all articles" color="sky" />
+          <AdminStatCard label="Pending" value={pending.length} sub="awaiting review" color="amber" />
+          <AdminStatCard label="Arena Games" value={arenaGames.length} sub={`${arenaVotes.length} votes`} color="rose" />
         </div>
 
         <div className="flex gap-2 border-b border-slate-700/60">
@@ -170,7 +170,7 @@ export default function AnalyticsPage() {
                   : "border-transparent text-slate-500 hover:text-slate-300",
               ].join(" ")}
             >
-              {tab === "content" ? "İçerik" : tab === "arena" ? "Arena" : "Üretim"}
+              {tab === "content" ? "Content" : tab === "arena" ? "Arena" : "Production"}
             </button>
           ))}
         </div>
@@ -178,7 +178,7 @@ export default function AnalyticsPage() {
         {activeTab === "content" && (
           <div className="space-y-6">
             <div className="rounded-xl border border-slate-700/60 bg-slate-900/40 p-5">
-              <p className="mb-4 text-[10px] font-semibold uppercase tracking-[0.18em] text-slate-400">Kategoriye Göre Dağılım</p>
+              <p className="mb-4 text-[10px] font-semibold uppercase tracking-[0.18em] text-slate-400">Distribution by Category</p>
               <div className="flex gap-4">
                 {Object.entries(byCategory).map(([cat, count]) => (
                   <div key={cat} className="flex-1 text-center">
@@ -201,13 +201,13 @@ export default function AnalyticsPage() {
 
             <div className="overflow-hidden rounded-xl border border-slate-700/60 bg-slate-900/40">
               <div className="border-b border-slate-700/60 px-5 py-3">
-                <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-slate-400">En Çok Görüntülenen İçerikler</p>
+                <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-slate-400">Most Viewed Articles</p>
               </div>
               {topContent.length === 0 ? (
                 <div className="p-8 text-center text-sm text-slate-500">
-                  Görüntüleme verisi yok.{" "}
+                  No view data yet.{" "}
                   <span className="text-slate-400">
-                    Supabase&apos;de <code className="text-xs text-emerald-400">increment_view_count</code> fonksiyonunu ve migration&apos;ı çalıştırın.
+                    Run <code className="text-xs text-emerald-400">increment_view_count</code> function and migration in Supabase.
                   </span>
                 </div>
               ) : (
@@ -215,9 +215,9 @@ export default function AnalyticsPage() {
                   <thead>
                     <tr className="border-b border-slate-700/60">
                       <th className="px-5 py-2.5 text-left text-[10px] font-semibold uppercase tracking-wider text-slate-500">#</th>
-                      <th className="px-5 py-2.5 text-left text-[10px] font-semibold uppercase tracking-wider text-slate-500">Başlık</th>
-                      <th className="px-5 py-2.5 text-left text-[10px] font-semibold uppercase tracking-wider text-slate-500">Kategori</th>
-                      <th className="px-5 py-2.5 text-right text-[10px] font-semibold uppercase tracking-wider text-slate-500">Görüntüleme</th>
+                      <th className="px-5 py-2.5 text-left text-[10px] font-semibold uppercase tracking-wider text-slate-500">Title</th>
+                      <th className="px-5 py-2.5 text-left text-[10px] font-semibold uppercase tracking-wider text-slate-500">Category</th>
+                      <th className="px-5 py-2.5 text-right text-[10px] font-semibold uppercase tracking-wider text-slate-500">Views</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -249,10 +249,10 @@ export default function AnalyticsPage() {
           <div className="space-y-4">
             <div className="overflow-hidden rounded-xl border border-slate-700/60 bg-slate-900/40">
               <div className="border-b border-slate-700/60 px-5 py-3">
-                <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-slate-400">En Popüler Arena Maçları</p>
+                <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-slate-400">Most Popular Arena Games</p>
               </div>
               {gamesWithVotes.length === 0 ? (
-                <div className="p-8 text-center text-sm text-slate-500">Arena maçı bulunamadı.</div>
+                <div className="p-8 text-center text-sm text-slate-500">No arena games found.</div>
               ) : (
                 <div className="divide-y divide-slate-700/40">
                   {gamesWithVotes.map((g, i) => (
@@ -262,11 +262,11 @@ export default function AnalyticsPage() {
                         <p className="truncate text-sm font-semibold text-slate-100">
                           {g.player_a} <span className="text-slate-500">vs</span> {g.player_b}
                         </p>
-                        <p className="text-[11px] text-slate-500">{new Date(g.created_at).toLocaleDateString("tr-TR")}</p>
+                        <p className="text-[11px] text-slate-500">{new Date(g.created_at).toLocaleDateString("en-US")}</p>
                       </div>
                       <div className="text-right">
                         <div className="text-sm font-black text-rose-400">{g.votes}</div>
-                        <div className="text-[10px] text-slate-500">oy</div>
+                        <div className="text-[10px] text-slate-500">votes</div>
                       </div>
                     </div>
                   ))}
@@ -281,8 +281,8 @@ export default function AnalyticsPage() {
             <div className="rounded-xl border border-sky-500/20 bg-sky-500/5 p-5">
               <p className="mb-2 text-[10px] font-semibold uppercase tracking-[0.18em] text-sky-400">sections_json Hard Migration</p>
               <p className="mb-4 text-[11px] text-slate-400">
-                Mevcut HTML içerikleri yapısal sections_json formatına dönüştürür.{" "}
-                <code className="text-[10px] text-sky-300">sections_json IS NULL</code> olan içerikleri işler (max 50/batch).
+                Converts existing HTML content to the structured sections_json format.{" "}
+                Processes articles where <code className="text-[10px] text-sky-300">sections_json IS NULL</code> (max 50/batch).
               </p>
               <div className="flex flex-wrap items-center gap-3">
                 <button
@@ -291,25 +291,25 @@ export default function AnalyticsPage() {
                   disabled={migrating}
                   className="rounded-lg bg-sky-500 px-4 py-2 text-xs font-semibold text-slate-950 transition hover:bg-sky-400 disabled:opacity-50"
                 >
-                  {migrating ? "Migrate ediliyor..." : "Batch Migrate (50 içerik)"}
+                  {migrating ? "Migrating..." : "Batch Migrate (50 articles)"}
                 </button>
                 {migrateResult ? (
                   <span className={`text-[11px] ${migrateResult.startsWith("✓") ? "text-emerald-400" : "text-rose-400"}`}>{migrateResult}</span>
                 ) : null}
               </div>
               <p className="mt-3 text-[10px] text-slate-500">
-                Not: Önce Supabase SQL Editor&apos;da <code className="text-slate-400">supabase/v2_columns_migration.sql</code> dosyasını çalıştırın.
+                Note: First run <code className="text-slate-400">supabase/v2_columns_migration.sql</code> in the Supabase SQL Editor.
               </p>
             </div>
 
             <div className="grid grid-cols-2 gap-4 sm:grid-cols-3">
-              <AdminStatCard label="Son 7 Gün" value={generatedLast7d} sub="üretilen içerik" color="emerald" />
-              <AdminStatCard label="Toplam Bekleyen" value={pending.length} sub="yayına alınmadı" color="amber" />
-              <AdminStatCard label="Toplam Yayında" value={published.length} sub="aktif içerik" color="sky" />
+              <AdminStatCard label="Last 7 Days" value={generatedLast7d} sub="articles created" color="emerald" />
+              <AdminStatCard label="Total Pending" value={pending.length} sub="not yet published" color="amber" />
+              <AdminStatCard label="Total Published" value={published.length} sub="active articles" color="sky" />
             </div>
 
             <div className="rounded-xl border border-slate-700/60 bg-slate-900/40 p-5">
-              <p className="mb-4 text-[10px] font-semibold uppercase tracking-[0.18em] text-slate-400">Hero Stili Dağılımı</p>
+              <p className="mb-4 text-[10px] font-semibold uppercase tracking-[0.18em] text-slate-400">Hero Style Distribution</p>
               <div className="space-y-2">
                 {Object.entries(byHeroVariant)
                   .sort((a, b) => b[1] - a[1])
@@ -332,7 +332,7 @@ export default function AnalyticsPage() {
             {pending.length > 0 && (
               <div className="overflow-hidden rounded-xl border border-amber-500/20 bg-amber-500/5">
                 <div className="border-b border-amber-500/20 px-5 py-3">
-                  <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-amber-400">Yayına Alınmayı Bekleyen</p>
+                  <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-amber-400">Awaiting Publication</p>
                 </div>
                 <div className="divide-y divide-slate-700/40">
                   {pending.slice(0, 10).map((c) => (
@@ -344,7 +344,7 @@ export default function AnalyticsPage() {
                         </p>
                       </div>
                       <Link href={`/admin/duzenle/${c.id}`} className="text-[11px] font-medium text-emerald-400 transition hover:text-emerald-300">
-                        Düzenle →
+                        Edit →
                       </Link>
                     </div>
                   ))}

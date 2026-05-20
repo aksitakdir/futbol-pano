@@ -17,33 +17,32 @@ function isContentEmpty(html: string): boolean {
 }
 
 const CATEGORIES = [
-  { value: "listeler", label: "Listeler" },
+  { value: "listeler", label: "Lists" },
   { value: "radar", label: "Radar" },
-  { value: "taktik-lab", label: "Taktik Lab" },
+  { value: "taktik-lab", label: "Tactics Lab" },
 ];
 
 const HERO_VARIANTS = [
-  { value: "player-cards", label: "🃏 Oyuncu Kartı", desc: "Radar/Liste" },
-  { value: "cover-image", label: "🖼 Kapak Görseli", desc: "Genel" },
-  { value: "pitch-diagram", label: "⬡ Saha Diyagramı", desc: "Taktik Lab" },
-  { value: "stat-focus", label: "📊 Stat Odak", desc: "Radar" },
-  { value: "text-only", label: "✍ Sadece Metin", desc: "Minimal" },
+  { value: "player-cards", label: "🃏 Player Card", desc: "Radar/Lists" },
+  { value: "cover-image", label: "🖼 Cover Image", desc: "General" },
+  { value: "pitch-diagram", label: "⬡ Pitch Diagram", desc: "Tactics Lab" },
+  { value: "stat-focus", label: "📊 Stat Focus", desc: "Radar" },
+  { value: "text-only", label: "✍ Text Only", desc: "Minimal" },
 ];
 
 const ACCENT_COLORS = [
-  { value: "emerald", label: "Yeşil", color: "oklch(0.71 0.19 155)" },
+  { value: "emerald", label: "Green", color: "oklch(0.71 0.19 155)" },
   { value: "cyan", label: "Cyan", color: "oklch(0.75 0.14 199)" },
-  { value: "sky", label: "Mavi", color: "oklch(0.72 0.14 233)" },
-  { value: "rose", label: "Kırmızı", color: "oklch(0.66 0.21 13)" },
-  { value: "amber", label: "Altın", color: "oklch(0.78 0.17 67)" },
+  { value: "sky", label: "Blue", color: "oklch(0.72 0.14 233)" },
+  { value: "rose", label: "Red", color: "oklch(0.66 0.21 13)" },
+  { value: "amber", label: "Gold", color: "oklch(0.78 0.17 67)" },
   { value: "lime", label: "Lime", color: "oklch(0.80 0.19 126)" },
 ];
 
-function categoryPublicPath(cat: string, lang: "tr" | "en" = "tr"): string {
-  const prefix = lang === "en" ? "/en" : "";
-  if (cat === "radar") return `${prefix}/radar`;
-  if (cat === "taktik-lab") return `${prefix}/taktik-lab`;
-  return `${prefix}/listeler`;
+function categoryPublicPath(cat: string): string {
+  if (cat === "radar") return "/radar";
+  if (cat === "taktik-lab") return "/taktik-lab";
+  return "/listeler";
 }
 
 const SLUG_PATTERN = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
@@ -97,7 +96,6 @@ export default function DuzenlePage() {
   const [category, setCategory] = useState("listeler");
   const [content, setContent] = useState("");
   const [contentEn, setContentEn] = useState("");
-  const [activeLang, setActiveLang] = useState<"tr" | "en">("tr");
   const [youtubeId, setYoutubeId] = useState("");
   const [coverImage, setCoverImage] = useState("");
   const [imageUploading, setImageUploading] = useState(false);
@@ -151,7 +149,7 @@ export default function DuzenlePage() {
         .single();
 
       if (error || !data) {
-        setError("İçerik bulunamadı");
+        setError("Article not found");
         setLoadingData(false);
         return;
       }
@@ -283,11 +281,11 @@ export default function DuzenlePage() {
     setError("");
     const slugTrim = slug.trim();
     if (!title.trim() || !slugTrim || isContentEmpty(content)) {
-      setError("Tüm alanlar zorunludur");
+      setError("All fields are required");
       return;
     }
     if (!SLUG_PATTERN.test(slugTrim)) {
-      setError("Slug yalnızca küçük harf, rakam ve tire içerebilir.");
+      setError("Slug can only contain lowercase letters, numbers and hyphens.");
       return;
     }
 
@@ -327,7 +325,7 @@ export default function DuzenlePage() {
       .eq("id", id);
 
     if (updateError) {
-      setError("Güncelleme sırasında hata oluştu: " + updateError.message);
+      setError("Update error: " + updateError.message);
       setSaving(false);
       return;
     }
@@ -342,7 +340,7 @@ export default function DuzenlePage() {
       <AdminLayout>
         <div className="flex items-center gap-2 py-20 text-sm text-slate-400 justify-center">
           <span className="h-4 w-4 animate-spin rounded-full border-2 border-emerald-400 border-t-transparent" />
-          Yükleniyor...
+          Loading...
         </div>
       </AdminLayout>
     );
@@ -353,36 +351,26 @@ export default function DuzenlePage() {
       <div className="mx-auto max-w-3xl">
         <div className="mb-5 flex items-center justify-between">
           <div>
-            <h1 className="text-xl font-bold">İçeriği Düzenle</h1>
-            <p className="text-xs text-slate-400">Değişiklikleri kaydet veya doğrudan yayınla</p>
+            <h1 className="text-xl font-bold">Edit Article</h1>
+            <p className="text-xs text-slate-400">Save changes or publish directly</p>
           </div>
           <Link
             href={category === "radar" ? "/admin/radar" : "/admin/icerikler"}
             className="rounded-lg border border-slate-700/60 px-3 py-1.5 text-xs font-medium text-slate-400 transition hover:border-slate-600 hover:text-slate-200"
           >
-            {category === "radar" ? "← Radar listesine" : "← İçeriklere dön"}
+            {category === "radar" ? "← Back to Radar" : "← Back to Articles"}
           </Link>
         </div>
 
         <div className="space-y-5">
           {/* Başlık */}
           <div>
-            <div className="flex gap-2 mb-2">
-              <button type="button" onClick={() => setActiveLang("tr")}
-                className={`px-4 py-1.5 text-xs font-bold uppercase tracking-wider transition ${activeLang === "tr" ? "bg-emerald-500 text-slate-950" : "border border-slate-700 text-slate-400 hover:text-slate-200"}`}>
-                🇹🇷 Türkçe
-              </button>
-              <button type="button" onClick={() => setActiveLang("en")}
-                className={`px-4 py-1.5 text-xs font-bold uppercase tracking-wider transition ${activeLang === "en" ? "bg-sky-500 text-slate-950" : "border border-slate-700 text-slate-400 hover:text-slate-200"}`}>
-                🇬🇧 EN
-              </button>
-            </div>
-            <label className="mb-1.5 block text-xs font-semibold text-slate-300">Başlık</label>
+            <label className="mb-1.5 block text-xs font-semibold text-slate-300">Title</label>
             <input
               type="text"
-              value={activeLang === "tr" ? title : titleEn}
-              onChange={(e) => activeLang === "tr" ? setTitle(e.target.value) : setTitleEn(e.target.value)}
-              placeholder={activeLang === "tr" ? "Örn: En İyi 10 Genç Kanat" : "E.g: Top 10 Young Wingers"}
+              value={titleEn || title}
+              onChange={(e) => { setTitleEn(e.target.value); setTitle(e.target.value); }}
+              placeholder="e.g: Top 10 Young Wingers"
               className="w-full rounded-lg border border-slate-700/80 bg-slate-900/70 px-4 py-2.5 text-sm text-slate-100 placeholder-slate-500 outline-none transition focus:border-emerald-500/60"
             />
           </div>
@@ -393,21 +381,21 @@ export default function DuzenlePage() {
             <input
               type="text" value={slug}
               onChange={(e) => setSlug(e.target.value)}
-              placeholder="ornek-makale-url-yolu"
+              placeholder="article-url-path"
               autoComplete="off" spellCheck={false}
               className="w-full rounded-lg border border-slate-700/80 bg-slate-900/70 px-4 py-2.5 font-mono text-sm text-slate-100 placeholder-slate-500 outline-none transition focus:border-emerald-500/60 focus:ring-1 focus:ring-emerald-500/40"
             />
             <p className="mt-1.5 text-[11px] leading-relaxed text-slate-500">
-              Yayında sayfa adresi:{" "}
+              Published URL:{" "}
               <span className="font-mono text-slate-400">
-                {categoryPublicPath(category, activeLang)}/{slug.trim() || "…"}
+                {categoryPublicPath(category)}/{slug.trim() || "…"}
               </span>
             </p>
           </div>
 
           {/* Kategori */}
           <div>
-            <label className="mb-1.5 block text-xs font-semibold text-slate-300">Kategori</label>
+            <label className="mb-1.5 block text-xs font-semibold text-slate-300">Category</label>
             <div className="flex gap-2">
               {CATEGORIES.map((cat) => (
                 <button
@@ -431,7 +419,7 @@ export default function DuzenlePage() {
           {/* V2 — Hero Variant + Accent */}
           <div className="grid gap-5 sm:grid-cols-2">
             <div>
-              <label className="mb-1.5 block text-xs font-semibold text-slate-300">Hero Stili</label>
+              <label className="mb-1.5 block text-xs font-semibold text-slate-300">Hero Style</label>
               <div className="flex flex-col gap-1.5">
                 {HERO_VARIANTS.map((v) => (
                   <button
@@ -451,7 +439,7 @@ export default function DuzenlePage() {
               </div>
             </div>
             <div>
-              <label className="mb-1.5 block text-xs font-semibold text-slate-300">Renk Vurgusu</label>
+              <label className="mb-1.5 block text-xs font-semibold text-slate-300">Accent Color</label>
               <div className="flex flex-col gap-1.5">
                 {ACCENT_COLORS.map((a) => (
                   <button
@@ -480,22 +468,22 @@ export default function DuzenlePage() {
               <input
                 type="text" value={youtubeId}
                 onChange={(e) => setYoutubeId(e.target.value)}
-                placeholder="örn: dQw4w9WgXcQ"
+                placeholder="e.g: dQw4w9WgXcQ"
                 className="w-full rounded-lg border border-slate-700/80 bg-slate-900/70 px-4 py-2.5 text-sm text-slate-100 placeholder-slate-500 outline-none transition focus:border-emerald-500/60 focus:ring-1 focus:ring-emerald-500/40"
               />
             </div>
             <div>
-              <label className="mb-1.5 block text-xs font-semibold text-slate-300">Kapak Görseli</label>
+              <label className="mb-1.5 block text-xs font-semibold text-slate-300">Cover Image</label>
               <div className="space-y-2">
                 <input
                   type="text" value={coverImage}
                   onChange={(e) => setCoverImage(e.target.value)}
-                  placeholder="URL yapıştır ya da aşağıdan yükle"
+                  placeholder="Paste URL or upload below"
                   className="w-full rounded-lg border border-slate-700/80 bg-slate-900/70 px-4 py-2.5 text-sm text-slate-100 placeholder-slate-500 outline-none transition focus:border-emerald-500/60"
                 />
                 <div className="flex items-center gap-2">
                   <label className="cursor-pointer rounded-lg border border-slate-700/60 bg-slate-800/60 px-3 py-2 text-xs font-semibold text-slate-300 transition hover:border-emerald-500/40 hover:text-emerald-300">
-                    {imageUploading ? "Yükleniyor..." : "📁 Görsel Yükle"}
+                    {imageUploading ? "Uploading..." : "📁 Upload Image"}
                     <input type="file" accept="image/*" className="hidden"
                       onChange={async (e) => {
                         const file = e.target.files?.[0];
@@ -509,7 +497,7 @@ export default function DuzenlePage() {
                           const { data: urlData } = supabase.storage.from("content-images").getPublicUrl(data.path);
                           setCoverImage(urlData.publicUrl);
                         } catch (err) {
-                          console.error("Görsel yükleme hatası:", err);
+                          console.error("Image upload error:", err);
                         }
                         setImageUploading(false);
                       }}
@@ -526,20 +514,20 @@ export default function DuzenlePage() {
           {/* YouTube sorguları */}
           <div className="grid gap-5 sm:grid-cols-2">
             <div>
-              <label className="mb-1.5 block text-xs font-semibold text-slate-300">YouTube Arama 1</label>
+              <label className="mb-1.5 block text-xs font-semibold text-slate-300">YouTube Search 1</label>
               <input
                 type="text" value={youtubeQuery1}
                 onChange={(e) => setYoutubeQuery1(e.target.value)}
-                placeholder="örn: Arda Güler highlights 2025"
+                placeholder="e.g: Arda Güler highlights 2025"
                 className="w-full rounded-lg border border-slate-700/80 bg-slate-900/70 px-4 py-2.5 text-sm text-slate-100 placeholder-slate-500 outline-none transition focus:border-emerald-500/60 focus:ring-1 focus:ring-emerald-500/40"
               />
             </div>
             <div>
-              <label className="mb-1.5 block text-xs font-semibold text-slate-300">YouTube Arama 2</label>
+              <label className="mb-1.5 block text-xs font-semibold text-slate-300">YouTube Search 2</label>
               <input
                 type="text" value={youtubeQuery2}
                 onChange={(e) => setYoutubeQuery2(e.target.value)}
-                placeholder="opsiyonel"
+                placeholder="optional"
                 className="w-full rounded-lg border border-slate-700/80 bg-slate-900/70 px-4 py-2.5 text-sm text-slate-100 placeholder-slate-500 outline-none transition focus:border-emerald-500/60 focus:ring-1 focus:ring-emerald-500/40"
               />
             </div>
@@ -547,11 +535,11 @@ export default function DuzenlePage() {
 
           {/* Haber keyword */}
           <div>
-            <label className="mb-1.5 block text-xs font-semibold text-slate-300">Haber Arama Keyword</label>
+            <label className="mb-1.5 block text-xs font-semibold text-slate-300">News Search Keyword</label>
             <input
               type="text" value={newsQuery}
               onChange={(e) => setNewsQuery(e.target.value)}
-              placeholder="örn: Arda Güler"
+              placeholder="e.g: Arda Güler"
               className="w-full rounded-lg border border-slate-700/80 bg-slate-900/70 px-4 py-2.5 text-sm text-slate-100 placeholder-slate-500 outline-none transition focus:border-emerald-500/60 focus:ring-1 focus:ring-emerald-500/40"
             />
           </div>
@@ -559,15 +547,15 @@ export default function DuzenlePage() {
           {category === "listeler" && (
             <div className="rounded-xl border border-slate-700/60 bg-slate-900/40 p-5">
               <div className="mb-4">
-                <p className="text-xs font-semibold uppercase tracking-[0.18em] text-sky-300/80">Oyuncu Listesi</p>
-                <p className="mt-0.5 text-[11px] text-slate-500">Liste içeriği için birden fazla oyuncu ekle</p>
+                <p className="text-xs font-semibold uppercase tracking-[0.18em] text-sky-300/80">Player List</p>
+                <p className="mt-0.5 text-[11px] text-slate-500">Add multiple players for list content</p>
               </div>
               <div className="relative mb-4">
                 <input
                   type="text"
                   value={playersListSearch}
                   onChange={(e) => setPlayersListSearch(e.target.value)}
-                  placeholder="Oyuncu adı yaz, seç ve listeye ekle..."
+                  placeholder="Type player name, select and add to list..."
                   className="w-full rounded-lg border border-slate-700/80 bg-slate-900/70 px-4 py-2.5 text-sm text-slate-100 placeholder-slate-500 outline-none transition focus:border-sky-500/60"
                 />
                 {playersListSearching && (
@@ -629,7 +617,7 @@ export default function DuzenlePage() {
                             prev.map((pl, j) => (j === i ? { ...pl, scout_note: e.target.value } : pl)),
                           )
                         }
-                        placeholder="Scout notu..."
+                        placeholder="Scout note..."
                         className="flex-1 rounded-md border border-slate-700/60 bg-slate-900/60 px-2 py-1 text-[11px] text-slate-100 placeholder-slate-500 outline-none focus:border-sky-500/40"
                       />
                       <button
@@ -641,7 +629,7 @@ export default function DuzenlePage() {
                       </button>
                     </div>
                   ))}
-                  <p className="text-[11px] text-slate-500">{playersList.length} oyuncu eklendi</p>
+                  <p className="text-[11px] text-slate-500">{playersList.length} player(s) added</p>
                 </div>
               )}
             </div>
@@ -652,10 +640,10 @@ export default function DuzenlePage() {
             <div className="mb-4 flex items-center justify-between">
               <div>
                 <p className="text-xs font-semibold uppercase tracking-[0.18em] text-emerald-300/80">
-                  Oyuncu Kartı
+                  Player Card
                 </p>
                 <p className="mt-0.5 text-[11px] text-slate-500">
-                  EA FC 26 veritabanından otomatik doldurulur — istersen düzenle
+                  Auto-filled from EA FC 26 database — edit if needed
                 </p>
               </div>
               {(playerMatched || statOverall) && (
@@ -663,19 +651,19 @@ export default function DuzenlePage() {
                   type="button" onClick={clearPlayer}
                   className="text-[11px] text-rose-400 hover:text-rose-300"
                 >
-                  Temizle
+                  Clear
                 </button>
               )}
             </div>
 
             {/* Oyuncu arama */}
             <div className="relative mb-4">
-              <label className="mb-1.5 block text-xs font-semibold text-slate-300">Odak Oyuncu</label>
+              <label className="mb-1.5 block text-xs font-semibold text-slate-300">Featured Player</label>
               <input
                 type="text"
                 value={playerSearch}
                 onChange={(e) => { setPlayerSearch(e.target.value); setPlayerMatched(null); setPlayerName(e.target.value); }}
-                placeholder="Oyuncu adı yazın — EA FC 26'dan otomatik bulur"
+                placeholder="Type player name — auto-finds from EA FC 26"
                 className="w-full rounded-lg border border-slate-700/80 bg-slate-900/70 px-4 py-2.5 text-sm text-slate-100 placeholder-slate-500 outline-none transition focus:border-emerald-500/60 focus:ring-1 focus:ring-emerald-500/40"
               />
               {playerSearching && (
@@ -707,7 +695,7 @@ export default function DuzenlePage() {
               <div className="mb-4 flex items-center gap-3 rounded-lg border border-emerald-500/20 bg-emerald-500/5 px-4 py-2.5">
                 <div className="flex-1 min-w-0">
                   <p className="text-sm font-bold text-emerald-300">{playerMatched.name}</p>
-                  <p className="text-[11px] text-slate-400">{playerMatched.club} · {playerMatched.league} · {playerMatched.age} yaş</p>
+                  <p className="text-[11px] text-slate-400">{playerMatched.club} · {playerMatched.league} · {playerMatched.age} yrs</p>
                 </div>
                 <span className="text-2xl font-black text-emerald-400">{playerMatched.overall}</span>
               </div>
@@ -715,12 +703,12 @@ export default function DuzenlePage() {
 
             {/* Stat grid */}
             <div className="grid grid-cols-3 gap-3 sm:grid-cols-6">
-              <StatInput label="PAC — Hız" value={statPace} onChange={setStatPace} />
-              <StatInput label="SHO — Şut" value={statShooting} onChange={setStatShooting} />
-              <StatInput label="PAS — Pas" value={statPassing} onChange={setStatPassing} />
-              <StatInput label="DRI — Dribling" value={statDribbling} onChange={setStatDribbling} />
-              <StatInput label="DEF — Defans" value={statDefending} onChange={setStatDefending} />
-              <StatInput label="PHY — Fizik" value={statPhysical} onChange={setStatPhysical} />
+              <StatInput label="PAC — Pace" value={statPace} onChange={setStatPace} />
+              <StatInput label="SHO — Shooting" value={statShooting} onChange={setStatShooting} />
+              <StatInput label="PAS — Passing" value={statPassing} onChange={setStatPassing} />
+              <StatInput label="DRI — Dribbling" value={statDribbling} onChange={setStatDribbling} />
+              <StatInput label="DEF — Defending" value={statDefending} onChange={setStatDefending} />
+              <StatInput label="PHY — Physical" value={statPhysical} onChange={setStatPhysical} />
             </div>
 
             <div className="mt-3 flex items-center gap-3">
@@ -735,7 +723,7 @@ export default function DuzenlePage() {
                 />
               </div>
               {statsFilled > 0 && (
-                <p className="text-[11px] text-emerald-400/70 mt-4">{statsFilled}/6 stat dolduruldu</p>
+                <p className="text-[11px] text-emerald-400/70 mt-4">{statsFilled}/6 stats filled</p>
               )}
             </div>
           </div>
@@ -744,7 +732,7 @@ export default function DuzenlePage() {
           <div className="rounded-xl border border-slate-700/60 bg-slate-900/40 p-5">
             {/* Mod seçimi */}
             <div className="flex items-center justify-between mb-4">
-              <label className="text-xs font-semibold text-slate-300">İçerik</label>
+              <label className="text-xs font-semibold text-slate-300">Content</label>
               <div className="flex rounded-lg overflow-hidden border border-slate-700/60">
                 <button
                   type="button"
@@ -766,33 +754,29 @@ export default function DuzenlePage() {
                       : "bg-transparent text-slate-500 hover:text-slate-300 border-l border-slate-700/60"
                   }`}
                 >
-                  🧱 Blok Editörü
+                  🧱 Block Editor
                 </button>
               </div>
             </div>
 
             {contentMode === "rich" ? (
               <div>
-                {activeLang === "tr" ? (
-                  <RichTextEditor value={content} onChange={setContent} placeholder="İçerik yazın..." />
-                ) : (
-                  <RichTextEditor value={contentEn} onChange={setContentEn} placeholder="Write content in English..." />
-                )}
+                <RichTextEditor value={contentEn || content} onChange={(v) => { setContentEn(v); setContent(v); }} placeholder="Write content in English..." />
                 <p className="mt-2 text-[10px] text-slate-600">
-                  Ham HTML editörü. <strong className="text-slate-500">Blok Editörü</strong> sekmesine geçerek lead, spot alıntı ve callout blokları görsel olarak ekleyebilirsin.
+                  Raw HTML editor. Switch to <strong className="text-slate-500">Block Editor</strong> tab to visually add lead, pull-quote and callout blocks.
                 </p>
                 <p className="mt-1.5 text-[10px] text-sky-500/90 leading-relaxed">
-                  Metnin istediğin yerinde EA FC kartı: tek satır olarak{" "}
-                  <code className="rounded bg-slate-800 px-1 py-0.5 text-[9px] text-sky-300">{`<!-- scout-player:Oyuncu Tam Adı -->`}</code>{" "}
-                  yazın (Veritabanındaki isme yakın; Radar/Listeler/Taktik HTML ve blok HTML alanlarında geçerli).
+                  To embed an EA FC card anywhere in the text, write on a single line:{" "}
+                  <code className="rounded bg-slate-800 px-1 py-0.5 text-[9px] text-sky-300">{`<!-- scout-player:Player Full Name -->`}</code>{" "}
+                  (close match to database name; valid in Radar/Lists/Tactics HTML and block HTML fields).
                 </p>
               </div>
             ) : (
               <div>
                 <p className="text-[11px] text-slate-500 mb-4">
-                  Her blok ayrı bir bölüm olarak render edilir. Kaydettiğinde <code className="text-sky-400">sections_json</code> kolonu güncellenir
-                  ve makale bu yapıyı kullanır (Rich Text yerine). HTML bloklarına{" "}
-                  <code className="text-sky-400/90">{`<!-- scout-player:İsim -->`}</code> ekleyerek kart gömebilirsin.
+                  Each block renders as a separate section. On save, the <code className="text-sky-400">sections_json</code> column is updated
+                  and the article uses this structure (instead of Rich Text). You can embed cards in HTML blocks with{" "}
+                  <code className="text-sky-400/90">{`<!-- scout-player:Name -->`}</code>.
                 </p>
                 <SectionsEditor value={sectionsBlocks} onChange={setSectionsBlocks} />
               </div>
@@ -806,19 +790,19 @@ export default function DuzenlePage() {
               onClick={() => handleSave(false)} disabled={saving}
               className="rounded-lg bg-emerald-500 px-6 py-2.5 text-sm font-semibold text-slate-950 transition hover:bg-emerald-400 disabled:opacity-50"
             >
-              {saving ? "Kaydediliyor..." : "Kaydet"}
+              {saving ? "Saving..." : "Save"}
             </button>
             <button
               onClick={() => handleSave(true)} disabled={saving}
               className="rounded-lg border border-emerald-500/60 bg-emerald-500/15 px-6 py-2.5 text-sm font-semibold text-emerald-300 transition hover:bg-emerald-500/25 disabled:opacity-50"
             >
-              {saving ? "Kaydediliyor..." : "Kaydet ve Yayınla"}
+              {saving ? "Saving..." : "Save & Publish"}
             </button>
             <Link
               href={category === "radar" ? "/admin/radar" : "/admin/icerikler"}
               className="rounded-lg border border-slate-700/80 bg-slate-900/70 px-6 py-2.5 text-sm font-medium text-slate-400 transition hover:border-slate-600 hover:text-slate-200"
             >
-              İptal
+              Cancel
             </Link>
           </div>
         </div>

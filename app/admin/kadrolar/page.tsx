@@ -127,13 +127,13 @@ export default function AdminKadrolarPage() {
     setMessage(null);
     const result = await saveWcSquadTeam(teamSlug, flattenGroups(groups));
     setSaving(false);
-    setMessage(result.ok ? "Kadro kaydedildi." : `Hata: ${result.error}`);
+    setMessage(result.ok ? "Squad saved." : `Error: ${result.error}`);
     if (result.ok) loadTeam(teamSlug);
   }
 
   function handleImportSeed() {
     setGroups(groupByBucket(rowsFromSeed(teamSlug)));
-    setMessage("Seed listesi yüklendi — Kaydet ile veritabanına yazın.");
+    setMessage("Seed data loaded — click Save to write to database.");
   }
 
   const team = WC_TEAMS.find((t) => t.slug === teamSlug);
@@ -142,16 +142,16 @@ export default function AdminKadrolarPage() {
     <AdminLayout>
       <div style={{ maxWidth: 1200, margin: "0 auto" }}>
         <h1 className="display" style={{ fontSize: 28, fontWeight: 700, marginBottom: 8 }}>
-          DK 2026 Kadroları
+          WC 2026 Squads
         </h1>
         <p style={{ color: "var(--sg-text-muted)", fontSize: 14, marginBottom: 24 }}>
-          Mevkiye göre oyuncu girin. Sitede varsayılan görünüm OVR renkli liste; FC kartı yalnızca tıklanınca açılır.
+          Enter players by position. Default view on site is OVR colored list; FC card only opens on click.
         </p>
 
         <div style={{ display: "flex", flexWrap: "wrap", gap: 12, marginBottom: 32, alignItems: "flex-end" }}>
           <label style={{ display: "flex", flexDirection: "column", gap: 6, flex: "1 1 240px" }}>
             <span className="mono" style={{ fontSize: 10, letterSpacing: "0.12em" }}>
-              TAKIM
+              TEAM
             </span>
             <select
               value={teamSlug}
@@ -161,16 +161,16 @@ export default function AdminKadrolarPage() {
             >
               {WC_TEAMS.map((t) => (
                 <option key={t.slug} value={t.slug}>
-                  {t.nameTr} ({t.code})
+                  {t.nameEn} ({t.code})
                 </option>
               ))}
             </select>
           </label>
           <button type="button" className="btn" onClick={handleImportSeed} disabled={loading}>
-            Seed&apos;den yükle
+            Load from Seed
           </button>
           <button type="button" className="btn btn-solid" onClick={handleSave} disabled={saving || loading}>
-            {saving ? "Kaydediliyor…" : "Kaydet"}
+            {saving ? "Saving..." : "Save"}
           </button>
         </div>
 
@@ -182,7 +182,7 @@ export default function AdminKadrolarPage() {
 
         {loading ? (
           <p className="mono" style={{ fontSize: 12, color: "var(--sg-text-muted)" }}>
-            Yükleniyor…
+            Loading...
           </p>
         ) : (
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", gap: 24 }}>
@@ -198,17 +198,17 @@ export default function AdminKadrolarPage() {
               >
                 <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 12 }}>
                   <h2 className="mono" style={{ fontSize: 11, letterSpacing: "0.14em", margin: 0 }}>
-                    {positionBucketLabel(bucket, "tr").toUpperCase()}
+                    {positionBucketLabel(bucket, "en").toUpperCase()}
                   </h2>
                   <button type="button" className="btn" style={{ padding: "4px 10px", fontSize: 11 }} onClick={() => addRow(bucket)}>
-                    + Oyuncu
+                    + Player
                   </button>
                 </div>
 
                 <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
                   {groups[bucket].length === 0 ? (
                     <p className="mono" style={{ fontSize: 10, color: "var(--sg-text-muted)" }}>
-                      Boş
+                      Empty
                     </p>
                   ) : null}
                   {groups[bucket].map((row, idx) => (
@@ -224,7 +224,7 @@ export default function AdminKadrolarPage() {
                       }}
                     >
                       <input
-                        placeholder="Oyuncu adı"
+                        placeholder="Player name"
                         value={row.player_name}
                         onChange={(e) => updateRow(bucket, idx, { player_name: e.target.value })}
                         className="admin-input"
@@ -243,7 +243,7 @@ export default function AdminKadrolarPage() {
                           ))}
                         </select>
                         <input
-                          placeholder="Kulüp"
+                          placeholder="Club"
                           value={row.club}
                           onChange={(e) => updateRow(bucket, idx, { club: e.target.value })}
                           className="admin-input"
@@ -254,7 +254,7 @@ export default function AdminKadrolarPage() {
                           type="number"
                           min={1}
                           max={99}
-                          placeholder="OVR (ops.)"
+                          placeholder="OVR (opt.)"
                           value={row.overall_override ?? ""}
                           onChange={(e) =>
                             updateRow(bucket, idx, {
@@ -263,7 +263,7 @@ export default function AdminKadrolarPage() {
                           }
                           className="admin-input"
                           style={{ width: 72 }}
-                          title="FC yoksa listede renk için manuel OVR"
+                          title="Manual OVR for list color if no FC card"
                         />
                         <button
                           type="button"
@@ -277,7 +277,7 @@ export default function AdminKadrolarPage() {
                             fontSize: 11,
                           }}
                         >
-                          Sil
+                          Delete
                         </button>
                       </div>
                     </div>
@@ -290,7 +290,7 @@ export default function AdminKadrolarPage() {
 
         {team ? (
           <p className="mono" style={{ marginTop: 32, fontSize: 10, color: "var(--sg-text-muted)" }}>
-            Önizleme: /dunya-kupasi-2026/kadrolar/{team.slug}
+            Preview: /world-cup-2026/squads/{team.slug}
           </p>
         ) : null}
       </div>

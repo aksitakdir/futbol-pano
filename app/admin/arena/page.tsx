@@ -190,7 +190,7 @@ export default function AdminArenaPage() {
   async function handleSave(e: React.FormEvent) {
     e.preventDefault();
     if (!form.title_tr || !form.slug) {
-      showToast("Slug ve TR başlık zorunlu", false);
+      showToast("Slug and title are required", false);
       return;
     }
     setSaving(true);
@@ -222,23 +222,23 @@ export default function AdminArenaPage() {
 
     setSaving(false);
     if (error) {
-      showToast(`Hata: ${error.message}`, false);
+      showToast(`Error: ${error.message}`, false);
     } else {
-      showToast(editingId ? "Güncellendi!" : "Eklendi!");
+      showToast(editingId ? "Updated!" : "Added!");
       closeForm();
       loadGames();
     }
   }
 
   async function handleDelete(id: string) {
-    if (!confirm("Bu arena oyununu silmek istediğinizden emin misiniz?")) return;
+    if (!confirm("Are you sure you want to delete this arena game?")) return;
     setDeleting(id);
     const { error } = await supabase.from("arena_games").delete().eq("id", id);
     setDeleting(null);
     if (error) {
-      showToast(`Silinemedi: ${error.message}`, false);
+      showToast(`Could not delete: ${error.message}`, false);
     } else {
-      showToast("Silindi.");
+      showToast("Deleted.");
       loadGames();
     }
   }
@@ -263,14 +263,14 @@ export default function AdminArenaPage() {
       <div className="mx-auto max-w-5xl">
         <div className="mb-6 flex items-center justify-between">
           <div>
-            <h1 className="text-xl font-bold">Arena Oyunları</h1>
-            <p className="text-xs text-slate-400">Supabase arena_games tablosunu yönet</p>
+            <h1 className="text-xl font-bold">Arena Games</h1>
+            <p className="text-xs text-slate-400">Manage arena_games in Supabase</p>
           </div>
           <button
             onClick={openNew}
             className="rounded-lg bg-emerald-500 px-4 py-2 text-xs font-semibold text-slate-950 transition hover:bg-emerald-400"
           >
-            + Yeni Oyun
+            + New Game
           </button>
         </div>
 
@@ -278,15 +278,15 @@ export default function AdminArenaPage() {
         {loading ? (
           <div className="flex items-center justify-center gap-2 py-20 text-sm text-slate-400">
             <span className="h-4 w-4 animate-spin rounded-full border-2 border-emerald-400 border-t-transparent" />
-            Yükleniyor...
+            Loading...
           </div>
         ) : (
           <div className="rounded-xl border border-slate-800/60 bg-slate-900/30">
             {games.length === 0 ? (
               <div className="px-5 py-12 text-center text-sm text-slate-500">
-                Henüz oyun eklenmemiş.{" "}
+                No games yet.{" "}
                 <button onClick={openNew} className="text-emerald-400 underline">
-                  İlk oyunu ekle
+                  Add first game
                 </button>
               </div>
             ) : (
@@ -303,9 +303,9 @@ export default function AdminArenaPage() {
                     <div className="mt-0.5 flex items-center gap-2 text-[11px] text-slate-500 flex-wrap">
                       <span>{g.game_type}</span>
                       <span>·</span>
-                      <span>{g.participants?.length ?? 0} katılımcı</span>
+                      <span>{g.participants?.length ?? 0} participants</span>
                       <span>·</span>
-                      <span>{new Date(g.created_at).toLocaleDateString("tr-TR", { day: "numeric", month: "short", year: "numeric" })}</span>
+                      <span>{new Date(g.created_at).toLocaleDateString("en-US", { day: "numeric", month: "short", year: "numeric" })}</span>
                     </div>
                   </div>
 
@@ -317,27 +317,27 @@ export default function AdminArenaPage() {
                           : "border-slate-600/40 bg-slate-700/20 text-slate-400"
                       }`}
                     >
-                      {g.status === "published" ? "Yayında" : "Taslak"}
+                      {g.status === "published" ? "Published" : "Draft"}
                     </span>
                     <Link
                       href={`/arena/${g.slug}`}
                       target="_blank"
                       className="rounded-lg border border-slate-700/50 px-2 py-1 text-[11px] text-slate-400 transition hover:text-slate-200"
                     >
-                      Görüntüle
+                      View
                     </Link>
                     <button
                       onClick={() => openEdit(g)}
                       className="rounded-lg border border-slate-700/50 px-2 py-1 text-[11px] text-slate-400 transition hover:text-emerald-300"
                     >
-                      Düzenle
+                      Edit
                     </button>
                     <button
                       onClick={() => handleDelete(g.id)}
                       disabled={deleting === g.id}
                       className="rounded-lg border border-rose-900/50 px-2 py-1 text-[11px] text-rose-400 transition hover:border-rose-500/50 disabled:opacity-50"
                     >
-                      {deleting === g.id ? "..." : "Sil"}
+                      {deleting === g.id ? "..." : "Delete"}
                     </button>
                   </div>
                 </div>
@@ -355,7 +355,7 @@ export default function AdminArenaPage() {
               className="mb-8 w-full max-w-3xl rounded-2xl border border-slate-800/60 bg-slate-900 p-6 shadow-2xl"
             >
               <div className="mb-5 flex items-center justify-between">
-                <h2 className="text-base font-bold">{editingId ? "Oyunu Düzenle" : "Yeni Arena Oyunu"}</h2>
+                <h2 className="text-base font-bold">{editingId ? "Edit Game" : "New Arena Game"}</h2>
                 <button type="button" onClick={closeForm} className="text-slate-500 hover:text-slate-300">
                   <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
                     <line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" />
@@ -381,19 +381,19 @@ export default function AdminArenaPage() {
                         className="mt-1 text-[10px] text-emerald-400 hover:underline"
                         onClick={() => handleField("slug", toSlug(form.title_tr))}
                       >
-                        Otomatik oluştur
+                        Auto-generate
                       </button>
                     )}
                   </div>
                   <div>
-                    <label className={labelCls}>Durum</label>
+                    <label className={labelCls}>Status</label>
                     <select
                       className={inputCls}
                       value={form.status}
                       onChange={(e) => handleField("status", e.target.value as ArenaGameStatus)}
                     >
-                      <option value="draft">Taslak</option>
-                      <option value="published">Yayında</option>
+                      <option value="draft">Draft</option>
+                      <option value="published">Published</option>
                     </select>
                   </div>
                 </div>
@@ -401,7 +401,7 @@ export default function AdminArenaPage() {
                 {/* Titles */}
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <label className={labelCls}>Başlık (TR) *</label>
+                    <label className={labelCls}>Title (TR) *</label>
                     <input
                       className={inputCls}
                       value={form.title_tr}
@@ -414,7 +414,7 @@ export default function AdminArenaPage() {
                     />
                   </div>
                   <div>
-                    <label className={labelCls}>Başlık (EN)</label>
+                    <label className={labelCls}>Title (EN)</label>
                     <input
                       className={inputCls}
                       value={form.title_en}
@@ -427,7 +427,7 @@ export default function AdminArenaPage() {
                 {/* Descriptions */}
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <label className={labelCls}>Açıklama (TR)</label>
+                    <label className={labelCls}>Description (TR)</label>
                     <textarea
                       className={inputCls}
                       rows={2}
@@ -436,7 +436,7 @@ export default function AdminArenaPage() {
                     />
                   </div>
                   <div>
-                    <label className={labelCls}>Açıklama (EN)</label>
+                    <label className={labelCls}>Description (EN)</label>
                     <textarea
                       className={inputCls}
                       rows={2}
@@ -449,7 +449,7 @@ export default function AdminArenaPage() {
                 {/* Hero titles */}
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <label className={labelCls}>Hero Başlık (TR)</label>
+                    <label className={labelCls}>Hero Title (TR)</label>
                     <input
                       className={inputCls}
                       value={form.hero_title_tr}
@@ -458,7 +458,7 @@ export default function AdminArenaPage() {
                     />
                   </div>
                   <div>
-                    <label className={labelCls}>Hero Başlık (EN)</label>
+                    <label className={labelCls}>Hero Title (EN)</label>
                     <input
                       className={inputCls}
                       value={form.hero_title_en}
@@ -491,7 +491,7 @@ export default function AdminArenaPage() {
                 </div>
 
                 <div>
-                  <label className={labelCls}>Kampanya hub</label>
+                  <label className={labelCls}>Campaign Hub</label>
                   <div className="mt-2 flex flex-wrap gap-4">
                     {(["wc-2026", "transfer"] as const).map((tag) => (
                       <label key={tag} className="flex items-center gap-2 text-xs text-slate-300">
@@ -512,12 +512,12 @@ export default function AdminArenaPage() {
                     ))}
                   </div>
                   <div className="mt-3">
-                    <label className={labelCls}>Takım slug (transfer anketi)</label>
+                    <label className={labelCls}>Team slug (transfer poll)</label>
                     <input
                       className={inputCls}
                       value={form.team_slug}
                       onChange={(e) => handleField("team_slug", e.target.value)}
-                      placeholder="örn. galatasaray"
+                      placeholder="e.g. manchester-city"
                     />
                   </div>
                 </div>
@@ -525,20 +525,20 @@ export default function AdminArenaPage() {
                 {/* Game type + card color */}
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <label className={labelCls}>Oyun Tipi</label>
+                    <label className={labelCls}>Game Type</label>
                     <select
                       className={inputCls}
                       value={form.game_type}
                       onChange={(e) => handleGameTypeChange(e.target.value as ArenaGameType)}
                     >
-                      <option value="random_16">random_16 (16 oyuncu, karışık)</option>
-                      <option value="random_32">random_32 (32 oyuncu, karışık)</option>
-                      <option value="random_64">random_64 (64 oyuncu, karışık)</option>
-                      <option value="fixed_8">fixed_8 (8 sabit eşleşme)</option>
+                      <option value="random_16">random_16 (16 players, random)</option>
+                      <option value="random_32">random_32 (32 players, random)</option>
+                      <option value="random_64">random_64 (64 players, random)</option>
+                      <option value="fixed_8">fixed_8 (8 fixed matchups)</option>
                     </select>
                   </div>
                   <div>
-                    <label className={labelCls}>Kart Rengi</label>
+                    <label className={labelCls}>Card Color</label>
                     <select
                       className={inputCls}
                       value={form.card_color}
@@ -554,18 +554,18 @@ export default function AdminArenaPage() {
                 {/* Katılımcılar — satır başına iki input */}
                 <div>
                   <label className={labelCls}>
-                    Katılımcılar ({bracketParticipantCount(form.game_type)} satır)
+                    Participants ({bracketParticipantCount(form.game_type)} rows)
                   </label>
                   <p className="mb-2 text-[10px] text-slate-500">
                     {form.game_type === "fixed_8"
-                      ? "Her satırda iki takım girin (A | B). Boş satırlar kayıtta yok sayılır."
-                      : "Her satırda oyuncu adı ve kulüp / alt başlık girin. Boş satırlar yok sayılır."}
+                      ? "Enter two teams per row (A | B). Empty rows are ignored on save."
+                      : "Enter player name and club / subtitle per row. Empty rows are ignored."}
                   </p>
                   <div className="rounded-lg border border-slate-800/60 bg-slate-950/40 p-3">
                     <div className="mb-2 hidden grid-cols-[2rem_minmax(0,1fr)_minmax(0,1fr)] gap-2 text-[10px] font-semibold uppercase tracking-wider text-slate-500 sm:grid">
                       <span className="text-center">#</span>
-                      <span>{form.game_type === "fixed_8" ? "Takım A" : "İsim"}</span>
-                      <span>{form.game_type === "fixed_8" ? "Takım B" : "Kulüp / alt başlık"}</span>
+                      <span>{form.game_type === "fixed_8" ? "Team A" : "Name"}</span>
+                      <span>{form.game_type === "fixed_8" ? "Team B" : "Club / subtitle"}</span>
                     </div>
                     <div className="max-h-[min(560px,60vh)] space-y-2 overflow-y-auto overscroll-contain pr-1">
                       {form.participantRows.map((row, i) => (
@@ -580,16 +580,16 @@ export default function AdminArenaPage() {
                               className={inputCls}
                               value={row.name}
                               onChange={(e) => handleParticipantRow(i, "name", e.target.value)}
-                              placeholder={form.game_type === "fixed_8" ? `Takım A (${i + 1})` : `Oyuncu (${i + 1})`}
-                              aria-label={form.game_type === "fixed_8" ? `Takım A ${i + 1}` : `İsim ${i + 1}`}
+                              placeholder={form.game_type === "fixed_8" ? `Team A (${i + 1})` : `Player (${i + 1})`}
+                              aria-label={form.game_type === "fixed_8" ? `Team A ${i + 1}` : `Name ${i + 1}`}
                             />
                             <input
                               type="text"
                               className={inputCls}
                               value={row.detail}
                               onChange={(e) => handleParticipantRow(i, "detail", e.target.value)}
-                              placeholder={form.game_type === "fixed_8" ? "Takım B" : "Kulüp"}
-                              aria-label={form.game_type === "fixed_8" ? `Takım B ${i + 1}` : `Kulüp ${i + 1}`}
+                              placeholder={form.game_type === "fixed_8" ? "Team B" : "Club"}
+                              aria-label={form.game_type === "fixed_8" ? `Team B ${i + 1}` : `Club ${i + 1}`}
                             />
                           </div>
                         </div>
@@ -598,7 +598,7 @@ export default function AdminArenaPage() {
                   </div>
                   <p className="mt-2 text-[10px] text-slate-500">
                     <strong className="font-semibold text-slate-400">{countFilledParticipants(form.participantRows)}</strong>{" "}
-                    katılımcı · Toplam {bracketParticipantCount(form.game_type)} slot
+                    participants · {bracketParticipantCount(form.game_type)} total slots
                   </p>
                 </div>
               </div>
@@ -609,14 +609,14 @@ export default function AdminArenaPage() {
                   onClick={closeForm}
                   className="rounded-lg border border-slate-700/60 px-4 py-2 text-xs text-slate-400 transition hover:text-slate-200"
                 >
-                  İptal
+                  Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={saving}
                   className="rounded-lg bg-emerald-500 px-5 py-2 text-xs font-semibold text-slate-950 transition hover:bg-emerald-400 disabled:opacity-60"
                 >
-                  {saving ? "Kaydediliyor..." : editingId ? "Güncelle" : "Kaydet"}
+                  {saving ? "Saving..." : editingId ? "Update" : "Save"}
                 </button>
               </div>
             </form>
