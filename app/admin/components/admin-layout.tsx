@@ -22,7 +22,7 @@ const NAV_ITEMS = [
   },
   {
     href: "/admin/icerikler",
-    label: "İçerikler",
+    label: "Articles",
     icon: (
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
         <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z" />
@@ -45,7 +45,7 @@ const NAV_ITEMS = [
   },
   {
     href: "/admin/api-durum",
-    label: "API Durumu",
+    label: "API Status",
     icon: (
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
         <path d="M22 12h-4l-3 9L9 3l-3 9H2" />
@@ -54,7 +54,7 @@ const NAV_ITEMS = [
   },
   {
     href: "/admin/ayarlar",
-    label: "Site Ayarları",
+    label: "Settings",
     icon: (
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
         <circle cx="12" cy="12" r="3" />
@@ -64,7 +64,7 @@ const NAV_ITEMS = [
   },
   {
     href: "/admin/statik",
-    label: "Statik İçerikler",
+    label: "Static Content",
     icon: (
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
         <path d="M4 19.5A2.5 2.5 0 016.5 17H20" />
@@ -74,7 +74,7 @@ const NAV_ITEMS = [
   },
   {
     href: "/admin/kadrolar",
-    label: "DK Kadroları",
+    label: "WC Squads",
     icon: (
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
         <circle cx="12" cy="8" r="4" />
@@ -84,7 +84,7 @@ const NAV_ITEMS = [
   },
   {
     href: "/admin/arena",
-    label: "Arena Oyunları",
+    label: "Arena Games",
     icon: (
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
         <circle cx="12" cy="12" r="10" />

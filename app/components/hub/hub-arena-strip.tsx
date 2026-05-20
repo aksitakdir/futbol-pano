@@ -9,11 +9,11 @@ import type { HubId } from "@/lib/hub-config";
 
 type Props = {
   hubId: HubId;
-  locale: "tr" | "en";
+  locale?: string;
   teamSlug?: string;
 };
 
-export default function HubArenaStrip({ hubId, locale, teamSlug }: Props) {
+export default function HubArenaStrip({ hubId, teamSlug }: Props) {
   const [games, setGames] = useState<ArenaGame[]>([]);
   const tag = hubId === "wc-2026" ? "wc-2026" : "transfer";
 
@@ -26,63 +26,41 @@ export default function HubArenaStrip({ hubId, locale, teamSlug }: Props) {
       .order("created_at", { ascending: false })
       .limit(teamSlug ? 6 : 4)
       .then(({ data, error }) => {
-        if (error || !data) {
-          setGames([]);
-          return;
-        }
+        if (error || !data) { setGames([]); return; }
         let rows = data as ArenaGame[];
-        if (teamSlug) {
-          rows = rows.filter((g) => !g.team_slug || g.team_slug === teamSlug);
-        }
+        if (teamSlug) rows = rows.filter((g) => !g.team_slug || g.team_slug === teamSlug);
         setGames(rows.slice(0, 3));
       });
   }, [tag, teamSlug]);
 
   if (games.length === 0) return null;
 
-  const title =
-    locale === "tr"
-      ? hubId === "wc-2026"
-        ? "DK 2026 ARENA"
-        : "TRANSFER ARENA"
-      : hubId === "wc-2026"
-        ? "WC 2026 ARENA"
-        : "TRANSFER ARENA";
-
-  const arenaBase = locale === "en" ? "/en/arena" : "/arena";
+  const title = hubId === "wc-2026" ? "WC 2026 ARENA" : "TRANSFER ARENA";
 
   return (
     <section className={hubId === "wc-2026" ? "wc-arena-strip" : "transfer-arena-strip"}>
       <PageShell className="sg-page-shell--section" style={{ paddingTop: 0 }}>
-        <div className="eyebrow" style={{ marginBottom: 20 }}>
-          {title}
-        </div>
+        <div className="eyebrow" style={{ marginBottom: 20 }}>{title}</div>
         <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
           {games.map((g) => {
             const accent = CARD_COLOR_MAP[g.card_color] ?? "var(--accent)";
-            const t = locale === "en" ? g.title_en || g.title_tr : g.title_tr;
-            const teaser = locale === "en" ? g.hero_teaser_en || g.hero_teaser_tr : g.hero_teaser_tr;
-            const href = `${arenaPath(g.slug)}${locale === "en" ? "?lang=en" : ""}`;
+            const t = g.title_en || g.title_tr;
+            const teaser = g.hero_teaser_en || g.hero_teaser_tr;
+            const href = `${arenaPath(g.slug)}?lang=en`;
             return (
-              <Link
-                key={g.id}
-                href={href}
-                className="lift hub-arena-card"
-                style={{ borderColor: `${accent}55`, ["--hub-arena-accent" as string]: accent }}
-              >
+              <Link key={g.id} href={href} className="lift hub-arena-card"
+                style={{ borderColor: `${accent}55`, ["--hub-arena-accent" as string]: accent }}>
                 <span className="hub-arena-card__bar" style={{ background: accent }} />
                 <span className="mono hub-arena-card__tag">ARENA</span>
                 <h3 className="display hub-arena-card__title">{t}</h3>
                 <p className="hub-arena-card__teaser">{teaser}</p>
-                <span className="mono hub-arena-card__cta">{locale === "tr" ? "OYNA →" : "PLAY →"}</span>
+                <span className="mono hub-arena-card__cta">PLAY →</span>
               </Link>
             );
           })}
         </div>
         <div style={{ marginTop: 20 }}>
-          <Link href={arenaBase} className="btn">
-            {locale === "tr" ? "TÜM ARENA →" : "ALL ARENA →"}
-          </Link>
+          <Link href="/arena" className="btn">ALL ARENA →</Link>
         </div>
       </PageShell>
     </section>
