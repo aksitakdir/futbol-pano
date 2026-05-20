@@ -69,7 +69,7 @@ export const HUBS: Record<HubId, HubConfig> = {
     navKey: "transfer",
     tr: {
       basePath: "/transfer",
-      navLabel: "TRANSFER HABERLERİ",
+      navLabel: "TRANSFERLER",
       pillarTitle: "Transferler",
       pillarEyebrow: "TRANSFER MERKEZİ",
       pillarDescription:
@@ -82,7 +82,7 @@ export const HUBS: Record<HubId, HubConfig> = {
     },
     en: {
       basePath: "/en/transfers",
-      navLabel: "TRANSFER NEWS",
+      navLabel: "TRANSFERS",
       pillarTitle: "Transfers",
       pillarEyebrow: "TRANSFER HUB",
       pillarDescription:
