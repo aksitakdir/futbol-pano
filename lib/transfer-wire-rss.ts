@@ -386,19 +386,18 @@ export function safePublishedIso(pubDate: string): string {
   }
 }
 
-export type WireTimeBucket = "today" | "yesterday" | "week" | "older";
+export type WireTimeBucket = "newest" | "recent" | "earlier";
 
 export const WIRE_TIME_BUCKET_LABELS: Record<WireTimeBucket, string> = {
-  today: "Today",
-  yesterday: "Yesterday",
-  week: "This week",
-  older: "Earlier",
+  newest: "Newest",
+  recent: "Recent",
+  earlier: "Earlier",
 };
 
 export function wireTimeBucket(publishedAt: string): WireTimeBucket {
-  if (!publishedAt) return "older";
+  if (!publishedAt) return "recent";
   const d = new Date(publishedAt);
-  if (Number.isNaN(d.getTime())) return "older";
+  if (Number.isNaN(d.getTime())) return "recent";
 
   const now = new Date();
   const startToday = new Date(now.getFullYear(), now.getMonth(), now.getDate());
@@ -407,16 +406,16 @@ export function wireTimeBucket(publishedAt: string): WireTimeBucket {
   const startWeek = new Date(startToday);
   startWeek.setDate(startWeek.getDate() - 7);
 
-  if (d >= startToday) return "today";
-  if (d >= startYesterday) return "yesterday";
-  if (d >= startWeek) return "week";
-  return "older";
+  // Today + prior calendar day → one fresh block (no "Yesterday" label)
+  if (d >= startYesterday) return "newest";
+  if (d >= startWeek) return "recent";
+  return "earlier";
 }
 
 export function groupHeadlinesByTime<T extends { publishedAt: string }>(
   items: T[],
 ): { bucket: WireTimeBucket; label: string; items: T[] }[] {
-  const order: WireTimeBucket[] = ["today", "yesterday", "week", "older"];
+  const order: WireTimeBucket[] = ["newest", "recent", "earlier"];
   const map = new Map<WireTimeBucket, T[]>();
   for (const item of items) {
     const b = wireTimeBucket(item.publishedAt);
