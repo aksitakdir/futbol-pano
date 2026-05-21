@@ -2,8 +2,11 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import { HUBS } from "@/lib/hub-config";
 import { WC_TEAMS, type WcTeam } from "@/lib/wc-2026-teams";
 import { supabase } from "@/lib/supabase";
+
+const WC_HUB = HUBS["wc-2026"].en;
 
 type TeamWithCount = WcTeam & { playerCount: number };
 
@@ -50,7 +53,7 @@ export default function HomeWcSquads() {
           <h2 className="display" style={{ fontSize: "clamp(24px, 4vw, 36px)", fontWeight: 700, letterSpacing: "-0.03em", margin: 0 }}>
             All 48 Squad Pages
           </h2>
-          <Link href="/wc-2026" className="mono u-link" style={{ fontSize: 12, letterSpacing: "0.14em", color: "var(--sg-text-muted)", whiteSpace: "nowrap" }}>
+          <Link href={WC_HUB.basePath} className="mono u-link" style={{ fontSize: 12, letterSpacing: "0.14em", color: "var(--sg-text-muted)", whiteSpace: "nowrap" }}>
             VIEW HUB →
           </Link>
         </div>
@@ -155,5 +158,5 @@ function TeamCard({ team, dimmed = false }: { team: TeamWithCount; dimmed?: bool
   );
 
   if (dimmed) return card;
-  return <Link href={`/wc-2026/${team.slug}`} style={{ textDecoration: "none", color: "inherit" }}>{card}</Link>;
+  return <Link href={`${WC_HUB.kadrolarPath}/${team.slug}`} style={{ textDecoration: "none", color: "inherit" }}>{card}</Link>;
 }
