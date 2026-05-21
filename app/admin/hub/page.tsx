@@ -5,6 +5,7 @@ import AdminLayout from "../components/admin-layout";
 import { supabase } from "@/lib/supabase";
 import { HUBS, type HubId } from "@/lib/hub-config";
 import type { HubPillarCopy } from "@/lib/hub-types";
+import { adminSyncTransferWire } from "./transfer-wire-actions";
 
 type CompletedRow = {
   id: string;
@@ -129,16 +130,17 @@ export default function AdminHubPage() {
     setSaving(true);
     setMessage("");
     try {
-      const res = await fetch("/api/transfer-wire?refresh=1");
-      const d = await res.json();
-      if (d.headlines?.length) {
-        setMessage(`Transfer Wire refreshed — ${d.headlines.length} headlines.`);
+      const d = await adminSyncTransferWire();
+      if (d.skipped) {
+        setMessage(`Sync skipped (cooldown). Cache has ${d.count} headlines.`);
+      } else if (d.ok && d.count > 0) {
+        setMessage(`Transfer Wire synced — ${d.count} headlines.`);
       } else {
-        setMessage("Wire refresh completed but no headlines returned.");
+        setMessage(d.error ?? "Wire sync completed but no headlines returned.");
       }
       await fetchWireStatus();
     } catch {
-      setMessage("Transfer Wire refresh failed.");
+      setMessage("Transfer Wire sync failed.");
     }
     setSaving(false);
     setTimeout(() => setMessage(""), 4000);
@@ -274,8 +276,8 @@ export default function AdminHubPage() {
         {tab === "sync" ? (
           <section className="space-y-4 rounded-xl border border-slate-800/60 bg-slate-900/30 p-5 text-sm text-slate-300">
             <p>
-              <strong className="text-slate-100">Transfer Wire</strong> pulls headlines from Google News, BBC Sport
-              football RSS, and Sky Sports transfers RSS. Cached for 1 hour; auto-refreshes when stale on page load.
+              <strong className="text-slate-100">Transfer Wire</strong> syncs RSS hourly via Vercel cron into Supabase
+              cache. Visitors only read cache — no RSS cost per page view.
             </p>
             <p className="text-xs text-slate-500">
               Last cache: {wireUpdated ? new Date(wireUpdated).toLocaleString("en-US") : "never"} ·{" "}
@@ -285,8 +287,7 @@ export default function AdminHubPage() {
               Refresh Transfer Wire now
             </button>
             <p className="text-xs text-slate-500 border-t border-slate-800 pt-4 mt-4">
-              Cron (optional): call <code className="text-slate-400">GET /api/transfer-wire?refresh=1</code> hourly
-              from your scheduler to warm the cache before visitors arrive.
+              Cron: <code className="text-slate-400">GET /api/cron/transfer-wire</code> every hour (see vercel.json).
             </p>
           </section>
         ) : null}

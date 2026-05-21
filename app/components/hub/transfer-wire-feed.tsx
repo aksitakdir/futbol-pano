@@ -60,68 +60,34 @@ const SOURCE_TABS: { id: SourceFilter; label: string; short: string }[] = [
   { id: "google", label: WIRE_SOURCE_LABELS.google, short: "Google" },
 ];
 
-const FALLBACK_NEWS_LIMIT = 12;
-
-async function fetchNewsWireFallback(): Promise<TransferWireHeadline[]> {
-  const queries = [
-    "transfer rumors",
-    "premier league transfer",
-    "football transfer deal",
-    "transfer window gossip",
-    "site:bbc.co.uk transfer",
-    "site:skysports.com transfer",
-  ];
-  const seen = new Set<string>();
-  const out: TransferWireHeadline[] = [];
-
-  for (const q of queries) {
-    try {
-      const res = await fetch(
-        `/api/news?query=${encodeURIComponent(q)}&locale=en&limit=${FALLBACK_NEWS_LIMIT}`,
-      );
-      if (!res.ok) continue;
-      const items = (await res.json()) as {
-        title: string;
-        link: string;
-        source: string;
-        date: string;
-        publishedAt?: string;
-      }[];
-      if (!Array.isArray(items)) continue;
-      for (const n of items) {
-        const { source, sourceLabel } = resolveWireSource(n.title, n.link, n.source);
-        const h: TransferWireHeadline = {
-          id: wireItemId(n.link, n.title),
-          title: n.title,
-          link: n.link,
-          source,
-          sourceLabel: sourceLabel || WIRE_SOURCE_LABELS[source],
-          publishedAt: n.publishedAt ?? "",
-          timeLabel: n.publishedAt ? relativeTimeLabel(n.publishedAt) : n.date || "recent",
-        };
-        if (seen.has(h.id)) continue;
-        seen.add(h.id);
-        out.push(h);
-      }
-    } catch {
-      /* try next query */
-    }
+/** Single lightweight fallback if cache empty (never 6 parallel /api/news calls) */
+async function fetchMinimalNewsFallback(): Promise<TransferWireHeadline[]> {
+  try {
+    const res = await fetch("/api/news?query=transfer+rumors&locale=en&limit=8");
+    if (!res.ok) return [];
+    const items = (await res.json()) as {
+      title: string;
+      link: string;
+      source: string;
+      date: string;
+      publishedAt?: string;
+    }[];
+    if (!Array.isArray(items)) return [];
+    return items.map((n) => {
+      const { source, sourceLabel } = resolveWireSource(n.title, n.link, n.source);
+      return {
+        id: wireItemId(n.link, n.title),
+        title: n.title,
+        link: n.link,
+        source,
+        sourceLabel: sourceLabel || WIRE_SOURCE_LABELS[source],
+        publishedAt: n.publishedAt ?? "",
+        timeLabel: n.publishedAt ? relativeTimeLabel(n.publishedAt) : n.date || "recent",
+      };
+    });
+  } catch {
+    return [];
   }
-  return out;
-}
-
-function mergeHeadlineLists(
-  primary: TransferWireHeadline[],
-  extra: TransferWireHeadline[],
-): TransferWireHeadline[] {
-  const seen = new Set(primary.map((h) => h.id));
-  const merged = [...primary];
-  for (const h of extra) {
-    if (seen.has(h.id)) continue;
-    seen.add(h.id);
-    merged.push(h);
-  }
-  return merged;
 }
 
 type Props = { initialLimit?: number };
@@ -137,32 +103,24 @@ export default function TransferWireFeed({ initialLimit = 40 }: Props) {
   const [articles, setArticles] = useState<EditorialArticle[]>([]);
   const [deals, setDeals] = useState<HubCompletedTransfer[]>([]);
 
-  async function loadWire(forceRefresh = false) {
-    if (forceRefresh) setWireRefreshing(true);
+  async function loadWire(reloadCache = false) {
+    if (reloadCache) setWireRefreshing(true);
     else setWireLoading(true);
     try {
-      let res = await fetch(
-        forceRefresh ? "/api/transfer-wire?refresh=1" : "/api/transfer-wire",
-        { cache: "no-store" },
+      const res = await fetch(
+        `/api/transfer-wire${reloadCache ? `?_=${Date.now()}` : ""}`,
+        reloadCache ? { cache: "no-store" } : undefined,
       );
-      let data = await res.json();
+      const data = await res.json();
       let list: TransferWireHeadline[] = data.headlines ?? [];
-
-      if (!forceRefresh && list.length < 10) {
-        res = await fetch("/api/transfer-wire?refresh=1", { cache: "no-store" });
-        data = await res.json();
-        list = data.headlines ?? [];
-      }
-      if (list.length < 20) {
-        const extra = await fetchNewsWireFallback();
-        list = list.length === 0 ? extra : mergeHeadlineLists(list, extra);
+      if (list.length === 0) {
+        list = await fetchMinimalNewsFallback();
       }
       setHeadlines(list);
-      setWireUpdated(data.updatedAt ?? (list.length > 0 ? new Date().toISOString() : null));
+      setWireUpdated(data.updatedAt ?? null);
     } catch {
-      const fallback = await fetchNewsWireFallback();
+      const fallback = await fetchMinimalNewsFallback();
       setHeadlines(fallback);
-      if (fallback.length > 0) setWireUpdated(new Date().toISOString());
     } finally {
       setWireLoading(false);
       setWireRefreshing(false);
@@ -245,7 +203,7 @@ export default function TransferWireFeed({ initialLimit = 40 }: Props) {
         <span className="mono" style={{ fontSize: 10, letterSpacing: "0.14em", color: "var(--transfer-cyan)", display: "block", marginBottom: 6 }}>
           AGGREGATED HEADLINES
         </span>
-        Headlines from BBC, Sky, Guardian, ESPN and Google News (public RSS). Refreshed hourly — not confirmed by Scout Gamer.
+        Headlines from BBC, Sky, Guardian, ESPN and Google News (public RSS). Updated hourly from cache — not confirmed by Scout Gamer.
       </div>
 
       {/* LIVE WIRE — primary feed */}
@@ -311,9 +269,10 @@ export default function TransferWireFeed({ initialLimit = 40 }: Props) {
                 className="btn"
                 disabled={wireLoading || wireRefreshing}
                 onClick={() => loadWire(true)}
+                title="Reload cached headlines (RSS syncs automatically every hour)"
                 style={{ padding: "8px 14px", fontSize: 10, letterSpacing: "0.1em" }}
               >
-                {wireRefreshing ? "Refreshing…" : "Refresh"}
+                {wireRefreshing ? "Loading…" : "Reload"}
               </button>
             </div>
           </div>
@@ -399,7 +358,7 @@ export default function TransferWireFeed({ initialLimit = 40 }: Props) {
               </p>
               {headlines.length === 0 ? (
                 <button type="button" className="btn btn-solid" onClick={() => loadWire(true)}>
-                  Refresh feed
+                  Reload feed
                 </button>
               ) : (
                 <button

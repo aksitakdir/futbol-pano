@@ -3,6 +3,10 @@
     {
       "path": "/api/cron",
       "schedule": "0 5 * * 1"
+    },
+    {
+      "path": "/api/cron/transfer-wire",
+      "schedule": "0 * * * *"
     }
   ]
 }
