@@ -374,6 +374,61 @@ export async function fetchAllTransferWireSources(): Promise<RawWireItem[]> {
   return merged;
 }
 
+/** Avoid RangeError when RSS pubDate is malformed (was breaking production sync) */
+export function safePublishedIso(pubDate: string): string {
+  if (!pubDate?.trim()) return "";
+  const d = new Date(pubDate);
+  if (Number.isNaN(d.getTime())) return "";
+  try {
+    return d.toISOString();
+  } catch {
+    return "";
+  }
+}
+
+export type WireTimeBucket = "today" | "yesterday" | "week" | "older";
+
+export const WIRE_TIME_BUCKET_LABELS: Record<WireTimeBucket, string> = {
+  today: "Today",
+  yesterday: "Yesterday",
+  week: "This week",
+  older: "Earlier",
+};
+
+export function wireTimeBucket(publishedAt: string): WireTimeBucket {
+  if (!publishedAt) return "older";
+  const d = new Date(publishedAt);
+  if (Number.isNaN(d.getTime())) return "older";
+
+  const now = new Date();
+  const startToday = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  const startYesterday = new Date(startToday);
+  startYesterday.setDate(startYesterday.getDate() - 1);
+  const startWeek = new Date(startToday);
+  startWeek.setDate(startWeek.getDate() - 7);
+
+  if (d >= startToday) return "today";
+  if (d >= startYesterday) return "yesterday";
+  if (d >= startWeek) return "week";
+  return "older";
+}
+
+export function groupHeadlinesByTime<T extends { publishedAt: string }>(
+  items: T[],
+): { bucket: WireTimeBucket; label: string; items: T[] }[] {
+  const order: WireTimeBucket[] = ["today", "yesterday", "week", "older"];
+  const map = new Map<WireTimeBucket, T[]>();
+  for (const item of items) {
+    const b = wireTimeBucket(item.publishedAt);
+    const list = map.get(b) ?? [];
+    list.push(item);
+    map.set(b, list);
+  }
+  return order
+    .filter((b) => (map.get(b)?.length ?? 0) > 0)
+    .map((b) => ({ bucket: b, label: WIRE_TIME_BUCKET_LABELS[b], items: map.get(b)! }));
+}
+
 export function relativeTimeLabel(pubDate: string): string {
   if (!pubDate) return "recent";
   const d = new Date(pubDate);

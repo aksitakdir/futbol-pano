@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { getTransferWireHeadlines } from "@/lib/transfer-wire-cache";
 
 export const dynamic = "force-dynamic";
-export const maxDuration = 30;
+export const maxDuration = 60;
 
 export async function GET(request: NextRequest) {
   const forceRefresh =

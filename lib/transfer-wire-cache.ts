@@ -2,6 +2,7 @@ import { createClient } from "@supabase/supabase-js";
 import {
   fetchAllTransferWireSources,
   relativeTimeLabel,
+  safePublishedIso,
   wireItemId,
   type RawWireItem,
 } from "@/lib/transfer-wire-rss";
@@ -34,7 +35,7 @@ function toHeadlines(items: RawWireItem[]): TransferWireHeadline[] {
     link: r.link,
     source: r.source,
     sourceLabel: r.sourceLabel,
-    publishedAt: r.pubDate ? new Date(r.pubDate).toISOString() : "",
+    publishedAt: safePublishedIso(r.pubDate),
     timeLabel: relativeTimeLabel(r.pubDate),
   }));
 }

@@ -5,6 +5,8 @@ export type NewsItem = {
   link: string;
   source: string;
   date: string;
+  /** RFC/ISO for sorting — used by Transfer Wire fallback */
+  publishedAt: string;
 };
 
 function stripCdata(text: string): string {
@@ -22,8 +24,10 @@ function decodeEntities(text: string): string {
     .replace(/&apos;/g, "'");
 }
 
-function parseRssItems(xml: string, maxItems: number): NewsItem[] {
-  const items: NewsItem[] = [];
+type RawNewsRow = { title: string; link: string; source: string; date: string };
+
+function parseRssItems(xml: string, maxItems: number): RawNewsRow[] {
+  const items: RawNewsRow[] = [];
   const itemRegex = /<item>([\s\S]*?)<\/item>/gi;
   let match;
   while ((match = itemRegex.exec(xml)) !== null && items.length < maxItems) {
@@ -77,6 +81,9 @@ export async function GET(request: NextRequest) {
   const gl = locale === "tr" ? "TR" : "US";
   const ceid = locale === "tr" ? "TR:tr" : "US:en";
 
+  const limitRaw = parseInt(request.nextUrl.searchParams.get("limit") ?? "4", 10);
+  const limit = Number.isFinite(limitRaw) ? Math.min(15, Math.max(4, limitRaw)) : 4;
+
   const q = `${query.trim()} ${suffix}`;
   const url = `https://news.google.com/rss/search?q=${encodeURIComponent(q)}&hl=${hl}&gl=${gl}&ceid=${ceid}`;
 
@@ -89,7 +96,7 @@ export async function GET(request: NextRequest) {
   }
 
   const xml = await res.text();
-  const raw = parseRssItems(xml, 14);
+  const raw = parseRssItems(xml, limit + 10);
 
   const thirtyDaysAgo = Date.now() - 30 * 24 * 60 * 60 * 1000;
   const filtered = raw.filter((r) => {
@@ -100,10 +107,22 @@ export async function GET(request: NextRequest) {
   });
 
   const pool = filtered.length > 0 ? filtered : raw;
-  const items: NewsItem[] = pool.slice(0, 4).map((r) => ({
-    ...r,
-    date: formatDate(r.date, locale),
-  }));
+  const items: NewsItem[] = pool.slice(0, limit).map((r) => {
+    let publishedAt = "";
+    try {
+      const d = new Date(r.date);
+      if (!Number.isNaN(d.getTime())) publishedAt = d.toISOString();
+    } catch {
+      publishedAt = "";
+    }
+    return {
+      title: r.title,
+      link: r.link,
+      source: r.source,
+      date: formatDate(r.date, locale),
+      publishedAt,
+    };
+  });
 
   return NextResponse.json(items);
 }

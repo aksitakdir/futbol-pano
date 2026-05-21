@@ -10,6 +10,7 @@ import type { EditorialArticle } from "@/lib/editorial-article";
 import type { TransferWireHeadline } from "@/lib/transfer-wire-cache";
 import {
   WIRE_SOURCE_LABELS,
+  groupHeadlinesByTime,
   relativeTimeLabel,
   resolveWireSource,
   wireItemId,
@@ -59,24 +60,32 @@ const SOURCE_TABS: { id: SourceFilter; label: string; short: string }[] = [
   { id: "google", label: WIRE_SOURCE_LABELS.google, short: "Google" },
 ];
 
+const FALLBACK_NEWS_LIMIT = 12;
+
 async function fetchNewsWireFallback(): Promise<TransferWireHeadline[]> {
   const queries = [
     "transfer rumors",
     "premier league transfer",
     "football transfer deal",
+    "transfer window gossip",
+    "site:bbc.co.uk transfer",
+    "site:skysports.com transfer",
   ];
   const seen = new Set<string>();
   const out: TransferWireHeadline[] = [];
 
   for (const q of queries) {
     try {
-      const res = await fetch(`/api/news?query=${encodeURIComponent(q)}&locale=en`);
+      const res = await fetch(
+        `/api/news?query=${encodeURIComponent(q)}&locale=en&limit=${FALLBACK_NEWS_LIMIT}`,
+      );
       if (!res.ok) continue;
       const items = (await res.json()) as {
         title: string;
         link: string;
         source: string;
         date: string;
+        publishedAt?: string;
       }[];
       if (!Array.isArray(items)) continue;
       for (const n of items) {
@@ -87,8 +96,8 @@ async function fetchNewsWireFallback(): Promise<TransferWireHeadline[]> {
           link: n.link,
           source,
           sourceLabel: sourceLabel || WIRE_SOURCE_LABELS[source],
-          publishedAt: "",
-          timeLabel: n.date || relativeTimeLabel(""),
+          publishedAt: n.publishedAt ?? "",
+          timeLabel: n.publishedAt ? relativeTimeLabel(n.publishedAt) : n.date || "recent",
         };
         if (seen.has(h.id)) continue;
         seen.add(h.id);
@@ -99,6 +108,20 @@ async function fetchNewsWireFallback(): Promise<TransferWireHeadline[]> {
     }
   }
   return out;
+}
+
+function mergeHeadlineLists(
+  primary: TransferWireHeadline[],
+  extra: TransferWireHeadline[],
+): TransferWireHeadline[] {
+  const seen = new Set(primary.map((h) => h.id));
+  const merged = [...primary];
+  for (const h of extra) {
+    if (seen.has(h.id)) continue;
+    seen.add(h.id);
+    merged.push(h);
+  }
+  return merged;
 }
 
 type Props = { initialLimit?: number };
@@ -130,8 +153,9 @@ export default function TransferWireFeed({ initialLimit = 40 }: Props) {
         data = await res.json();
         list = data.headlines ?? [];
       }
-      if (list.length === 0) {
-        list = await fetchNewsWireFallback();
+      if (list.length < 20) {
+        const extra = await fetchNewsWireFallback();
+        list = list.length === 0 ? extra : mergeHeadlineLists(list, extra);
       }
       setHeadlines(list);
       setWireUpdated(data.updatedAt ?? (list.length > 0 ? new Date().toISOString() : null));
@@ -169,6 +193,7 @@ export default function TransferWireFeed({ initialLimit = 40 }: Props) {
   }, [headlines]);
 
   const visible = filtered.slice(0, showCount);
+  const timeGroups = useMemo(() => groupHeadlinesByTime(visible), [visible]);
 
   useEffect(() => {
     Promise.all([
@@ -391,73 +416,113 @@ export default function TransferWireFeed({ initialLimit = 40 }: Props) {
             </div>
           ) : (
             <ul style={{ listStyle: "none", margin: 0, padding: 0 }}>
-              {visible.map((h, i) => {
-                const accent = SOURCE_COLORS[h.source] ?? SOURCE_COLORS.other;
-                return (
-                  <li key={h.id} style={{ borderBottom: i < visible.length - 1 ? "1px solid var(--sg-border)" : "none" }}>
-                    <a
-                      href={h.link}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="lift"
-                      style={{
-                        display: "grid",
-                        gridTemplateColumns: "auto 1fr auto auto",
-                        gap: "12px 16px",
-                        alignItems: "center",
-                        padding: "18px 20px",
-                        textDecoration: "none",
-                        color: "inherit",
-                        transition: "background 0.15s",
-                      }}
-                      onMouseEnter={(e) => {
-                        e.currentTarget.style.background = "var(--sg-surface-low)";
-                      }}
-                      onMouseLeave={(e) => {
-                        e.currentTarget.style.background = "transparent";
-                      }}
-                    >
-                      <button
-                        type="button"
-                        className="mono"
-                        onClick={(e) => {
-                          e.preventDefault();
-                          e.stopPropagation();
-                          const src = h.source as WireSource;
-                          if (src in WIRE_SOURCE_LABELS) {
-                            setSourceFilter(src);
-                            setShowCount(initialLimit);
-                          }
-                        }}
-                        title={`Filter by ${h.sourceLabel}`}
-                        style={{
-                          fontSize: 9,
-                          fontWeight: 700,
-                          letterSpacing: "0.1em",
-                          color: accent,
-                          padding: "5px 10px",
-                          borderRadius: 999,
-                          border: `1px solid ${accent}55`,
-                          background: `${accent}18`,
-                          whiteSpace: "nowrap",
-                          cursor: "pointer",
-                        }}
-                      >
-                        {h.sourceLabel}
-                      </button>
-                      <span className="display" style={{ fontSize: 15, fontWeight: 500, lineHeight: 1.35, margin: 0 }}>
-                        {h.title}
-                      </span>
-                      <span className="mono" style={{ fontSize: 10, letterSpacing: "0.08em", color: "var(--sg-text-muted)", whiteSpace: "nowrap" }}>
-                        {h.timeLabel}
-                      </span>
-                      <span className="mono" style={{ fontSize: 12, color: "var(--transfer-cyan)", opacity: 0.8 }} aria-hidden>
-                        ↗
-                      </span>
-                    </a>
-                  </li>
-                );
-              })}
+              {timeGroups.map((group, gi) => (
+                <li key={group.bucket} style={{ listStyle: "none" }}>
+                  <div
+                    className="mono"
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      gap: 12,
+                      padding: gi === 0 ? "16px 20px 10px" : "20px 20px 10px",
+                      fontSize: 10,
+                      letterSpacing: "0.14em",
+                      color: "var(--transfer-cyan)",
+                      background: "var(--sg-surface-low)",
+                      borderBottom: "1px solid var(--sg-border)",
+                    }}
+                  >
+                    <span style={{ flex: 1, height: 1, background: "var(--sg-border)", opacity: 0.6 }} />
+                    {group.label}
+                    <span style={{ flex: 1, height: 1, background: "var(--sg-border)", opacity: 0.6 }} />
+                  </div>
+                  <ul style={{ listStyle: "none", margin: 0, padding: 0 }}>
+                    {group.items.map((h, i) => {
+                      const accent = SOURCE_COLORS[h.source] ?? SOURCE_COLORS.other;
+                      const isLastInGroup = i === group.items.length - 1;
+                      const isLastGroup = gi === timeGroups.length - 1;
+                      return (
+                        <li
+                          key={h.id}
+                          style={{
+                            borderBottom:
+                              isLastInGroup && isLastGroup ? "none" : "1px solid var(--sg-border)",
+                          }}
+                        >
+                          <a
+                            href={h.link}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="lift"
+                            style={{
+                              display: "grid",
+                              gridTemplateColumns: "auto 1fr auto auto",
+                              gap: "12px 16px",
+                              alignItems: "center",
+                              padding: "18px 20px",
+                              textDecoration: "none",
+                              color: "inherit",
+                              transition: "background 0.15s",
+                            }}
+                            onMouseEnter={(e) => {
+                              e.currentTarget.style.background = "var(--sg-surface-low)";
+                            }}
+                            onMouseLeave={(e) => {
+                              e.currentTarget.style.background = "transparent";
+                            }}
+                          >
+                            <button
+                              type="button"
+                              className="mono"
+                              onClick={(e) => {
+                                e.preventDefault();
+                                e.stopPropagation();
+                                const src = h.source as WireSource;
+                                if (src in WIRE_SOURCE_LABELS) {
+                                  setSourceFilter(src);
+                                  setShowCount(initialLimit);
+                                }
+                              }}
+                              title={`Filter by ${h.sourceLabel}`}
+                              style={{
+                                fontSize: 9,
+                                fontWeight: 700,
+                                letterSpacing: "0.1em",
+                                color: accent,
+                                padding: "5px 10px",
+                                borderRadius: 999,
+                                border: `1px solid ${accent}55`,
+                                background: `${accent}18`,
+                                whiteSpace: "nowrap",
+                                cursor: "pointer",
+                              }}
+                            >
+                              {h.sourceLabel}
+                            </button>
+                            <span className="display" style={{ fontSize: 15, fontWeight: 500, lineHeight: 1.35, margin: 0 }}>
+                              {h.title}
+                            </span>
+                            <span
+                              className="mono"
+                              style={{
+                                fontSize: 10,
+                                letterSpacing: "0.08em",
+                                color: "var(--sg-text-muted)",
+                                whiteSpace: "nowrap",
+                              }}
+                            >
+                              {h.timeLabel}
+                            </span>
+                            <span className="mono" style={{ fontSize: 12, color: "var(--transfer-cyan)", opacity: 0.8 }} aria-hidden>
+                              ↗
+                            </span>
+                          </a>
+                        </li>
+                      );
+                    })}
+                  </ul>
+                </li>
+              ))}
             </ul>
           )}
         </div>
