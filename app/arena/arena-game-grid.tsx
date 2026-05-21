@@ -73,15 +73,10 @@ export default function ArenaGameGrid({ games, lang = "tr" }: Props) {
                   </div>
                 ) : null}
                 <div
-                  className="mt-auto inline-flex w-full items-center justify-center py-3 text-sm font-bold transition hover:brightness-110"
-                  style={{
-                    background: accent,
-                    color: "#060f1e",
-                    fontFamily: "var(--font-headline)",
-                    letterSpacing: "0.08em",
-                  }}
+                  className="btn btn-solid mt-auto w-full justify-center"
+                  style={{ background: accent, borderColor: accent }}
                 >
-                  {isEn ? "PLAY" : "OYNA"}
+                  {isEn ? "PLAY →" : "OYNA →"}
                 </div>
               </div>
             </Link>

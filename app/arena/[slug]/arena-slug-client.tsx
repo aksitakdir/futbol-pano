@@ -197,12 +197,8 @@ function ChampionResultView({
           <button
             type="button"
             onClick={onPlay}
-            className="inline-flex items-center justify-center gap-2 px-8 py-3 text-sm font-black tracking-wide transition-all hover:opacity-90 hover:scale-105 active:scale-95"
-            style={{
-              background: accentColor,
-              color: "#000",
-              borderRadius: 0,
-            }}
+            className="btn btn-solid"
+            style={{ background: accentColor, borderColor: accentColor, padding: "12px 28px" }}
           >
             {isEn ? "Play & pick yours →" : "Oyna ve seçini yap →"}
           </button>
@@ -210,13 +206,8 @@ function ChampionResultView({
           <button
             type="button"
             onClick={handleShare}
-            className="inline-flex items-center justify-center gap-2 px-6 py-3 text-sm font-semibold transition-all hover:opacity-90"
-            style={{
-              border: `1px solid ${accentColor}60`,
-              background: "var(--sg-surface)",
-              color: "var(--sg-text-primary)",
-              borderRadius: 0,
-            }}
+            className="btn"
+            style={{ borderColor: `${accentColor}60` }}
           >
             {shared
               ? isEn ? "✓ Copied!" : "✓ Kopyalandı!"
@@ -375,25 +366,15 @@ export default function ArenaSlugClient({ game, lang, canonicalUrl, initialChamp
 
             <div className="sg-site-container flex flex-wrap items-center gap-3 pb-4">
               <Link
-                href={isEn ? "/en/arena" : "/arena"}
-                className="inline-flex items-center gap-2 px-4 py-2 text-xs font-semibold transition hover:opacity-80"
-                style={{
-                  border: "1px solid rgba(26,58,92,0.6)",
-                  background: "var(--sg-surface)",
-                  color: "var(--sg-text-secondary)",
-                }}
+                href="/arena"
+                className="btn"
               >
                 ← {isEn ? "All Arenas" : "Tüm Arenalar"}
               </Link>
               <button
                 type="button"
                 onClick={remount}
-                className="inline-flex items-center gap-2 px-4 py-2 text-xs font-semibold transition hover:opacity-80"
-                style={{
-                  border: "1px solid rgba(26,58,92,0.6)",
-                  background: "var(--sg-surface)",
-                  color: "var(--sg-text-secondary)",
-                }}
+                className="btn"
               >
                 🔀 {isEn ? "New Matchups" : "Yeni Eşleşme"}
               </button>
