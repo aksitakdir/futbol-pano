@@ -11,11 +11,18 @@ export async function GET(request: NextRequest) {
 
   const result = await getTransferWireHeadlines(forceRefresh);
 
+  const sourceCounts: Record<string, number> = {};
+  for (const h of result.headlines) {
+    sourceCounts[h.source] = (sourceCounts[h.source] ?? 0) + 1;
+  }
+
   return NextResponse.json(
     {
       headlines: result.headlines,
       updatedAt: result.updatedAt,
       source: result.source,
+      total: result.headlines.length,
+      sourceCounts,
       error: result.error,
     },
     {

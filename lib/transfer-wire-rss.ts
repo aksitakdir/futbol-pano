@@ -2,6 +2,18 @@
 
 export type WireSource = "google" | "bbc" | "sky" | "espn" | "guardian" | "other";
 
+/** Max headlines stored in cache (free RSS — no API cost) */
+export const TRANSFER_WIRE_MAX_ITEMS = 80;
+
+export const WIRE_SOURCE_LABELS: Record<WireSource, string> = {
+  google: "Google News",
+  bbc: "BBC Sport",
+  sky: "Sky Sports",
+  espn: "ESPN",
+  guardian: "The Guardian",
+  other: "News",
+};
+
 export type RawWireItem = {
   title: string;
   link: string;
@@ -163,7 +175,22 @@ async function fetchBbcFootball(): Promise<RawWireItem[]> {
   if (!xml) return [];
   const raw = parseFeedXml(xml, 50);
   const transfer = raw.filter((r) => isTransferHeadline(r.title));
-  return toWireItems(transfer.slice(0, 25), "bbc", "BBC Sport");
+  return toWireItems(transfer.slice(0, 35), "bbc", "BBC Sport");
+}
+
+async function fetchEspnSoccer(): Promise<RawWireItem[]> {
+  const urls = [
+    "https://www.espn.com/espn/rss/soccer/news",
+    "https://www.espn.com/espn/rss/news",
+  ];
+  for (const url of urls) {
+    const xml = await fetchXml(url);
+    if (!xml) continue;
+    const raw = parseFeedXml(xml, 40);
+    const transfer = raw.filter((r) => isTransferHeadline(r.title));
+    if (transfer.length > 0) return toWireItems(transfer.slice(0, 30), "espn", "ESPN");
+  }
+  return [];
 }
 
 async function fetchSkyTransfers(): Promise<RawWireItem[]> {
@@ -174,7 +201,7 @@ async function fetchSkyTransfers(): Promise<RawWireItem[]> {
   for (const url of urls) {
     const xml = await fetchXml(url);
     if (!xml) continue;
-    const raw = parseFeedXml(xml, 30);
+    const raw = parseFeedXml(xml, 45);
     if (raw.length > 0) return toWireItems(raw, "sky", "Sky Sports");
   }
   return [];
@@ -185,10 +212,10 @@ async function fetchGuardianFootball(): Promise<RawWireItem[]> {
   if (!xml) return [];
   const raw = parseFeedXml(xml, 40);
   const transfer = raw.filter((r) => isTransferHeadline(r.title));
-  return toWireItems(transfer.slice(0, 20), "guardian", "The Guardian");
+  return toWireItems(transfer.slice(0, 30), "guardian", "The Guardian");
 }
 
-export function mergeWireItems(sources: RawWireItem[], limit = 48): RawWireItem[] {
+export function mergeWireItems(sources: RawWireItem[], limit = TRANSFER_WIRE_MAX_ITEMS): RawWireItem[] {
   const seen = new Set<string>();
   const merged: { item: RawWireItem; ts: number }[] = [];
 
@@ -207,12 +234,29 @@ export function mergeWireItems(sources: RawWireItem[], limit = 48): RawWireItem[
   return merged.slice(0, limit).map((m) => m.item);
 }
 
+/** Extra Google queries when primary sources return few items (still free) */
+export async function fetchGoogleNewsFallback(limit = 30): Promise<RawWireItem[]> {
+  const queries = ["football transfer", "transfer gossip soccer"];
+  const out: RawWireItem[] = [];
+  for (const q of queries) {
+    const url = `https://news.google.com/rss/search?q=${encodeURIComponent(q)}&hl=en&gl=US&ceid=US:en`;
+    const xml = await fetchXml(url);
+    if (!xml) continue;
+    const raw = parseFeedXml(xml, 40);
+    for (const r of raw) {
+      out.push({ ...r, source: "google", sourceLabel: "Google News" });
+    }
+  }
+  return mergeWireItems(out, limit);
+}
+
 export async function fetchAllTransferWireSources(): Promise<RawWireItem[]> {
   const results = await Promise.allSettled([
     fetchSkyTransfers(),
     fetchBbcFootball(),
     fetchGuardianFootball(),
     fetchGoogleNews(),
+    fetchEspnSoccer(),
   ]);
 
   const all: RawWireItem[] = [];
@@ -220,7 +264,12 @@ export async function fetchAllTransferWireSources(): Promise<RawWireItem[]> {
     if (r.status === "fulfilled") all.push(...r.value);
   }
 
-  return mergeWireItems(all, 48);
+  let merged = mergeWireItems(all, TRANSFER_WIRE_MAX_ITEMS);
+  if (merged.length < 20) {
+    const extra = await fetchGoogleNewsFallback(40);
+    merged = mergeWireItems([...merged, ...extra], TRANSFER_WIRE_MAX_ITEMS);
+  }
+  return merged;
 }
 
 export function relativeTimeLabel(pubDate: string): string {

@@ -1,15 +1,14 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import Link from "next/link";
+import { useEffect, useMemo, useState } from "react";
 import PageShell from "@/app/components/page-shell";
 import EditorialContentFeed from "@/app/components/editorial-content-feed";
-import { categoryArticlePath } from "@/lib/hub-config";
 import { supabase } from "@/lib/supabase";
 import { rowToCompleted } from "@/lib/hub-types";
 import type { HubCompletedTransfer, HubCompletedTransferRow } from "@/lib/hub-types";
 import type { EditorialArticle } from "@/lib/editorial-article";
 import type { TransferWireHeadline } from "@/lib/transfer-wire-cache";
+import { WIRE_SOURCE_LABELS, type WireSource } from "@/lib/transfer-wire-rss";
 
 const SOURCE_COLORS: Record<string, string> = {
   bbc: "#bb1919",
@@ -42,13 +41,27 @@ function isRecentDeal(dateStr: string): boolean {
   return deal >= cutoff;
 }
 
+type SourceFilter = "all" | WireSource;
+type SortMode = "newest" | "oldest";
+
+const FILTER_OPTIONS: { id: SourceFilter; label: string }[] = [
+  { id: "all", label: "All sources" },
+  { id: "bbc", label: WIRE_SOURCE_LABELS.bbc },
+  { id: "sky", label: WIRE_SOURCE_LABELS.sky },
+  { id: "guardian", label: WIRE_SOURCE_LABELS.guardian },
+  { id: "google", label: WIRE_SOURCE_LABELS.google },
+  { id: "espn", label: WIRE_SOURCE_LABELS.espn },
+];
+
 type Props = { initialLimit?: number };
 
-export default function TransferWireFeed({ initialLimit = 20 }: Props) {
+export default function TransferWireFeed({ initialLimit = 40 }: Props) {
   const [headlines, setHeadlines] = useState<TransferWireHeadline[]>([]);
   const [wireLoading, setWireLoading] = useState(true);
   const [wireUpdated, setWireUpdated] = useState<string | null>(null);
   const [showCount, setShowCount] = useState(initialLimit);
+  const [sourceFilter, setSourceFilter] = useState<SourceFilter>("all");
+  const [sortMode, setSortMode] = useState<SortMode>("newest");
   const [articles, setArticles] = useState<EditorialArticle[]>([]);
   const [deals, setDeals] = useState<HubCompletedTransfer[]>([]);
 
@@ -57,30 +70,9 @@ export default function TransferWireFeed({ initialLimit = 20 }: Props) {
       try {
         let res = await fetch("/api/transfer-wire", { cache: "no-store" });
         let data = await res.json();
-        if (!data.headlines?.length) {
+        if ((data.headlines?.length ?? 0) < 15) {
           res = await fetch("/api/transfer-wire?refresh=1", { cache: "no-store" });
           data = await res.json();
-        }
-        if (!data.headlines?.length) {
-          const newsRes = await fetch(
-            "/api/news?query=football transfer rumors&locale=en",
-            { cache: "no-store" },
-          );
-          const news = await newsRes.json();
-          if (Array.isArray(news) && news.length > 0) {
-            data.headlines = news.map(
-              (n: { title: string; link: string; source: string; date: string }, i: number) => ({
-                id: `news-fallback-${i}`,
-                title: n.title,
-                link: n.link,
-                source: "google",
-                sourceLabel: n.source || "Google News",
-                publishedAt: "",
-                timeLabel: n.date || "recent",
-              }),
-            );
-            data.updatedAt = new Date().toISOString();
-          }
         }
         setHeadlines(data.headlines ?? []);
         setWireUpdated(data.updatedAt ?? null);
@@ -92,6 +84,27 @@ export default function TransferWireFeed({ initialLimit = 20 }: Props) {
     }
     loadWire();
   }, []);
+
+  const filtered = useMemo(() => {
+    let list =
+      sourceFilter === "all"
+        ? [...headlines]
+        : headlines.filter((h) => h.source === sourceFilter);
+    if (sortMode === "oldest") {
+      list = [...list].reverse();
+    }
+    return list;
+  }, [headlines, sourceFilter, sortMode]);
+
+  const sourceCounts = useMemo(() => {
+    const c: Record<string, number> = { all: headlines.length };
+    for (const h of headlines) {
+      c[h.source] = (c[h.source] ?? 0) + 1;
+    }
+    return c;
+  }, [headlines]);
+
+  const visible = filtered.slice(0, showCount);
 
   useEffect(() => {
     Promise.all([
@@ -119,8 +132,6 @@ export default function TransferWireFeed({ initialLimit = 20 }: Props) {
     });
   }, []);
 
-  const visible = headlines.slice(0, showCount);
-
   return (
     <PageShell
       as="section"
@@ -145,23 +156,80 @@ export default function TransferWireFeed({ initialLimit = 20 }: Props) {
         <span className="mono" style={{ fontSize: 10, letterSpacing: "0.14em", color: "var(--transfer-cyan)", display: "block", marginBottom: 6 }}>
           AGGREGATED HEADLINES
         </span>
-        Rumors from BBC, Sky, Guardian & Google News — not confirmed by Scout Gamer. External links open the original publisher.
+        Rumors from BBC, Sky, Guardian, ESPN & Google News — free public RSS, refreshed hourly. Not confirmed by Scout Gamer.
       </div>
 
       {/* LIVE WIRE — primary feed */}
       <div style={{ marginBottom: 56 }}>
-        <div style={{ display: "flex", flexWrap: "wrap", justifyContent: "space-between", alignItems: "baseline", gap: 12, marginBottom: 20 }}>
+        <div style={{ display: "flex", flexWrap: "wrap", justifyContent: "space-between", alignItems: "baseline", gap: 12, marginBottom: 16 }}>
           <div>
             <div className="eyebrow transfer-eyebrow">LIVE WIRE</div>
             <h2 className="display" style={{ fontSize: "clamp(22px, 3.5vw, 32px)", fontWeight: 700, letterSpacing: "-0.03em", margin: "8px 0 0" }}>
               Transfer rumors
             </h2>
+            {!wireLoading && headlines.length > 0 ? (
+              <p className="mono" style={{ fontSize: 10, letterSpacing: "0.1em", color: "var(--sg-text-muted)", marginTop: 8 }}>
+                {filtered.length} headlines
+                {sourceFilter !== "all" ? ` · ${WIRE_SOURCE_LABELS[sourceFilter]}` : ""}
+                {visible.length < filtered.length ? ` · showing ${visible.length}` : ""}
+              </p>
+            ) : null}
           </div>
           {wireUpdated ? (
             <span className="mono" style={{ fontSize: 10, letterSpacing: "0.1em", color: "var(--sg-text-muted)" }}>
               Updated {new Date(wireUpdated).toLocaleString("en-US", { dateStyle: "medium", timeStyle: "short" })}
             </span>
           ) : null}
+        </div>
+
+        {/* Source filter + sort */}
+        <div style={{ display: "flex", flexWrap: "wrap", gap: 8, alignItems: "center", marginBottom: 16 }}>
+          {FILTER_OPTIONS.map((opt) => {
+            const count = sourceCounts[opt.id] ?? 0;
+            const active = sourceFilter === opt.id;
+            const accent = opt.id === "all" ? "var(--transfer-cyan)" : SOURCE_COLORS[opt.id] ?? SOURCE_COLORS.other;
+            if (opt.id !== "all" && count === 0) return null;
+            return (
+              <button
+                key={opt.id}
+                type="button"
+                className="btn"
+                onClick={() => {
+                  setSourceFilter(opt.id);
+                  setShowCount(initialLimit);
+                }}
+                style={{
+                  padding: "6px 12px",
+                  fontSize: 10,
+                  letterSpacing: "0.08em",
+                  borderColor: active ? accent : "var(--sg-border)",
+                  background: active ? `${accent}22` : "transparent",
+                  color: active ? accent : "var(--sg-text-muted)",
+                }}
+              >
+                {opt.label}
+                {count > 0 ? ` (${count})` : ""}
+              </button>
+            );
+          })}
+          <span style={{ flex: 1, minWidth: 8 }} />
+          <select
+            value={sortMode}
+            onChange={(e) => setSortMode(e.target.value as SortMode)}
+            className="mono"
+            style={{
+              padding: "8px 12px",
+              borderRadius: 999,
+              border: "1px solid var(--sg-border)",
+              background: "var(--sg-surface-low)",
+              color: "var(--sg-text-primary)",
+              fontSize: 10,
+              letterSpacing: "0.1em",
+            }}
+          >
+            <option value="newest">Newest first</option>
+            <option value="oldest">Oldest first</option>
+          </select>
         </div>
 
         <div style={shell.panel}>
@@ -173,7 +241,9 @@ export default function TransferWireFeed({ initialLimit = 20 }: Props) {
             </div>
           ) : visible.length === 0 ? (
             <p className="mono" style={{ padding: 40, textAlign: "center", fontSize: 12, color: "var(--sg-text-muted)" }}>
-              No headlines right now.
+              {headlines.length === 0
+                ? "No headlines right now. Try again shortly."
+                : "No headlines for this source. Pick another filter."}
             </p>
           ) : (
             <ul style={{ listStyle: "none", margin: 0, padding: 0 }}>
@@ -236,10 +306,10 @@ export default function TransferWireFeed({ initialLimit = 20 }: Props) {
           )}
         </div>
 
-        {showCount < headlines.length ? (
+        {showCount < filtered.length ? (
           <div style={{ display: "flex", justifyContent: "center", marginTop: 24 }}>
-            <button type="button" className="btn" onClick={() => setShowCount((n) => n + 20)}>
-              LOAD MORE →
+            <button type="button" className="btn" onClick={() => setShowCount((n) => n + 25)}>
+              LOAD MORE ({filtered.length - showCount} left) →
             </button>
           </div>
         ) : null}
