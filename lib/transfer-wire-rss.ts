@@ -121,19 +121,21 @@ function isTransferHeadline(title: string): boolean {
   return TRANSFER_RE.test(title);
 }
 
-async function fetchXml(url: string, timeoutMs = 12000): Promise<string | null> {
+async function fetchXml(url: string, timeoutMs = 12000, simple = false): Promise<string | null> {
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), timeoutMs);
   try {
-    const res = await fetch(url, {
-      headers: FETCH_HEADERS,
-      cache: "no-store",
-      signal: controller.signal,
-    });
+    const res = await fetch(
+      url,
+      simple
+        ? { next: { revalidate: 0 } }
+        : { headers: FETCH_HEADERS, cache: "no-store", signal: controller.signal },
+    );
     clearTimeout(timer);
     if (!res.ok) return null;
     const text = await res.text();
-    if (!text.includes("<") || text.length < 200) return null;
+    if (!text.includes("<")) return null;
+    if (!simple && text.length < 120) return null;
     return text;
   } catch {
     clearTimeout(timer);
@@ -145,17 +147,19 @@ function toWireItems(raw: ParsedItem[], source: WireSource, sourceLabel: string)
   return raw.map((r) => ({ ...r, source, sourceLabel }));
 }
 
+/** Google News — same fetch style as /api/news (works on Vercel) */
 async function fetchGoogleNews(): Promise<RawWireItem[]> {
   const queries = [
     "football transfer rumors",
     "premier league transfer news",
     "soccer transfer window",
+    "transfer gossip",
   ];
   const out: RawWireItem[] = [];
 
   for (const q of queries) {
-    const url = `https://news.google.com/rss/search?q=${encodeURIComponent(q)}&hl=en&gl=US&ceid=US:en`;
-    const xml = await fetchXml(url);
+    const url = `https://news.google.com/rss/search?q=${encodeURIComponent(`${q} soccer`)}&hl=en&gl=US&ceid=US:en`;
+    const xml = await fetchXml(url, 10000, true);
     if (!xml) continue;
     const raw = parseFeedXml(xml, 25);
     for (const r of raw) {
@@ -223,10 +227,10 @@ export function mergeWireItems(sources: RawWireItem[], limit = TRANSFER_WIRE_MAX
     const key = normalizeTitleKey(item.title);
     if (!key || seen.has(key)) continue;
     seen.add(key);
-    const ts = item.pubDate ? new Date(item.pubDate).getTime() : Date.now();
-    if (Number.isNaN(ts)) continue;
+    let ts = item.pubDate ? new Date(item.pubDate).getTime() : Date.now();
+    if (Number.isNaN(ts)) ts = Date.now();
     const thirtyDays = Date.now() - 30 * 24 * 60 * 60 * 1000;
-    if (item.pubDate && ts < thirtyDays) continue;
+    if (item.pubDate && !Number.isNaN(new Date(item.pubDate).getTime()) && ts < thirtyDays) continue;
     merged.push({ item, ts });
   }
 
@@ -239,8 +243,8 @@ export async function fetchGoogleNewsFallback(limit = 30): Promise<RawWireItem[]
   const queries = ["football transfer", "transfer gossip soccer"];
   const out: RawWireItem[] = [];
   for (const q of queries) {
-    const url = `https://news.google.com/rss/search?q=${encodeURIComponent(q)}&hl=en&gl=US&ceid=US:en`;
-    const xml = await fetchXml(url);
+    const url = `https://news.google.com/rss/search?q=${encodeURIComponent(`${q} soccer`)}&hl=en&gl=US&ceid=US:en`;
+    const xml = await fetchXml(url, 10000, true);
     if (!xml) continue;
     const raw = parseFeedXml(xml, 40);
     for (const r of raw) {
@@ -251,21 +255,25 @@ export async function fetchGoogleNewsFallback(limit = 30): Promise<RawWireItem[]
 }
 
 export async function fetchAllTransferWireSources(): Promise<RawWireItem[]> {
+  // Google first — reliable on Vercel (same as /api/news)
+  const google = await fetchGoogleNews();
+  let merged = mergeWireItems(google, TRANSFER_WIRE_MAX_ITEMS);
+  if (merged.length >= 25) return merged;
+
   const results = await Promise.allSettled([
     fetchSkyTransfers(),
     fetchBbcFootball(),
     fetchGuardianFootball(),
-    fetchGoogleNews(),
     fetchEspnSoccer(),
   ]);
 
-  const all: RawWireItem[] = [];
+  const all: RawWireItem[] = [...google];
   for (const r of results) {
     if (r.status === "fulfilled") all.push(...r.value);
   }
 
-  let merged = mergeWireItems(all, TRANSFER_WIRE_MAX_ITEMS);
-  if (merged.length < 20) {
+  merged = mergeWireItems(all, TRANSFER_WIRE_MAX_ITEMS);
+  if (merged.length < 15) {
     const extra = await fetchGoogleNewsFallback(40);
     merged = mergeWireItems([...merged, ...extra], TRANSFER_WIRE_MAX_ITEMS);
   }

@@ -20,10 +20,11 @@ export type TransferWireHeadline = {
 };
 
 function supabaseAdmin() {
-  return createClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-  );
+  const url = process.env.NEXT_PUBLIC_SUPABASE_URL!;
+  const key =
+    process.env.SUPABASE_SERVICE_ROLE_KEY ??
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
+  return createClient(url, key);
 }
 
 function toHeadlines(items: RawWireItem[]): TransferWireHeadline[] {
@@ -38,10 +39,14 @@ function toHeadlines(items: RawWireItem[]): TransferWireHeadline[] {
   }));
 }
 
-async function writeCache(headlines: TransferWireHeadline[]): Promise<string> {
+async function writeCache(headlines: TransferWireHeadline[]): Promise<{
+  updatedAt: string;
+  ok: boolean;
+  error?: string;
+}> {
   const updatedAt = new Date().toISOString();
   const sb = supabaseAdmin();
-  await sb.from("site_settings").upsert(
+  const { error } = await sb.from("site_settings").upsert(
     {
       key: TRANSFER_WIRE_CACHE_KEY,
       value: { headlines, updatedAt },
@@ -49,7 +54,10 @@ async function writeCache(headlines: TransferWireHeadline[]): Promise<string> {
     },
     { onConflict: "key" },
   );
-  return updatedAt;
+  if (error) {
+    return { updatedAt, ok: false, error: error.message };
+  }
+  return { updatedAt, ok: true };
 }
 
 export async function readTransferWireCache(): Promise<{
@@ -83,7 +91,9 @@ export async function readTransferWireCache(): Promise<{
 export async function syncTransferWireCache(): Promise<{
   ok: boolean;
   count: number;
+  headlines: TransferWireHeadline[];
   updatedAt: string | null;
+  cacheWritten: boolean;
   error?: string;
 }> {
   try {
@@ -94,18 +104,29 @@ export async function syncTransferWireCache(): Promise<{
       return {
         ok: false,
         count: 0,
+        headlines: [],
         updatedAt: null,
+        cacheWritten: false,
         error: "All RSS sources returned no items",
       };
     }
 
-    const updatedAt = await writeCache(headlines);
-    return { ok: true, count: headlines.length, updatedAt };
+    const written = await writeCache(headlines);
+    return {
+      ok: true,
+      count: headlines.length,
+      headlines,
+      updatedAt: written.updatedAt,
+      cacheWritten: written.ok,
+      error: written.ok ? undefined : written.error,
+    };
   } catch (e) {
     return {
       ok: false,
       count: 0,
+      headlines: [],
       updatedAt: null,
+      cacheWritten: false,
       error: (e as Error).message,
     };
   }
@@ -132,12 +153,22 @@ export async function getTransferWireHeadlines(
   }
 
   const synced = await syncTransferWireCache();
-  if (synced.ok && synced.count > 0) {
-    const fresh = await readTransferWireCache();
+  if (synced.ok && synced.headlines.length > 0) {
+    if (synced.cacheWritten) {
+      const fresh = await readTransferWireCache();
+      if (fresh.headlines.length > 0) {
+        return {
+          headlines: fresh.headlines,
+          updatedAt: fresh.updatedAt,
+          source: "cache",
+        };
+      }
+    }
     return {
-      headlines: fresh.headlines,
-      updatedAt: fresh.updatedAt,
+      headlines: synced.headlines,
+      updatedAt: synced.updatedAt,
       source: "live",
+      error: synced.cacheWritten ? undefined : synced.error,
     };
   }
 

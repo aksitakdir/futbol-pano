@@ -8,7 +8,12 @@ import { rowToCompleted } from "@/lib/hub-types";
 import type { HubCompletedTransfer, HubCompletedTransferRow } from "@/lib/hub-types";
 import type { EditorialArticle } from "@/lib/editorial-article";
 import type { TransferWireHeadline } from "@/lib/transfer-wire-cache";
-import { WIRE_SOURCE_LABELS, type WireSource } from "@/lib/transfer-wire-rss";
+import {
+  WIRE_SOURCE_LABELS,
+  relativeTimeLabel,
+  wireItemId,
+  type WireSource,
+} from "@/lib/transfer-wire-rss";
 
 const SOURCE_COLORS: Record<string, string> = {
   bbc: "#bb1919",
@@ -44,14 +49,65 @@ function isRecentDeal(dateStr: string): boolean {
 type SourceFilter = "all" | WireSource;
 type SortMode = "newest" | "oldest";
 
-const FILTER_OPTIONS: { id: SourceFilter; label: string }[] = [
-  { id: "all", label: "All sources" },
-  { id: "bbc", label: WIRE_SOURCE_LABELS.bbc },
-  { id: "sky", label: WIRE_SOURCE_LABELS.sky },
-  { id: "guardian", label: WIRE_SOURCE_LABELS.guardian },
-  { id: "google", label: WIRE_SOURCE_LABELS.google },
-  { id: "espn", label: WIRE_SOURCE_LABELS.espn },
+const SOURCE_TABS: { id: SourceFilter; label: string; short: string }[] = [
+  { id: "all", label: "All sources", short: "All" },
+  { id: "google", label: WIRE_SOURCE_LABELS.google, short: "Google" },
+  { id: "bbc", label: WIRE_SOURCE_LABELS.bbc, short: "BBC" },
+  { id: "sky", label: WIRE_SOURCE_LABELS.sky, short: "Sky" },
+  { id: "guardian", label: WIRE_SOURCE_LABELS.guardian, short: "Guardian" },
+  { id: "espn", label: WIRE_SOURCE_LABELS.espn, short: "ESPN" },
 ];
+
+function detectWireSource(sourceLabel: string, link: string): WireSource {
+  const s = `${sourceLabel} ${link}`.toLowerCase();
+  if (s.includes("bbc")) return "bbc";
+  if (s.includes("sky")) return "sky";
+  if (s.includes("guardian")) return "guardian";
+  if (s.includes("espn")) return "espn";
+  return "google";
+}
+
+async function fetchNewsWireFallback(): Promise<TransferWireHeadline[]> {
+  const queries = [
+    "transfer rumors",
+    "premier league transfer",
+    "football transfer deal",
+  ];
+  const seen = new Set<string>();
+  const out: TransferWireHeadline[] = [];
+
+  for (const q of queries) {
+    try {
+      const res = await fetch(`/api/news?query=${encodeURIComponent(q)}&locale=en`);
+      if (!res.ok) continue;
+      const items = (await res.json()) as {
+        title: string;
+        link: string;
+        source: string;
+        date: string;
+      }[];
+      if (!Array.isArray(items)) continue;
+      for (const n of items) {
+        const source = detectWireSource(n.source, n.link);
+        const h: TransferWireHeadline = {
+          id: wireItemId(n.link, n.title),
+          title: n.title,
+          link: n.link,
+          source,
+          sourceLabel: n.source || WIRE_SOURCE_LABELS[source],
+          publishedAt: "",
+          timeLabel: n.date || relativeTimeLabel(""),
+        };
+        if (seen.has(h.id)) continue;
+        seen.add(h.id);
+        out.push(h);
+      }
+    } catch {
+      /* try next query */
+    }
+  }
+  return out;
+}
 
 type Props = { initialLimit?: number };
 
@@ -62,26 +118,42 @@ export default function TransferWireFeed({ initialLimit = 40 }: Props) {
   const [showCount, setShowCount] = useState(initialLimit);
   const [sourceFilter, setSourceFilter] = useState<SourceFilter>("all");
   const [sortMode, setSortMode] = useState<SortMode>("newest");
+  const [wireRefreshing, setWireRefreshing] = useState(false);
   const [articles, setArticles] = useState<EditorialArticle[]>([]);
   const [deals, setDeals] = useState<HubCompletedTransfer[]>([]);
 
-  useEffect(() => {
-    async function loadWire() {
-      try {
-        let res = await fetch("/api/transfer-wire", { cache: "no-store" });
-        let data = await res.json();
-        if ((data.headlines?.length ?? 0) < 15) {
-          res = await fetch("/api/transfer-wire?refresh=1", { cache: "no-store" });
-          data = await res.json();
-        }
-        setHeadlines(data.headlines ?? []);
-        setWireUpdated(data.updatedAt ?? null);
-      } catch {
-        setHeadlines([]);
-      } finally {
-        setWireLoading(false);
+  async function loadWire(forceRefresh = false) {
+    if (forceRefresh) setWireRefreshing(true);
+    else setWireLoading(true);
+    try {
+      let res = await fetch(
+        forceRefresh ? "/api/transfer-wire?refresh=1" : "/api/transfer-wire",
+        { cache: "no-store" },
+      );
+      let data = await res.json();
+      let list: TransferWireHeadline[] = data.headlines ?? [];
+
+      if (!forceRefresh && list.length < 10) {
+        res = await fetch("/api/transfer-wire?refresh=1", { cache: "no-store" });
+        data = await res.json();
+        list = data.headlines ?? [];
       }
+      if (list.length === 0) {
+        list = await fetchNewsWireFallback();
+      }
+      setHeadlines(list);
+      setWireUpdated(data.updatedAt ?? (list.length > 0 ? new Date().toISOString() : null));
+    } catch {
+      const fallback = await fetchNewsWireFallback();
+      setHeadlines(fallback);
+      if (fallback.length > 0) setWireUpdated(new Date().toISOString());
+    } finally {
+      setWireLoading(false);
+      setWireRefreshing(false);
     }
+  }
+
+  useEffect(() => {
     loadWire();
   }, []);
 
@@ -183,53 +255,116 @@ export default function TransferWireFeed({ initialLimit = 40 }: Props) {
         </div>
 
         {/* Source filter + sort */}
-        <div style={{ display: "flex", flexWrap: "wrap", gap: 8, alignItems: "center", marginBottom: 16 }}>
-          {FILTER_OPTIONS.map((opt) => {
-            const count = sourceCounts[opt.id] ?? 0;
-            const active = sourceFilter === opt.id;
-            const accent = opt.id === "all" ? "var(--transfer-cyan)" : SOURCE_COLORS[opt.id] ?? SOURCE_COLORS.other;
-            if (opt.id !== "all" && count === 0) return null;
-            return (
-              <button
-                key={opt.id}
-                type="button"
-                className="btn"
-                onClick={() => {
-                  setSourceFilter(opt.id);
-                  setShowCount(initialLimit);
-                }}
-                style={{
-                  padding: "6px 12px",
-                  fontSize: 10,
-                  letterSpacing: "0.08em",
-                  borderColor: active ? accent : "var(--sg-border)",
-                  background: active ? `${accent}22` : "transparent",
-                  color: active ? accent : "var(--sg-text-muted)",
-                }}
-              >
-                {opt.label}
-                {count > 0 ? ` (${count})` : ""}
-              </button>
-            );
-          })}
-          <span style={{ flex: 1, minWidth: 8 }} />
-          <select
-            value={sortMode}
-            onChange={(e) => setSortMode(e.target.value as SortMode)}
-            className="mono"
+        <div style={{ marginBottom: 16 }}>
+          <div
             style={{
-              padding: "8px 12px",
-              borderRadius: 999,
-              border: "1px solid var(--sg-border)",
-              background: "var(--sg-surface-low)",
-              color: "var(--sg-text-primary)",
-              fontSize: 10,
-              letterSpacing: "0.1em",
+              display: "flex",
+              flexWrap: "wrap",
+              justifyContent: "space-between",
+              alignItems: "center",
+              gap: 10,
+              marginBottom: 10,
             }}
           >
-            <option value="newest">Newest first</option>
-            <option value="oldest">Oldest first</option>
-          </select>
+            <span className="mono" style={{ fontSize: 10, letterSpacing: "0.14em", color: "var(--sg-text-muted)" }}>
+              FILTER BY SOURCE
+            </span>
+            <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
+              <select
+                value={sortMode}
+                onChange={(e) => setSortMode(e.target.value as SortMode)}
+                aria-label="Sort headlines"
+                className="mono"
+                style={{
+                  padding: "8px 14px",
+                  borderRadius: 999,
+                  border: "1px solid var(--sg-border)",
+                  background: "var(--sg-surface-low)",
+                  color: "var(--sg-text-primary)",
+                  fontSize: 10,
+                  letterSpacing: "0.1em",
+                  cursor: "pointer",
+                }}
+              >
+                <option value="newest">Newest first</option>
+                <option value="oldest">Oldest first</option>
+              </select>
+              <button
+                type="button"
+                className="btn"
+                disabled={wireLoading || wireRefreshing}
+                onClick={() => loadWire(true)}
+                style={{ padding: "8px 14px", fontSize: 10, letterSpacing: "0.1em" }}
+              >
+                {wireRefreshing ? "Refreshing…" : "Refresh"}
+              </button>
+            </div>
+          </div>
+          <div
+            role="tablist"
+            aria-label="News source filter"
+            style={{
+              display: "flex",
+              gap: 8,
+              overflowX: "auto",
+              paddingBottom: 4,
+              WebkitOverflowScrolling: "touch",
+              scrollbarWidth: "none",
+            }}
+          >
+            {SOURCE_TABS.map((opt) => {
+              const count = sourceCounts[opt.id] ?? 0;
+              const active = sourceFilter === opt.id;
+              const accent =
+                opt.id === "all" ? "var(--transfer-cyan)" : SOURCE_COLORS[opt.id] ?? SOURCE_COLORS.other;
+              const disabled = !wireLoading && opt.id !== "all" && count === 0;
+              return (
+                <button
+                  key={opt.id}
+                  type="button"
+                  role="tab"
+                  aria-selected={active}
+                  disabled={disabled}
+                  onClick={() => {
+                    setSourceFilter(opt.id);
+                    setShowCount(initialLimit);
+                  }}
+                  style={{
+                    flex: "0 0 auto",
+                    display: "inline-flex",
+                    alignItems: "center",
+                    gap: 8,
+                    padding: "10px 16px",
+                    borderRadius: 999,
+                    border: `1px solid ${active ? accent : "var(--sg-border)"}`,
+                    background: active ? `color-mix(in oklch, ${accent} 18%, transparent)` : "var(--sg-surface-low)",
+                    color: active ? accent : disabled ? "var(--sg-text-muted)" : "var(--sg-text-primary)",
+                    fontSize: 12,
+                    fontWeight: active ? 600 : 500,
+                    letterSpacing: "0.02em",
+                    cursor: disabled ? "not-allowed" : "pointer",
+                    opacity: disabled ? 0.45 : 1,
+                    transition: "border-color 0.15s, background 0.15s",
+                  }}
+                >
+                  <span
+                    aria-hidden
+                    style={{
+                      width: 8,
+                      height: 8,
+                      borderRadius: "50%",
+                      background: accent,
+                      flexShrink: 0,
+                    }}
+                  />
+                  {opt.short}
+                  <span className="mono" style={{ fontSize: 10, opacity: 0.75 }}>
+                    {count}
+                  </span>
+                </button>
+              );
+            })}
+          </div>
         </div>
 
         <div style={shell.panel}>
@@ -240,11 +375,29 @@ export default function TransferWireFeed({ initialLimit = 40 }: Props) {
               <span className="mono" style={{ fontSize: 11, letterSpacing: "0.12em" }}>LOADING…</span>
             </div>
           ) : visible.length === 0 ? (
-            <p className="mono" style={{ padding: 40, textAlign: "center", fontSize: 12, color: "var(--sg-text-muted)" }}>
-              {headlines.length === 0
-                ? "No headlines right now. Try again shortly."
-                : "No headlines for this source. Pick another filter."}
-            </p>
+            <div style={{ padding: 40, textAlign: "center" }}>
+              <p className="mono" style={{ fontSize: 12, color: "var(--sg-text-muted)", margin: "0 0 16px" }}>
+                {headlines.length === 0
+                  ? "No headlines right now."
+                  : `No ${SOURCE_TABS.find((t) => t.id === sourceFilter)?.short ?? "matching"} headlines — try another source.`}
+              </p>
+              {headlines.length === 0 ? (
+                <button type="button" className="btn btn-solid" onClick={() => loadWire(true)}>
+                  Refresh feed
+                </button>
+              ) : (
+                <button
+                  type="button"
+                  className="btn"
+                  onClick={() => {
+                    setSourceFilter("all");
+                    setShowCount(initialLimit);
+                  }}
+                >
+                  Show all sources
+                </button>
+              )}
+            </div>
           ) : (
             <ul style={{ listStyle: "none", margin: 0, padding: 0 }}>
               {visible.map((h, i) => {
@@ -273,8 +426,19 @@ export default function TransferWireFeed({ initialLimit = 40 }: Props) {
                         e.currentTarget.style.background = "transparent";
                       }}
                     >
-                      <span
+                      <button
+                        type="button"
                         className="mono"
+                        onClick={(e) => {
+                          e.preventDefault();
+                          e.stopPropagation();
+                          const src = h.source as WireSource;
+                          if (src in WIRE_SOURCE_LABELS) {
+                            setSourceFilter(src);
+                            setShowCount(initialLimit);
+                          }
+                        }}
+                        title={`Filter by ${h.sourceLabel}`}
                         style={{
                           fontSize: 9,
                           fontWeight: 700,
@@ -285,10 +449,11 @@ export default function TransferWireFeed({ initialLimit = 40 }: Props) {
                           border: `1px solid ${accent}55`,
                           background: `${accent}18`,
                           whiteSpace: "nowrap",
+                          cursor: "pointer",
                         }}
                       >
                         {h.sourceLabel}
-                      </span>
+                      </button>
                       <span className="display" style={{ fontSize: 15, fontWeight: 500, lineHeight: 1.35, margin: 0 }}>
                         {h.title}
                       </span>
