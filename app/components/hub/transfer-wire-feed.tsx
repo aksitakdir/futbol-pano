@@ -11,6 +11,7 @@ import type { TransferWireHeadline } from "@/lib/transfer-wire-cache";
 import {
   WIRE_SOURCE_LABELS,
   relativeTimeLabel,
+  resolveWireSource,
   wireItemId,
   type WireSource,
 } from "@/lib/transfer-wire-rss";
@@ -51,21 +52,12 @@ type SortMode = "newest" | "oldest";
 
 const SOURCE_TABS: { id: SourceFilter; label: string; short: string }[] = [
   { id: "all", label: "All sources", short: "All" },
-  { id: "google", label: WIRE_SOURCE_LABELS.google, short: "Google" },
   { id: "bbc", label: WIRE_SOURCE_LABELS.bbc, short: "BBC" },
   { id: "sky", label: WIRE_SOURCE_LABELS.sky, short: "Sky" },
   { id: "guardian", label: WIRE_SOURCE_LABELS.guardian, short: "Guardian" },
   { id: "espn", label: WIRE_SOURCE_LABELS.espn, short: "ESPN" },
+  { id: "google", label: WIRE_SOURCE_LABELS.google, short: "Google" },
 ];
-
-function detectWireSource(sourceLabel: string, link: string): WireSource {
-  const s = `${sourceLabel} ${link}`.toLowerCase();
-  if (s.includes("bbc")) return "bbc";
-  if (s.includes("sky")) return "sky";
-  if (s.includes("guardian")) return "guardian";
-  if (s.includes("espn")) return "espn";
-  return "google";
-}
 
 async function fetchNewsWireFallback(): Promise<TransferWireHeadline[]> {
   const queries = [
@@ -88,13 +80,13 @@ async function fetchNewsWireFallback(): Promise<TransferWireHeadline[]> {
       }[];
       if (!Array.isArray(items)) continue;
       for (const n of items) {
-        const source = detectWireSource(n.source, n.link);
+        const { source, sourceLabel } = resolveWireSource(n.title, n.link, n.source);
         const h: TransferWireHeadline = {
           id: wireItemId(n.link, n.title),
           title: n.title,
           link: n.link,
           source,
-          sourceLabel: n.source || WIRE_SOURCE_LABELS[source],
+          sourceLabel: sourceLabel || WIRE_SOURCE_LABELS[source],
           publishedAt: "",
           timeLabel: n.date || relativeTimeLabel(""),
         };
@@ -228,7 +220,7 @@ export default function TransferWireFeed({ initialLimit = 40 }: Props) {
         <span className="mono" style={{ fontSize: 10, letterSpacing: "0.14em", color: "var(--transfer-cyan)", display: "block", marginBottom: 6 }}>
           AGGREGATED HEADLINES
         </span>
-        Rumors from BBC, Sky, Guardian, ESPN & Google News — free public RSS, refreshed hourly. Not confirmed by Scout Gamer.
+        Headlines from BBC, Sky, Guardian, ESPN and Google News (public RSS). Refreshed hourly — not confirmed by Scout Gamer.
       </div>
 
       {/* LIVE WIRE — primary feed */}
@@ -317,14 +309,12 @@ export default function TransferWireFeed({ initialLimit = 40 }: Props) {
               const active = sourceFilter === opt.id;
               const accent =
                 opt.id === "all" ? "var(--transfer-cyan)" : SOURCE_COLORS[opt.id] ?? SOURCE_COLORS.other;
-              const disabled = !wireLoading && opt.id !== "all" && count === 0;
               return (
                 <button
                   key={opt.id}
                   type="button"
                   role="tab"
                   aria-selected={active}
-                  disabled={disabled}
                   onClick={() => {
                     setSourceFilter(opt.id);
                     setShowCount(initialLimit);
@@ -338,12 +328,11 @@ export default function TransferWireFeed({ initialLimit = 40 }: Props) {
                     borderRadius: 999,
                     border: `1px solid ${active ? accent : "var(--sg-border)"}`,
                     background: active ? `color-mix(in oklch, ${accent} 18%, transparent)` : "var(--sg-surface-low)",
-                    color: active ? accent : disabled ? "var(--sg-text-muted)" : "var(--sg-text-primary)",
+                    color: active ? accent : "var(--sg-text-primary)",
                     fontSize: 12,
                     fontWeight: active ? 600 : 500,
                     letterSpacing: "0.02em",
-                    cursor: disabled ? "not-allowed" : "pointer",
-                    opacity: disabled ? 0.45 : 1,
+                    cursor: "pointer",
                     transition: "border-color 0.15s, background 0.15s",
                   }}
                 >
@@ -358,9 +347,11 @@ export default function TransferWireFeed({ initialLimit = 40 }: Props) {
                     }}
                   />
                   {opt.short}
-                  <span className="mono" style={{ fontSize: 10, opacity: 0.75 }}>
-                    {count}
-                  </span>
+                  {count > 0 ? (
+                    <span className="mono" style={{ fontSize: 10, opacity: 0.75 }}>
+                      {count}
+                    </span>
+                  ) : null}
                 </button>
               );
             })}

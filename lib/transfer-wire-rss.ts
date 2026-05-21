@@ -46,7 +46,17 @@ function decodeEntities(text: string): string {
     .replace(/&apos;/g, "'");
 }
 
-type ParsedItem = { title: string; link: string; pubDate: string };
+type ParsedItem = { title: string; link: string; pubDate: string; publisher?: string };
+
+/** Min headlines kept per brand when merging (rest filled by date) */
+const MIN_PER_BRAND = 8;
+
+const GOOGLE_SITE_SOURCES: { site: string; source: WireSource; sourceLabel: string; query: string }[] = [
+  { site: "bbc.co.uk", source: "bbc", sourceLabel: "BBC Sport", query: "site:bbc.co.uk football transfer" },
+  { site: "skysports.com", source: "sky", sourceLabel: "Sky Sports", query: "site:skysports.com transfer" },
+  { site: "theguardian.com", source: "guardian", sourceLabel: "The Guardian", query: "site:theguardian.com football transfer" },
+  { site: "espn.com", source: "espn", sourceLabel: "ESPN", query: "site:espn.com soccer transfer" },
+];
 
 /** RSS 2.0 <item> blocks */
 function parseRssItems(xml: string, maxItems: number): ParsedItem[] {
@@ -61,10 +71,12 @@ function parseRssItems(xml: string, maxItems: number): ParsedItem[] {
       block.match(/<guid[^>]*isPermaLink="true"[^>]*>([\s\S]*?)<\/guid>/i)?.[1]?.trim() ??
       "";
     const pubDateMatch = block.match(/<pubDate[^>]*>([\s\S]*?)<\/pubDate>/i);
+    const sourceMatch = block.match(/<source[^>]*>([\s\S]*?)<\/source>/i);
     const title = titleMatch ? decodeEntities(stripCdata(titleMatch[1].trim())) : "";
     link = decodeEntities(stripCdata(link));
     const pubDate = pubDateMatch ? pubDateMatch[1].trim() : "";
-    if (title && link) items.push({ title, link, pubDate });
+    const publisher = sourceMatch ? decodeEntities(stripCdata(sourceMatch[1].trim())) : undefined;
+    if (title && link) items.push({ title, link, pubDate, publisher });
   }
   return items;
 }
@@ -106,15 +118,49 @@ function normalizeTitleKey(title: string): string {
     .slice(0, 80);
 }
 
-function detectSource(link: string, label: string): { source: WireSource; sourceLabel: string } {
+const PUBLISHER_HINTS: { re: RegExp; source: WireSource; sourceLabel: string }[] = [
+  { re: /\bbbc\b/i, source: "bbc", sourceLabel: "BBC Sport" },
+  { re: /sky\s*sports?/i, source: "sky", sourceLabel: "Sky Sports" },
+  { re: /guardian/i, source: "guardian", sourceLabel: "The Guardian" },
+  { re: /\bespn\b/i, source: "espn", sourceLabel: "ESPN" },
+  { re: /goal\.com/i, source: "other", sourceLabel: "Goal" },
+  { re: /fabrizio|romano/i, source: "other", sourceLabel: "Fabrizio Romano" },
+];
+
+function matchPublisherHint(text: string): { source: WireSource; sourceLabel: string } | null {
+  for (const h of PUBLISHER_HINTS) {
+    if (h.re.test(text)) return { source: h.source, sourceLabel: h.sourceLabel };
+  }
+  return null;
+}
+
+/** Google titles often end with " - BBC Sport" or " | Sky Sports" */
+function detectSourceFromTitle(title: string): { source: WireSource; sourceLabel: string } | null {
+  const tail = title.match(/\s[-–—|]\s*([^|–—-]+)$/);
+  if (!tail) return null;
+  return matchPublisherHint(tail[1]);
+}
+
+export function resolveWireSource(
+  title: string,
+  link: string,
+  publisher = "",
+): { source: WireSource; sourceLabel: string } {
+  const fromTitle = detectSourceFromTitle(title);
+  if (fromTitle) return fromTitle;
+
+  const blob = `${publisher} ${title} ${link}`.toLowerCase();
+  const fromHint = matchPublisherHint(blob);
+  if (fromHint) return fromHint;
+
   const u = link.toLowerCase();
-  const l = label.toLowerCase();
+  const l = publisher.toLowerCase();
   if (u.includes("bbc.co.uk") || l.includes("bbc")) return { source: "bbc", sourceLabel: "BBC Sport" };
   if (u.includes("skysports") || l.includes("sky")) return { source: "sky", sourceLabel: "Sky Sports" };
   if (u.includes("theguardian") || l.includes("guardian")) return { source: "guardian", sourceLabel: "The Guardian" };
   if (u.includes("espn") || l.includes("espn")) return { source: "espn", sourceLabel: "ESPN" };
-  if (u.includes("google.com") || l.includes("google")) return { source: "google", sourceLabel: "Google News" };
-  return { source: "other", sourceLabel: label || "News" };
+  if (u.includes("google.com")) return { source: "google", sourceLabel: "Google News" };
+  return { source: "google", sourceLabel: publisher || "Google News" };
 }
 
 function isTransferHeadline(title: string): boolean {
@@ -163,11 +209,27 @@ async function fetchGoogleNews(): Promise<RawWireItem[]> {
     if (!xml) continue;
     const raw = parseFeedXml(xml, 25);
     for (const r of raw) {
-      const { source, sourceLabel } = detectSource(r.link, "");
+      const { source, sourceLabel } = resolveWireSource(r.title, r.link, r.publisher ?? "");
+      out.push({ ...r, source, sourceLabel });
+    }
+  }
+  return out;
+}
+
+/** Brand headlines via Google site: search (works on Vercel when direct RSS is blocked) */
+async function fetchGoogleSiteNews(): Promise<RawWireItem[]> {
+  const out: RawWireItem[] = [];
+  for (const { source, sourceLabel, query } of GOOGLE_SITE_SOURCES) {
+    const url = `https://news.google.com/rss/search?q=${encodeURIComponent(query)}&hl=en&gl=US&ceid=US:en`;
+    const xml = await fetchXml(url, 10000, true);
+    if (!xml) continue;
+    const raw = parseFeedXml(xml, 20);
+    for (const r of raw) {
+      const resolved = resolveWireSource(r.title, r.link, r.publisher ?? sourceLabel);
       out.push({
         ...r,
-        source: source === "other" ? "google" : source,
-        sourceLabel: sourceLabel === "News" ? "Google News" : sourceLabel,
+        source: resolved.source === "google" ? source : resolved.source,
+        sourceLabel: resolved.source === "google" ? sourceLabel : resolved.sourceLabel,
       });
     }
   }
@@ -219,7 +281,7 @@ async function fetchGuardianFootball(): Promise<RawWireItem[]> {
   return toWireItems(transfer.slice(0, 30), "guardian", "The Guardian");
 }
 
-export function mergeWireItems(sources: RawWireItem[], limit = TRANSFER_WIRE_MAX_ITEMS): RawWireItem[] {
+function dedupeWirePool(sources: RawWireItem[]): { item: RawWireItem; ts: number }[] {
   const seen = new Set<string>();
   const merged: { item: RawWireItem; ts: number }[] = [];
 
@@ -235,7 +297,44 @@ export function mergeWireItems(sources: RawWireItem[], limit = TRANSFER_WIRE_MAX
   }
 
   merged.sort((a, b) => b.ts - a.ts);
-  return merged.slice(0, limit).map((m) => m.item);
+  return merged;
+}
+
+/** Keep a fair share per BBC/Sky/Guardian/ESPN so the feed does not look Google-only */
+export function mergeWireItems(sources: RawWireItem[], limit = TRANSFER_WIRE_MAX_ITEMS): RawWireItem[] {
+  const pool = dedupeWirePool(sources);
+  const brands: WireSource[] = ["bbc", "sky", "guardian", "espn"];
+  const picked: RawWireItem[] = [];
+  const pickedKeys = new Set<string>();
+
+  const take = (list: typeof pool, max: number) => {
+    let n = 0;
+    for (const row of list) {
+      if (n >= max) break;
+      const key = normalizeTitleKey(row.item.title);
+      if (pickedKeys.has(key)) continue;
+      pickedKeys.add(key);
+      picked.push(row.item);
+      n++;
+    }
+  };
+
+  for (const brand of brands) {
+    take(
+      pool.filter((r) => r.item.source === brand),
+      MIN_PER_BRAND,
+    );
+  }
+
+  for (const row of pool) {
+    if (picked.length >= limit) break;
+    const key = normalizeTitleKey(row.item.title);
+    if (pickedKeys.has(key)) continue;
+    pickedKeys.add(key);
+    picked.push(row.item);
+  }
+
+  return picked.slice(0, limit);
 }
 
 /** Extra Google queries when primary sources return few items (still free) */
@@ -248,32 +347,27 @@ export async function fetchGoogleNewsFallback(limit = 30): Promise<RawWireItem[]
     if (!xml) continue;
     const raw = parseFeedXml(xml, 40);
     for (const r of raw) {
-      out.push({ ...r, source: "google", sourceLabel: "Google News" });
+      const { source, sourceLabel } = resolveWireSource(r.title, r.link, r.publisher ?? "");
+      out.push({ ...r, source, sourceLabel });
     }
   }
   return mergeWireItems(out, limit);
 }
 
 export async function fetchAllTransferWireSources(): Promise<RawWireItem[]> {
-  // Google first — reliable on Vercel (same as /api/news)
-  const google = await fetchGoogleNews();
-  let merged = mergeWireItems(google, TRANSFER_WIRE_MAX_ITEMS);
-  if (merged.length >= 25) return merged;
-
-  const results = await Promise.allSettled([
+  const [google, siteBranded, sky, bbc, guardian, espn] = await Promise.all([
+    fetchGoogleNews(),
+    fetchGoogleSiteNews(),
     fetchSkyTransfers(),
     fetchBbcFootball(),
     fetchGuardianFootball(),
     fetchEspnSoccer(),
   ]);
 
-  const all: RawWireItem[] = [...google];
-  for (const r of results) {
-    if (r.status === "fulfilled") all.push(...r.value);
-  }
+  const all: RawWireItem[] = [...google, ...siteBranded, ...sky, ...bbc, ...guardian, ...espn];
+  let merged = mergeWireItems(all, TRANSFER_WIRE_MAX_ITEMS);
 
-  merged = mergeWireItems(all, TRANSFER_WIRE_MAX_ITEMS);
-  if (merged.length < 15) {
+  if (merged.length < 20) {
     const extra = await fetchGoogleNewsFallback(40);
     merged = mergeWireItems([...merged, ...extra], TRANSFER_WIRE_MAX_ITEMS);
   }
