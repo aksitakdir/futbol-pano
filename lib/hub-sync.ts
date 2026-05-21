@@ -1,6 +1,7 @@
 import { createClient } from "@supabase/supabase-js";
 import { fetchFootballDataMatches } from "@/lib/football-data-matches";
 import { fetchApiFootballTransfers } from "@/lib/api-football-transfers";
+import { syncTransferWireCache } from "@/lib/transfer-wire-cache";
 import { TRANSFER_SCENARIOS } from "@/lib/transfer-scenarios";
 import { COMPLETED_TRANSFERS } from "@/lib/completed-transfers";
 import type { LiveScoreMatch } from "@/app/api/wc-live-scores/route";
@@ -141,11 +142,16 @@ export async function syncAllHubData(): Promise<Record<string, unknown>> {
   await seedTransferScenariosIfEmpty();
   await seedCompletedTransfersIfEmpty();
 
-  const [wc, transfers] = await Promise.all([syncWcMatchesCache(), syncCompletedTransfersFromApi()]);
+  const [wc, transfers, wire] = await Promise.all([
+    syncWcMatchesCache(),
+    syncCompletedTransfersFromApi(),
+    syncTransferWireCache(),
+  ]);
 
   return {
     wc,
     transfers,
+    wire,
     seeded: true,
     at: new Date().toISOString(),
   };

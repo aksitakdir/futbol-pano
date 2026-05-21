@@ -2,7 +2,7 @@ import HubPillarPage from "../components/hub-pillar-page";
 
 export const metadata = {
   title: "Transfers | Scout Gamer",
-  description: "Done deals, scout analysis, and club Arena games — the transfer window through a scout lens.",
+  description: "Transfer Wire — rumors from BBC, Sky and Google News, scout analysis, and confirmed deals.",
 };
 
 export default function Page() {

@@ -9,8 +9,7 @@ import WcTeamGrid from "./wc/wc-team-grid";
 import HubArenaStrip from "./hub/hub-arena-strip";
 import HubEditorialSection from "./hub/hub-editorial-section";
 import HubFeaturedArenaBanner from "./hub/hub-featured-arena-banner";
-import CompletedTransfersSection from "./hub/completed-transfers-section";
-import HubTransferTeamArenas from "./hub/hub-transfer-team-arenas";
+import TransferWireFeed from "./hub/transfer-wire-feed";
 import { getHubConfig, type HubId } from "@/lib/hub-config";
 import { WC_2026_HERO_BG } from "@/lib/wc-2026-brand";
 import type { HubPillarCopy } from "@/lib/hub-types";
@@ -65,22 +64,17 @@ export default function HubPillarPage({ hubId }: Props) {
                 48 Team Squads →
               </Link>
             ) : (
-              <Link href="#completed-transfers" className="btn btn-solid hub-pillar-cta">
-                Done Deals →
+              <Link href="#transfer-wire" className="btn btn-solid hub-pillar-cta">
+                Transfer Wire →
               </Link>
             )}
           </div>
         </PageShell>
       </header>
 
-      {!isWc ? (
-        <>
-          <CompletedTransfersSection locale="en" />
-          <HubTransferTeamArenas locale="en" />
-        </>
-      ) : null}
+      {!isWc ? <TransferWireFeed /> : null}
 
-      <HubEditorialSection hubId={hubId} locale="en" accent={accent} />
+      {isWc ? <HubEditorialSection hubId={hubId} locale="en" accent={accent} /> : null}
 
       {isWc ? (
         <PageShell as="section" className="sg-page-shell--section" style={{ paddingTop: 0 }}>

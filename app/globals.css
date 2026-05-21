@@ -596,6 +596,140 @@ button { font-family: inherit; cursor: pointer; }
 }
 .transfer-scenario-rank__meter-label { font-size: 8px; letter-spacing: 0.12em; color: var(--sg-text-muted); margin-top: 4px; display: block; }
 
+/* Transfer Wire feed */
+.transfer-wire__header { margin-bottom: 40px; max-width: 62ch; }
+.transfer-wire__title { font-size: clamp(28px, 4.5vw, 40px); margin: 8px 0 12px; letter-spacing: -0.03em; }
+.transfer-wire__intro { font-size: 15px; line-height: 1.55; color: var(--sg-text-muted); margin: 0; }
+.transfer-wire__block { margin-bottom: 48px; }
+.transfer-wire__block-head { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: baseline; gap: 12px; margin-bottom: 16px; }
+.transfer-wire__block-label { font-size: 10px; letter-spacing: 0.14em; color: var(--transfer-cyan); margin-bottom: 16px; }
+.transfer-wire__block-head .transfer-wire__block-label { margin-bottom: 0; }
+.transfer-wire__updated { font-size: 10px; letter-spacing: 0.08em; color: var(--sg-text-muted); }
+.transfer-wire__loading { display: flex; align-items: center; gap: 10px; padding: 32px 0; color: var(--sg-text-muted); font-size: 11px; letter-spacing: 0.12em; }
+.transfer-wire__empty { text-align: center; padding: 40px 0; color: var(--sg-text-muted); font-size: 12px; }
+.transfer-wire__more { display: flex; justify-content: center; margin-top: 24px; }
+.transfer-wire__disclaimer {
+  font-size: 10px;
+  letter-spacing: 0.06em;
+  line-height: 1.5;
+  color: var(--sg-text-muted);
+  margin: 0;
+  padding-top: 24px;
+  border-top: 1px solid var(--sg-border);
+  max-width: 56ch;
+}
+
+.transfer-wire-scout-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 14px;
+}
+.transfer-wire-scout-card {
+  display: flex;
+  flex-direction: column;
+  padding: 20px 18px;
+  border-radius: 14px;
+  border: 1px solid var(--sg-border);
+  background: var(--sg-surface);
+  text-decoration: none;
+  position: relative;
+  overflow: hidden;
+  min-height: 180px;
+}
+.transfer-wire-scout-card__bar {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, var(--transfer-cyan), var(--transfer-mint));
+}
+.transfer-wire-scout-card__tag { font-size: 9px; letter-spacing: 0.16em; color: var(--transfer-cyan); margin-bottom: 10px; }
+.transfer-wire-scout-card__title { font-size: 17px; font-weight: 600; margin: 0 0 8px; line-height: 1.25; color: var(--sg-text-primary); }
+.transfer-wire-scout-card__teaser { font-size: 13px; line-height: 1.45; color: var(--sg-text-muted); margin: 0 0 12px; flex: 1; }
+.transfer-wire-scout-card__meta { font-size: 10px; letter-spacing: 0.12em; color: var(--transfer-mint); margin-top: auto; }
+
+.transfer-wire-deals {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 8px;
+}
+.transfer-wire-deals__item {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 4px 16px;
+  align-items: center;
+  padding: 14px 16px;
+  border-radius: 12px;
+  border: 1px solid var(--sg-border);
+  background: var(--sg-surface-low);
+}
+.transfer-wire-deals__player { font-size: 15px; font-weight: 600; grid-column: 1; }
+.transfer-wire-deals__route { font-size: 10px; letter-spacing: 0.1em; color: var(--sg-text-muted); grid-column: 1; }
+.transfer-wire-deals__meta { font-size: 10px; color: var(--transfer-mint); grid-column: 2; grid-row: 1 / 3; text-align: right; }
+.transfer-wire-deals__sep { margin: 0 6px; opacity: 0.5; }
+
+.transfer-wire-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  border: 1px solid var(--sg-border);
+  border-radius: 16px;
+  overflow: hidden;
+  background: var(--sg-surface-low);
+}
+.transfer-wire-list__item {
+  display: grid;
+  grid-template-columns: auto 1fr auto auto;
+  gap: 12px 16px;
+  align-items: center;
+  padding: 16px 18px;
+  border-bottom: 1px solid var(--sg-border);
+  text-decoration: none;
+  color: inherit;
+  transition: background 0.15s;
+}
+.transfer-wire-list__item:last-child { border-bottom: none; }
+.transfer-wire-list__item:hover { background: var(--sg-surface); }
+.transfer-wire-list__source {
+  font-size: 9px;
+  letter-spacing: 0.12em;
+  font-weight: 700;
+  color: var(--wire-source-color, var(--transfer-cyan));
+  padding: 4px 8px;
+  border-radius: 999px;
+  border: 1px solid color-mix(in oklch, var(--wire-source-color) 40%, transparent);
+  background: color-mix(in oklch, var(--wire-source-color) 12%, transparent);
+  white-space: nowrap;
+}
+.transfer-wire-list__title {
+  font-size: 15px;
+  font-weight: 500;
+  line-height: 1.35;
+  margin: 0;
+  color: var(--sg-text-primary);
+}
+.transfer-wire-list__time { font-size: 10px; letter-spacing: 0.08em; color: var(--sg-text-muted); white-space: nowrap; }
+.transfer-wire-list__ext { font-size: 12px; color: var(--sg-text-muted); opacity: 0.6; }
+
+@media (max-width: 640px) {
+  .transfer-wire-list__item {
+    grid-template-columns: 1fr auto;
+    grid-template-rows: auto auto auto;
+  }
+  .transfer-wire-list__source { grid-column: 1; }
+  .transfer-wire-list__time { grid-column: 2; grid-row: 1; }
+  .transfer-wire-list__title { grid-column: 1 / -1; }
+  .transfer-wire-list__ext { display: none; }
+  .transfer-wire-deals__item { grid-template-columns: 1fr; }
+  .transfer-wire-deals__meta { grid-column: 1; grid-row: auto; text-align: left; margin-top: 4px; }
+}
+
 /* Gerçekleşen transferler */
 .completed-transfers-section__title { font-size: clamp(24px, 4vw, 36px); margin: 8px 0 12px; }
 .completed-transfers-section__sub { color: var(--sg-text-muted); margin: 0 0 24px; }

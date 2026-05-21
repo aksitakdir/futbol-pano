@@ -60,7 +60,7 @@ export const HUBS: Record<HubId, HubConfig> = {
       pillarTitle: "Transfers",
       pillarEyebrow: "TRANSFER HUB",
       pillarDescription:
-        "Done deals, scout analysis, and club Arena games — the transfer window through a scout lens.",
+        "Transfer Wire — rumors from trusted public sources, scout analysis, and confirmed deals.",
       radarPath: "/transfers/radar",
       listelerPath: "/transfers/lists",
       kadrolarPath: "/transfers",
