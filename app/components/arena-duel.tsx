@@ -226,14 +226,12 @@ function PlayerCard({ participant, side, onSelect, isLoser, isSelected, disabled
             type="button"
             disabled={disabled}
             onClick={disabled ? undefined : (e) => { e.stopPropagation(); onSelect(); }}
-            className="mt-auto w-full font-black uppercase tracking-widest transition-all duration-200 hover:brightness-110 active:scale-95 disabled:cursor-not-allowed disabled:opacity-40"
+            className="btn btn-solid mt-auto w-full justify-center disabled:cursor-not-allowed disabled:opacity-40"
             style={{
               background: isSelected ? "var(--sg-amber)" : "var(--sg-primary)",
-              color: "#060f1e",
-              fontFamily: "var(--font-headline)",
-              padding: "clamp(6px, 1.5vw, 12px) 4px",
-              fontSize: "clamp(9px, 2.4vw, 13px)",
-              letterSpacing: "0.1em",
+              borderColor: isSelected ? "var(--sg-amber)" : "var(--sg-primary)",
+              fontSize: "clamp(9px, 2.4vw, 12px)",
+              padding: "clamp(8px, 1.5vw, 12px) 8px",
             }}
           >
             {btnLabel}

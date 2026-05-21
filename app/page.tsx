@@ -12,6 +12,7 @@ import { supabase } from "@/lib/supabase";
 import { arenaPath, type ArenaGame } from "@/lib/arena-brackets";
 import HomeRecentCarousel from "./components/home-recent-carousel";
 import HomeHubPromo from "./components/home-hub-promo";
+import HomeWcSquads from "./components/home-wc-squads";
 import { ContentHighlightPills } from "./components/content-highlight-pills";
 import { extractArticleHighlights } from "@/lib/content-highlight-tags";
 
@@ -361,6 +362,9 @@ export default function HomePage() {
       {recentItems.length > 0 && <HomeRecentCarousel items={recentItems} locale="en" />}
 
       <HomeHubPromo locale="en" wcArticles={wcHubPreview} transferArticles={transferHubPreview} />
+
+      {/* ── WC 2026 Squad Grid ── */}
+      <HomeWcSquads />
 
       {/* ── Radar Player of the Week ── */}
       <section style={{ background: "var(--sg-surface-low)", borderTop: "1px solid var(--sg-border)", borderBottom: "1px solid var(--sg-border)" }}>
