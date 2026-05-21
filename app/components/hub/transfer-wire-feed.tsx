@@ -12,10 +12,11 @@ import { stripHtml, estimateReadMinutes } from "@/lib/utils";
 import type { TransferWireHeadline } from "@/lib/transfer-wire-cache";
 import type { WireSource } from "@/lib/transfer-wire-rss";
 
-const SOURCE_COLORS: Record<WireSource, string> = {
+const SOURCE_COLORS: Record<string, string> = {
   bbc: "#bb1919",
   sky: "#0082ca",
   espn: "#d00",
+  guardian: "#052962",
   google: "var(--transfer-cyan)",
   other: "var(--sg-text-muted)",
 };
@@ -32,14 +33,47 @@ export default function TransferWireFeed({ initialLimit = 24 }: Props) {
   const [deals, setDeals] = useState<HubCompletedTransfer[]>([]);
 
   useEffect(() => {
-    fetch("/api/transfer-wire")
-      .then((r) => r.json())
-      .then((d) => {
-        setHeadlines(d.headlines ?? []);
-        setWireUpdated(d.updatedAt ?? null);
-      })
-      .catch(() => setHeadlines([]))
-      .finally(() => setWireLoading(false));
+    async function loadWire() {
+      try {
+        let res = await fetch("/api/transfer-wire", { cache: "no-store" });
+        let data = await res.json();
+
+        if (!data.headlines?.length) {
+          res = await fetch("/api/transfer-wire?refresh=1", { cache: "no-store" });
+          data = await res.json();
+        }
+
+        if (!data.headlines?.length) {
+          const newsRes = await fetch(
+            "/api/news?query=football transfer rumors&locale=en",
+            { cache: "no-store" },
+          );
+          const news = await newsRes.json();
+          if (Array.isArray(news) && news.length > 0) {
+            data.headlines = news.map(
+              (n: { title: string; link: string; source: string; date: string }, i: number) => ({
+                id: `news-fallback-${i}`,
+                title: n.title,
+                link: n.link,
+                source: "google",
+                sourceLabel: n.source || "Google News",
+                publishedAt: "",
+                timeLabel: n.date || "recent",
+              }),
+            );
+            data.updatedAt = new Date().toISOString();
+          }
+        }
+
+        setHeadlines(data.headlines ?? []);
+        setWireUpdated(data.updatedAt ?? null);
+      } catch {
+        setHeadlines([]);
+      } finally {
+        setWireLoading(false);
+      }
+    }
+    loadWire();
   }, []);
 
   useEffect(() => {

@@ -1,8 +1,14 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getTransferWireHeadlines } from "@/lib/transfer-wire-cache";
 
+export const dynamic = "force-dynamic";
+export const maxDuration = 30;
+
 export async function GET(request: NextRequest) {
-  const forceRefresh = request.nextUrl.searchParams.get("refresh") === "1";
+  const forceRefresh =
+    request.nextUrl.searchParams.get("refresh") === "1" ||
+    request.nextUrl.searchParams.get("sync") === "1";
+
   const result = await getTransferWireHeadlines(forceRefresh);
 
   return NextResponse.json(
@@ -10,10 +16,14 @@ export async function GET(request: NextRequest) {
       headlines: result.headlines,
       updatedAt: result.updatedAt,
       source: result.source,
+      error: result.error,
     },
     {
       headers: {
-        "Cache-Control": "public, s-maxage=600, stale-while-revalidate=1800",
+        "Cache-Control":
+          result.headlines.length > 0
+            ? "public, s-maxage=300, stale-while-revalidate=600"
+            : "no-store",
       },
     },
   );
