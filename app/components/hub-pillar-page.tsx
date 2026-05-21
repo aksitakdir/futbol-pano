@@ -72,7 +72,11 @@ export default function HubPillarPage({ hubId }: Props) {
         </PageShell>
       </header>
 
-      {!isWc ? <TransferWireFeed /> : null}
+      {!isWc ? (
+        <div className="theme-transfer">
+          <TransferWireFeed />
+        </div>
+      ) : null}
 
       {isWc ? <HubEditorialSection hubId={hubId} locale="en" accent={accent} /> : null}
 
