@@ -361,7 +361,7 @@ export default function ArticleLayoutEn({
               </div>
             </div>
           ) : (
-          <div style={{ display: "grid", gridTemplateColumns: useCoverHero ? "1fr" : "1.5fr 1fr", gap: 56, alignItems: "end" }}>
+          <div className={useCoverHero ? "" : "article-hero-grid"} style={{ display: "grid", gridTemplateColumns: useCoverHero ? "1fr" : "1.5fr 1fr", gap: 56, alignItems: "end" }}>
             <div style={{ maxWidth: useCoverHero ? 760 : undefined }}>
               <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 28 }}>
                 <span className="chip solid" style={{ background: accent, borderColor: accent, color: "var(--ink-900)", fontSize: 10 }}>
@@ -402,7 +402,7 @@ export default function ArticleLayoutEn({
             </div>
 
             {!useCoverHero ? (
-            <div style={{ display: "flex", justifyContent: "flex-end", alignItems: "flex-end" }}>
+            <div className="article-hero-right" style={{ display: "flex", justifyContent: "flex-end", alignItems: "flex-end" }}>
               {heroVariant === "player-cards" && children ? (
                 <div style={{ width: "100%", maxWidth: 320 }}>{children}</div>
               ) : heroVariant === "cover-image" && coverImage ? (
@@ -485,7 +485,7 @@ export default function ArticleLayoutEn({
       {/* ── TOC Strip ── */}
       {showTocStrip && (
         <div style={{ background: "var(--sg-bg)", borderBottom: "1px solid var(--sg-border)" }}>
-          <div style={{ maxWidth: 1280, margin: "0 auto", padding: "16px 32px" }}>
+          <div className="sg-editorial-shell article-toc-strip">
             <div style={{ display: "flex", alignItems: "center", gap: 16, flexWrap: "wrap" }}>
               <div className="mono" style={{ fontSize: 10, letterSpacing: "0.2em", color: "var(--sg-text-muted)", whiteSpace: "nowrap" }}>
                 IN THIS PIECE
@@ -505,9 +505,9 @@ export default function ArticleLayoutEn({
       )}
 
       {/* ── Article Body + Sidebar ── */}
-      <div style={{ maxWidth: 1280, margin: "0 auto", padding: "80px 32px 80px", display: "grid", gridTemplateColumns: "1fr 320px", gap: 64, alignItems: "start" }}>
+      <div className="sg-editorial-shell article-page-body">
 
-        <article>
+        <article className="article-page-main">
           <div className="article-v2" style={{ fontSize: 19, lineHeight: 1.65, color: "var(--sg-text-secondary)" }}>
             {sectionsJson && sectionsJson.length > 0 ? (
               <SectionsJsonBody
@@ -533,7 +533,7 @@ export default function ArticleLayoutEn({
               {youtubeVideos1 === null ? (
                 <p className="mono" style={{ fontSize: 11, color: "var(--sg-text-muted)" }}>Loading…</p>
               ) : youtubeVideos1.length === 0 ? null : (
-                <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 12 }}>
+                <div className="yt-thumb-grid" style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 12 }}>
                   {youtubeVideos1.map(v => (
                     <a key={v.videoId} href={`https://www.youtube.com/watch?v=${v.videoId}`} target="_blank" rel="noopener noreferrer"
                       className="lift" style={{ textDecoration: "none", background: "var(--sg-surface)", borderRadius: 4, overflow: "hidden" }}>
@@ -557,7 +557,7 @@ export default function ArticleLayoutEn({
           {youtubeQuery2?.trim() && youtubeVideos2 && youtubeVideos2.length > 0 && (
             <div style={{ marginTop: 40 }}>
               <div className="eyebrow" style={{ color: accent, marginBottom: 20 }}>VIDEO · {youtubeQuery2.trim().toUpperCase()}</div>
-              <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 12 }}>
+              <div className="yt-thumb-grid" style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 12 }}>
                 {youtubeVideos2.map(v => (
                   <a key={v.videoId} href={`https://www.youtube.com/watch?v=${v.videoId}`} target="_blank" rel="noopener noreferrer"
                     className="lift" style={{ textDecoration: "none", background: "var(--sg-surface)", borderRadius: 4, overflow: "hidden" }}>
@@ -629,7 +629,7 @@ export default function ArticleLayoutEn({
           </div>
         </article>
 
-        <aside style={{ position: "sticky", top: 100 }}>
+        <aside className="article-v2-sidebar" style={{ position: "sticky", top: 100 }}>
           <div style={{ marginBottom: 32, padding: "20px 20px", background: "var(--sg-surface)", borderRadius: 6, border: "1px solid var(--sg-border)" }}>
             <div className="mono" style={{ fontSize: 9, letterSpacing: "0.2em", color: "var(--sg-text-muted)", marginBottom: 14 }}>SHARE</div>
             <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>

@@ -5,6 +5,8 @@ import Link from "next/link";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { getCategoryImage } from "@/lib/category-images";
 import { categoryArticlePath } from "@/lib/hub-config";
+import { ContentHighlightPills } from "./content-highlight-pills";
+import { extractArticleHighlights } from "@/lib/content-highlight-tags";
 
 export type HomeRecentItem = {
   id: string;
@@ -14,6 +16,8 @@ export type HomeRecentItem = {
   category: string;
   created_at: string;
   cover_image?: string;
+  content?: string;
+  content_en?: string;
 };
 
 const CAT_LABEL: Record<string, string> = {
@@ -106,8 +110,13 @@ export default function HomeRecentCarousel({ items, locale }: { items: HomeRecen
                       {new Date(item.created_at).toLocaleDateString("en-US", { day: "numeric", month: "short" })}
                     </span>
                   </div>
-                  <h3 className="display" style={{ fontSize: 18, fontWeight: 600, lineHeight: 1.2, letterSpacing: "-0.02em", margin: 0, flex: 1, color: "var(--sg-text-primary)" }}>{title}</h3>
-                  <span className="mono u-link" style={{ fontSize: 11, letterSpacing: "0.16em", color: accent, marginTop: 14, display: "block" }}>READ →</span>
+                  <h3 className="display" style={{ fontSize: 18, fontWeight: 600, lineHeight: 1.2, letterSpacing: "-0.02em", margin: 0, color: "var(--sg-text-primary)" }}>{title}</h3>
+                  {(() => {
+                    const body = item.content_en || item.content || "";
+                    const pills = body ? extractArticleHighlights(body, { max: 3, seed: item.slug, titleHint: title }) : [];
+                    return pills.length ? <div style={{ marginTop: 10 }}><ContentHighlightPills tags={pills} accent={accent} label="FROM CONTENT" /></div> : null;
+                  })()}
+                  <span className="mono u-link" style={{ fontSize: 11, letterSpacing: "0.16em", color: accent, marginTop: "auto", paddingTop: 14, display: "block" }}>READ →</span>
                 </div>
               </Link>
             );

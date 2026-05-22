@@ -172,7 +172,7 @@ function ListLayout({ row }: { row: ContentRow }) {
         <div style={{ position: "absolute", top: 0, left: 0, right: 0, height: 3, background: accent }} />
         <div style={{ position: "absolute", inset: 0, opacity: 0.04, pointerEvents: "none", backgroundImage: "repeating-linear-gradient(90deg, rgba(255,255,255,0.5) 0 1px, transparent 1px 22px)" }} />
         <div style={{ position: "absolute", bottom: -200, left: -100, width: 500, height: 500, borderRadius: "50%", background: `radial-gradient(circle, ${accent} 0%, transparent 65%)`, opacity: 0.12, pointerEvents: "none" }} />
-        <div style={{ maxWidth: 1280, margin: "0 auto", padding: "40px 32px 60px", position: "relative" }}>
+        <div className="sg-editorial-shell" style={{ padding: "40px 0 60px", position: "relative" }}>
           <button onClick={() => window.history.back()} className="mono" style={{ background: "transparent", border: "none", color: "var(--sg-text-muted)", fontSize: 11, letterSpacing: "0.14em", padding: 0, marginBottom: 40, cursor: "pointer" }}>← Back to Lists</button>
           <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 24 }}>
             <span className="chip solid" style={{ background: accent, borderColor: accent, color: "var(--ink-900)", fontSize: 10 }}>LIST</span>
@@ -191,7 +191,7 @@ function ListLayout({ row }: { row: ContentRow }) {
 
       {structuredToc.length > 0 ? (
         <div style={{ background: "var(--sg-bg)", borderBottom: "1px solid var(--sg-border)" }}>
-          <div style={{ maxWidth: 1280, margin: "0 auto", padding: "14px 32px" }}>
+          <div className="sg-editorial-shell article-toc-strip">
             <div style={{ display: "flex", alignItems: "center", gap: 12, flexWrap: "wrap" }}>
               <div className="mono" style={{ fontSize: 9, letterSpacing: "0.2em", color: "var(--sg-text-muted)", whiteSpace: "nowrap" }}>IN THIS PIECE</div>
               <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
@@ -208,7 +208,7 @@ function ListLayout({ row }: { row: ContentRow }) {
         </div>
       ) : enriched.length > 0 ? (
         <div style={{ background: "var(--sg-bg)", borderBottom: "1px solid var(--sg-border)" }}>
-          <div style={{ maxWidth: 1280, margin: "0 auto", padding: "14px 32px" }}>
+          <div className="sg-editorial-shell article-toc-strip">
             <div style={{ display: "flex", alignItems: "center", gap: 12, flexWrap: "wrap" }}>
               <div className="mono" style={{ fontSize: 9, letterSpacing: "0.2em", color: "var(--sg-text-muted)", whiteSpace: "nowrap" }}>IN THIS LIST</div>
               <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
@@ -225,8 +225,8 @@ function ListLayout({ row }: { row: ContentRow }) {
         </div>
       ) : null}
 
-      <div style={{ maxWidth: 1280, margin: "0 auto", padding: "64px 32px 80px", display: "grid", gridTemplateColumns: "1fr 280px", gap: 56, alignItems: "start" }}>
-        <div>
+      <div className="sg-editorial-shell article-page-body">
+        <div className="article-page-main">
           {sections && sections.length > 0 ? (
             <div className="article-v2" style={{ fontSize: 18, lineHeight: 1.65, color: "var(--sg-text-secondary)", marginBottom: 56 }}>
               <SectionsJsonBody sections={sections} accent={accent} locale="en" />
@@ -243,7 +243,7 @@ function ListLayout({ row }: { row: ContentRow }) {
           ))}
         </div>
 
-        <aside style={{ position: "sticky", top: 88 }}>
+        <aside className="article-v2-sidebar" style={{ position: "sticky", top: 88 }}>
           <div style={{ marginBottom: 32, padding: "20px", background: "var(--sg-surface)", borderRadius: 6, border: "1px solid var(--sg-border)" }}>
             <div className="mono" style={{ fontSize: 9, letterSpacing: "0.2em", color: "var(--sg-text-muted)", marginBottom: 14 }}>SHARE</div>
             <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>

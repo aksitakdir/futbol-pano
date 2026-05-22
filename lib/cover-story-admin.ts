@@ -1,7 +1,5 @@
 import type { CoverStoryScope } from "@/lib/cover-story";
 
-const ADMIN_PASSWORD = "scout2026";
-
 export async function fetchCoverStoryPinsFromApi(): Promise<Record<string, string>> {
   const res = await fetch("/api/cover-stories", { cache: "no-store" });
   if (!res.ok) return {};
@@ -19,7 +17,6 @@ export async function saveCoverStoryPinsViaApi(
     headers: { "Content-Type": "application/json" },
     cache: "no-store",
     body: JSON.stringify({
-      adminPassword: ADMIN_PASSWORD,
       contentId,
       category,
       scopes,

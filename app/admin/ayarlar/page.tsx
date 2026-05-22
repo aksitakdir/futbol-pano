@@ -133,9 +133,33 @@ export default function SettingsPage() {
             </section>
 
             <section className="rounded-xl border border-slate-800/60 bg-slate-900/30 p-5">
-              <h2 className="mb-1 text-sm font-semibold">Hero & Latest Content Count</h2>
+              <h2 className="mb-1 text-sm font-semibold">Hero Slider Count</h2>
               <p className="mb-4 text-[11px] text-slate-500">
-                How many published articles to pull into the hero rotation and the Latest Content row below it.
+                Max number of article slides in the hero banner (excluding promo slides).
+              </p>
+              <div className="flex gap-2">
+                {[3, 5, 7, 9].map((n) => (
+                  <button
+                    key={n}
+                    type="button"
+                    onClick={() => setSlider({ ...slider, sliderCount: n })}
+                    className={[
+                      "rounded-lg border px-5 py-2.5 text-sm font-semibold transition",
+                      (slider.sliderCount ?? 5) === n
+                        ? "border-emerald-500/40 bg-emerald-500/15 text-emerald-300"
+                        : "border-slate-700/60 bg-slate-800/40 text-slate-500 hover:text-slate-300",
+                    ].join(" ")}
+                  >
+                    {n}
+                  </button>
+                ))}
+              </div>
+            </section>
+
+            <section className="rounded-xl border border-slate-800/60 bg-slate-900/30 p-5">
+              <h2 className="mb-1 text-sm font-semibold">Latest Content Count</h2>
+              <p className="mb-4 text-[11px] text-slate-500">
+                How many published articles to show in the Latest Content carousel below the hero.
               </p>
               <div className="flex gap-2">
                 {[3, 6, 9].map((n) => (

@@ -50,7 +50,7 @@ export default function HubArticleDetailClient({
       .from("contents")
       .select("*")
       .eq("slug", slug)
-      .eq("category", hubId)
+      .or(`category.eq.${hubId},hub_tags.cs.{${hubId}}`)
       .eq("status", "yayinda")
       .maybeSingle()
       .then(({ data, error }) => {

@@ -268,6 +268,8 @@ export default function HomePage() {
       filtered = prioritizeHeroContent(filtered, homepageCoverId);
       setRecentItems(filtered.slice(0, articleCount));
 
+      const sliderCount = heroSettings.sliderCount ?? 5;
+
       const arenaRes = await supabase
         .from("arena_games")
         .select("id,slug,status,title_tr,title_en,description_tr,description_en,hero_title_tr,hero_title_en,hero_teaser_tr,hero_teaser_en,card_color,game_type,created_at")
@@ -283,15 +285,15 @@ export default function HomePage() {
         return;
       }
 
-      setSlides(mergeHeroSlides(buildHeroSlides(filtered, articleCount, homepageCoverId), arenaGames, heroSettings));
+      setSlides(mergeHeroSlides(buildHeroSlides(filtered, sliderCount, homepageCoverId), arenaGames, heroSettings));
     }
     load();
   }, []);
 
   useEffect(() => {
     void Promise.all([
-      supabase.from("contents").select("title,title_en,slug,category").eq("status", "yayinda").contains("hub_tags", ["wc-2026"]).order("created_at", { ascending: false }).limit(3),
-      supabase.from("contents").select("title,title_en,slug,category").eq("status", "yayinda").contains("hub_tags", ["transfer"]).order("created_at", { ascending: false }).limit(3),
+      supabase.from("contents").select("title,title_en,slug,category").eq("status", "yayinda").or("category.eq.wc-2026,hub_tags.cs.{wc-2026}").order("created_at", { ascending: false }).limit(3),
+      supabase.from("contents").select("title,title_en,slug,category").eq("status", "yayinda").or("category.eq.transfer,hub_tags.cs.{transfer}").order("created_at", { ascending: false }).limit(3),
     ]).then(([wcRes, trRes]) => {
       const mapRow = (rows: { title: string; title_en?: string; slug: string; category: string }[]) =>
         rows.map((r) => ({ title: r.title_en?.trim() || r.title, slug: r.slug, category: r.category }));
@@ -436,10 +438,10 @@ export default function HomePage() {
                         {CAT_LABEL[item.slide.category] ?? item.slide.category}
                       </span>
                     </div>
-                    <h1 className="display" style={{ fontSize: "clamp(2.4rem, 5.5vw, 4.8rem)", fontWeight: 700, letterSpacing: "-0.04em", lineHeight: 1.08, margin: "0 0 20px", paddingBottom: "0.14em", textWrap: "balance", maxWidth: 640, background: "linear-gradient(135deg, var(--accent) 0%, var(--accent-2) 60%, var(--accent-3) 100%)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", backgroundClip: "text" }}>
+                    <h1 className="display" style={{ fontSize: "clamp(2.4rem, 5.5vw, 4.8rem)", fontWeight: 700, letterSpacing: "-0.04em", lineHeight: 1.08, margin: "0 0 20px", paddingBottom: "0.14em", textWrap: "balance", maxWidth: 820, background: "linear-gradient(135deg, var(--accent) 0%, var(--accent-2) 60%, var(--accent-3) 100%)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", backgroundClip: "text" }}>
                       {item.slide.title_en || item.slide.title}
                     </h1>
-                    <p className="hidden sm:block line-clamp-3" style={{ fontSize: 17, lineHeight: 1.6, color: "var(--ink-200)", maxWidth: 480, marginBottom: 36 }}>
+                    <p className="hidden sm:block line-clamp-3" style={{ fontSize: 17, lineHeight: 1.6, color: "var(--ink-200)", maxWidth: 600, marginBottom: 36 }}>
                       {(() => {
                         const raw = item.slide.content_en || item.slide.content;
                         const clean = raw.replace(/<[^>]+>/g, " ").replace(/[#*_\n]/g, " ").replace(/\s+/g, " ").trim();
@@ -477,7 +479,7 @@ export default function HomePage() {
                         margin: "0 0 20px",
                         paddingBottom: "0.14em",
                         textWrap: "balance",
-                        maxWidth: 640,
+                        maxWidth: 820,
                         background: "linear-gradient(135deg, #f5d020 0%, #fff 45%, #c9a227 100%)",
                         WebkitBackgroundClip: "text",
                         WebkitTextFillColor: "transparent",
@@ -491,7 +493,7 @@ export default function HomePage() {
                         fontSize: 17,
                         lineHeight: 1.6,
                         color: "var(--ink-200)",
-                        maxWidth: 520,
+                        maxWidth: 600,
                         marginBottom: 36,
                       }}
                     >
@@ -510,10 +512,10 @@ export default function HomePage() {
                     <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 24 }}>
                       <span className="chip solid" style={{ background: "var(--amber)", borderColor: "var(--amber)", color: "var(--ink-900)" }}>Arena</span>
                     </div>
-                    <h1 className="display" style={{ fontSize: "clamp(2.4rem, 5.5vw, 4.8rem)", fontWeight: 700, letterSpacing: "-0.04em", lineHeight: 1.08, margin: "0 0 20px", paddingBottom: "0.14em", textWrap: "balance", maxWidth: 640, background: "linear-gradient(135deg, var(--amber) 0%, var(--accent) 100%)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", backgroundClip: "text" }}>
+                    <h1 className="display" style={{ fontSize: "clamp(2.4rem, 5.5vw, 4.8rem)", fontWeight: 700, letterSpacing: "-0.04em", lineHeight: 1.08, margin: "0 0 20px", paddingBottom: "0.14em", textWrap: "balance", maxWidth: 820, background: "linear-gradient(135deg, var(--amber) 0%, var(--accent) 100%)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", backgroundClip: "text" }}>
                       {item.title}
                     </h1>
-                    <p style={{ fontSize: 17, lineHeight: 1.6, color: "var(--ink-200)", maxWidth: 480, marginBottom: 36 }}>{item.teaser}</p>
+                    <p style={{ fontSize: 17, lineHeight: 1.6, color: "var(--ink-200)", maxWidth: 600, marginBottom: 36 }}>{item.teaser}</p>
                     <Link href={item.href} className="btn btn-solid" style={{ background: "var(--amber)", borderColor: "var(--amber)" }}>Play →</Link>
                   </div>
                 )}

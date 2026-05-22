@@ -53,7 +53,7 @@ export function proxy(request: NextRequest) {
             secure: process.env.NODE_ENV === "production",
             sameSite: "lax",
             maxAge: SESSION_MAX_AGE,
-            path: "/admin",
+            path: "/",
           });
           return authedResponse;
         }

@@ -1,14 +1,21 @@
 import { NextResponse } from "next/server";
+import { cookies } from "next/headers";
 import {
   buildCoverStoriesPatch,
   type CoverStoryScope,
 } from "@/lib/cover-story";
 import {
-  adminPasswordOk,
   createSupabaseAdmin,
   readCoverStoryPins,
   writeCoverStoryPins,
 } from "@/lib/cover-story-store";
+
+function isAdminAuthed(cookieStore: Awaited<ReturnType<typeof cookies>>): boolean {
+  const expected = process.env.ADMIN_PASSWORD;
+  if (!expected) return false;
+  const session = cookieStore.get("sg_admin");
+  return session?.value === expected;
+}
 
 export async function GET() {
   try {
@@ -23,16 +30,16 @@ export async function GET() {
 
 export async function POST(request: Request) {
   try {
+    const cookieStore = await cookies();
+    if (!isAdminAuthed(cookieStore)) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
     const body = (await request.json()) as {
-      adminPassword?: string;
       contentId?: string;
       category?: string;
       scopes?: CoverStoryScope[];
     };
-
-    if (!adminPasswordOk(body.adminPassword)) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
 
     const contentId = body.contentId?.trim();
     const category = body.category?.trim();

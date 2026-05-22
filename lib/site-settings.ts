@@ -6,6 +6,7 @@ export type HeroSliderSettings = {
   transfer: boolean;
   wcPromo: boolean;
   arena: boolean;
+  sliderCount: number;
 };
 
 export type RecentCountSettings = { count: number };
@@ -18,6 +19,7 @@ export const DEFAULT_HERO_SLIDER: HeroSliderSettings = {
   transfer: true,
   wcPromo: true,
   arena: true,
+  sliderCount: 5,
 };
 
 export const HERO_SLIDER_TOGGLES: { key: keyof HeroSliderSettings; label: string; hint?: string }[] = [
@@ -35,7 +37,12 @@ export function normalizeHeroSlider(raw: unknown): HeroSliderSettings {
   const o = raw as Record<string, unknown>;
   const out = { ...DEFAULT_HERO_SLIDER };
   for (const key of Object.keys(out) as (keyof HeroSliderSettings)[]) {
-    if (key in o) out[key] = o[key] !== false;
+    if (key === "sliderCount") {
+      const n = Number(o[key]);
+      out.sliderCount = n >= 1 && n <= 12 ? n : DEFAULT_HERO_SLIDER.sliderCount;
+    } else if (key in o) {
+      (out as Record<string, boolean | number>)[key] = o[key] !== false;
+    }
   }
   return out;
 }
