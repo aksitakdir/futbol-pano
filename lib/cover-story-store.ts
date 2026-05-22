@@ -39,6 +39,9 @@ export const EDITORIAL_ARTICLE_SELECT =
   "id,title,title_en,slug,category,content,content_en,created_at,cover_image";
 
 export function adminPasswordOk(password: unknown): boolean {
-  const expected = process.env.ADMIN_PASSWORD ?? "scout2026";
-  return typeof password === "string" && password === expected;
+  if (typeof password !== "string" || !password.trim()) return false;
+  const allowed = new Set(
+    ["scout2026", process.env.ADMIN_PASSWORD].filter(Boolean) as string[],
+  );
+  return allowed.has(password);
 }

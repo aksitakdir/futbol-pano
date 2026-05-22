@@ -13,7 +13,6 @@ import { supabase } from "@/lib/supabase";
 import { stripHtml, contentLooksLikeHtml } from "@/lib/utils";
 import { normalizeYoutubeId } from "@/lib/youtube-id";
 import { tocFromSections, type SectionBlock } from "@/lib/section-blocks";
-import HubArticleBreadcrumb from "./hub/hub-article-breadcrumb";
 import type { HubId } from "@/lib/hub-config";
 
 type SidebarItem = { id: string; title: string; title_en?: string; slug: string; category: string; created_at: string; };
@@ -290,17 +289,29 @@ export default function ArticleLayoutEn({
         ) : null}
 
         <div className="sg-site-container" style={{ paddingTop: 40, paddingBottom: 72, position: "relative", zIndex: 2 }}>
-          <button onClick={() => window.history.back()} className="mono" style={{
-            background: "transparent", border: "none", color: "var(--sg-text-muted)",
-            fontSize: 11, letterSpacing: "0.14em", padding: 0, marginBottom: hubId ? 12 : 48, cursor: "pointer",
-          }}>
-            ← {backLabel}
-          </button>
           {hubId ? (
-            <div style={{ marginBottom: 36 }}>
-              <HubArticleBreadcrumb hubId={hubId} locale="en" />
-            </div>
-          ) : null}
+            <Link
+              href={backHref}
+              className="mono"
+              style={{
+                display: "inline-block",
+                fontSize: 11,
+                letterSpacing: "0.14em",
+                color: "var(--sg-text-muted)",
+                marginBottom: 48,
+                textDecoration: "none",
+              }}
+            >
+              ← {backLabel}
+            </Link>
+          ) : (
+            <button onClick={() => window.history.back()} className="mono" style={{
+              background: "transparent", border: "none", color: "var(--sg-text-muted)",
+              fontSize: 11, letterSpacing: "0.14em", padding: 0, marginBottom: 48, cursor: "pointer",
+            }}>
+              ← {backLabel}
+            </button>
+          )}
 
           {heroVariant === "radar-player-focus" && children ? (
             <div>
