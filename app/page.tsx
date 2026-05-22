@@ -21,6 +21,11 @@ import {
   normalizeRecentCount,
   type HeroSliderSettings,
 } from "@/lib/site-settings";
+import {
+  COVER_STORY_SETTINGS_KEY,
+  normalizeCoverStories,
+  prioritizeHeroContent,
+} from "@/lib/cover-story";
 import { ContentHighlightPills } from "./components/content-highlight-pills";
 import { extractArticleHighlights } from "@/lib/content-highlight-tags";
 
@@ -78,7 +83,7 @@ const fadeUp = {
   visible: { opacity: 1, y: 0, transition: { duration: 0.5 } },
 };
 
-function buildHeroSlides(all: SlideContent[], sliderCount: number): { slide: SlideContent; slideKey: string }[] {
+function buildHeroSlides(all: SlideContent[], sliderCount: number, pinnedId?: string): { slide: SlideContent; slideKey: string }[] {
   if (!all.length || sliderCount <= 0) return [];
   const now = Date.now();
   const ms7 = 7 * 24 * 60 * 60 * 1000;
@@ -86,7 +91,16 @@ function buildHeroSlides(all: SlideContent[], sliderCount: number): { slide: Sli
   const byNewest = [...all].sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
   const picked: SlideContent[] = [];
   const used = new Set<string>();
-  for (const c of byNewest.filter(c => new Date(c.created_at).getTime() >= now - ms7)) {
+
+  if (pinnedId) {
+    const pinned = all.find((c) => c.id === pinnedId);
+    if (pinned) {
+      picked.push(pinned);
+      used.add(pinned.id);
+    }
+  }
+
+  for (const c of byNewest.filter(c => new Date(c.created_at).getTime() >= now - ms7 && !used.has(c.id))) {
     if (picked.length >= 2) break;
     picked.push(c); used.add(c.id);
   }
@@ -208,12 +222,19 @@ export default function HomePage() {
 
   useEffect(() => {
     async function load() {
-      const { data: settingsRows } = await supabase.from("site_settings").select("key, value").in("key", ["hero_slider", "recent_count"]);
+      const { data: settingsRows } = await supabase
+        .from("site_settings")
+        .select("key, value")
+        .in("key", ["hero_slider", "recent_count", COVER_STORY_SETTINGS_KEY]);
       let heroSettings = { ...DEFAULT_HERO_SLIDER };
       let articleCount = 6;
+      let homepageCoverId: string | undefined;
       for (const row of settingsRows ?? []) {
         if (row.key === "hero_slider") heroSettings = normalizeHeroSlider(row.value);
         if (row.key === "recent_count") articleCount = normalizeRecentCount(row.value);
+        if (row.key === COVER_STORY_SETTINGS_KEY) {
+          homepageCoverId = normalizeCoverStories(row.value).homepage;
+        }
       }
 
       const enabledCategories = enabledHeroCategories(heroSettings);
@@ -225,7 +246,20 @@ export default function HomePage() {
         .order("created_at", { ascending: false })
         .limit(Math.max(articleCount * 3, 24));
 
-      const filtered = (data ?? []) as SlideContent[];
+      let filtered = prioritizeHeroContent((data ?? []) as SlideContent[], homepageCoverId);
+
+      if (homepageCoverId && !filtered.some((row) => row.id === homepageCoverId)) {
+        const { data: pinnedRow } = await supabase
+          .from("contents")
+          .select("id,title,title_en,slug,category,content,content_en,created_at,cover_image")
+          .eq("id", homepageCoverId)
+          .eq("status", "yayinda")
+          .maybeSingle();
+        if (pinnedRow) {
+          filtered = [pinnedRow as SlideContent, ...filtered];
+        }
+      }
+
       setRecentItems(filtered.slice(0, articleCount));
 
       const arenaRes = await supabase
@@ -243,7 +277,7 @@ export default function HomePage() {
         return;
       }
 
-      setSlides(mergeHeroSlides(buildHeroSlides(filtered, articleCount), arenaGames, heroSettings));
+      setSlides(mergeHeroSlides(buildHeroSlides(filtered, articleCount, homepageCoverId), arenaGames, heroSettings));
     }
     load();
   }, []);

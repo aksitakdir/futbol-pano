@@ -20,6 +20,14 @@ import {
 } from "@/lib/article-destination";
 import { hasBlockContent } from "@/lib/section-blocks";
 import type { HubId } from "@/lib/hub-config";
+import CoverStoryField from "@/app/components/cover-story-field";
+import {
+  buildCoverStoriesPatch,
+  COVER_STORY_SETTINGS_KEY,
+  coverScopesForCategory,
+  normalizeCoverStories,
+  type CoverStoryScope,
+} from "@/lib/cover-story";
 
 function isContentEmpty(html: string): boolean {
   if (!html?.trim()) return true;
@@ -107,9 +115,15 @@ function NewArticleForm() {
   const [accentColor, setAccentColor] = useState("emerald");
   const [sectionsBlocks, setSectionsBlocks] = useState<SectionBlock[]>([]);
   const [contentMode, setContentMode] = useState<"rich" | "blocks">("rich");
+  const [coverStoryScopes, setCoverStoryScopes] = useState<CoverStoryScope[]>([]);
 
   const publishScope = publishScopeForCategory(category);
   const hubTags = hubTagsFromDestination(publishScope, crossPostHubs);
+
+  useEffect(() => {
+    const allowed = coverScopesForCategory(category);
+    setCoverStoryScopes((prev) => prev.filter((scope) => allowed.includes(scope)));
+  }, [category]);
 
   useEffect(() => {
     const h = searchParams.get("hub");
@@ -180,7 +194,7 @@ function NewArticleForm() {
     const usingBlocks = contentMode === "blocks";
     const bodyHtml = usingBlocks ? PLACEHOLDER_HTML : content.trim();
     const saveCategory = category;
-    const { error: insertError } = await supabase.from("contents").insert({
+    const { data: inserted, error: insertError } = await supabase.from("contents").insert({
       title: title.trim(),
       title_en: title.trim(),
       slug: slug.trim(),
@@ -206,11 +220,30 @@ function NewArticleForm() {
       sections_json: usingBlocks && sectionsBlocks.length > 0 ? sectionsBlocks : null,
       hub_tags: hubTags.length > 0 ? hubTags : [],
       status: "bekliyor",
-    });
-    if (insertError) {
-      setError("Save failed: " + insertError.message);
+    }).select("id").single();
+    if (insertError || !inserted?.id) {
+      setError("Save failed: " + (insertError?.message ?? "No id returned"));
       setSaving(false);
       return;
+    }
+
+    if (coverStoryScopes.length > 0) {
+      const { data: pinRow } = await supabase
+        .from("site_settings")
+        .select("value")
+        .eq("key", COVER_STORY_SETTINGS_KEY)
+        .maybeSingle();
+      const next = buildCoverStoriesPatch(
+        normalizeCoverStories(pinRow?.value),
+        inserted.id,
+        saveCategory,
+        coverStoryScopes,
+      );
+      await supabase.from("site_settings").upsert({
+        key: COVER_STORY_SETTINGS_KEY,
+        value: next,
+        updated_at: new Date().toISOString(),
+      });
     }
     router.push(adminHubPath(publishScope) ?? (category === "radar" ? "/admin/radar" : "/admin/icerikler"));
   }
@@ -334,6 +367,12 @@ function NewArticleForm() {
               </div>
             </div>
           </div>
+
+          <CoverStoryField
+            category={category}
+            selectedScopes={coverStoryScopes}
+            onChange={setCoverStoryScopes}
+          />
 
           {/* YouTube queries */}
           <div className="grid gap-5 sm:grid-cols-2">

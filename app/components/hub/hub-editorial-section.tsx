@@ -7,6 +7,12 @@ import type { EditorialArticle } from "@/lib/editorial-article";
 import { supabase } from "@/lib/supabase";
 import type { HubId } from "@/lib/hub-config";
 import { HUB_TAG } from "@/lib/hub-config";
+import {
+  COVER_STORY_SETTINGS_KEY,
+  normalizeCoverStories,
+  orderWithCoverPin,
+  type CoverStoryScope,
+} from "@/lib/cover-story";
 
 const PAGE_SIZE = 12;
 
@@ -36,34 +42,55 @@ export default function HubEditorialSection({ hubId, accent, category, limit, co
 
   useEffect(() => {
     setLoading(true);
-    let query = supabase
-      .from("contents")
-      .select("id,title,title_en,slug,category,content,content_en,created_at")
-      .eq("status", "yayinda")
-      .contains("hub_tags", [tag])
-      .order("created_at", { ascending: false })
-      .range(0, pageSize - 1);
+    void (async () => {
+      const [{ data: pinRow }, listRes] = await Promise.all([
+        supabase.from("site_settings").select("value").eq("key", COVER_STORY_SETTINGS_KEY).maybeSingle(),
+        (() => {
+          let query = supabase
+            .from("contents")
+            .select("id,title,title_en,slug,category,content,content_en,created_at,cover_image")
+            .eq("status", "yayinda")
+            .or(`category.eq.${hubId},hub_tags.cs.{${tag}}`)
+            .order("created_at", { ascending: false })
+            .range(0, pageSize - 1);
+          if (category) query = query.eq("category", category);
+          return query;
+        })(),
+      ]);
 
-    if (category) query = query.eq("category", category);
+      const pins = normalizeCoverStories(pinRow?.value);
+      const pinnedId = pins[hubId as CoverStoryScope];
+      const { data, error } = listRes;
 
-    query.then(({ data, error }) => {
       if (!error && data) {
-        const items = data as EditorialArticle[];
+        let items = data as EditorialArticle[];
+        if (pinnedId && !items.some((row) => row.id === pinnedId)) {
+          const { data: pinnedRow } = await supabase
+            .from("contents")
+            .select("id,title,title_en,slug,category,content,content_en,created_at,cover_image")
+            .eq("id", pinnedId)
+            .eq("status", "yayinda")
+            .maybeSingle();
+          if (pinnedRow) {
+            items = [pinnedRow as EditorialArticle, ...items].slice(0, pageSize);
+          }
+        }
+        items = orderWithCoverPin(items, pinnedId);
         setArticles(items);
         setHasMore(!compact && items.length === pageSize);
       }
       setLoading(false);
-    });
-  }, [tag, category, pageSize, compact]);
+    })();
+  }, [tag, hubId, category, pageSize, compact]);
 
   async function handleLoadMore() {
     if (compact) return;
     setLoadingMore(true);
     let query = supabase
       .from("contents")
-      .select("id,title,title_en,slug,category,content,content_en,created_at")
+      .select("id,title,title_en,slug,category,content,content_en,created_at,cover_image")
       .eq("status", "yayinda")
-      .contains("hub_tags", [tag])
+      .or(`category.eq.${hubId},hub_tags.cs.{${tag}}`)
       .order("created_at", { ascending: false })
       .range(articles.length, articles.length + PAGE_SIZE - 1);
 

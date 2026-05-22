@@ -9,11 +9,17 @@ import { ContentHighlightPills } from "../components/content-highlight-pills";
 import { supabase } from "@/lib/supabase";
 import { stripHtml, estimateReadMinutes } from "@/lib/utils";
 import { extractArticleHighlights, HIGHLIGHT_CARD_ACCENTS_CYCLE } from "@/lib/content-highlight-tags";
+import {
+  COVER_STORY_SETTINGS_KEY,
+  normalizeCoverStories,
+  orderWithCoverPin,
+} from "@/lib/cover-story";
 
 
 type Content = {
   id: string; title: string; title_en?: string; slug: string;
   content: string; content_en?: string; created_at: string;
+  cover_image?: string | null;
 };
 
 const PAGE_SIZE = 12;
@@ -41,14 +47,20 @@ export default function RadarPage() {
   }, [articles]);
 
   useEffect(() => {
-    supabase.from("contents")
-      .select("id,title,title_en,slug,content,content_en,created_at")
-      .eq("status", "yayinda").eq("category", "radar")
-      .order("created_at", { ascending: false }).range(0, PAGE_SIZE - 1)
-      .then(({ data }) => {
-        const items = data ?? [];
-        setArticles(items); setHasMore(items.length === PAGE_SIZE); setLoading(false);
-      });
+    void (async () => {
+      const [{ data: pinRow }, listRes] = await Promise.all([
+        supabase.from("site_settings").select("value").eq("key", COVER_STORY_SETTINGS_KEY).maybeSingle(),
+        supabase.from("contents")
+          .select("id,title,title_en,slug,content,content_en,created_at,cover_image")
+          .eq("status", "yayinda").eq("category", "radar")
+          .order("created_at", { ascending: false }).range(0, PAGE_SIZE - 1),
+      ]);
+      const pinnedId = normalizeCoverStories(pinRow?.value).radar;
+      const items = orderWithCoverPin((listRes.data ?? []) as Content[], pinnedId);
+      setArticles(items);
+      setHasMore(items.length === PAGE_SIZE);
+      setLoading(false);
+    })();
   }, []);
 
   useEffect(() => {

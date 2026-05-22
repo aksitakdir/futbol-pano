@@ -8,6 +8,7 @@ export type EditorialArticle = {
   content: string;
   content_en?: string | null;
   created_at: string;
+  cover_image?: string | null;
 };
 
 export function editorialBody(article: EditorialArticle, locale: "tr" | "en"): string {

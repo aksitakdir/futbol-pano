@@ -69,15 +69,28 @@ export default function EditorialContentFeed({
   const featuredTitle = editorialTitle(featured, "en");
   const featuredPills = highlightsBySlug.get(featured.slug);
   const catLabel = CAT_LABEL[featured.category] ?? featured.category;
+  const featuredCover = featured.cover_image?.trim();
 
   return (
     <>
       <Link href={getHref(featured)} className="lift editorial-featured-story"
-        style={{ display: "block", position: "relative", overflow: "hidden", background: "linear-gradient(135deg, oklch(0.16 0.02 150) 0%, oklch(0.12 0.012 220) 70%)", border: "1px solid var(--sg-border)", borderRadius: 6, marginBottom: 48, minHeight: 320, textDecoration: "none" }}>
-        <div style={{ position: "absolute", top: 0, left: 0, right: 0, height: 3, background: accent }} />
-        <div style={{ position: "absolute", bottom: -180, left: -100, width: 480, height: 480, borderRadius: "50%", background: `radial-gradient(circle, ${accent} 0%, transparent 65%)`, opacity: 0.12, pointerEvents: "none" }} />
-        <div style={{ position: "absolute", inset: 0, opacity: 0.04, pointerEvents: "none", backgroundImage: "repeating-linear-gradient(90deg, rgba(255,255,255,0.5) 0 1px, transparent 1px 22px)" }} />
-        <div className="editorial-featured-story__inner">
+        style={{ display: "block", position: "relative", overflow: "hidden", background: featuredCover ? "var(--ink-900)" : "linear-gradient(135deg, oklch(0.16 0.02 150) 0%, oklch(0.12 0.012 220) 70%)", border: "1px solid var(--sg-border)", borderRadius: 6, marginBottom: 48, minHeight: 320, textDecoration: "none" }}>
+        {featuredCover ? (
+          <>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src={featuredCover} alt="" style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover", filter: "brightness(0.38) saturate(0.9)" }} />
+            <div style={{ position: "absolute", inset: 0, background: "linear-gradient(to right, rgba(13,18,30,0.94) 0%, rgba(13,18,30,0.72) 55%, rgba(13,18,30,0.45) 100%)" }} />
+            <div style={{ position: "absolute", inset: 0, background: "linear-gradient(to top, rgba(13,18,30,0.85) 0%, transparent 50%)" }} />
+          </>
+        ) : null}
+        <div style={{ position: "absolute", top: 0, left: 0, right: 0, height: 3, background: accent, zIndex: 1 }} />
+        {!featuredCover ? (
+          <>
+            <div style={{ position: "absolute", bottom: -180, left: -100, width: 480, height: 480, borderRadius: "50%", background: `radial-gradient(circle, ${accent} 0%, transparent 65%)`, opacity: 0.12, pointerEvents: "none" }} />
+            <div style={{ position: "absolute", inset: 0, opacity: 0.04, pointerEvents: "none", backgroundImage: "repeating-linear-gradient(90deg, rgba(255,255,255,0.5) 0 1px, transparent 1px 22px)" }} />
+          </>
+        ) : null}
+        <div className="editorial-featured-story__inner" style={{ position: "relative", zIndex: 2 }}>
           <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 20 }}>
             <span className="chip solid" style={{ background: accent, borderColor: accent, color: "var(--ink-900)", fontSize: 10 }}>{labels.featuredChip}</span>
             <span className="mono" style={{ fontSize: 10, letterSpacing: "0.18em", color: "var(--sg-text-muted)" }}>
