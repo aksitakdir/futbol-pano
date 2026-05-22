@@ -31,7 +31,7 @@ function settingsKey(hubId: HubId) {
 }
 
 export default function AdminHubPage() {
-  const [tab, setTab] = useState<Tab>("completed");
+  const [tab, setTab] = useState<Tab>("sync");
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [message, setMessage] = useState("");
@@ -153,9 +153,9 @@ export default function AdminHubPage() {
   }
 
   const TABS: { id: Tab; label: string }[] = [
+    { id: "sync", label: "Transfer Wire" },
     { id: "completed", label: "Confirmed deals" },
     { id: "copy", label: "Page copy" },
-    { id: "sync", label: "Transfer Wire" },
   ];
 
   return (
@@ -276,8 +276,7 @@ export default function AdminHubPage() {
         {tab === "sync" ? (
           <section className="space-y-4 rounded-xl border border-slate-800/60 bg-slate-900/30 p-5 text-sm text-slate-300">
             <p>
-              <strong className="text-slate-100">Transfer Wire</strong> syncs RSS hourly via Vercel cron into Supabase
-              cache. Visitors only read cache — no RSS cost per page view.
+              <strong className="text-slate-100">Transfer Wire</strong> pulls headlines from BBC, Sky, Guardian, ESPN and Google News into Supabase cache. Auto-sync daily at 06:00 UTC (Vercel cron). Use the button below after deploy or when the feed looks empty.
             </p>
             <p className="text-xs text-slate-500">
               Last cache: {wireUpdated ? new Date(wireUpdated).toLocaleString("en-US") : "never"} ·{" "}

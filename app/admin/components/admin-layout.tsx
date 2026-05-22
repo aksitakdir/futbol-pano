@@ -73,6 +73,17 @@ const NAV_ITEMS = [
     ),
   },
   {
+    href: "/admin/hub",
+    label: "Transfers Hub",
+    icon: (
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+        <path d="M5 12h14M12 5l7 7-7 7" />
+        <circle cx="6" cy="6" r="2" />
+        <circle cx="18" cy="18" r="2" />
+      </svg>
+    ),
+  },
+  {
     href: "/admin/kadrolar",
     label: "WC Squads",
     icon: (
