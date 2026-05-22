@@ -17,6 +17,7 @@ import {
   type EditorialCategory,
   type PublishScope,
 } from "@/lib/article-destination";
+import { hasBlockContent } from "@/lib/section-blocks";
 import type { HubId } from "@/lib/hub-config";
 
 function isContentEmpty(html: string): boolean {
@@ -24,18 +25,7 @@ function isContentEmpty(html: string): boolean {
   return html.replace(/<[^>]+>/g, "").trim() === "";
 }
 
-function hasBlockContent(blocks: SectionBlock[]): boolean {
-  return blocks.some((b) => {
-    if (b.type === "intro" || b.type === "callout") {
-      return b.html.replace(/<[^>]+>/g, "").trim().length > 0;
-    }
-    if (b.type === "section") {
-      return b.heading.trim().length > 0 || b.html.replace(/<[^>]+>/g, "").trim().length > 0;
-    }
-    if (b.type === "pullquote") return b.text.trim().length > 0;
-    return false;
-  });
-}
+const PLACEHOLDER_HTML = "<p></p>";
 
 const HERO_VARIANTS = [
   { value: "player-cards", label: "🃏 Player Card", desc: "Radar/Lists" },
@@ -185,7 +175,8 @@ function NewArticleForm() {
       return;
     }
     setSaving(true);
-    const bodyHtml = contentMode === "blocks" ? "<p></p>" : content.trim();
+    const usingBlocks = contentMode === "blocks";
+    const bodyHtml = usingBlocks ? PLACEHOLDER_HTML : content.trim();
     const { error: insertError } = await supabase.from("contents").insert({
       title: title.trim(),
       title_en: title.trim(),
@@ -209,7 +200,7 @@ function NewArticleForm() {
       players_json: playersList.length > 0 ? JSON.stringify(playersList) : null,
       hero_variant: heroVariant,
       accent: accentColor,
-      sections_json: contentMode === "blocks" && sectionsBlocks.length > 0 ? sectionsBlocks : null,
+      sections_json: usingBlocks && sectionsBlocks.length > 0 ? sectionsBlocks : null,
       hub_tags: hubTags.length > 0 ? hubTags : [],
       status: "bekliyor",
     });

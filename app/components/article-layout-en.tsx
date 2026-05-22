@@ -8,9 +8,11 @@ import rehypeRaw from "rehype-raw";
 import SiteHeader from "./site-header";
 import SiteFooter from "./site-footer";
 import ArticleHtmlWithPlayerEmbeds from "./article-html-with-player-embeds";
+import SectionsJsonBody from "./sections-json-body";
 import { supabase } from "@/lib/supabase";
 import { stripHtml, contentLooksLikeHtml } from "@/lib/utils";
 import { normalizeYoutubeId } from "@/lib/youtube-id";
+import { tocFromSections, type SectionBlock } from "@/lib/section-blocks";
 import HubArticleBreadcrumb from "./hub/hub-article-breadcrumb";
 import type { HubId } from "@/lib/hub-config";
 
@@ -93,12 +95,6 @@ function getNewsQueryFromTitle(title: string): string {
   return t.split(/\s+/).filter(Boolean).slice(0, 2).join(" ") || t;
 }
 
-type SectionItem =
-  | { type: "intro"; html: string }
-  | { type: "section"; heading: string; html: string }
-  | { type: "pullquote"; text: string }
-  | { type: "callout"; html: string };
-
 type Props = {
   title: string; content: string; category: string; date: string; slug: string;
   activeNav: "listeler" | "radar" | "taktik-lab";
@@ -107,7 +103,7 @@ type Props = {
   youtubeQuery1?: string; youtubeQuery2?: string;
   newsQuery?: string; playerName?: string;
   heroVariant?: string; accentOverride?: string;
-  sectionsJson?: SectionItem[] | null;
+  sectionsJson?: SectionBlock[] | null;
   showNewsSection?: boolean; children?: React.ReactNode;
   excerptContent?: string; isPending?: boolean;
   hubId?: HubId;
@@ -147,6 +143,13 @@ export default function ArticleLayoutEn({
     const withDrop = addDropCap(withIds, accent);
     return { processedHtml: withDrop, toc: extractH2Headings(content) };
   }, [content, accent]);
+
+  const structuredToc = useMemo(
+    () => (sectionsJson?.length ? tocFromSections(sectionsJson) : []),
+    [sectionsJson],
+  );
+  const displayToc = structuredToc.length > 0 ? structuredToc : toc;
+  const showTocStrip = structuredToc.length > 0 ? structuredToc.length >= 1 : toc.length > 1;
 
   const youtubeEmbedId = useMemo(() => normalizeYoutubeId(youtubeId), [youtubeId]);
 
@@ -429,7 +432,7 @@ export default function ArticleLayoutEn({
       )}
 
       {/* ── TOC Strip ── */}
-      {toc.length > 1 && (
+      {showTocStrip && (
         <div style={{ background: "var(--sg-bg)", borderBottom: "1px solid var(--sg-border)" }}>
           <div style={{ maxWidth: 1280, margin: "0 auto", padding: "16px 32px" }}>
             <div style={{ display: "flex", alignItems: "center", gap: 16, flexWrap: "wrap" }}>
@@ -437,7 +440,7 @@ export default function ArticleLayoutEn({
                 IN THIS PIECE
               </div>
               <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
-                {toc.map((item, i) => (
+                {displayToc.map((item, i) => (
                   <a key={item.id} href={`#${item.id}`} className="chip"
                     style={{ cursor: "pointer", borderColor: "var(--sg-border)", fontSize: 10, textDecoration: "none" }}>
                     <span style={{ color: accent, marginRight: 4 }}>{String(i + 1).padStart(2, "0")}</span>
@@ -456,39 +459,12 @@ export default function ArticleLayoutEn({
         <article>
           <div className="article-v2" style={{ fontSize: 19, lineHeight: 1.65, color: "var(--sg-text-secondary)" }}>
             {sectionsJson && sectionsJson.length > 0 ? (
-              <div>
-                {sectionsJson.map((sec, i) => {
-                  if (sec.type === "intro") {
-                    return (
-                      <ArticleHtmlWithPlayerEmbeds key={i} html={addDropCap(sec.html, accent)} locale="en" />
-                    );
-                  }
-                  if (sec.type === "section") {
-                    const headingId = sec.heading.toLowerCase().replace(/[^a-z0-9]/g, "-").replace(/-+/g, "-").slice(0, 40);
-                    return (
-                      <div key={i}>
-                        <h2 id={headingId}>{sec.heading}</h2>
-                        <ArticleHtmlWithPlayerEmbeds html={sec.html} locale="en" />
-                      </div>
-                    );
-                  }
-                  if (sec.type === "pullquote") {
-                    return (
-                      <blockquote key={i}>
-                        {sec.text}
-                      </blockquote>
-                    );
-                  }
-                  if (sec.type === "callout") {
-                    return (
-                      <div key={i} className="callout">
-                        <ArticleHtmlWithPlayerEmbeds html={sec.html} locale="en" />
-                      </div>
-                    );
-                  }
-                  return null;
-                })}
-              </div>
+              <SectionsJsonBody
+                sections={sectionsJson}
+                accent={accent}
+                locale="en"
+                addDropCap={addDropCap}
+              />
             ) : contentLooksLikeHtml(content) ? (
               <ArticleHtmlWithPlayerEmbeds html={processedHtml} locale="en" />
             ) : (

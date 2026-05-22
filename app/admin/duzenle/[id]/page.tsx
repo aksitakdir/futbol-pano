@@ -16,7 +16,10 @@ import {
   type EditorialCategory,
   type PublishScope,
 } from "@/lib/article-destination";
+import { hasBlockContent } from "@/lib/section-blocks";
 import type { HubId } from "@/lib/hub-config";
+
+const PLACEHOLDER_HTML = "<p></p>";
 
 function isContentEmpty(html: string): boolean {
   if (!html?.trim()) return true;
@@ -287,8 +290,17 @@ export default function DuzenlePage() {
   async function handleSave(publish = false) {
     setError("");
     const slugTrim = slug.trim();
-    if (!title.trim() || !slugTrim || isContentEmpty(content)) {
-      setError("All fields are required");
+    if (!title.trim() || !slugTrim) {
+      setError("Title and slug are required");
+      return;
+    }
+    if (contentMode === "blocks") {
+      if (!hasBlockContent(sectionsBlocks)) {
+        setError("Add at least one block with content in Block Editor");
+        return;
+      }
+    } else if (isContentEmpty(content)) {
+      setError("Content is required in Rich Text mode");
       return;
     }
     if (!SLUG_PATTERN.test(slugTrim)) {
@@ -297,13 +309,14 @@ export default function DuzenlePage() {
     }
 
     setSaving(true);
+    const usingBlocks = contentMode === "blocks";
     const updateData: Record<string, unknown> = {
       title: title.trim(),
       title_en: titleEn.trim() || null,
       slug: slugTrim,
       category,
-      content: content.trim(),
-      content_en: contentEn.trim() || null,
+      content: usingBlocks ? PLACEHOLDER_HTML : content.trim(),
+      content_en: usingBlocks ? PLACEHOLDER_HTML : contentEn.trim() || null,
       youtube_id: youtubeId.trim(),
       cover_image: coverImage.trim(),
       youtube_query_1: youtubeQuery1.trim(),
@@ -320,7 +333,7 @@ export default function DuzenlePage() {
       players_json: playersList.length > 0 ? JSON.stringify(playersList) : null,
       hero_variant: heroVariant,
       accent: accentColor,
-      sections_json: sectionsBlocks.length > 0 ? sectionsBlocks : null,
+      sections_json: usingBlocks && sectionsBlocks.length > 0 ? sectionsBlocks : null,
       hub_tags: hubTags.length > 0 ? hubTags : [],
     };
 

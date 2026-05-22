@@ -11,6 +11,8 @@ import remarkGfm from "remark-gfm";
 import rehypeRaw from "rehype-raw";
 import PlayerCard, { type PlayerCardData } from "../../components/player-card";
 import ArticleHtmlWithPlayerEmbeds from "../../components/article-html-with-player-embeds";
+import SectionsJsonBody from "../../components/sections-json-body";
+import { tocFromSections, type SectionBlock } from "@/lib/section-blocks";
 
 type ContentRow = {
   id: string; title: string; title_en?: string;
@@ -20,6 +22,7 @@ type ContentRow = {
   youtube_id?: string; cover_image?: string;
   player_name?: string; players_json?: string | null;
   hero_variant?: string; accent?: string;
+  sections_json?: SectionBlock[] | null;
 };
 
 type PlayerJsonEntry = {
@@ -152,8 +155,10 @@ function ListLayout({ row }: { row: ContentRow }) {
   const enriched = usePlayersWithStats(players);
   const accent = ACCENT_CSS[row.accent ?? ""] ?? "var(--emerald)";
   const displayTitle   = row.title_en   || row.title;
+  const sections = Array.isArray(row.sections_json) ? row.sections_json : null;
   const displayContent = row.content_en?.trim() ? row.content_en : row.content;
   const isHtml = contentLooksLikeHtml(displayContent);
+  const structuredToc = sections?.length ? tocFromSections(sections) : [];
   const formattedDate = new Date(row.created_at).toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric" });
   const minutes = readTime(stripHtml(displayContent));
 
@@ -183,7 +188,24 @@ function ListLayout({ row }: { row: ContentRow }) {
         </div>
       </header>
 
-      {enriched.length > 0 && (
+      {structuredToc.length > 0 ? (
+        <div style={{ background: "var(--sg-bg)", borderBottom: "1px solid var(--sg-border)" }}>
+          <div style={{ maxWidth: 1280, margin: "0 auto", padding: "14px 32px" }}>
+            <div style={{ display: "flex", alignItems: "center", gap: 12, flexWrap: "wrap" }}>
+              <div className="mono" style={{ fontSize: 9, letterSpacing: "0.2em", color: "var(--sg-text-muted)", whiteSpace: "nowrap" }}>IN THIS PIECE</div>
+              <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
+                {structuredToc.map((item, i) => (
+                  <a key={item.id} href={`#${item.id}`} className="chip"
+                    style={{ cursor: "pointer", fontSize: 10, textDecoration: "none", borderColor: "var(--sg-border)" }}>
+                    <span style={{ color: accent, marginRight: 4 }}>{String(i + 1).padStart(2, "0")}</span>
+                    {item.text.length > 30 ? `${item.text.slice(0, 30)}…` : item.text}
+                  </a>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+      ) : enriched.length > 0 ? (
         <div style={{ background: "var(--sg-bg)", borderBottom: "1px solid var(--sg-border)" }}>
           <div style={{ maxWidth: 1280, margin: "0 auto", padding: "14px 32px" }}>
             <div style={{ display: "flex", alignItems: "center", gap: 12, flexWrap: "wrap" }}>
@@ -200,15 +222,19 @@ function ListLayout({ row }: { row: ContentRow }) {
             </div>
           </div>
         </div>
-      )}
+      ) : null}
 
       <div style={{ maxWidth: 1280, margin: "0 auto", padding: "64px 32px 80px", display: "grid", gridTemplateColumns: "1fr 280px", gap: 56, alignItems: "start" }}>
         <div>
-          {displayContent && (
+          {sections && sections.length > 0 ? (
+            <div className="article-v2" style={{ fontSize: 18, lineHeight: 1.65, color: "var(--sg-text-secondary)", marginBottom: 56 }}>
+              <SectionsJsonBody sections={sections} accent={accent} locale="en" />
+            </div>
+          ) : displayContent && stripHtml(displayContent) ? (
             <div className="article-v2" style={{ fontSize: 18, lineHeight: 1.65, color: "var(--sg-text-secondary)", marginBottom: 56 }}>
               {isHtml ? <ArticleHtmlWithPlayerEmbeds html={displayContent} locale="en" /> : <ReactMarkdown remarkPlugins={[remarkGfm]} rehypePlugins={[rehypeRaw]}>{displayContent}</ReactMarkdown>}
             </div>
-          )}
+          ) : null}
           {enriched.map((player, i) => (
             <div key={player.name} id={`player-${i + 1}`}>
               <NumberedPlayerEntry player={player} rank={i + 1} accent={accent} />

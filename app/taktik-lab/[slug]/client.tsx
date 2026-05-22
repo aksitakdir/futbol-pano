@@ -5,12 +5,7 @@ import Link from "next/link";
 import { supabase } from "@/lib/supabase";
 import ArticleLayoutEn from "../../components/article-layout-en";
 import { primaryHubId } from "@/lib/hub-from-tags";
-
-type SectionBlock =
-  | { type: "intro"; html: string }
-  | { type: "section"; heading: string; html: string }
-  | { type: "pullquote"; text: string }
-  | { type: "callout"; html: string };
+import type { SectionBlock } from "@/lib/section-blocks";
 
 type ContentRow = {
   id: string; title: string; title_en?: string;
