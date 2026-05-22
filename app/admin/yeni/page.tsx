@@ -7,6 +7,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { supabase } from "@/lib/supabase";
 import RichTextEditor from "@/app/components/rich-text-editor";
 import AdminLayout from "../components/admin-layout";
+import SectionsEditor, { type SectionBlock } from "../components/sections-editor";
 import ArticleDestinationField from "@/app/components/article-destination-field";
 import {
   adminHubPath,
@@ -21,6 +22,19 @@ import type { HubId } from "@/lib/hub-config";
 function isContentEmpty(html: string): boolean {
   if (!html?.trim()) return true;
   return html.replace(/<[^>]+>/g, "").trim() === "";
+}
+
+function hasBlockContent(blocks: SectionBlock[]): boolean {
+  return blocks.some((b) => {
+    if (b.type === "intro" || b.type === "callout") {
+      return b.html.replace(/<[^>]+>/g, "").trim().length > 0;
+    }
+    if (b.type === "section") {
+      return b.heading.trim().length > 0 || b.html.replace(/<[^>]+>/g, "").trim().length > 0;
+    }
+    if (b.type === "pullquote") return b.text.trim().length > 0;
+    return false;
+  });
 }
 
 const HERO_VARIANTS = [
@@ -101,14 +115,18 @@ function NewArticleForm() {
 
   const [heroVariant, setHeroVariant] = useState("text-only");
   const [accentColor, setAccentColor] = useState("emerald");
+  const [sectionsBlocks, setSectionsBlocks] = useState<SectionBlock[]>([]);
+  const [contentMode, setContentMode] = useState<"rich" | "blocks">("rich");
 
   const hubTags = hubTagsFromDestination(publishScope, crossPostHubs);
 
   useEffect(() => {
     const c = searchParams.get("category");
     const h = searchParams.get("hub");
+    const m = searchParams.get("mode");
     if (isEditorialCategory(c)) setCategory(c);
     if (isPublishScope(h)) setPublishScope(h);
+    if (m === "blocks") setContentMode("blocks");
   }, [searchParams]);
 
   useEffect(() => {
@@ -153,18 +171,28 @@ function NewArticleForm() {
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setError("");
-    if (!title.trim() || !slug.trim() || isContentEmpty(content)) {
+    if (!title.trim() || !slug.trim()) {
+      setError("Title and slug are required");
+      return;
+    }
+    if (contentMode === "blocks") {
+      if (!hasBlockContent(sectionsBlocks)) {
+        setError("Add at least one block with content in Block Editor");
+        return;
+      }
+    } else if (isContentEmpty(content)) {
       setError("Title, slug and content are required");
       return;
     }
     setSaving(true);
+    const bodyHtml = contentMode === "blocks" ? "<p></p>" : content.trim();
     const { error: insertError } = await supabase.from("contents").insert({
       title: title.trim(),
       title_en: title.trim(),
       slug: slug.trim(),
       category,
-      content: content.trim(),
-      content_en: content.trim(),
+      content: bodyHtml,
+      content_en: bodyHtml,
       youtube_id: youtubeId.trim(),
       cover_image: coverImage.trim(),
       youtube_query_1: youtubeQuery1.trim(),
@@ -181,6 +209,7 @@ function NewArticleForm() {
       players_json: playersList.length > 0 ? JSON.stringify(playersList) : null,
       hero_variant: heroVariant,
       accent: accentColor,
+      sections_json: contentMode === "blocks" && sectionsBlocks.length > 0 ? sectionsBlocks : null,
       hub_tags: hubTags.length > 0 ? hubTags : [],
       status: "bekliyor",
     });
@@ -444,14 +473,59 @@ function NewArticleForm() {
             </div>
           </div>
 
-          {/* Content editor */}
-          <div>
-            <label className="mb-1.5 block text-xs font-semibold text-slate-300">Content</label>
-            <RichTextEditor value={content} onChange={setContent} placeholder="Write content in English..." />
-            <p className="mt-2 text-[10px] text-sky-500/90 leading-relaxed">
-              Embed player card in body:{" "}
-              <code className="rounded bg-slate-800 px-1 py-0.5 text-[9px] text-sky-300">{`<!-- scout-player:Player Full Name -->`}</code>
-            </p>
+          {/* Content — Rich Text or Block Editor */}
+          <div className="rounded-xl border border-slate-700/60 bg-slate-900/40 p-5">
+            <div className="mb-4 flex items-center justify-between">
+              <label className="text-xs font-semibold text-slate-300">Content</label>
+              <div className="flex overflow-hidden rounded-lg border border-slate-700/60">
+                <button
+                  type="button"
+                  onClick={() => setContentMode("rich")}
+                  className={`px-3 py-1.5 text-[11px] font-semibold transition ${
+                    contentMode === "rich"
+                      ? "bg-slate-700 text-slate-100"
+                      : "bg-transparent text-slate-500 hover:text-slate-300"
+                  }`}
+                >
+                  ✏️ Rich Text
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setContentMode("blocks")}
+                  className={`border-l border-slate-700/60 px-3 py-1.5 text-[11px] font-semibold transition ${
+                    contentMode === "blocks"
+                      ? "bg-emerald-500/20 text-emerald-300"
+                      : "bg-transparent text-slate-500 hover:text-slate-300"
+                  }`}
+                >
+                  🧱 Block Editor
+                </button>
+              </div>
+            </div>
+
+            {contentMode === "rich" ? (
+              <div>
+                <RichTextEditor value={content} onChange={setContent} placeholder="Write content in English..." />
+                <p className="mt-2 text-[10px] text-slate-600">
+                  Raw HTML editor. Switch to <strong className="text-slate-500">Block Editor</strong> for structured
+                  articles (IN THIS PIECE, section headings, pull-quotes).
+                </p>
+                <p className="mt-1.5 text-[10px] leading-relaxed text-sky-500/90">
+                  Embed player card in body:{" "}
+                  <code className="rounded bg-slate-800 px-1 py-0.5 text-[9px] text-sky-300">{`<!-- scout-player:Player Full Name -->`}</code>
+                </p>
+              </div>
+            ) : (
+              <div>
+                <p className="mb-4 text-[11px] text-slate-500">
+                  Each block renders as a separate section. Saved as{" "}
+                  <code className="text-sky-400">sections_json</code> — the V2 article layout with table of contents.
+                  Embed cards in HTML blocks with{" "}
+                  <code className="text-sky-400/90">{`<!-- scout-player:Name -->`}</code>.
+                </p>
+                <SectionsEditor value={sectionsBlocks} onChange={setSectionsBlocks} />
+              </div>
+            )}
           </div>
 
           {error && <p className="text-xs text-rose-400">{error}</p>}

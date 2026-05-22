@@ -68,9 +68,11 @@ export function adminHubPath(scope: PublishScope): string | null {
   return null;
 }
 
-export function newArticlePath(scope: PublishScope, category: EditorialCategory): string {
-  if (scope === "main") {
-    return category === "radar" ? "/admin/yeni?category=radar" : `/admin/yeni?category=${category}`;
-  }
-  return `/admin/yeni?hub=${scope}&category=${category}`;
+export function newArticlePath(scope: PublishScope, category: EditorialCategory, mode?: "blocks"): string {
+  const params = new URLSearchParams();
+  if (scope !== "main") params.set("hub", scope);
+  if (category !== "listeler") params.set("category", category);
+  if (mode === "blocks") params.set("mode", "blocks");
+  const qs = params.toString();
+  return qs ? `/admin/yeni?${qs}` : "/admin/yeni";
 }

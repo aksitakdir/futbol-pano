@@ -61,7 +61,7 @@ export default function HubArticlesPanel({ hubId }: { hubId: HubId }) {
           {EDITORIAL_CATEGORIES.map((cat) => (
             <Link
               key={cat.value}
-              href={newArticlePath(hubId, cat.value as EditorialCategory)}
+              href={newArticlePath(hubId, cat.value as EditorialCategory, "blocks")}
               className="rounded-lg bg-emerald-500 px-3 py-1.5 text-xs font-semibold text-slate-950 transition hover:bg-emerald-400"
             >
               + {cat.label}
@@ -76,7 +76,7 @@ export default function HubArticlesPanel({ hubId }: { hubId: HubId }) {
         <div className="rounded-xl border border-dashed border-slate-700/80 bg-slate-900/20 px-4 py-10 text-center">
           <p className="text-sm text-slate-400">No hub articles yet.</p>
           <Link
-            href={newArticlePath(hubId, "radar")}
+            href={newArticlePath(hubId, "radar", "blocks")}
             className="mt-3 inline-block text-xs font-semibold text-emerald-400 hover:underline"
           >
             Add first article →
