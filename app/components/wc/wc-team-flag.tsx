@@ -1,4 +1,3 @@
-import Image from "next/image";
 import { wcTeamFlagUrl } from "@/lib/wc-team-flags";
 
 type Props = {
@@ -24,7 +23,16 @@ export default function WcTeamFlag({ slug, name, size = "md", className = "" }: 
       className={`wc-team-flag wc-team-flag--${size} ${className}`.trim()}
       style={{ width: dim.w, height: dim.h }}
     >
-      <Image src={src} alt="" fill className="wc-team-flag__img" sizes={`${dim.w}px`} />
+      {/* Native img — avoids Next image optimizer timeouts on flagcdn in dev */}
+      <img
+        src={src}
+        alt=""
+        width={dim.w}
+        height={dim.h}
+        className="wc-team-flag__img"
+        loading="lazy"
+        decoding="async"
+      />
       <span className="sr-only">{name}</span>
     </span>
   );
