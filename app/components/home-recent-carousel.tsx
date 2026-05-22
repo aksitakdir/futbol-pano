@@ -85,7 +85,7 @@ export default function HomeRecentCarousel({ items, locale }: { items: HomeRecen
           <div className="eyebrow" style={{ color: "var(--accent)" }}>DISCOVER</div>
           <h2 className="display" style={{ fontSize: 36, fontWeight: 700, letterSpacing: "-0.03em", margin: "6px 0 0" }}>Latest Content</h2>
         </div>
-        <Link href="/listeler" className="mono u-link" style={{ fontSize: 12, letterSpacing: "0.14em", color: "var(--sg-text-muted)" }}>ARCHIVE →</Link>
+        <Link href="/lists" className="mono u-link" style={{ fontSize: 12, letterSpacing: "0.14em", color: "var(--sg-text-muted)" }}>ARCHIVE →</Link>
       </div>
 
       <div style={{ position: "relative" }}>

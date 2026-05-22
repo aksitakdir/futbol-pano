@@ -10,15 +10,15 @@ const staticEntries = [
   { url: "/world-cup-2026/lists",     priority: 0.85 },
   { url: "/transfers",                priority: 0.9 },
   { url: "/radar",                    priority: 0.85 },
-  { url: "/listeler",                 priority: 0.85 },
-  { url: "/taktik-lab",               priority: 0.85 },
+  { url: "/lists",                     priority: 0.85 },
+  { url: "/tactics-lab",              priority: 0.85 },
   { url: "/arena",                    priority: 0.75 },
 ];
 
 const CAT_PATHS: Record<string, string> = {
   radar: "radar",
-  listeler: "listeler",
-  "taktik-lab": "taktik-lab",
+  listeler: "lists",
+  "taktik-lab": "tactics-lab",
   "wc-2026": "world-cup-2026",
   transfer: "transfers",
 };

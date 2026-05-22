@@ -11,9 +11,9 @@ type Props = { activeNav?: string; maxWidth?: string; forceEn?: boolean };
 type SearchResult = { id: string; title: string; title_en?: string; slug: string; category: string; };
 
 function categoryPath(cat: string): string {
-  if (cat === "listeler") return "/listeler";
+  if (cat === "listeler" || cat === "lists") return "/lists";
   if (cat === "radar") return "/radar";
-  if (cat === "taktik-lab") return "/taktik-lab";
+  if (cat === "taktik-lab" || cat === "tactics-lab") return "/tactics-lab";
   return "/";
 }
 
@@ -44,7 +44,7 @@ const NAV_ITEMS = [
   { href: HUBS["wc-2026"].en.basePath, label: HUBS["wc-2026"].en.navLabel, key: "wc-2026" },
   { href: HUBS.transfer.en.basePath, label: HUBS.transfer.en.navLabel, key: "transfer" },
   { href: "/radar", label: "RADAR", key: "radar" },
-  { href: "/listeler", label: "LISTS", key: "listeler" },
+  { href: "/lists", label: "LISTS", key: "lists" },
   { href: "/arena", label: "ARENA", key: "arena" },
 ];
 

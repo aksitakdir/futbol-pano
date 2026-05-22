@@ -85,7 +85,7 @@ export default function ListelerPage() {
 
   return (
     <main style={{ background: "var(--sg-bg)", color: "var(--sg-text-primary)", minHeight: "100vh" }}>
-      <SiteHeader activeNav="listeler" />
+      <SiteHeader activeNav="lists" />
       <div style={{ paddingTop: "68px" }} />
 
       <div className="sg-hero-text-block sg-page-shell--hero" style={{ display: "grid", gridTemplateColumns: "2fr 1fr", gap: 32, alignItems: "end" }}>
@@ -112,7 +112,7 @@ export default function ListelerPage() {
         ) : null}
 
         {!loading && featured ? (
-          <Link href={`/listeler/${featured.slug}`} className="lift" style={{ display: "block", position: "relative", overflow: "hidden", background: "linear-gradient(135deg, oklch(0.17 0.04 155) 0%, oklch(0.12 0.018 200) 72%)", border: "1px solid var(--sg-border)", borderRadius: 16, marginBottom: recentDbLists.length > 0 ? 48 : hasMore ? 36 : 48, minHeight: 320, textDecoration: "none" }}>
+          <Link href={`/lists/${featured.slug}`} className="lift" style={{ display: "block", position: "relative", overflow: "hidden", background: "linear-gradient(135deg, oklch(0.17 0.04 155) 0%, oklch(0.12 0.018 200) 72%)", border: "1px solid var(--sg-border)", borderRadius: 16, marginBottom: recentDbLists.length > 0 ? 48 : hasMore ? 36 : 48, minHeight: 320, textDecoration: "none" }}>
             <div style={{ position: "absolute", top: 0, left: 0, right: 0, height: 3, background: LIST_COVER_ACCENT }} />
             <div style={{ position: "absolute", bottom: -160, right: -100, width: 440, height: 440, borderRadius: "50%", background: "radial-gradient(circle, var(--emerald) 0%, transparent 65%)", opacity: 0.14, pointerEvents: "none" }} />
             <svg viewBox="0 0 140 120" preserveAspectRatio="xMidYMid slice" style={{ position: "absolute", right: 0, top: 0, height: "100%", width: "44%", opacity: 0.28, pointerEvents: "none" }}>
@@ -161,7 +161,7 @@ export default function ListelerPage() {
                     const accent = HIGHLIGHT_CARD_ACCENTS_CYCLE[(idx + 1) % HIGHLIGHT_CARD_ACCENTS_CYCLE.length]!;
                     const pills = highlightsBySlug.get(item.slug) ?? [];
                     return (
-                      <Link key={item.id} href={`/listeler/${item.slug}`}
+                      <Link key={item.id} href={`/lists/${item.slug}`}
                         className="lift" style={{ background: "var(--sg-surface)", border: "1px solid var(--sg-border)", borderRadius: 12, overflow: "hidden", cursor: "pointer", textDecoration: "none", display: "flex", flexDirection: "column", minHeight: 220 }}>
                         <div style={{ height: 2, background: accent }} />
                         <div style={{ padding: 28, flex: 1, display: "flex", flexDirection: "column" }}>
@@ -201,7 +201,7 @@ export default function ListelerPage() {
           <div className="eyebrow" style={{ marginBottom: 20 }}>FEATURED LISTS</div>
           <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 16 }}>
             {STATIC_LISTS.map((list) => (
-              <Link key={list.slug} href={`/listeler/${list.slug}`}
+              <Link key={list.slug} href={`/lists/${list.slug}`}
                 className="lift" style={{ background: "var(--sg-surface)", border: "1px solid var(--sg-border)", borderRadius: 12, overflow: "hidden", cursor: "pointer", textDecoration: "none" }}>
                 <div style={{ height: 2, background: list.accent }} />
                 <div style={{ padding: 28 }}>

@@ -165,7 +165,7 @@ function ListLayout({ row }: { row: ContentRow }) {
 
   return (
     <main style={{ background: "var(--sg-bg)", color: "var(--sg-text-primary)", minHeight: "100vh" }}>
-      <SiteHeader activeNav="listeler" />
+      <SiteHeader activeNav="lists" />
       <div style={{ paddingTop: "68px" }} />
 
       <header style={{ position: "relative", overflow: "hidden", background: "linear-gradient(180deg, oklch(0.13 0.018 240) 0%, oklch(0.10 0.012 250) 100%)", borderBottom: "1px solid var(--sg-border)" }}>
@@ -257,7 +257,7 @@ function ListLayout({ row }: { row: ContentRow }) {
             <div style={{ padding: "20px", background: "var(--sg-surface)", borderRadius: 6, border: "1px solid var(--sg-border)" }}>
               <div className="mono" style={{ fontSize: 9, letterSpacing: "0.2em", color: "var(--sg-text-muted)", marginBottom: 16 }}>MORE LISTS</div>
               {similar.map((item) => (
-                <Link key={item.id} href={`/listeler/${item.slug}`} style={{ padding: "12px 0", borderBottom: "1px solid var(--sg-border)", textDecoration: "none", display: "block" }}>
+                <Link key={item.id} href={`/lists/${item.slug}`} style={{ padding: "12px 0", borderBottom: "1px solid var(--sg-border)", textDecoration: "none", display: "block" }}>
                   <div style={{ fontSize: 13, fontWeight: 600, color: "var(--sg-text-primary)", lineHeight: 1.35, marginBottom: 4 }}>{item.title_en || item.title}</div>
                   <div className="mono" style={{ fontSize: 9, color: "var(--sg-text-muted)", letterSpacing: "0.1em" }}>{new Date(item.created_at).toLocaleDateString("en-GB", { day: "numeric", month: "short" })}</div>
                 </Link>
@@ -265,7 +265,7 @@ function ListLayout({ row }: { row: ContentRow }) {
             </div>
           )}
           <div style={{ marginTop: 24 }}>
-            <Link href="/listeler" className="btn" style={{ display: "block", textAlign: "center", fontSize: 11 }}>← All Lists</Link>
+            <Link href="/lists" className="btn" style={{ display: "block", textAlign: "center", fontSize: 11 }}>← All Lists</Link>
           </div>
         </aside>
       </div>
@@ -310,7 +310,7 @@ export default function ListelerDetailClient({ slug }: { slug: string }) {
   if (notFound || !article) return (
     <main className="flex min-h-screen flex-col items-center justify-center" style={{ background: "var(--sg-bg)", color: "var(--sg-text-primary)" }}>
       <h1 className="mb-2 text-2xl font-bold">404</h1>
-      <Link href="/listeler" className="text-sm" style={{ color: "var(--emerald)" }}>← Back to Lists</Link>
+      <Link href="/lists" className="text-sm" style={{ color: "var(--emerald)" }}>← Back to Lists</Link>
     </main>
   );
 

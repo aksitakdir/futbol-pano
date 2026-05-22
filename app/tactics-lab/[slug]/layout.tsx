@@ -10,22 +10,22 @@ const supabase = createClient(
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
   const { slug } = await params;
   const { data } = await supabase.from("contents").select("title,content,cover_image").eq("slug", slug).eq("status", "yayinda").single();
-  if (!data) return { title: "Taktik Lab | Scout Gamer" };
+  if (!data) return { title: "Tactics Lab | Scout Gamer" };
   const description = data.content?.replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").trim().slice(0, 160) ?? "";
   return {
     title: `${data.title} | Scout Gamer`,
     description,
     alternates: {
-      canonical: `https://scoutgamer.com/taktik-lab/${slug}`,
+      canonical: `https://scoutgamer.com/tactics-lab/${slug}`,
       languages: {
-        tr: `https://scoutgamer.com/taktik-lab/${slug}`,
-        en: `https://scoutgamer.com/en/taktik-lab/${slug}`,
+        tr: `https://scoutgamer.com/tactics-lab/${slug}`,
+        en: `https://scoutgamer.com/en/tactics-lab/${slug}`,
       },
     },
     openGraph: {
       title: `${data.title} | Scout Gamer`,
       description,
-      url: `https://scoutgamer.com/taktik-lab/${slug}`,
+      url: `https://scoutgamer.com/tactics-lab/${slug}`,
       images: data.cover_image ? [{ url: data.cover_image }] : [{ url: "https://scoutgamer.com/og-image.png" }],
     },
     twitter: { card: "summary_large_image", title: `${data.title} | Scout Gamer`, description },

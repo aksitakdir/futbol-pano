@@ -1,15 +1,15 @@
 import type { Metadata } from "next";
 import { articleMetadata } from "@/lib/article-metadata";
-import TaktikLabDetailClient from "./client";
+import ListDetailClient from "./client";
 
 type Props = { params: Promise<{ slug: string }> };
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
-  return articleMetadata(slug, `/taktik-lab/${slug}`, "en");
+  return articleMetadata(slug, `/lists/${slug}`, "en");
 }
 
-export default async function TaktikLabDetailPage({ params }: Props) {
+export default async function ListDetailPage({ params }: Props) {
   const { slug } = await params;
-  return <TaktikLabDetailClient slug={slug} />;
+  return <ListDetailClient slug={slug} />;
 }

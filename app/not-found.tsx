@@ -11,8 +11,8 @@ export const metadata: Metadata = {
 
 const QUICK_LINKS = [
   { href: "/radar", label: "Radar", color: "var(--sg-primary)", desc: "Scout analizleri" },
-  { href: "/listeler", label: "Listeler", color: "var(--sg-secondary)", desc: "Kürasyonlu listeler" },
-  { href: "/taktik-lab", label: "Taktik Lab", color: "var(--sg-tertiary)", desc: "Taktik analizler" },
+  { href: "/lists", label: "Lists", color: "var(--sg-secondary)", desc: "Curated scouting lists" },
+  { href: "/tactics-lab", label: "Tactics Lab", color: "var(--sg-tertiary)", desc: "Tactical deep-dives" },
   { href: "/arena", label: "Arena", color: "var(--sg-amber)", desc: "Bracket oyunları" },
 ];
 

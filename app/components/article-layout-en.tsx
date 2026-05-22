@@ -45,9 +45,9 @@ function readTime(text: string): number {
 function categoryPath(category: string): string {
   if (category === "wc-2026") return "/world-cup-2026";
   if (category === "transfer") return "/transfers";
-  if (category === "listeler") return "/listeler";
+  if (category === "listeler") return "/lists";
   if (category === "radar") return "/radar";
-  if (category === "taktik-lab") return "/taktik-lab";
+  if (category === "taktik-lab") return "/tactics-lab";
   return "/";
 }
 
@@ -101,7 +101,7 @@ function getNewsQueryFromTitle(title: string): string {
 
 type Props = {
   title: string; content: string; category: string; date: string; slug: string;
-  activeNav: "listeler" | "radar" | "taktik-lab" | "wc-2026" | "transfer";
+  activeNav: "lists" | "radar" | "tactics-lab" | "wc-2026" | "transfer";
   backHref: string; backLabel: string;
   youtubeId?: string; coverImage?: string;
   youtubeQuery1?: string; youtubeQuery2?: string;
@@ -168,7 +168,7 @@ export default function ArticleLayoutEn({
           eyebrow: "✦ TACTICS LAB",
           title: "Archetypes & structures.",
           description: "Roles and tactical angles in the modern game.",
-          href: "/en/taktik-lab",
+          href: "/tactics-lab",
           cta: "GO TO TACTICS LAB →",
         }
       : {

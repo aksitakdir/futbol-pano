@@ -60,9 +60,9 @@ const CAT_COLOR: Record<string, string> = {
 };
 
 function categoryPath(cat: string): string {
-  if (cat === "listeler") return "/listeler";
+  if (cat === "listeler") return "/lists";
   if (cat === "radar") return "/radar";
-  if (cat === "taktik-lab") return "/taktik-lab";
+  if (cat === "taktik-lab") return "/tactics-lab";
   if (cat === "wc-2026") return HUBS["wc-2026"].en.basePath;
   if (cat === "transfer") return HUBS.transfer.en.basePath;
   return categoryArticlePath(cat, "").replace(/\/$/, "") || "/";

@@ -55,7 +55,7 @@ export default function TaktikLabDetailClient({ slug }: { slug: string }) {
   if (notFound || !article) return (
     <main className="flex min-h-screen flex-col items-center justify-center" style={{ background: "var(--sg-bg)", color: "var(--sg-text-primary)" }}>
       <h1 className="mb-2 text-2xl font-bold">404</h1>
-      <Link href="/taktik-lab" style={{ color: "var(--cyan)", fontSize: 13 }}>← Back to Tactics Lab</Link>
+      <Link href="/tactics-lab" style={{ color: "var(--cyan)", fontSize: 13 }}>← Back to Tactics Lab</Link>
     </main>
   );
 
@@ -69,8 +69,8 @@ export default function TaktikLabDetailClient({ slug }: { slug: string }) {
       category={article.category}
       date={article.created_at}
       slug={article.slug}
-      activeNav="taktik-lab"
-      backHref="/taktik-lab"
+      activeNav="tactics-lab"
+      backHref="/tactics-lab"
       backLabel="Back to Tactics Lab"
       youtubeId={article.youtube_id}
       coverImage={article.cover_image}

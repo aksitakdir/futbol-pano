@@ -18,7 +18,7 @@ export const CONTENT_DESTINATIONS: { value: ContentCategory; label: string; desc
   {
     value: "listeler",
     label: "Lists",
-    desc: "Permanent site section · /listeler/your-slug",
+    desc: "Permanent site section · /lists/your-slug",
   },
   {
     value: "radar",
@@ -28,7 +28,7 @@ export const CONTENT_DESTINATIONS: { value: ContentCategory; label: string; desc
   {
     value: "taktik-lab",
     label: "Tactics Lab",
-    desc: "Permanent site section · /taktik-lab/your-slug",
+    desc: "Permanent site section · /tactics-lab/your-slug",
   },
   {
     value: "wc-2026",
@@ -112,8 +112,8 @@ export function categoryPublicPath(category: string): string {
   if (category === "wc-2026") return HUBS["wc-2026"].en.basePath;
   if (category === "transfer") return HUBS.transfer.en.basePath;
   if (category === "radar") return "/radar";
-  if (category === "taktik-lab") return "/taktik-lab";
-  return "/listeler";
+  if (category === "taktik-lab") return "/tactics-lab";
+  return "/lists";
 }
 
 export function destinationSummary(scope: PublishScope, category: ContentCategory): string {

@@ -10,22 +10,22 @@ const supabase = createClient(
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
   const { slug } = await params;
   const { data } = await supabase.from("contents").select("title,content,cover_image").eq("slug", slug).eq("status", "yayinda").single();
-  if (!data) return { title: "Listeler | Scout Gamer" };
+  if (!data) return { title: "Lists | Scout Gamer" };
   const description = data.content?.replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").trim().slice(0, 160) ?? "";
   return {
     title: `${data.title} | Scout Gamer`,
     description,
     alternates: {
-      canonical: `https://scoutgamer.com/listeler/${slug}`,
+      canonical: `https://scoutgamer.com/lists/${slug}`,
       languages: {
-        tr: `https://scoutgamer.com/listeler/${slug}`,
-        en: `https://scoutgamer.com/en/listeler/${slug}`,
+        tr: `https://scoutgamer.com/lists/${slug}`,
+        en: `https://scoutgamer.com/en/lists/${slug}`,
       },
     },
     openGraph: {
       title: `${data.title} | Scout Gamer`,
       description,
-      url: `https://scoutgamer.com/listeler/${slug}`,
+      url: `https://scoutgamer.com/lists/${slug}`,
       images: data.cover_image ? [{ url: data.cover_image }] : [{ url: "https://scoutgamer.com/og-image.png" }],
     },
     twitter: { card: "summary_large_image", title: `${data.title} | Scout Gamer`, description },

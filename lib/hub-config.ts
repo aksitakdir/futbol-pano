@@ -46,7 +46,7 @@ export const HUBS: Record<HubId, HubConfig> = {
       radarPath: "/world-cup-2026/radar",
       listelerPath: "/world-cup-2026/lists",
       kadrolarPath: "/world-cup-2026/squads",
-      taktikPath: "/taktik-lab",
+      taktikPath: "/tactics-lab",
     },
   },
   transfer: {
@@ -64,7 +64,7 @@ export const HUBS: Record<HubId, HubConfig> = {
       radarPath: "/transfers/radar",
       listelerPath: "/transfers/lists",
       kadrolarPath: "/transfers",
-      taktikPath: "/taktik-lab",
+      taktikPath: "/tactics-lab",
       transferPollPath: "/transfers/will-they-go",
     },
   },
@@ -78,10 +78,10 @@ export function getHubConfig(hubId: HubId, _locale?: HubLocale): HubLocaleConfig
 export function categoryArticlePath(category: string, slug: string): string {
   if (category === "wc-2026") return `${HUBS["wc-2026"].en.basePath}/${slug}`;
   if (category === "transfer") return `${HUBS.transfer.en.basePath}/${slug}`;
-  if (category === "listeler") return `/listeler/${slug}`;
+  if (category === "listeler") return `/lists/${slug}`;
   if (category === "radar") return `/radar/${slug}`;
-  if (category === "taktik-lab") return `/taktik-lab/${slug}`;
-  return `/listeler/${slug}`;
+  if (category === "taktik-lab") return `/tactics-lab/${slug}`;
+  return `/lists/${slug}`;
 }
 
 export const CAT_LABEL: Record<string, string> = {

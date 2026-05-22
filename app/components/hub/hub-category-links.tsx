@@ -6,8 +6,8 @@ type Props = { locale?: string };
 export default function HubCategoryLinks(_props: Props) {
   const links = [
     { href: "/radar", label: "Radar", desc: "Player analysis" },
-    { href: "/listeler", label: "Lists", desc: "Curated lists" },
-    { href: "/taktik-lab", label: "Tactics Lab", desc: "Tactics & roles" },
+    { href: "/lists", label: "Lists", desc: "Curated lists" },
+    { href: "/tactics-lab", label: "Tactics Lab", desc: "Tactics & roles" },
     { href: "/arena", label: "Arena", desc: "Play & share" },
   ];
 
