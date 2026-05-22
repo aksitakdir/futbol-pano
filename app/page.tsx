@@ -13,7 +13,14 @@ import { arenaPath, type ArenaGame } from "@/lib/arena-brackets";
 import HomeRecentCarousel from "./components/home-recent-carousel";
 import HomeHubPromo from "./components/home-hub-promo";
 import HomeWcSquads from "./components/home-wc-squads";
-import { HUBS } from "@/lib/hub-config";
+import { HUBS, categoryArticlePath } from "@/lib/hub-config";
+import {
+  DEFAULT_HERO_SLIDER,
+  enabledHeroCategories,
+  normalizeHeroSlider,
+  normalizeRecentCount,
+  type HeroSliderSettings,
+} from "@/lib/site-settings";
 import { ContentHighlightPills } from "./components/content-highlight-pills";
 import { extractArticleHighlights } from "@/lib/content-highlight-tags";
 
@@ -32,17 +39,30 @@ type FormPlayer = { name: string; club: string; league: string; position: string
 type FormPlayerWithStats = FormPlayer & Partial<PlayerCardData>;
 type FeaturedPlayer = { name: string; club: string; position: string; age: string; league: string; goals: string; assists: string; description: string; whyWatch: string; };
 
-const CAT_LABEL: Record<string, string> = { listeler: "Scouting Lists", radar: "Radar", "taktik-lab": "Tactics Lab" };
-const CAT_COLOR: Record<string, string> = { listeler: "var(--sg-secondary)", radar: "var(--sg-primary)", "taktik-lab": "var(--sg-tertiary)", arena: "var(--sg-amber)" };
+const CAT_LABEL: Record<string, string> = {
+  listeler: "Scouting Lists",
+  radar: "Radar",
+  "taktik-lab": "Tactics Lab",
+  "wc-2026": "World Cup 2026",
+  transfer: "Transfers",
+};
+const CAT_COLOR: Record<string, string> = {
+  listeler: "var(--sg-secondary)",
+  radar: "var(--sg-primary)",
+  "taktik-lab": "var(--sg-tertiary)",
+  "wc-2026": "var(--amber)",
+  transfer: "var(--cyan)",
+  arena: "var(--sg-amber)",
+};
 
 function categoryPath(cat: string): string {
   if (cat === "listeler") return "/listeler";
   if (cat === "radar") return "/radar";
   if (cat === "taktik-lab") return "/taktik-lab";
-  return "/";
+  if (cat === "wc-2026") return HUBS["wc-2026"].en.basePath;
+  if (cat === "transfer") return HUBS.transfer.en.basePath;
+  return categoryArticlePath(cat, "").replace(/\/$/, "") || "/";
 }
-
-const SLIDER_COUNT = 5;
 
 function shuffleInPlace<T>(arr: T[]): T[] {
   const a = [...arr];
@@ -58,8 +78,8 @@ const fadeUp = {
   visible: { opacity: 1, y: 0, transition: { duration: 0.5 } },
 };
 
-function buildHeroSlides(all: SlideContent[]): { slide: SlideContent; slideKey: string }[] {
-  if (!all.length) return [];
+function buildHeroSlides(all: SlideContent[], sliderCount: number): { slide: SlideContent; slideKey: string }[] {
+  if (!all.length || sliderCount <= 0) return [];
   const now = Date.now();
   const ms7 = 7 * 24 * 60 * 60 * 1000;
   const ms30 = 30 * 24 * 60 * 60 * 1000;
@@ -71,17 +91,17 @@ function buildHeroSlides(all: SlideContent[]): { slide: SlideContent; slideKey: 
     picked.push(c); used.add(c.id);
   }
   for (const c of byNewest.filter(c => new Date(c.created_at).getTime() >= now - ms30 && !used.has(c.id))) {
-    if (picked.length >= SLIDER_COUNT) break;
+    if (picked.length >= sliderCount) break;
     picked.push(c); used.add(c.id);
   }
   for (const c of shuffleInPlace(byNewest.filter(c => !used.has(c.id)))) {
-    if (picked.length >= SLIDER_COUNT) break;
+    if (picked.length >= sliderCount) break;
     picked.push(c); used.add(c.id);
   }
   const pool = picked.length > 0 ? picked : byNewest;
   let r = 0;
-  while (picked.length < SLIDER_COUNT && pool.length > 0) { picked.push(pool[r % pool.length]); r++; }
-  return picked.map((slide, i) => ({ slide, slideKey: `${slide.id}-${i}` }));
+  while (picked.length < sliderCount && pool.length > 0) { picked.push(pool[r % pool.length]); r++; }
+  return picked.slice(0, sliderCount).map((slide, i) => ({ slide, slideKey: `${slide.id}-${i}` }));
 }
 
 type HeroContentSlide = { kind: "content"; slide: SlideContent; slideKey: string };
@@ -111,13 +131,19 @@ function pickArenaSlide(arenaGames: ArenaGame[]): HeroArenaSlide | null {
   return { kind: "arena", slideKey: `arena-${g.slug}-${Date.now()}`, title: g.hero_title_en, teaser: g.hero_teaser_en, href: arenaPath(g.slug) };
 }
 
-function mergeHeroSlides(content: { slide: SlideContent; slideKey: string }[], arenaGames: ArenaGame[]): HeroSlide[] {
-  const arena = pickArenaSlide(arenaGames);
+function mergeHeroSlides(
+  content: { slide: SlideContent; slideKey: string }[],
+  arenaGames: ArenaGame[],
+  heroSettings: HeroSliderSettings,
+): HeroSlide[] {
+  const arena = heroSettings.arena ? pickArenaSlide(arenaGames) : null;
   const items: HeroSlide[] = content.map(({ slide, slideKey }) => ({ kind: "content", slide, slideKey }));
-  const out: HeroSlide[] = [WC_HERO, ...items];
-  if (!items.length && !arena) return [WC_HERO];
+  const out: HeroSlide[] = heroSettings.wcPromo ? [WC_HERO, ...items] : [...items];
+  if (!items.length && !arena) return heroSettings.wcPromo ? [WC_HERO] : [];
   if (arena) {
-    const insertAt = 1 + Math.floor(Math.random() * Math.max(1, out.length - 1));
+    const insertAt = heroSettings.wcPromo
+      ? 1 + Math.floor(Math.random() * Math.max(1, out.length - 1))
+      : Math.floor(Math.random() * Math.max(1, out.length + 1));
     out.splice(insertAt, 0, arena);
   }
   return out;
@@ -182,21 +208,44 @@ export default function HomePage() {
 
   useEffect(() => {
     async function load() {
-      const { data } = await supabase.from("contents").select("id,title,title_en,slug,category,content,content_en,created_at,cover_image").eq("status", "yayinda").order("created_at", { ascending: false }).limit(200);
-      const arenaRes = await supabase.from("arena_games").select("id,slug,status,title_tr,title_en,description_tr,description_en,hero_title_tr,hero_title_en,hero_teaser_tr,hero_teaser_en,card_color,game_type,created_at").eq("status", "published");
+      const { data: settingsRows } = await supabase.from("site_settings").select("key, value").in("key", ["hero_slider", "recent_count"]);
+      let heroSettings = { ...DEFAULT_HERO_SLIDER };
+      let articleCount = 6;
+      for (const row of settingsRows ?? []) {
+        if (row.key === "hero_slider") heroSettings = normalizeHeroSlider(row.value);
+        if (row.key === "recent_count") articleCount = normalizeRecentCount(row.value);
+      }
+
+      const enabledCategories = enabledHeroCategories(heroSettings);
+      const { data } = await supabase
+        .from("contents")
+        .select("id,title,title_en,slug,category,content,content_en,created_at,cover_image")
+        .eq("status", "yayinda")
+        .in("category", enabledCategories.length ? enabledCategories : ["radar"])
+        .order("created_at", { ascending: false })
+        .limit(Math.max(articleCount * 3, 24));
+
+      const filtered = (data ?? []) as SlideContent[];
+      setRecentItems(filtered.slice(0, articleCount));
+
+      const arenaRes = await supabase
+        .from("arena_games")
+        .select("id,slug,status,title_tr,title_en,description_tr,description_en,hero_title_tr,hero_title_en,hero_teaser_tr,hero_teaser_en,card_color,game_type,created_at")
+        .eq("status", "published");
       const arenaGames = (arenaRes.data ?? []) as ArenaGame[];
-      if (!data?.length) {
-        const a = pickArenaSlide(arenaGames);
-        setSlides(a ? [WC_HERO, a] : [WC_HERO]);
+
+      if (!filtered.length) {
+        const a = heroSettings.arena ? pickArenaSlide(arenaGames) : null;
+        if (heroSettings.wcPromo && a) setSlides([WC_HERO, a]);
+        else if (heroSettings.wcPromo) setSlides([WC_HERO]);
+        else if (a) setSlides([a]);
+        else setSlides([]);
         return;
       }
-      setSlides(mergeHeroSlides(buildHeroSlides(data as SlideContent[]), arenaGames));
+
+      setSlides(mergeHeroSlides(buildHeroSlides(filtered, articleCount), arenaGames, heroSettings));
     }
     load();
-  }, []);
-
-  useEffect(() => {
-    supabase.from("contents").select("id,title,title_en,slug,category,content,content_en,created_at,cover_image").eq("status", "yayinda").order("created_at", { ascending: false }).limit(12).then(({ data }) => { if (data?.length) setRecentItems(data); });
   }, []);
 
   useEffect(() => {
@@ -362,7 +411,7 @@ export default function HomePage() {
                         return text.length > 140 ? text.slice(0, 140) + "…" : text;
                       })()}
                     </p>
-                    <Link href={`${categoryPath(item.slide.category)}/${item.slide.slug}`} className="btn btn-solid">Read More →</Link>
+                    <Link href={categoryArticlePath(item.slide.category, item.slide.slug)} className="btn btn-solid">Read More →</Link>
                   </div>
                 ) : item.kind === "wc" ? (
                   <div className="page-enter" key={`wc-${i}`}>

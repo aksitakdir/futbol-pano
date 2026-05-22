@@ -16,17 +16,21 @@ export type HomeRecentItem = {
   cover_image?: string;
 };
 
-const CAT_COLOR: Record<string, string> = {
-  listeler: "var(--sg-secondary)",
-  radar: "var(--sg-primary)",
-  "taktik-lab": "var(--sg-tertiary)",
-  arena: "var(--sg-amber)",
-};
-
 const CAT_LABEL: Record<string, string> = {
   listeler: "Scouting Lists",
   radar: "Radar",
   "taktik-lab": "Tactics Lab",
+  "wc-2026": "World Cup 2026",
+  transfer: "Transfers",
+};
+
+const CAT_COLOR: Record<string, string> = {
+  listeler: "var(--sg-secondary)",
+  radar: "var(--sg-primary)",
+  "taktik-lab": "var(--sg-tertiary)",
+  "wc-2026": "var(--amber)",
+  transfer: "var(--cyan)",
+  arena: "var(--sg-amber)",
 };
 
 function itemHref(category: string, slug: string): string {
