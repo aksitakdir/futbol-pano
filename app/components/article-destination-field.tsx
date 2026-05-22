@@ -1,22 +1,20 @@
 "use client";
 
 import {
-  EDITORIAL_CATEGORIES,
-  PUBLISH_SCOPES,
+  CONTENT_DESTINATIONS,
   categoryPublicPath,
   destinationSummary,
   hubTagsFromDestination,
+  isEditorialCategory,
   isHubCategory,
+  publishScopeForCategory,
   type ContentCategory,
-  type PublishScope,
 } from "@/lib/article-destination";
 import { HUBS, type HubId } from "@/lib/hub-config";
 
 type Props = {
-  scope: PublishScope;
   category: ContentCategory;
   crossPostHubs: HubId[];
-  onScopeChange: (scope: PublishScope) => void;
   onCategoryChange: (category: ContentCategory) => void;
   onCrossPostHubsChange: (hubs: HubId[]) => void;
   slugPreview?: string;
@@ -28,21 +26,15 @@ const btnIdle =
   "border-slate-700/80 bg-slate-900/70 text-slate-400 hover:border-slate-600 hover:text-slate-200";
 
 export default function ArticleDestinationField({
-  scope,
   category,
   crossPostHubs,
-  onScopeChange,
   onCategoryChange,
   onCrossPostHubsChange,
   slugPreview,
 }: Props) {
-  function handleScopeChange(next: PublishScope) {
-    onScopeChange(next);
-    if (next === "main") {
-      if (isHubCategory(category)) onCategoryChange("radar");
-    } else {
-      onCategoryChange(next);
-    }
+  function handleCategoryChange(next: ContentCategory) {
+    onCategoryChange(next);
+    if (isHubCategory(next)) onCrossPostHubsChange([]);
   }
 
   function toggleCrossPost(hubId: HubId) {
@@ -53,60 +45,32 @@ export default function ArticleDestinationField({
     }
   }
 
+  const scope = publishScopeForCategory(category);
   const hubTags = hubTagsFromDestination(scope, crossPostHubs);
   const previewSlug = slugPreview?.trim() || "your-slug";
   const publicUrl = `${categoryPublicPath(category)}/${previewSlug}`;
-  const isHubScope = scope !== "main";
+  const selected = CONTENT_DESTINATIONS.find((d) => d.value === category);
 
   return (
     <div className="space-y-4 rounded-xl border border-slate-800/60 bg-slate-900/25 p-4">
       <div>
-        <label className="mb-1.5 block text-xs font-semibold text-slate-300">Publish destination</label>
+        <label className="mb-1.5 block text-xs font-semibold text-slate-300">Publish to</label>
         <div className="flex flex-wrap gap-2">
-          {PUBLISH_SCOPES.map((opt) => (
+          {CONTENT_DESTINATIONS.map((opt) => (
             <button
               key={opt.value}
               type="button"
-              onClick={() => handleScopeChange(opt.value)}
-              className={[btnBase, scope === opt.value ? btnActive : btnIdle].join(" ")}
+              onClick={() => handleCategoryChange(opt.value)}
+              className={[btnBase, category === opt.value ? btnActive : btnIdle].join(" ")}
             >
               {opt.label}
             </button>
           ))}
         </div>
-        <p className="mt-2 text-[11px] text-slate-500">
-          {PUBLISH_SCOPES.find((s) => s.value === scope)?.desc}
-        </p>
+        <p className="mt-2 text-[11px] text-slate-500">{selected?.desc}</p>
       </div>
 
-      {scope === "main" ? (
-        <div>
-          <label className="mb-1.5 block text-xs font-semibold text-slate-300">Article format</label>
-          <div className="flex flex-wrap gap-2">
-            {EDITORIAL_CATEGORIES.map((cat) => (
-              <button
-                key={cat.value}
-                type="button"
-                onClick={() => onCategoryChange(cat.value)}
-                className={[btnBase, category === cat.value ? btnActive : btnIdle].join(" ")}
-              >
-                {cat.label}
-              </button>
-            ))}
-          </div>
-          <p className="mt-2 text-[11px] text-slate-500">
-            For Radar, Lists and Tactics Lab index pages.
-          </p>
-        </div>
-      ) : (
-        <p className="rounded-lg border border-amber-500/25 bg-amber-500/10 px-3 py-2 text-[11px] text-amber-200/90">
-          Hub article — lives only under{" "}
-          <span className="font-mono">{HUBS[scope].en.basePath}</span>, not on Lists or Radar.
-          When the hub closes, these articles can be archived without touching main categories.
-        </p>
-      )}
-
-      {scope === "main" ? (
+      {isEditorialCategory(category) ? (
         <div>
           <label className="mb-1.5 block text-xs font-semibold text-slate-300">
             Also feature on hub (optional)
@@ -140,8 +104,16 @@ export default function ArticleDestinationField({
               );
             })}
           </div>
+          <p className="mt-2 text-[11px] text-slate-500">
+            Cross-post keeps the main URL ({publicUrl}) and also surfaces the article on the hub feed.
+          </p>
         </div>
-      ) : null}
+      ) : (
+        <p className="rounded-lg border border-amber-500/25 bg-amber-500/10 px-3 py-2 text-[11px] text-amber-200/90">
+          Hub-only article — not listed under Lists, Radar or Tactics Lab. When the hub closes, archive
+          without touching main site sections.
+        </p>
+      )}
 
       <p className="rounded-lg border border-slate-800/80 bg-slate-950/40 px-3 py-2 text-[11px] leading-relaxed text-slate-400">
         <span className="font-medium text-slate-300">Will appear at:</span>{" "}
@@ -154,9 +126,7 @@ export default function ArticleDestinationField({
           </>
         ) : null}
         <br />
-        <span className="text-slate-500">
-          {isHubScope ? destinationSummary(scope, scope) : destinationSummary(scope, category)}
-        </span>
+        <span className="text-slate-500">{destinationSummary(scope, category)}</span>
       </p>
     </div>
   );

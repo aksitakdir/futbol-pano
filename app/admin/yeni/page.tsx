@@ -11,12 +11,12 @@ import SectionsEditor, { type SectionBlock } from "../components/sections-editor
 import ArticleDestinationField from "@/app/components/article-destination-field";
 import {
   adminHubPath,
-  categoryForScope,
   hubTagsFromDestination,
   isEditorialCategory,
+  isHubCategory,
   isPublishScope,
+  publishScopeForCategory,
   type ContentCategory,
-  type PublishScope,
 } from "@/lib/article-destination";
 import { hasBlockContent } from "@/lib/section-blocks";
 import type { HubId } from "@/lib/hub-config";
@@ -71,7 +71,6 @@ function NewArticleForm() {
   const [title, setTitle] = useState("");
   const [slug, setSlug] = useState("");
   const [category, setCategory] = useState<ContentCategory>("radar");
-  const [publishScope, setPublishScope] = useState<PublishScope>("main");
   const [crossPostHubs, setCrossPostHubs] = useState<HubId[]>([]);
   const [content, setContent] = useState("");
   const [youtubeId, setYoutubeId] = useState("");
@@ -109,18 +108,16 @@ function NewArticleForm() {
   const [sectionsBlocks, setSectionsBlocks] = useState<SectionBlock[]>([]);
   const [contentMode, setContentMode] = useState<"rich" | "blocks">("rich");
 
+  const publishScope = publishScopeForCategory(category);
   const hubTags = hubTagsFromDestination(publishScope, crossPostHubs);
 
   useEffect(() => {
     const h = searchParams.get("hub");
     const c = searchParams.get("category");
     const m = searchParams.get("mode");
-    if (isPublishScope(h)) {
-      setPublishScope(h);
-      if (h !== "main") setCategory(categoryForScope(h));
-    } else if (isEditorialCategory(c)) {
-      setCategory(c);
-    }
+    if (isHubCategory(h)) setCategory(h);
+    else if (isPublishScope(h) && h !== "main") setCategory(h);
+    else if (isEditorialCategory(c)) setCategory(c);
     if (m === "blocks") setContentMode("blocks");
   }, [searchParams]);
 
@@ -182,7 +179,7 @@ function NewArticleForm() {
     setSaving(true);
     const usingBlocks = contentMode === "blocks";
     const bodyHtml = usingBlocks ? PLACEHOLDER_HTML : content.trim();
-    const saveCategory = publishScope === "main" ? category : publishScope;
+    const saveCategory = category;
     const { error: insertError } = await supabase.from("contents").insert({
       title: title.trim(),
       title_en: title.trim(),
@@ -252,10 +249,8 @@ function NewArticleForm() {
           </div>
 
           <ArticleDestinationField
-            scope={publishScope}
             category={category}
             crossPostHubs={crossPostHubs}
-            onScopeChange={setPublishScope}
             onCategoryChange={setCategory}
             onCrossPostHubsChange={setCrossPostHubs}
             slugPreview={slug}

@@ -14,6 +14,34 @@ export const EDITORIAL_CATEGORIES: { value: EditorialCategory; label: string }[]
 
 export const HUB_CATEGORIES: HubCategory[] = ["wc-2026", "transfer"];
 
+export const CONTENT_DESTINATIONS: { value: ContentCategory; label: string; desc: string }[] = [
+  {
+    value: "listeler",
+    label: "Lists",
+    desc: "Permanent site section · /listeler/your-slug",
+  },
+  {
+    value: "radar",
+    label: "Radar",
+    desc: "Permanent site section · /radar/your-slug",
+  },
+  {
+    value: "taktik-lab",
+    label: "Tactics Lab",
+    desc: "Permanent site section · /taktik-lab/your-slug",
+  },
+  {
+    value: "wc-2026",
+    label: "World Cup 2026",
+    desc: `Temporary hub · ${HUBS["wc-2026"].en.basePath}/your-slug`,
+  },
+  {
+    value: "transfer",
+    label: "Transfers",
+    desc: `Hub · ${HUBS.transfer.en.basePath}/your-slug`,
+  },
+];
+
 export const PUBLISH_SCOPES: { value: PublishScope; label: string; desc: string }[] = [
   { value: "main", label: "Main site", desc: "Radar, Lists or Tactics Lab — permanent site sections" },
   {
@@ -44,9 +72,8 @@ export function isPublishScope(value: string | null): value is PublishScope {
   return value === "main" || value === "wc-2026" || value === "transfer";
 }
 
-export function categoryForScope(scope: PublishScope): ContentCategory {
-  if (scope === "main") return "radar";
-  return scope;
+export function publishScopeForCategory(category: ContentCategory): PublishScope {
+  return isHubCategory(category) ? category : "main";
 }
 
 export function hubTagsFromDestination(scope: PublishScope, crossPostHubs: HubId[]): string[] {

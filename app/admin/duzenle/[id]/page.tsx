@@ -12,9 +12,8 @@ import ArticleDestinationField from "@/app/components/article-destination-field"
 import {
   destinationFromHubTags,
   hubTagsFromDestination,
-  isEditorialCategory,
+  publishScopeForCategory,
   type ContentCategory,
-  type PublishScope,
 } from "@/lib/article-destination";
 import { hasBlockContent } from "@/lib/section-blocks";
 import type { HubId } from "@/lib/hub-config";
@@ -99,7 +98,6 @@ export default function DuzenlePage() {
   const [titleEn, setTitleEn] = useState("");
   const [slug, setSlug] = useState("");
   const [category, setCategory] = useState<ContentCategory>("listeler");
-  const [publishScope, setPublishScope] = useState<PublishScope>("main");
   const [crossPostHubs, setCrossPostHubs] = useState<HubId[]>([]);
   const [content, setContent] = useState("");
   const [contentEn, setContentEn] = useState("");
@@ -138,6 +136,7 @@ export default function DuzenlePage() {
   const [heroVariant, setHeroVariant] = useState("text-only");
   const [accentColor, setAccentColor] = useState("emerald");
 
+  const publishScope = publishScopeForCategory(category);
   const hubTags = hubTagsFromDestination(publishScope, crossPostHubs);
 
   // Sections JSON (blok editörü)
@@ -208,7 +207,6 @@ export default function DuzenlePage() {
       setHeroVariant(row.hero_variant ?? "text-only");
       setAccentColor(row.accent ?? "emerald");
       const dest = destinationFromHubTags(row.hub_tags, data.category);
-      setPublishScope(dest.scope);
       setCrossPostHubs(dest.crossPostHubs);
       setCategory(dest.category);
 
@@ -310,7 +308,7 @@ export default function DuzenlePage() {
 
     setSaving(true);
     const usingBlocks = contentMode === "blocks";
-    const saveCategory = publishScope === "main" ? category : publishScope;
+    const saveCategory = category;
     const updateData: Record<string, unknown> = {
       title: title.trim(),
       title_en: titleEn.trim() || null,
@@ -415,10 +413,8 @@ export default function DuzenlePage() {
           </div>
 
           <ArticleDestinationField
-            scope={publishScope}
             category={category}
             crossPostHubs={crossPostHubs}
-            onScopeChange={setPublishScope}
             onCategoryChange={setCategory}
             onCrossPostHubsChange={setCrossPostHubs}
             slugPreview={slug}
