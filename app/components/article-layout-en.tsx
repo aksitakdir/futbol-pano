@@ -134,6 +134,7 @@ export default function ArticleLayoutEn({
     rose: "var(--rose)", amber: "var(--amber)", lime: "var(--lime)",
   };
   const accent = accentOverride ? (ACCENT_MAP[accentOverride] ?? CAT_ACCENT[category] ?? "var(--accent)") : (CAT_ACCENT[category] ?? "var(--accent)");
+  const useCoverHero = heroVariant === "cover-image" && !!coverImage?.trim();
   const catLabel = CATEGORY_LABEL[category] ?? category;
   const tags = CATEGORY_TAGS[category] ?? [];
   const effectiveNewsQuery = showNewsSection ? (newsQuery?.trim() || getNewsQueryFromTitle(title)) : "";
@@ -243,20 +244,52 @@ export default function ArticleLayoutEn({
       {/* ── V2 Editorial Hero ── */}
       <header style={{
         position: "relative", overflow: "hidden",
-        background: "linear-gradient(180deg, oklch(0.13 0.018 240) 0%, oklch(0.10 0.012 250) 100%)",
+        background: useCoverHero ? "var(--ink-900)" : "linear-gradient(180deg, oklch(0.13 0.018 240) 0%, oklch(0.10 0.012 250) 100%)",
         borderBottom: "1px solid var(--sg-border)",
+        minHeight: useCoverHero ? "min(520px, 58vh)" : undefined,
       }}>
-        <div style={{ position: "absolute", top: 0, left: 0, right: 0, height: 3, background: accent }} />
+        {useCoverHero ? (
+          <>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src={coverImage}
+              alt=""
+              style={{
+                position: "absolute",
+                inset: 0,
+                width: "100%",
+                height: "100%",
+                objectFit: "cover",
+                filter: "brightness(0.42) saturate(0.88)",
+              }}
+            />
+            <div style={{
+              position: "absolute", inset: 0,
+              background: "linear-gradient(to right, rgba(13,18,30,0.92) 0%, rgba(13,18,30,0.55) 55%, rgba(13,18,30,0.35) 100%)",
+            }} />
+            <div style={{
+              position: "absolute", inset: 0,
+              background: "linear-gradient(to top, var(--sg-bg) 0%, transparent 45%)",
+            }} />
+          </>
+        ) : null}
+        <div style={{
+          position: "absolute", top: 0, left: 0, right: 0, height: 3, background: accent, zIndex: 1,
+        }} />
+        {!useCoverHero ? (
         <div style={{
           position: "absolute", inset: 0, opacity: 0.04, pointerEvents: "none",
           backgroundImage: "repeating-linear-gradient(90deg, rgba(255,255,255,0.5) 0 1px, transparent 1px 22px)",
         }} />
+        ) : null}
+        {!useCoverHero ? (
         <div style={{
           position: "absolute", bottom: -240, left: -120, width: 600, height: 600, borderRadius: "50%",
           background: `radial-gradient(circle, ${accent} 0%, transparent 65%)`, opacity: 0.12, pointerEvents: "none",
         }} />
+        ) : null}
 
-        <div className="sg-site-container" style={{ paddingTop: 40, paddingBottom: 72, position: "relative" }}>
+        <div className="sg-site-container" style={{ paddingTop: 40, paddingBottom: 72, position: "relative", zIndex: 2 }}>
           <button onClick={() => window.history.back()} className="mono" style={{
             background: "transparent", border: "none", color: "var(--sg-text-muted)",
             fontSize: 11, letterSpacing: "0.14em", padding: 0, marginBottom: hubId ? 12 : 48, cursor: "pointer",
@@ -317,8 +350,8 @@ export default function ArticleLayoutEn({
               </div>
             </div>
           ) : (
-          <div style={{ display: "grid", gridTemplateColumns: "1.5fr 1fr", gap: 56, alignItems: "end" }}>
-            <div>
+          <div style={{ display: "grid", gridTemplateColumns: useCoverHero ? "1fr" : "1.5fr 1fr", gap: 56, alignItems: "end" }}>
+            <div style={{ maxWidth: useCoverHero ? 760 : undefined }}>
               <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 28 }}>
                 <span className="chip solid" style={{ background: accent, borderColor: accent, color: "var(--ink-900)", fontSize: 10 }}>
                   {catLabel.toUpperCase()}
@@ -357,6 +390,7 @@ export default function ArticleLayoutEn({
               </div>
             </div>
 
+            {!useCoverHero ? (
             <div style={{ display: "flex", justifyContent: "flex-end", alignItems: "flex-end" }}>
               {heroVariant === "player-cards" && children ? (
                 <div style={{ width: "100%", maxWidth: 320 }}>{children}</div>
@@ -403,6 +437,7 @@ export default function ArticleLayoutEn({
                 </div>
               )}
             </div>
+            ) : null}
           </div>
           )}
         </div>

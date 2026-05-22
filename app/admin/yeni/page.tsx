@@ -30,7 +30,7 @@ const PLACEHOLDER_HTML = "<p></p>";
 
 const HERO_VARIANTS = [
   { value: "player-cards", label: "🃏 Player Card", desc: "Radar/Lists" },
-  { value: "cover-image", label: "🖼 Cover Image", desc: "General" },
+  { value: "cover-image", label: "🖼 Cover Image", desc: "Full-width hero" },
   { value: "pitch-diagram", label: "⬡ Pitch Diagram", desc: "Tactics Lab" },
   { value: "stat-focus", label: "📊 Stat Focus", desc: "Radar" },
   { value: "text-only", label: "✍ Text Only", desc: "Minimal" },
@@ -266,10 +266,17 @@ function NewArticleForm() {
                     className={["flex items-center gap-2 rounded-lg border px-3 py-2 text-xs transition text-left",
                       heroVariant === v.value ? "border-emerald-500/60 bg-emerald-500/10 text-emerald-200" : "border-slate-700/80 bg-slate-900/60 text-slate-400 hover:text-slate-200"].join(" ")}>
                     <span className="font-medium">{v.label}</span>
-                    <span className="ml-auto text-[10px] opacity-50">{v.desc}</span>
+                    {v.value === "cover-image" && coverImage ? (
+                      <Image src={coverImage} alt="" width={48} height={32} unoptimized className="ml-auto h-8 w-12 rounded object-cover border border-slate-600/80" />
+                    ) : (
+                      <span className="ml-auto text-[10px] opacity-50">{v.desc}</span>
+                    )}
                   </button>
                 ))}
               </div>
+              {heroVariant === "cover-image" && !coverImage.trim() ? (
+                <p className="mt-2 text-[11px] text-amber-300/90">Upload or paste a cover image below — it becomes the full-width article hero.</p>
+              ) : null}
             </div>
             <div>
               <label className="mb-1.5 block text-xs font-semibold text-slate-300">Accent Color</label>
@@ -297,6 +304,7 @@ function NewArticleForm() {
             </div>
             <div>
               <label className="mb-1.5 block text-xs font-semibold text-slate-300">Cover Image</label>
+              <p className="mb-2 text-[11px] text-slate-500">Used for Hero Style → Cover Image and homepage slider thumbnails.</p>
               <div className="space-y-2">
                 <input type="text" value={coverImage} onChange={(e) => setCoverImage(e.target.value)}
                   placeholder="Paste URL or upload below"
@@ -316,6 +324,7 @@ function NewArticleForm() {
                           if (error) throw error;
                           const { data: urlData } = supabase.storage.from("content-images").getPublicUrl(data.path);
                           setCoverImage(urlData.publicUrl);
+                          setHeroVariant("cover-image");
                         } catch (err) { console.error("Image upload error:", err); }
                         setImageUploading(false);
                       }} />
