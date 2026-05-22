@@ -22,12 +22,10 @@ import { hasBlockContent } from "@/lib/section-blocks";
 import type { HubId } from "@/lib/hub-config";
 import CoverStoryField from "@/app/components/cover-story-field";
 import {
-  buildCoverStoriesPatch,
-  COVER_STORY_SETTINGS_KEY,
   coverScopesForCategory,
-  normalizeCoverStories,
   type CoverStoryScope,
 } from "@/lib/cover-story";
+import { saveCoverStoryPinsViaApi } from "@/lib/cover-story-admin";
 
 function isContentEmpty(html: string): boolean {
   if (!html?.trim()) return true;
@@ -228,22 +226,12 @@ function NewArticleForm() {
     }
 
     if (coverStoryScopes.length > 0) {
-      const { data: pinRow } = await supabase
-        .from("site_settings")
-        .select("value")
-        .eq("key", COVER_STORY_SETTINGS_KEY)
-        .maybeSingle();
-      const next = buildCoverStoriesPatch(
-        normalizeCoverStories(pinRow?.value),
-        inserted.id,
-        saveCategory,
-        coverStoryScopes,
-      );
-      await supabase.from("site_settings").upsert({
-        key: COVER_STORY_SETTINGS_KEY,
-        value: next,
-        updated_at: new Date().toISOString(),
-      });
+      const pinResult = await saveCoverStoryPinsViaApi(inserted.id, saveCategory, coverStoryScopes);
+      if (!pinResult.ok) {
+        setError(`Article saved but cover story failed: ${pinResult.error}`);
+        setSaving(false);
+        return;
+      }
     }
     router.push(adminHubPath(publishScope) ?? (category === "radar" ? "/admin/radar" : "/admin/icerikler"));
   }

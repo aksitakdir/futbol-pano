@@ -22,10 +22,9 @@ import {
   type HeroSliderSettings,
 } from "@/lib/site-settings";
 import {
-  COVER_STORY_SETTINGS_KEY,
-  normalizeCoverStories,
   prioritizeHeroContent,
 } from "@/lib/cover-story";
+import { EDITORIAL_ARTICLE_SELECT } from "@/lib/cover-story-store";
 import { ContentHighlightPills } from "./components/content-highlight-pills";
 import { extractArticleHighlights } from "@/lib/content-highlight-tags";
 
@@ -222,19 +221,22 @@ export default function HomePage() {
 
   useEffect(() => {
     async function load() {
-      const { data: settingsRows } = await supabase
+      const settingsRes = await supabase
         .from("site_settings")
         .select("key, value")
-        .in("key", ["hero_slider", "recent_count", COVER_STORY_SETTINGS_KEY]);
+        .in("key", ["hero_slider", "recent_count"]);
+
+      const pinsRes = await fetch("/api/cover-stories", { cache: "no-store" });
+      const pinsJson = pinsRes.ok
+        ? ((await pinsRes.json()) as { pins?: { homepage?: string } })
+        : { pins: {} };
+
       let heroSettings = { ...DEFAULT_HERO_SLIDER };
       let articleCount = 6;
-      let homepageCoverId: string | undefined;
-      for (const row of settingsRows ?? []) {
+      let homepageCoverId: string | undefined = pinsJson.pins?.homepage;
+      for (const row of settingsRes.data ?? []) {
         if (row.key === "hero_slider") heroSettings = normalizeHeroSlider(row.value);
         if (row.key === "recent_count") articleCount = normalizeRecentCount(row.value);
-        if (row.key === COVER_STORY_SETTINGS_KEY) {
-          homepageCoverId = normalizeCoverStories(row.value).homepage;
-        }
       }
 
       const enabledCategories = enabledHeroCategories(heroSettings);
@@ -246,20 +248,24 @@ export default function HomePage() {
         .order("created_at", { ascending: false })
         .limit(Math.max(articleCount * 3, 24));
 
-      let filtered = prioritizeHeroContent((data ?? []) as SlideContent[], homepageCoverId);
+      let filtered = (data ?? []) as SlideContent[];
 
-      if (homepageCoverId && !filtered.some((row) => row.id === homepageCoverId)) {
+      if (homepageCoverId) {
         const { data: pinnedRow } = await supabase
           .from("contents")
-          .select("id,title,title_en,slug,category,content,content_en,created_at,cover_image")
+          .select(EDITORIAL_ARTICLE_SELECT)
           .eq("id", homepageCoverId)
           .eq("status", "yayinda")
           .maybeSingle();
         if (pinnedRow) {
-          filtered = [pinnedRow as SlideContent, ...filtered];
+          filtered = [
+            pinnedRow as SlideContent,
+            ...filtered.filter((row) => row.id !== homepageCoverId),
+          ];
         }
       }
 
+      filtered = prioritizeHeroContent(filtered, homepageCoverId);
       setRecentItems(filtered.slice(0, articleCount));
 
       const arenaRes = await supabase

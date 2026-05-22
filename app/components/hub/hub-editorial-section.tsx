@@ -7,12 +7,8 @@ import type { EditorialArticle } from "@/lib/editorial-article";
 import { supabase } from "@/lib/supabase";
 import type { HubId } from "@/lib/hub-config";
 import { HUB_TAG } from "@/lib/hub-config";
-import {
-  COVER_STORY_SETTINGS_KEY,
-  normalizeCoverStories,
-  orderWithCoverPin,
-  type CoverStoryScope,
-} from "@/lib/cover-story";
+import type { CoverStoryScope } from "@/lib/cover-story";
+import { EDITORIAL_ARTICLE_SELECT } from "@/lib/cover-story-store";
 
 const PAGE_SIZE = 12;
 
@@ -43,41 +39,41 @@ export default function HubEditorialSection({ hubId, accent, category, limit, co
   useEffect(() => {
     setLoading(true);
     void (async () => {
-      const [{ data: pinRow }, listRes] = await Promise.all([
-        supabase.from("site_settings").select("value").eq("key", COVER_STORY_SETTINGS_KEY).maybeSingle(),
-        (() => {
-          let query = supabase
-            .from("contents")
-            .select("id,title,title_en,slug,category,content,content_en,created_at,cover_image")
-            .eq("status", "yayinda")
-            .or(`category.eq.${hubId},hub_tags.cs.{${tag}}`)
-            .order("created_at", { ascending: false })
-            .range(0, pageSize - 1);
-          if (category) query = query.eq("category", category);
-          return query;
-        })(),
-      ]);
+      const pinsRes = await fetch("/api/cover-stories", { cache: "no-store" });
+      const pinsJson = pinsRes.ok
+        ? ((await pinsRes.json()) as { pins?: Partial<Record<CoverStoryScope, string>> })
+        : { pins: {} };
+      const pinnedId = pinsJson.pins?.[hubId as CoverStoryScope];
 
-      const pins = normalizeCoverStories(pinRow?.value);
-      const pinnedId = pins[hubId as CoverStoryScope];
-      const { data, error } = listRes;
+      let pinned: EditorialArticle | null = null;
+      if (pinnedId) {
+        const { data: pinnedRow } = await supabase
+          .from("contents")
+          .select(EDITORIAL_ARTICLE_SELECT)
+          .eq("id", pinnedId)
+          .eq("status", "yayinda")
+          .maybeSingle();
+        pinned = (pinnedRow as EditorialArticle | null) ?? null;
+      }
 
-      if (!error && data) {
-        let items = data as EditorialArticle[];
-        if (pinnedId && !items.some((row) => row.id === pinnedId)) {
-          const { data: pinnedRow } = await supabase
-            .from("contents")
-            .select("id,title,title_en,slug,category,content,content_en,created_at,cover_image")
-            .eq("id", pinnedId)
-            .eq("status", "yayinda")
-            .maybeSingle();
-          if (pinnedRow) {
-            items = [pinnedRow as EditorialArticle, ...items].slice(0, pageSize);
-          }
-        }
-        items = orderWithCoverPin(items, pinnedId);
-        setArticles(items);
-        setHasMore(!compact && items.length === pageSize);
+      let query = supabase
+        .from("contents")
+        .select(EDITORIAL_ARTICLE_SELECT)
+        .eq("status", "yayinda")
+        .or(`category.eq.${hubId},hub_tags.cs.{${tag}}`)
+        .order("created_at", { ascending: false })
+        .range(0, pageSize - 1);
+
+      if (category) query = query.eq("category", category);
+      if (pinnedId) query = query.neq("id", pinnedId);
+
+      const { data, error } = await query;
+
+      if (!error) {
+        const list = (data ?? []) as EditorialArticle[];
+        const items = pinned ? [pinned, ...list] : list;
+        setArticles(items.slice(0, pageSize));
+        setHasMore(!compact && list.length === pageSize);
       }
       setLoading(false);
     })();
@@ -86,15 +82,25 @@ export default function HubEditorialSection({ hubId, accent, category, limit, co
   async function handleLoadMore() {
     if (compact) return;
     setLoadingMore(true);
+
+    const pinsRes = await fetch("/api/cover-stories", { cache: "no-store" });
+    const pinsJson = pinsRes.ok
+      ? ((await pinsRes.json()) as { pins?: Partial<Record<CoverStoryScope, string>> })
+      : { pins: {} };
+    const pinnedId = pinsJson.pins?.[hubId as CoverStoryScope];
+
+    const listCount = pinnedId ? articles.filter((a) => a.id !== pinnedId).length : articles.length;
+
     let query = supabase
       .from("contents")
-      .select("id,title,title_en,slug,category,content,content_en,created_at,cover_image")
+      .select(EDITORIAL_ARTICLE_SELECT)
       .eq("status", "yayinda")
       .or(`category.eq.${hubId},hub_tags.cs.{${tag}}`)
       .order("created_at", { ascending: false })
-      .range(articles.length, articles.length + PAGE_SIZE - 1);
+      .range(listCount, listCount + PAGE_SIZE - 1);
 
     if (category) query = query.eq("category", category);
+    if (pinnedId) query = query.neq("id", pinnedId);
 
     const { data } = await query;
     const items = (data ?? []) as EditorialArticle[];

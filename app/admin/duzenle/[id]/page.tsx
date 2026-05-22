@@ -21,12 +21,10 @@ import type { HubId } from "@/lib/hub-config";
 import CoverStoryField from "@/app/components/cover-story-field";
 import {
   activeCoverScopesForContent,
-  buildCoverStoriesPatch,
-  COVER_STORY_SETTINGS_KEY,
   coverScopesForCategory,
-  normalizeCoverStories,
   type CoverStoryScope,
 } from "@/lib/cover-story";
+import { fetchCoverStoryPinsFromApi, saveCoverStoryPinsViaApi } from "@/lib/cover-story-admin";
 
 const PLACEHOLDER_HTML = "<p></p>";
 
@@ -157,20 +155,6 @@ export default function DuzenlePage() {
     setCoverStoryScopes((prev) => prev.filter((scope) => allowed.includes(scope)));
   }, [category]);
 
-  async function persistCoverStoryPins(contentId: string, cat: string, scopes: CoverStoryScope[]) {
-    const { data: pinRow } = await supabase
-      .from("site_settings")
-      .select("value")
-      .eq("key", COVER_STORY_SETTINGS_KEY)
-      .maybeSingle();
-    const next = buildCoverStoriesPatch(normalizeCoverStories(pinRow?.value), contentId, cat, scopes);
-    await supabase.from("site_settings").upsert({
-      key: COVER_STORY_SETTINGS_KEY,
-      value: next,
-      updated_at: new Date().toISOString(),
-    });
-  }
-
   useEffect(() => {
     async function fetchContent() {
       const { data, error } = await supabase
@@ -234,12 +218,8 @@ export default function DuzenlePage() {
       setCrossPostHubs(dest.crossPostHubs);
       setCategory(dest.category);
 
-      const { data: pinRow } = await supabase
-        .from("site_settings")
-        .select("value")
-        .eq("key", COVER_STORY_SETTINGS_KEY)
-        .maybeSingle();
-      setCoverStoryScopes(activeCoverScopesForContent(normalizeCoverStories(pinRow?.value), id));
+      const pins = await fetchCoverStoryPinsFromApi();
+      setCoverStoryScopes(activeCoverScopesForContent(pins, id));
 
       // Blok editörü — mevcut sections_json'ı yükle
       if (Array.isArray(row.sections_json) && row.sections_json.length > 0) {
@@ -380,8 +360,14 @@ export default function DuzenlePage() {
       return;
     }
 
-    await persistCoverStoryPins(id, saveCategory, coverStoryScopes);
+    const pinResult = await saveCoverStoryPinsViaApi(id, saveCategory, coverStoryScopes);
+    if (!pinResult.ok) {
+      setError(`Article saved but cover story failed: ${pinResult.error}`);
+      setSaving(false);
+      return;
+    }
 
+    setSaving(false);
     router.push(category === "radar" ? "/admin/radar" : "/admin/icerikler");
   }
 

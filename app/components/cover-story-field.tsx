@@ -29,8 +29,8 @@ export default function CoverStoryField({ category, selectedScopes, onChange, di
     <section className="rounded-xl border border-slate-800/60 bg-slate-900/25 p-4">
       <h2 className="mb-1 text-sm font-semibold text-slate-200">Cover Story</h2>
       <p className="mb-4 text-[11px] leading-relaxed text-slate-500">
-        Pin this article to featured slots. It always uses this article&apos;s live title, summary and cover image —
-        change the cover here and the cover story updates on save.
+        Pin this article to featured slots. Uses live title, summary and cover image from this article.
+        The article must be <strong className="font-medium text-slate-400">Published</strong> to show on site.
       </p>
       <div className="flex flex-col gap-2">
         {scopes.map((scope) => {
