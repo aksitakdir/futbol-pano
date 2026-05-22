@@ -13,6 +13,7 @@ import { arenaPath, type ArenaGame } from "@/lib/arena-brackets";
 import HomeRecentCarousel from "./components/home-recent-carousel";
 import HomeHubPromo from "./components/home-hub-promo";
 import HomeWcSquads from "./components/home-wc-squads";
+import { HUBS } from "@/lib/hub-config";
 import { ContentHighlightPills } from "./components/content-highlight-pills";
 import { extractArticleHighlights } from "@/lib/content-highlight-tags";
 
@@ -85,7 +86,24 @@ function buildHeroSlides(all: SlideContent[]): { slide: SlideContent; slideKey: 
 
 type HeroContentSlide = { kind: "content"; slide: SlideContent; slideKey: string };
 type HeroArenaSlide = { kind: "arena"; slideKey: string; title: string; teaser: string; href: string };
-type HeroSlide = HeroContentSlide | HeroArenaSlide;
+type HeroWcSlide = {
+  kind: "wc";
+  slideKey: string;
+  title: string;
+  teaser: string;
+  href: string;
+  eyebrow: string;
+};
+type HeroSlide = HeroContentSlide | HeroArenaSlide | HeroWcSlide;
+
+const WC_HERO: HeroWcSlide = {
+  kind: "wc",
+  slideKey: "wc-2026-promo",
+  eyebrow: "FIFA WORLD CUP 2026",
+  title: HUBS["wc-2026"].en.pillarTitle,
+  teaser: HUBS["wc-2026"].en.pillarDescription,
+  href: HUBS["wc-2026"].en.basePath,
+};
 
 function pickArenaSlide(arenaGames: ArenaGame[]): HeroArenaSlide | null {
   if (!arenaGames.length) return null;
@@ -93,12 +111,16 @@ function pickArenaSlide(arenaGames: ArenaGame[]): HeroArenaSlide | null {
   return { kind: "arena", slideKey: `arena-${g.slug}-${Date.now()}`, title: g.hero_title_en, teaser: g.hero_teaser_en, href: arenaPath(g.slug) };
 }
 
-function mergeWithArena(content: { slide: SlideContent; slideKey: string }[], arenaGames: ArenaGame[]): HeroSlide[] {
+function mergeHeroSlides(content: { slide: SlideContent; slideKey: string }[], arenaGames: ArenaGame[]): HeroSlide[] {
   const arena = pickArenaSlide(arenaGames);
   const items: HeroSlide[] = content.map(({ slide, slideKey }) => ({ kind: "content", slide, slideKey }));
-  if (!items.length) return arena ? [arena] : [];
-  if (arena) items.splice(Math.floor(Math.random() * (items.length + 1)), 0, arena);
-  return items;
+  const out: HeroSlide[] = [WC_HERO, ...items];
+  if (!items.length && !arena) return [WC_HERO];
+  if (arena) {
+    const insertAt = 1 + Math.floor(Math.random() * Math.max(1, out.length - 1));
+    out.splice(insertAt, 0, arena);
+  }
+  return out;
 }
 
 async function fetchFcPlayer(name: string, club?: string) {
@@ -163,8 +185,12 @@ export default function HomePage() {
       const { data } = await supabase.from("contents").select("id,title,title_en,slug,category,content,content_en,created_at,cover_image").eq("status", "yayinda").order("created_at", { ascending: false }).limit(200);
       const arenaRes = await supabase.from("arena_games").select("id,slug,status,title_tr,title_en,description_tr,description_en,hero_title_tr,hero_title_en,hero_teaser_tr,hero_teaser_en,card_color,game_type,created_at").eq("status", "published");
       const arenaGames = (arenaRes.data ?? []) as ArenaGame[];
-      if (!data?.length) { const a = pickArenaSlide(arenaGames); setSlides(a ? [a] : []); return; }
-      setSlides(mergeWithArena(buildHeroSlides(data as SlideContent[]), arenaGames));
+      if (!data?.length) {
+        const a = pickArenaSlide(arenaGames);
+        setSlides(a ? [WC_HERO, a] : [WC_HERO]);
+        return;
+      }
+      setSlides(mergeHeroSlides(buildHeroSlides(data as SlideContent[]), arenaGames));
     }
     load();
   }, []);
@@ -287,6 +313,15 @@ export default function HomePage() {
           <div className="absolute inset-0 z-0">
             {slides[activeSlide]?.kind === "content" && (slides[activeSlide] as HeroContentSlide).slide.cover_image ? (
               <img key={(slides[activeSlide] as HeroContentSlide).slide.cover_image} src={(slides[activeSlide] as HeroContentSlide).slide.cover_image!} alt="" className="w-full h-full object-cover" style={{ filter: "brightness(0.48) saturate(0.85)" }} />
+            ) : slides[activeSlide]?.kind === "wc" ? (
+              <div
+                key="wc-hero-bg"
+                className="absolute inset-0"
+                style={{
+                  background:
+                    "linear-gradient(135deg, #0d2818 0%, #1a3a5c 35%, #0f172a 70%, #1c1408 100%)",
+                }}
+              />
             ) : (
               <div className="absolute inset-0" style={{ background: "linear-gradient(120deg, var(--ink-800) 0%, var(--ink-900) 100%)" }} />
             )}
@@ -328,6 +363,58 @@ export default function HomePage() {
                       })()}
                     </p>
                     <Link href={`${categoryPath(item.slide.category)}/${item.slide.slug}`} className="btn btn-solid">Read More →</Link>
+                  </div>
+                ) : item.kind === "wc" ? (
+                  <div className="page-enter" key={`wc-${i}`}>
+                    <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 24 }}>
+                      <span
+                        className="chip solid"
+                        style={{
+                          background: "var(--amber)",
+                          borderColor: "var(--amber)",
+                          color: "var(--ink-900)",
+                        }}
+                      >
+                        {item.eyebrow}
+                      </span>
+                    </div>
+                    <h1
+                      className="display"
+                      style={{
+                        fontSize: "clamp(2.4rem, 5.5vw, 4.8rem)",
+                        fontWeight: 700,
+                        letterSpacing: "-0.04em",
+                        lineHeight: 1.08,
+                        margin: "0 0 20px",
+                        paddingBottom: "0.14em",
+                        textWrap: "balance",
+                        maxWidth: 640,
+                        background: "linear-gradient(135deg, #f5d020 0%, #fff 45%, #c9a227 100%)",
+                        WebkitBackgroundClip: "text",
+                        WebkitTextFillColor: "transparent",
+                        backgroundClip: "text",
+                      }}
+                    >
+                      {item.title}
+                    </h1>
+                    <p
+                      style={{
+                        fontSize: 17,
+                        lineHeight: 1.6,
+                        color: "var(--ink-200)",
+                        maxWidth: 520,
+                        marginBottom: 36,
+                      }}
+                    >
+                      {item.teaser}
+                    </p>
+                    <Link
+                      href={item.href}
+                      className="btn btn-solid"
+                      style={{ background: "var(--amber)", borderColor: "var(--amber)", color: "var(--ink-900)" }}
+                    >
+                      Explore WC 2026 →
+                    </Link>
                   </div>
                 ) : (
                   <div className="page-enter" key={`arena-${i}`}>

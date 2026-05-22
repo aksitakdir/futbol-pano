@@ -41,8 +41,11 @@ export default function HomeWcSquads() {
     load();
   }, []);
 
-  const seeded = teams.filter((t) => t.playerCount > 0);
-  const unseeded = teams.filter((t) => t.playerCount === 0);
+  const byName = (a: TeamWithCount, b: TeamWithCount) =>
+    a.nameEn.localeCompare(b.nameEn, "en", { sensitivity: "base" });
+
+  const seeded = teams.filter((t) => t.playerCount > 0).sort(byName);
+  const unseeded = teams.filter((t) => t.playerCount === 0).sort(byName);
 
   return (
     <section className="sg-editorial-shell" style={{ paddingTop: 80, paddingBottom: 80 }}>
