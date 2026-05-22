@@ -6,7 +6,7 @@
     },
     {
       "path": "/api/cron/transfer-wire",
-      "schedule": "0 * * * *"
+      "schedule": "0 6 * * *"
     }
   ]
 }

@@ -287,7 +287,7 @@ export default function AdminHubPage() {
               Refresh Transfer Wire now
             </button>
             <p className="text-xs text-slate-500 border-t border-slate-800 pt-4 mt-4">
-              Cron: <code className="text-slate-400">GET /api/cron/transfer-wire</code> every hour (see vercel.json).
+              Cron: <code className="text-slate-400">GET /api/cron/transfer-wire</code> daily 06:00 UTC (Vercel Hobby — see vercel.json).
             </p>
           </section>
         ) : null}
