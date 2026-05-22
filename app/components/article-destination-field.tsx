@@ -1,0 +1,143 @@
+"use client";
+
+import {
+  EDITORIAL_CATEGORIES,
+  PUBLISH_SCOPES,
+  categoryPublicPath,
+  destinationSummary,
+  hubTagsFromDestination,
+  type EditorialCategory,
+  type PublishScope,
+} from "@/lib/article-destination";
+import { HUBS, type HubId } from "@/lib/hub-config";
+
+type Props = {
+  scope: PublishScope;
+  category: EditorialCategory;
+  crossPostHubs: HubId[];
+  onScopeChange: (scope: PublishScope) => void;
+  onCategoryChange: (category: EditorialCategory) => void;
+  onCrossPostHubsChange: (hubs: HubId[]) => void;
+  slugPreview?: string;
+};
+
+const btnBase =
+  "rounded-lg border px-4 py-2 text-xs font-semibold transition";
+const btnActive = "border-emerald-500/60 bg-emerald-500/15 text-emerald-300";
+const btnIdle =
+  "border-slate-700/80 bg-slate-900/70 text-slate-400 hover:border-slate-600 hover:text-slate-200";
+
+export default function ArticleDestinationField({
+  scope,
+  category,
+  crossPostHubs,
+  onScopeChange,
+  onCategoryChange,
+  onCrossPostHubsChange,
+  slugPreview,
+}: Props) {
+  function toggleCrossPost(hubId: HubId) {
+    if (crossPostHubs.includes(hubId)) {
+      onCrossPostHubsChange(crossPostHubs.filter((id) => id !== hubId));
+    } else {
+      onCrossPostHubsChange([...crossPostHubs, hubId]);
+    }
+  }
+
+  const hubTags = hubTagsFromDestination(scope, crossPostHubs);
+  const previewSlug = slugPreview?.trim() || "your-slug";
+  const publicUrl = `${categoryPublicPath(category)}/${previewSlug}`;
+
+  return (
+    <div className="space-y-4 rounded-xl border border-slate-800/60 bg-slate-900/25 p-4">
+      <div>
+        <label className="mb-1.5 block text-xs font-semibold text-slate-300">Publish destination</label>
+        <div className="flex flex-wrap gap-2">
+          {PUBLISH_SCOPES.map((opt) => (
+            <button
+              key={opt.value}
+              type="button"
+              onClick={() => onScopeChange(opt.value)}
+              className={[btnBase, scope === opt.value ? btnActive : btnIdle].join(" ")}
+            >
+              {opt.label}
+            </button>
+          ))}
+        </div>
+        <p className="mt-2 text-[11px] text-slate-500">
+          {PUBLISH_SCOPES.find((s) => s.value === scope)?.desc}
+        </p>
+      </div>
+
+      <div>
+        <label className="mb-1.5 block text-xs font-semibold text-slate-300">Article format</label>
+        <div className="flex flex-wrap gap-2">
+          {EDITORIAL_CATEGORIES.map((cat) => (
+            <button
+              key={cat.value}
+              type="button"
+              onClick={() => onCategoryChange(cat.value)}
+              className={[btnBase, category === cat.value ? btnActive : btnIdle].join(" ")}
+            >
+              {cat.label}
+            </button>
+          ))}
+        </div>
+        <p className="mt-2 text-[11px] text-slate-500">
+          URL path and feed type — same as main site categories.
+        </p>
+      </div>
+
+      {scope === "main" ? (
+        <div>
+          <label className="mb-1.5 block text-xs font-semibold text-slate-300">
+            Also feature on hub (optional)
+          </label>
+          <div className="flex flex-col gap-2 sm:flex-row">
+            {(["wc-2026", "transfer"] as const).map((hubId) => {
+              const checked = crossPostHubs.includes(hubId);
+              return (
+                <label
+                  key={hubId}
+                  className={[
+                    "flex flex-1 cursor-pointer items-start gap-3 rounded-lg border px-3 py-2.5 transition",
+                    checked
+                      ? "border-emerald-500/50 bg-emerald-500/10"
+                      : "border-slate-700/80 bg-slate-900/60 hover:border-slate-600",
+                  ].join(" ")}
+                >
+                  <input
+                    type="checkbox"
+                    checked={checked}
+                    onChange={() => toggleCrossPost(hubId)}
+                    className="mt-0.5 accent-emerald-500"
+                  />
+                  <span>
+                    <span className="block text-xs font-medium text-slate-200">
+                      {HUBS[hubId].en.pillarTitle}
+                    </span>
+                    <span className="block text-[10px] text-slate-500">{HUBS[hubId].en.basePath}</span>
+                  </span>
+                </label>
+              );
+            })}
+          </div>
+        </div>
+      ) : null}
+
+      <p className="rounded-lg border border-slate-800/80 bg-slate-950/40 px-3 py-2 text-[11px] leading-relaxed text-slate-400">
+        <span className="font-medium text-slate-300">Will appear at:</span>{" "}
+        <span className="font-mono text-slate-300">{publicUrl}</span>
+        {hubTags.length > 0 ? (
+          <>
+            {" "}
+            · hub tag{hubTags.length > 1 ? "s" : ""}{" "}
+            <span className="font-mono text-emerald-400/90">{hubTags.join(", ")}</span>
+          </>
+        ) : null}
+        <br />
+        <span className="text-slate-500">{destinationSummary(scope, category)}</span>
+      </p>
+    </div>
+  );
+}

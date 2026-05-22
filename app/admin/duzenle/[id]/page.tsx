@@ -8,19 +8,21 @@ import { supabase } from "@/lib/supabase";
 import RichTextEditor from "@/app/components/rich-text-editor";
 import AdminLayout from "../../components/admin-layout";
 import SectionsEditor, { type SectionBlock } from "../../components/sections-editor";
-import HubTagsField from "@/app/components/hub-tags-field";
+import ArticleDestinationField from "@/app/components/article-destination-field";
+import {
+  destinationFromHubTags,
+  hubTagsFromDestination,
+  isEditorialCategory,
+  type EditorialCategory,
+  type PublishScope,
+} from "@/lib/article-destination";
+import type { HubId } from "@/lib/hub-config";
 
 function isContentEmpty(html: string): boolean {
   if (!html?.trim()) return true;
   const text = html.replace(/<[^>]+>/g, "").trim();
   return text === "";
 }
-
-const CATEGORIES = [
-  { value: "listeler", label: "Lists" },
-  { value: "radar", label: "Radar" },
-  { value: "taktik-lab", label: "Tactics Lab" },
-];
 
 const HERO_VARIANTS = [
   { value: "player-cards", label: "🃏 Player Card", desc: "Radar/Lists" },
@@ -93,7 +95,9 @@ export default function DuzenlePage() {
   const [title, setTitle] = useState("");
   const [titleEn, setTitleEn] = useState("");
   const [slug, setSlug] = useState("");
-  const [category, setCategory] = useState("listeler");
+  const [category, setCategory] = useState<EditorialCategory>("listeler");
+  const [publishScope, setPublishScope] = useState<PublishScope>("main");
+  const [crossPostHubs, setCrossPostHubs] = useState<HubId[]>([]);
   const [content, setContent] = useState("");
   const [contentEn, setContentEn] = useState("");
   const [youtubeId, setYoutubeId] = useState("");
@@ -130,7 +134,8 @@ export default function DuzenlePage() {
 
   const [heroVariant, setHeroVariant] = useState("text-only");
   const [accentColor, setAccentColor] = useState("emerald");
-  const [hubTags, setHubTags] = useState<string[]>([]);
+
+  const hubTags = hubTagsFromDestination(publishScope, crossPostHubs);
 
   // Sections JSON (blok editörü)
   const [sectionsBlocks, setSectionsBlocks] = useState<SectionBlock[]>([]);
@@ -156,7 +161,7 @@ export default function DuzenlePage() {
 
       setTitle(data.title ?? "");
       setSlug(data.slug ?? "");
-      setCategory(data.category ?? "listeler");
+      setCategory(isEditorialCategory(data.category) ? data.category : "listeler");
       setContent(data.content ?? "");
       setYoutubeId(data.youtube_id ?? "");
       setCoverImage(data.cover_image ?? "");
@@ -200,7 +205,9 @@ export default function DuzenlePage() {
       setContentEn(row.content_en ?? "");
       setHeroVariant(row.hero_variant ?? "text-only");
       setAccentColor(row.accent ?? "emerald");
-      setHubTags(Array.isArray(row.hub_tags) ? row.hub_tags : []);
+      const dest = destinationFromHubTags(row.hub_tags);
+      setPublishScope(dest.scope);
+      setCrossPostHubs(dest.crossPostHubs);
 
       // Blok editörü — mevcut sections_json'ı yükle
       if (Array.isArray(row.sections_json) && row.sections_json.length > 0) {
@@ -393,28 +400,15 @@ export default function DuzenlePage() {
             </p>
           </div>
 
-          {/* Kategori */}
-          <div>
-            <label className="mb-1.5 block text-xs font-semibold text-slate-300">Category</label>
-            <div className="flex gap-2">
-              {CATEGORIES.map((cat) => (
-                <button
-                  key={cat.value} type="button"
-                  onClick={() => setCategory(cat.value)}
-                  className={[
-                    "rounded-lg border px-4 py-2 text-xs font-semibold transition",
-                    category === cat.value
-                      ? "border-emerald-500/60 bg-emerald-500/15 text-emerald-300"
-                      : "border-slate-700/80 bg-slate-900/70 text-slate-400 hover:border-slate-600 hover:text-slate-200",
-                  ].join(" ")}
-                >
-                  {cat.label}
-                </button>
-              ))}
-            </div>
-          </div>
-
-          <HubTagsField value={hubTags} onChange={setHubTags} />
+          <ArticleDestinationField
+            scope={publishScope}
+            category={category}
+            crossPostHubs={crossPostHubs}
+            onScopeChange={setPublishScope}
+            onCategoryChange={setCategory}
+            onCrossPostHubsChange={setCrossPostHubs}
+            slugPreview={slug}
+          />
 
           {/* V2 — Hero Variant + Accent */}
           <div className="grid gap-5 sm:grid-cols-2">

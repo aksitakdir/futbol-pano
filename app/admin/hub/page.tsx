@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useState } from "react";
 import AdminLayout from "../components/admin-layout";
+import HubArticlesPanel from "../components/hub-articles-panel";
 import { supabase } from "@/lib/supabase";
 import { HUBS, type HubId } from "@/lib/hub-config";
 import type { HubPillarCopy } from "@/lib/hub-types";
@@ -20,7 +21,7 @@ type CompletedRow = {
   isNew?: boolean;
 };
 
-type Tab = "completed" | "copy" | "sync";
+type Tab = "articles" | "completed" | "copy" | "sync";
 
 const labelCls = "mb-1 block text-[11px] font-medium text-slate-400";
 const inputCls =
@@ -31,7 +32,7 @@ function settingsKey(hubId: HubId) {
 }
 
 export default function AdminHubPage() {
-  const [tab, setTab] = useState<Tab>("sync");
+  const [tab, setTab] = useState<Tab>("articles");
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [message, setMessage] = useState("");
@@ -153,6 +154,7 @@ export default function AdminHubPage() {
   }
 
   const TABS: { id: Tab; label: string }[] = [
+    { id: "articles", label: "Articles" },
     { id: "sync", label: "Transfer Wire" },
     { id: "completed", label: "Confirmed deals" },
     { id: "copy", label: "Page copy" },
@@ -164,8 +166,7 @@ export default function AdminHubPage() {
         <div className="mb-6">
           <h1 className="text-xl font-bold">Transfers Hub</h1>
           <p className="text-xs text-slate-400">
-            Confirmed deals (manual) · Transfer Wire RSS (auto) · Scout articles via Content with hub tag{" "}
-            <code className="text-emerald-400">transfer</code>
+            Scout articles, Transfer Wire RSS, and confirmed deals for {HUBS.transfer.en.basePath}
           </p>
         </div>
 
@@ -190,6 +191,8 @@ export default function AdminHubPage() {
           ))}
         </div>
 
+        {tab === "articles" ? <HubArticlesPanel hubId="transfer" /> : null}
+
         {loading && tab === "completed" ? (
           <p className="py-12 text-center text-sm text-slate-400">Loading…</p>
         ) : null}
@@ -197,8 +200,8 @@ export default function AdminHubPage() {
         {tab === "completed" && !loading ? (
           <section className="space-y-4">
             <p className="text-xs text-slate-500">
-              Shown under <strong className="text-slate-300">CONFIRMED DEALS</strong> on /transfers. Add scout analysis
-              articles in Content with hub tag <code className="text-emerald-400">transfer</code>.
+              Shown under <strong className="text-slate-300">CONFIRMED DEALS</strong> on /transfers. Scout
+              analysis articles are managed under the Articles tab.
             </p>
             <button
               type="button"

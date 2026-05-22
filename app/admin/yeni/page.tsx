@@ -7,18 +7,21 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { supabase } from "@/lib/supabase";
 import RichTextEditor from "@/app/components/rich-text-editor";
 import AdminLayout from "../components/admin-layout";
-import HubTagsField from "@/app/components/hub-tags-field";
+import ArticleDestinationField from "@/app/components/article-destination-field";
+import {
+  adminHubPath,
+  hubTagsFromDestination,
+  isEditorialCategory,
+  isPublishScope,
+  type EditorialCategory,
+  type PublishScope,
+} from "@/lib/article-destination";
+import type { HubId } from "@/lib/hub-config";
 
 function isContentEmpty(html: string): boolean {
   if (!html?.trim()) return true;
   return html.replace(/<[^>]+>/g, "").trim() === "";
 }
-
-const CATEGORIES = [
-  { value: "listeler", label: "Lists" },
-  { value: "radar", label: "Radar" },
-  { value: "taktik-lab", label: "Tactics Lab" },
-];
 
 const HERO_VARIANTS = [
   { value: "player-cards", label: "🃏 Player Card", desc: "Radar/Lists" },
@@ -62,7 +65,9 @@ function NewArticleForm() {
 
   const [title, setTitle] = useState("");
   const [slug, setSlug] = useState("");
-  const [category, setCategory] = useState("listeler");
+  const [category, setCategory] = useState<EditorialCategory>("listeler");
+  const [publishScope, setPublishScope] = useState<PublishScope>("main");
+  const [crossPostHubs, setCrossPostHubs] = useState<HubId[]>([]);
   const [content, setContent] = useState("");
   const [youtubeId, setYoutubeId] = useState("");
   const [coverImage, setCoverImage] = useState("");
@@ -96,11 +101,14 @@ function NewArticleForm() {
 
   const [heroVariant, setHeroVariant] = useState("text-only");
   const [accentColor, setAccentColor] = useState("emerald");
-  const [hubTags, setHubTags] = useState<string[]>([]);
+
+  const hubTags = hubTagsFromDestination(publishScope, crossPostHubs);
 
   useEffect(() => {
     const c = searchParams.get("category");
-    if (c === "radar" || c === "listeler" || c === "taktik-lab") setCategory(c);
+    const h = searchParams.get("hub");
+    if (isEditorialCategory(c)) setCategory(c);
+    if (isPublishScope(h)) setPublishScope(h);
   }, [searchParams]);
 
   useEffect(() => {
@@ -181,10 +189,10 @@ function NewArticleForm() {
       setSaving(false);
       return;
     }
-    router.push(category === "radar" ? "/admin/radar" : "/admin/icerikler");
+    router.push(adminHubPath(publishScope) ?? (category === "radar" ? "/admin/radar" : "/admin/icerikler"));
   }
 
-  const backHref = category === "radar" ? "/admin/radar" : "/admin/icerikler";
+  const backHref = adminHubPath(publishScope) ?? (category === "radar" ? "/admin/radar" : "/admin/icerikler");
   const statsFilled = [statPace, statShooting, statPassing, statDribbling, statDefending, statPhysical].filter(v => v !== "").length;
 
   return (
@@ -217,21 +225,15 @@ function NewArticleForm() {
               className="w-full rounded-lg border border-slate-700/80 bg-slate-900/70 px-4 py-2.5 text-sm text-slate-100 placeholder-slate-500 outline-none transition focus:border-emerald-500/60 focus:ring-1 focus:ring-emerald-500/40" />
           </div>
 
-          {/* Category */}
-          <div>
-            <label className="mb-1.5 block text-xs font-semibold text-slate-300">Category</label>
-            <div className="flex gap-2">
-              {CATEGORIES.map((cat) => (
-                <button key={cat.value} type="button" onClick={() => setCategory(cat.value)}
-                  className={["rounded-lg border px-4 py-2 text-xs font-semibold transition",
-                    category === cat.value ? "border-emerald-500/60 bg-emerald-500/15 text-emerald-300" : "border-slate-700/80 bg-slate-900/70 text-slate-400 hover:border-slate-600 hover:text-slate-200"].join(" ")}>
-                  {cat.label}
-                </button>
-              ))}
-            </div>
-          </div>
-
-          <HubTagsField value={hubTags} onChange={setHubTags} />
+          <ArticleDestinationField
+            scope={publishScope}
+            category={category}
+            crossPostHubs={crossPostHubs}
+            onScopeChange={setPublishScope}
+            onCategoryChange={setCategory}
+            onCrossPostHubsChange={setCrossPostHubs}
+            slugPreview={slug}
+          />
 
           {/* Hero Style + Accent Color */}
           <div className="grid gap-5 sm:grid-cols-2">
