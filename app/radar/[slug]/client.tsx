@@ -9,6 +9,7 @@ import { type PlayerCardData } from "../../components/player-card";
 import { stripHtml } from "@/lib/utils";
 import { primaryHubId } from "@/lib/hub-from-tags";
 import type { SectionBlock } from "@/lib/section-blocks";
+import { redirectToCanonicalArticle } from "@/lib/article-route-guard";
 
 type ContentRow = {
   id: string; title: string; title_en?: string;
@@ -63,6 +64,7 @@ export default function RadarDetailClient({ slug }: { slug: string }) {
   const [playerCard, setPlayerCard] = useState<PlayerCardData | null>(null);
   const [loading, setLoading] = useState(true);
   const [notFound, setNotFound] = useState(false);
+  const [redirecting, setRedirecting] = useState(false);
 
   useEffect(() => {
     if (!slug) return;
@@ -71,6 +73,11 @@ export default function RadarDetailClient({ slug }: { slug: string }) {
       .then(async ({ data, error }) => {
         if (error || !data) { setNotFound(true); setLoading(false); return; }
         const row = data as ContentRow;
+        if (redirectToCanonicalArticle(row.category, row.slug, "radar")) {
+          setRedirecting(true);
+          setLoading(false);
+          return;
+        }
         setArticle(row);
 
         if (row.player_name) {
@@ -96,7 +103,7 @@ export default function RadarDetailClient({ slug }: { slug: string }) {
       });
   }, [slug]);
 
-  if (loading) return (
+  if (loading || redirecting) return (
     <main className="flex min-h-screen items-center justify-center" style={{ background: "var(--sg-bg)" }}>
       <span className="h-5 w-5 animate-spin rounded-full border-2" style={{ borderColor: "var(--sg-primary)", borderTopColor: "transparent" }} />
     </main>

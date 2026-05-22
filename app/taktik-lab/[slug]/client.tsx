@@ -6,6 +6,7 @@ import { supabase } from "@/lib/supabase";
 import ArticleLayoutEn from "../../components/article-layout-en";
 import { primaryHubId } from "@/lib/hub-from-tags";
 import type { SectionBlock } from "@/lib/section-blocks";
+import { redirectToCanonicalArticle } from "@/lib/article-route-guard";
 
 type ContentRow = {
   id: string; title: string; title_en?: string;
@@ -23,17 +24,29 @@ export default function TaktikLabDetailClient({ slug }: { slug: string }) {
   const [article, setArticle] = useState<ContentRow | null>(null);
   const [loading, setLoading] = useState(true);
   const [notFound, setNotFound] = useState(false);
+  const [redirecting, setRedirecting] = useState(false);
 
   useEffect(() => {
     if (!slug) return;
     supabase.from("contents").select("*").eq("slug", slug).eq("status", "yayinda").single()
       .then(({ data, error }) => {
-        if (error || !data) { setNotFound(true); } else { setArticle(data as ContentRow); }
+        if (error || !data) {
+          setNotFound(true);
+          setLoading(false);
+          return;
+        }
+        const row = data as ContentRow;
+        if (redirectToCanonicalArticle(row.category, row.slug, "taktik-lab")) {
+          setRedirecting(true);
+          setLoading(false);
+          return;
+        }
+        setArticle(row);
         setLoading(false);
       });
   }, [slug]);
 
-  if (loading) return (
+  if (loading || redirecting) return (
     <main className="flex min-h-screen items-center justify-center" style={{ background: "var(--sg-bg)" }}>
       <span className="h-5 w-5 animate-spin rounded-full border-2" style={{ borderColor: "var(--cyan)", borderTopColor: "transparent" }} />
     </main>

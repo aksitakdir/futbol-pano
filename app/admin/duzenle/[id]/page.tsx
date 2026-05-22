@@ -10,6 +10,7 @@ import AdminLayout from "../../components/admin-layout";
 import SectionsEditor, { type SectionBlock } from "../../components/sections-editor";
 import ArticleDestinationField from "@/app/components/article-destination-field";
 import {
+  categoryPublicPath,
   destinationFromHubTags,
   hubTagsFromDestination,
   publishScopeForCategory,
@@ -42,12 +43,6 @@ const ACCENT_COLORS = [
   { value: "amber", label: "Gold", color: "oklch(0.78 0.17 67)" },
   { value: "lime", label: "Lime", color: "oklch(0.80 0.19 126)" },
 ];
-
-function categoryPublicPath(cat: string): string {
-  if (cat === "radar") return "/radar";
-  if (cat === "taktik-lab") return "/taktik-lab";
-  return "/listeler";
-}
 
 const SLUG_PATTERN = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
 
