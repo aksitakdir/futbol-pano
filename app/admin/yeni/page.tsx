@@ -11,10 +11,11 @@ import SectionsEditor, { type SectionBlock } from "../components/sections-editor
 import ArticleDestinationField from "@/app/components/article-destination-field";
 import {
   adminHubPath,
+  categoryForScope,
   hubTagsFromDestination,
   isEditorialCategory,
   isPublishScope,
-  type EditorialCategory,
+  type ContentCategory,
   type PublishScope,
 } from "@/lib/article-destination";
 import { hasBlockContent } from "@/lib/section-blocks";
@@ -69,7 +70,7 @@ function NewArticleForm() {
 
   const [title, setTitle] = useState("");
   const [slug, setSlug] = useState("");
-  const [category, setCategory] = useState<EditorialCategory>("listeler");
+  const [category, setCategory] = useState<ContentCategory>("radar");
   const [publishScope, setPublishScope] = useState<PublishScope>("main");
   const [crossPostHubs, setCrossPostHubs] = useState<HubId[]>([]);
   const [content, setContent] = useState("");
@@ -111,11 +112,15 @@ function NewArticleForm() {
   const hubTags = hubTagsFromDestination(publishScope, crossPostHubs);
 
   useEffect(() => {
-    const c = searchParams.get("category");
     const h = searchParams.get("hub");
+    const c = searchParams.get("category");
     const m = searchParams.get("mode");
-    if (isEditorialCategory(c)) setCategory(c);
-    if (isPublishScope(h)) setPublishScope(h);
+    if (isPublishScope(h)) {
+      setPublishScope(h);
+      if (h !== "main") setCategory(categoryForScope(h));
+    } else if (isEditorialCategory(c)) {
+      setCategory(c);
+    }
     if (m === "blocks") setContentMode("blocks");
   }, [searchParams]);
 
@@ -177,11 +182,12 @@ function NewArticleForm() {
     setSaving(true);
     const usingBlocks = contentMode === "blocks";
     const bodyHtml = usingBlocks ? PLACEHOLDER_HTML : content.trim();
+    const saveCategory = publishScope === "main" ? category : publishScope;
     const { error: insertError } = await supabase.from("contents").insert({
       title: title.trim(),
       title_en: title.trim(),
       slug: slug.trim(),
-      category,
+      category: saveCategory,
       content: bodyHtml,
       content_en: bodyHtml,
       youtube_id: youtubeId.trim(),

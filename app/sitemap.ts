@@ -19,6 +19,8 @@ const CAT_PATHS: Record<string, string> = {
   radar: "radar",
   listeler: "listeler",
   "taktik-lab": "taktik-lab",
+  "wc-2026": "world-cup-2026",
+  transfer: "transfers",
 };
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {

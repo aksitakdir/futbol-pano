@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { HUBS } from "@/lib/hub-config";
+import { HUBS, categoryArticlePath } from "@/lib/hub-config";
 
 type HubArticlePreview = { title: string; slug: string; category: string; };
 
@@ -12,9 +12,7 @@ type Props = {
 };
 
 function articleHref(category: string, slug: string): string {
-  if (category === "radar") return `/radar/${slug}`;
-  if (category === "taktik-lab") return `/taktik-lab/${slug}`;
-  return `/listeler/${slug}`;
+  return categoryArticlePath(category, slug);
 }
 
 export default function HomeHubPromo({ wcArticles, transferArticles }: Props) {

@@ -17,6 +17,8 @@ const BLOCK_TYPES: { type: SectionBlock["type"]; label: string; icon: string; de
   { type: "section", label: "Section", icon: "§", desc: "Heading + body content", color: "sky" },
   { type: "pullquote", label: "Pull Quote", icon: "❝", desc: "Italic highlight quote", color: "amber" },
   { type: "callout", label: "Callout", icon: "◈", desc: "Tactical note / info box", color: "rose" },
+  { type: "youtube", label: "YouTube", icon: "▶", desc: "Embed a video inline in the article", color: "red" },
+  { type: "player", label: "Player Card", icon: "🃏", desc: "EA FC card at this position in the text", color: "cyan" },
 ];
 
 const COLOR_MAP: Record<string, string> = {
@@ -26,6 +28,8 @@ const COLOR_MAP: Record<string, string> = {
   sky: "border-sky-500/30 bg-sky-500/5 text-sky-300",
   amber: "border-amber-500/30 bg-amber-500/5 text-amber-300",
   rose: "border-rose-500/30 bg-rose-500/5 text-rose-300",
+  red: "border-red-500/30 bg-red-500/5 text-red-300",
+  cyan: "border-cyan-500/30 bg-cyan-500/5 text-cyan-300",
 };
 
 function blockMeta(type: SectionBlock["type"]) {
@@ -46,6 +50,10 @@ function defaultBlock(type: SectionBlock["type"]): SectionBlock {
       return { type, text: "" };
     case "callout":
       return { type, html: "" };
+    case "youtube":
+      return { type, url: "" };
+    case "player":
+      return { type, name: "" };
   }
 }
 
@@ -190,6 +198,34 @@ function BlockEditor({
                 rows={3}
                 className="w-full rounded-lg border border-amber-700/40 bg-slate-800/70 px-3 py-2 text-sm text-slate-100 placeholder-slate-500 outline-none resize-y focus:border-amber-500/60"
               />
+            </div>
+          )}
+
+          {block.type === "youtube" && (
+            <div>
+              <label className="mb-1 block text-[10px] font-semibold text-slate-400 uppercase tracking-wider">YouTube URL or video ID</label>
+              <input
+                type="text"
+                value={block.url}
+                onChange={(e) => onChange({ ...block, url: e.target.value })}
+                placeholder="https://youtu.be/… or dQw4w9WgXcQ"
+                className="w-full rounded-lg border border-slate-700/80 bg-slate-800/70 px-3 py-2 text-sm text-slate-100 placeholder-slate-500 outline-none focus:border-red-500/60"
+              />
+              <p className="mt-1 text-[10px] text-slate-500">Embeds here in the article body — separate from the hero YouTube field above.</p>
+            </div>
+          )}
+
+          {block.type === "player" && (
+            <div>
+              <label className="mb-1 block text-[10px] font-semibold text-slate-400 uppercase tracking-wider">Player name</label>
+              <input
+                type="text"
+                value={block.name}
+                onChange={(e) => onChange({ ...block, name: e.target.value })}
+                placeholder="e.g. Bukayo Saka"
+                className="w-full rounded-lg border border-slate-700/80 bg-slate-800/70 px-3 py-2 text-sm text-slate-100 placeholder-slate-500 outline-none focus:border-cyan-500/60"
+              />
+              <p className="mt-1 text-[10px] text-slate-500">Matches fc_players database — card appears inline at this block.</p>
             </div>
           )}
         </div>

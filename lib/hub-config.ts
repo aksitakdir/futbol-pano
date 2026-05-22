@@ -76,6 +76,8 @@ export function getHubConfig(hubId: HubId, _locale?: HubLocale): HubLocaleConfig
 }
 
 export function categoryArticlePath(category: string, slug: string): string {
+  if (category === "wc-2026") return `${HUBS["wc-2026"].en.basePath}/${slug}`;
+  if (category === "transfer") return `${HUBS.transfer.en.basePath}/${slug}`;
   if (category === "listeler") return `/listeler/${slug}`;
   if (category === "radar") return `/radar/${slug}`;
   if (category === "taktik-lab") return `/taktik-lab/${slug}`;
@@ -83,5 +85,9 @@ export function categoryArticlePath(category: string, slug: string): string {
 }
 
 export const CAT_LABEL: Record<string, string> = {
-  listeler: "Lists", radar: "Radar", "taktik-lab": "Tactics Lab",
+  listeler: "Lists",
+  radar: "Radar",
+  "taktik-lab": "Tactics Lab",
+  "wc-2026": "World Cup 2026",
+  transfer: "Transfers",
 };

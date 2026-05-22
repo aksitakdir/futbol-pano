@@ -37,6 +37,8 @@ const CATEGORY_LABEL: Record<string, string> = {
   listeler: "Lists",
   radar: "Radar",
   "taktik-lab": "Tactics Lab",
+  "wc-2026": "WC 2026",
+  transfer: "Transfers",
 };
 
 const CATEGORY_COLOR: Record<string, string> = {

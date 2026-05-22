@@ -4,6 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { getCategoryImage } from "@/lib/category-images";
+import { categoryArticlePath } from "@/lib/hub-config";
 
 export type HomeRecentItem = {
   id: string;
@@ -29,10 +30,7 @@ const CAT_LABEL: Record<string, string> = {
 };
 
 function itemHref(category: string, slug: string): string {
-  if (category === "listeler") return `/listeler/${slug}`;
-  if (category === "radar") return `/radar/${slug}`;
-  if (category === "taktik-lab") return `/taktik-lab/${slug}`;
-  return `/listeler/${slug}`;
+  return categoryArticlePath(category, slug);
 }
 
 export default function HomeRecentCarousel({ items, locale }: { items: HomeRecentItem[]; locale?: string }) {

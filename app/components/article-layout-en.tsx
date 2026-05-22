@@ -22,12 +22,15 @@ export type NewsItem = { title: string; link: string; source: string; date: stri
 
 const CATEGORY_LABEL: Record<string, string> = {
   listeler: "Lists", radar: "Radar", "taktik-lab": "Tactics Lab",
+  "wc-2026": "World Cup 2026", transfer: "Transfers",
 };
 
 const CAT_ACCENT: Record<string, string> = {
   listeler: "var(--emerald)",
   radar: "var(--accent)",
   "taktik-lab": "var(--sky)",
+  "wc-2026": "var(--amber)",
+  transfer: "var(--cyan)",
 };
 
 const CATEGORY_TAGS: Record<string, string[]> = {
@@ -41,6 +44,8 @@ function readTime(text: string): number {
 }
 
 function categoryPath(category: string): string {
+  if (category === "wc-2026") return "/world-cup-2026";
+  if (category === "transfer") return "/transfers";
   if (category === "listeler") return "/listeler";
   if (category === "radar") return "/radar";
   if (category === "taktik-lab") return "/taktik-lab";
@@ -97,7 +102,7 @@ function getNewsQueryFromTitle(title: string): string {
 
 type Props = {
   title: string; content: string; category: string; date: string; slug: string;
-  activeNav: "listeler" | "radar" | "taktik-lab";
+  activeNav: "listeler" | "radar" | "taktik-lab" | "wc-2026" | "transfer";
   backHref: string; backLabel: string;
   youtubeId?: string; coverImage?: string;
   youtubeQuery1?: string; youtubeQuery2?: string;

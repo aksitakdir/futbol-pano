@@ -1,7 +1,9 @@
 "use client";
 
 import ArticleHtmlWithPlayerEmbeds from "./article-html-with-player-embeds";
+import ArticlePlayerEmbed from "./article-player-embed";
 import { headingToId, plainTextToHtml, type SectionBlock } from "@/lib/section-blocks";
+import { normalizeYoutubeId } from "@/lib/youtube-id";
 
 type Props = {
   sections: SectionBlock[];
@@ -60,6 +62,35 @@ export default function SectionsJsonBody({
               <ArticleHtmlWithPlayerEmbeds html={sec.html} locale={locale} />
             </div>
           );
+        }
+        if (sec.type === "youtube") {
+          const videoId = normalizeYoutubeId(sec.url);
+          if (!videoId) return null;
+          return (
+            <div
+              key={i}
+              style={{
+                position: "relative",
+                aspectRatio: "16 / 9",
+                margin: "32px 0",
+                borderRadius: 8,
+                overflow: "hidden",
+                border: "1px solid var(--sg-border)",
+              }}
+            >
+              <iframe
+                src={`https://www.youtube-nocookie.com/embed/${videoId}`}
+                title="YouTube video"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                referrerPolicy="strict-origin-when-cross-origin"
+                allowFullScreen
+                style={{ position: "absolute", inset: 0, width: "100%", height: "100%", border: "none" }}
+              />
+            </div>
+          );
+        }
+        if (sec.type === "player") {
+          return <ArticlePlayerEmbed key={i} playerName={sec.name} locale={locale} />;
         }
         return null;
       })}

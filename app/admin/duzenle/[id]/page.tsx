@@ -13,7 +13,7 @@ import {
   destinationFromHubTags,
   hubTagsFromDestination,
   isEditorialCategory,
-  type EditorialCategory,
+  type ContentCategory,
   type PublishScope,
 } from "@/lib/article-destination";
 import { hasBlockContent } from "@/lib/section-blocks";
@@ -98,7 +98,7 @@ export default function DuzenlePage() {
   const [title, setTitle] = useState("");
   const [titleEn, setTitleEn] = useState("");
   const [slug, setSlug] = useState("");
-  const [category, setCategory] = useState<EditorialCategory>("listeler");
+  const [category, setCategory] = useState<ContentCategory>("listeler");
   const [publishScope, setPublishScope] = useState<PublishScope>("main");
   const [crossPostHubs, setCrossPostHubs] = useState<HubId[]>([]);
   const [content, setContent] = useState("");
@@ -164,7 +164,6 @@ export default function DuzenlePage() {
 
       setTitle(data.title ?? "");
       setSlug(data.slug ?? "");
-      setCategory(isEditorialCategory(data.category) ? data.category : "listeler");
       setContent(data.content ?? "");
       setYoutubeId(data.youtube_id ?? "");
       setCoverImage(data.cover_image ?? "");
@@ -208,9 +207,10 @@ export default function DuzenlePage() {
       setContentEn(row.content_en ?? "");
       setHeroVariant(row.hero_variant ?? "text-only");
       setAccentColor(row.accent ?? "emerald");
-      const dest = destinationFromHubTags(row.hub_tags);
+      const dest = destinationFromHubTags(row.hub_tags, data.category);
       setPublishScope(dest.scope);
       setCrossPostHubs(dest.crossPostHubs);
+      setCategory(dest.category);
 
       // Blok editörü — mevcut sections_json'ı yükle
       if (Array.isArray(row.sections_json) && row.sections_json.length > 0) {
@@ -310,11 +310,12 @@ export default function DuzenlePage() {
 
     setSaving(true);
     const usingBlocks = contentMode === "blocks";
+    const saveCategory = publishScope === "main" ? category : publishScope;
     const updateData: Record<string, unknown> = {
       title: title.trim(),
       title_en: titleEn.trim() || null,
       slug: slugTrim,
-      category,
+      category: saveCategory,
       content: usingBlocks ? PLACEHOLDER_HTML : content.trim(),
       content_en: usingBlocks ? PLACEHOLDER_HTML : contentEn.trim() || null,
       youtube_id: youtubeId.trim(),
