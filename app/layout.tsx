@@ -28,10 +28,10 @@ export const metadata: Metadata = {
   metadataBase: new URL("https://www.scoutgamer.com"),
   alternates: { canonical: "./" },
   title: {
-    default: "Scout Gamer",
+    default: "Scout Gamer | Young Talent Scouting, Rising Footballers & Game Culture",
     template: "%s | Scout Gamer",
   },
-  description: "Football × Game Culture. Discover Europe's brightest young talents.",
+  description: "Discover the brightest young football talents, World Cup 2026 squads, transfer analysis, tactical deep-dives, and interactive bracket tournaments.",
   openGraph: {
     type: "website",
     siteName: "Scout Gamer",
