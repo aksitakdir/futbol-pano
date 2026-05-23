@@ -111,7 +111,7 @@ export default function DuzenlePage() {
   const [newsQuery, setNewsQuery] = useState("");
   const [playerName, setPlayerName] = useState("");
 
-  // Stat alanları
+  // Stat fields
   const [statPace, setStatPace] = useState<number | "">("");
   const [statShooting, setStatShooting] = useState<number | "">("");
   const [statPassing, setStatPassing] = useState<number | "">("");
@@ -120,7 +120,7 @@ export default function DuzenlePage() {
   const [statPhysical, setStatPhysical] = useState<number | "">("");
   const [statOverall, setStatOverall] = useState<number | "">("");
 
-  // Oyuncu arama
+  // Player search
   const [playerSearch, setPlayerSearch] = useState("");
   const [playerResults, setPlayerResults] = useState<FcPlayer[]>([]);
   const [playerSearching, setPlayerSearching] = useState(false);
@@ -141,7 +141,7 @@ export default function DuzenlePage() {
   const publishScope = publishScopeForCategory(category);
   const hubTags = hubTagsFromDestination(publishScope, crossPostHubs);
 
-  // Sections JSON (blok editörü)
+  // Sections JSON (block editor)
   const [sectionsBlocks, setSectionsBlocks] = useState<SectionBlock[]>([]);
   const [contentMode, setContentMode] = useState<"rich" | "blocks">("rich");
 
@@ -180,7 +180,7 @@ export default function DuzenlePage() {
       setPlayerName(data.player_name ?? "");
       setPlayerSearch(data.player_name ?? "");
 
-      // Mevcut stat değerlerini yükle
+      // Load existing stat values
       setStatPace(data.stat_pace ?? "");
       setStatShooting(data.stat_shooting ?? "");
       setStatPassing(data.stat_passing ?? "");
@@ -221,7 +221,7 @@ export default function DuzenlePage() {
       const pins = await fetchCoverStoryPinsFromApi();
       setCoverStoryScopes(activeCoverScopesForContent(pins, id));
 
-      // Blok editörü — mevcut sections_json'ı yükle
+      // Block editor — load existing sections_json
       if (Array.isArray(row.sections_json) && row.sections_json.length > 0) {
         setSectionsBlocks(row.sections_json as SectionBlock[]);
         setContentMode("blocks");
@@ -232,7 +232,7 @@ export default function DuzenlePage() {
     fetchContent();
   }, [id]);
 
-  // Oyuncu arama — debounced
+  // Player search — debounced
   useEffect(() => {
     if (!playerSearch.trim() || playerSearch.length < 2) {
       setPlayerResults([]);
@@ -401,7 +401,7 @@ export default function DuzenlePage() {
         </div>
 
         <div className="space-y-5">
-          {/* Başlık */}
+          {/* Title */}
           <div>
             <label className="mb-1.5 block text-xs font-semibold text-slate-300">Title</label>
             <input
@@ -491,7 +491,7 @@ export default function DuzenlePage() {
             </div>
           </div>
 
-          {/* YouTube + Kapak */}
+          {/* YouTube + Cover */}
           <div className="grid gap-5 sm:grid-cols-2">
             <div>
               <label className="mb-1.5 block text-xs font-semibold text-slate-300">YouTube Video ID</label>
@@ -549,7 +549,7 @@ export default function DuzenlePage() {
             onChange={setCoverStoryScopes}
           />
 
-          {/* YouTube sorguları */}
+          {/* YouTube queries */}
           <div className="grid gap-5 sm:grid-cols-2">
             <div>
               <label className="mb-1.5 block text-xs font-semibold text-slate-300">YouTube Search 1</label>
@@ -571,7 +571,7 @@ export default function DuzenlePage() {
             </div>
           </div>
 
-          {/* Haber keyword */}
+          {/* News keyword */}
           <div>
             <label className="mb-1.5 block text-xs font-semibold text-slate-300">News Search Keyword</label>
             <input
@@ -673,7 +673,7 @@ export default function DuzenlePage() {
             </div>
           )}
 
-          {/* ─── Oyuncu Kartı Bölümü ─────────────────────────────────────────── */}
+          {/* ─── Player Card Section ─────────────────────────────────────────── */}
           <div className="rounded-xl border border-slate-700/60 bg-slate-900/40 p-5">
             <div className="mb-4 flex items-center justify-between">
               <div>
@@ -694,7 +694,7 @@ export default function DuzenlePage() {
               )}
             </div>
 
-            {/* Oyuncu arama */}
+            {/* Player search */}
             <div className="relative mb-4">
               <label className="mb-1.5 block text-xs font-semibold text-slate-300">Featured Player</label>
               <input
@@ -728,7 +728,7 @@ export default function DuzenlePage() {
               )}
             </div>
 
-            {/* Eşleşen oyuncu özeti */}
+            {/* Matched player summary */}
             {playerMatched && (
               <div className="mb-4 flex items-center gap-3 rounded-lg border border-emerald-500/20 bg-emerald-500/5 px-4 py-2.5">
                 <div className="flex-1 min-w-0">
@@ -766,9 +766,9 @@ export default function DuzenlePage() {
             </div>
           </div>
 
-          {/* İçerik editörü — Rich Text veya Blok Editörü */}
+          {/* Content editor — Rich Text or Block Editor */}
           <div className="rounded-xl border border-slate-700/60 bg-slate-900/40 p-5">
-            {/* Mod seçimi */}
+            {/* Mode selection */}
             <div className="flex items-center justify-between mb-4">
               <label className="text-xs font-semibold text-slate-300">Content</label>
               <div className="flex rounded-lg overflow-hidden border border-slate-700/60">

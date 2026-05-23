@@ -1,7 +1,15 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect, useRef } from "react";
+import { supabase } from "@/lib/supabase";
 import type { SectionBlock } from "@/lib/section-blocks";
+
+type FcPlayerResult = {
+  name: string;
+  overall: number;
+  position: string;
+  club: string;
+};
 
 export type { SectionBlock } from "@/lib/section-blocks";
 
@@ -216,20 +224,93 @@ function BlockEditor({
           )}
 
           {block.type === "player" && (
-            <div>
-              <label className="mb-1 block text-[10px] font-semibold text-slate-400 uppercase tracking-wider">Player name</label>
-              <input
-                type="text"
-                value={block.name}
-                onChange={(e) => onChange({ ...block, name: e.target.value })}
-                placeholder="e.g. Bukayo Saka"
-                className="w-full rounded-lg border border-slate-700/80 bg-slate-800/70 px-3 py-2 text-sm text-slate-100 placeholder-slate-500 outline-none focus:border-cyan-500/60"
-              />
-              <p className="mt-1 text-[10px] text-slate-500">Matches fc_players database — card appears inline at this block.</p>
-            </div>
+            <PlayerBlockSearch
+              name={block.name}
+              onChange={(name) => onChange({ ...block, name })}
+            />
           )}
         </div>
       )}
+    </div>
+  );
+}
+
+function PlayerBlockSearch({ name, onChange }: { name: string; onChange: (name: string) => void }) {
+  const [query, setQuery] = useState(name);
+  const [results, setResults] = useState<FcPlayerResult[]>([]);
+  const [searching, setSearching] = useState(false);
+  const [matched, setMatched] = useState<FcPlayerResult | null>(null);
+  const timeout = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  useEffect(() => { setQuery(name); }, [name]);
+
+  useEffect(() => {
+    if (!query.trim() || query.length < 2 || matched) {
+      setResults([]);
+      return;
+    }
+    if (timeout.current) clearTimeout(timeout.current);
+    timeout.current = setTimeout(async () => {
+      setSearching(true);
+      const { data } = await supabase
+        .from("fc_players")
+        .select("name,overall,position,club")
+        .ilike("name", `%${query.trim()}%`)
+        .order("overall", { ascending: false })
+        .limit(8);
+      setResults((data as FcPlayerResult[]) ?? []);
+      setSearching(false);
+    }, 300);
+  }, [query, matched]);
+
+  function select(p: FcPlayerResult) {
+    setMatched(p);
+    setQuery(p.name);
+    onChange(p.name);
+    setResults([]);
+  }
+
+  return (
+    <div>
+      <label className="mb-1 block text-[10px] font-semibold text-slate-400 uppercase tracking-wider">Player name</label>
+      <div className="relative">
+        <input
+          type="text"
+          value={query}
+          onChange={(e) => { setQuery(e.target.value); setMatched(null); onChange(e.target.value); }}
+          placeholder="Type to search EA FC 26 database..."
+          className="w-full rounded-lg border border-slate-700/80 bg-slate-800/70 px-3 py-2 text-sm text-slate-100 placeholder-slate-500 outline-none focus:border-cyan-500/60"
+        />
+        {searching && (
+          <div className="absolute right-3 top-2.5 h-4 w-4 animate-spin rounded-full border-2 border-cyan-400 border-t-transparent" />
+        )}
+        {results.length > 0 && (
+          <div className="absolute z-30 mt-1 w-full rounded-xl border border-slate-700 bg-slate-900 shadow-xl overflow-hidden">
+            {results.map((p) => (
+              <button
+                key={p.name + p.club}
+                type="button"
+                onClick={() => select(p)}
+                className="flex w-full items-center justify-between px-3 py-2 text-left text-sm hover:bg-slate-800/80 transition"
+              >
+                <div>
+                  <span className="font-semibold text-slate-100">{p.name}</span>
+                  <span className="ml-2 text-[10px] text-slate-400">{p.club} · {p.position}</span>
+                </div>
+                <span className="text-sm font-bold text-cyan-400">{p.overall}</span>
+              </button>
+            ))}
+          </div>
+        )}
+      </div>
+      {matched && (
+        <div className="mt-2 flex items-center gap-2 rounded-lg border border-cyan-500/20 bg-cyan-500/5 px-3 py-1.5">
+          <span className="text-sm font-bold text-cyan-300">{matched.name}</span>
+          <span className="text-[10px] text-slate-400">{matched.club} · {matched.position}</span>
+          <span className="ml-auto text-lg font-black text-cyan-400">{matched.overall}</span>
+        </div>
+      )}
+      {!matched && <p className="mt-1 text-[10px] text-slate-500">Type at least 2 characters to search — card renders inline at this position.</p>}
     </div>
   );
 }

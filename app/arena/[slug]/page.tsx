@@ -6,7 +6,7 @@ import ArenaSlugClient from "./arena-slug-client";
 
 const BASE = "https://www.scoutgamer.com";
 
-// Yayında olan tüm slug'ları build time'da oluştur (SSG)
+// Generate all published slugs at build time (SSG)
 export async function generateStaticParams() {
   const supabase = createClient();
   const { data } = await supabase
@@ -16,7 +16,7 @@ export async function generateStaticParams() {
   return (data ?? []).map((g) => ({ slug: g.slug }));
 }
 
-// Build sonrası güncellemeler için ISR: 1 saat
+// ISR: revalidate every hour
 export const revalidate = 3600;
 
 async function fetchGame(slug: string): Promise<ArenaGame | null> {
