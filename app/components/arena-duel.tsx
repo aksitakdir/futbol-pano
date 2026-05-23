@@ -358,7 +358,7 @@ export default function ArenaDuel({ participants, gameType, title, lang = "tr", 
       ? `My champion in "${title}": ${champion.name}! Who's yours?`
       : `"${title}" turnuvasında şampiyonum: ${champion.name}! Seninki kim?`;
     // Embed champion name in URL so the shared link shows a champion-specific OG image
-    const base = canonicalUrl ?? "https://scoutgamer.com/arena";
+    const base = canonicalUrl ?? "https://www.scoutgamer.com/arena";
     const shareUrl = `${base}?champion=${encodeURIComponent(champion.name)}`;
 
     if (typeof navigator !== "undefined" && navigator.share) {

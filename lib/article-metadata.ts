@@ -28,8 +28,8 @@ export async function articleMetadata(
     const title = lang === "en" ? (data.title_en || data.title) : data.title;
     const raw = lang === "en" ? (data.content_en || data.content) : data.content;
     const description = plainText(raw).slice(0, 160);
-    const url = `https://scoutgamer.com${urlPath}`;
-    const ogImage = data.cover_image || "https://scoutgamer.com/og-image.png";
+    const url = `https://www.scoutgamer.com${urlPath}`;
+    const ogImage = data.cover_image || "https://www.scoutgamer.com/og-image.png";
 
     return {
       title,

@@ -1,9 +1,10 @@
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Oyna & Paylaş",
+  title: "Arena — Play & Share | Scout Gamer",
   description:
-    "Arena bracket’ları: genç yıldızlar, Şampiyonlar Ligi, teknik direktörler, Süper Lig efsaneleri ve yabancılar. Şampiyonunu seç ve paylaş.",
+    "Bracket tournaments — young stars, Champions League legends, managers and more. Pick your champion and share.",
+  alternates: { canonical: "https://www.scoutgamer.com/arena" },
 };
 
 export default function ArenaLayout({ children }: { children: React.ReactNode }) {

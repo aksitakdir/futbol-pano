@@ -16,17 +16,13 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
     title: `${data.title} | Scout Gamer`,
     description,
     alternates: {
-      canonical: `https://scoutgamer.com/radar/${slug}`,
-      languages: {
-        tr: `https://scoutgamer.com/radar/${slug}`,
-        en: `https://scoutgamer.com/en/radar/${slug}`,
-      },
+      canonical: `https://www.scoutgamer.com/radar/${slug}`,
     },
     openGraph: {
       title: `${data.title} | Scout Gamer`,
       description,
-      url: `https://scoutgamer.com/radar/${slug}`,
-      images: data.cover_image ? [{ url: data.cover_image }] : [{ url: "https://scoutgamer.com/og-image.png" }],
+      url: `https://www.scoutgamer.com/radar/${slug}`,
+      images: data.cover_image ? [{ url: data.cover_image }] : [{ url: "https://www.scoutgamer.com/og-image.png" }],
     },
     twitter: { card: "summary_large_image", title: `${data.title} | Scout Gamer`, description },
   };

@@ -25,10 +25,8 @@ const ibmPlexMono = IBM_Plex_Mono({
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://scoutgamer.com"),
-  alternates: {
-    canonical: "https://scoutgamer.com",
-  },
+  metadataBase: new URL("https://www.scoutgamer.com"),
+  alternates: { canonical: "./" },
   title: {
     default: "Scout Gamer",
     template: "%s | Scout Gamer",
@@ -38,8 +36,8 @@ export const metadata: Metadata = {
     type: "website",
     siteName: "Scout Gamer",
     locale: "en_US",
-    url: "https://scoutgamer.com",
-    images: [{ url: "https://scoutgamer.com/og-image.png", width: 1200, height: 630, alt: "Scout Gamer" }],
+    url: "https://www.scoutgamer.com",
+    images: [{ url: "https://www.scoutgamer.com/og-image.png", width: 1200, height: 630, alt: "Scout Gamer" }],
   },
   twitter: {
     card: "summary_large_image",

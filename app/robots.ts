@@ -9,6 +9,6 @@ export default function robots(): MetadataRoute.Robots {
         disallow: ["/admin", "/admin/", "/api/"],
       },
     ],
-    sitemap: "https://scoutgamer.com/sitemap.xml",
+    sitemap: "https://www.scoutgamer.com/sitemap.xml",
   };
 }

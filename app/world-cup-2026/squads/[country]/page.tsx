@@ -11,6 +11,7 @@ export async function generateMetadata({ params }: Props) {
   return {
     title: `${team.nameEn} World Cup Squad 2026 | Scout Gamer`,
     description: `${team.nameEn} 2026 World Cup squad — by position scout view.`,
+    alternates: { canonical: `https://www.scoutgamer.com/world-cup-2026/squads/${country}` },
   };
 }
 

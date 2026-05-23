@@ -158,7 +158,7 @@ export default function ArticleLayoutEn({
 
   const youtubeEmbedId = useMemo(() => normalizeYoutubeId(youtubeId), [youtubeId]);
 
-  const canonicalUrl = `https://scoutgamer.com${categoryPath(category)}/${slug}`;
+  const canonicalUrl = `https://www.scoutgamer.com${categoryPath(category)}/${slug}`;
   const xShareUrl = `https://x.com/intent/tweet?text=${encodeURIComponent(title + " | Scout Gamer")}&url=${encodeURIComponent(canonicalUrl)}`;
   const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(title + " " + canonicalUrl)}`;
 

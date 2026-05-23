@@ -13,13 +13,13 @@ export const metadata: Metadata = {
   description:
     "Pick your favourite footballers, managers and legends in a bracket tournament. New matchups every time — choose your champion and share.",
   alternates: {
-    canonical: "https://scoutgamer.com/arena",
+    canonical: "https://www.scoutgamer.com/arena",
   },
   openGraph: {
     title: "Arena — Play & Share | Scout Gamer",
     description:
       "Pick your favourite footballers and legends in a bracket tournament. Choose your champion and share.",
-    url: "https://scoutgamer.com/arena",
+    url: "https://www.scoutgamer.com/arena",
     siteName: "Scout Gamer",
     type: "website",
   },
@@ -45,13 +45,13 @@ export default async function ArenaHomePage() {
     "@type": "ItemList",
     "name": "Scout Gamer Arena Tournaments",
     "description": "Pick your favourite footballers in a bracket tournament",
-    "url": "https://scoutgamer.com/arena",
+    "url": "https://www.scoutgamer.com/arena",
     "numberOfItems": games.length,
     "itemListElement": games.map((g, i) => ({
       "@type": "ListItem",
       "position": i + 1,
       "name": g.title_en || g.title_tr,
-      "url": `https://scoutgamer.com/arena/${g.slug}`,
+      "url": `https://www.scoutgamer.com/arena/${g.slug}`,
     })),
   };
 

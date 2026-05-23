@@ -1,7 +1,7 @@
 import type { MetadataRoute } from "next";
 import { createClient } from "@/lib/supabase";
 
-const base = "https://scoutgamer.com";
+const base = "https://www.scoutgamer.com";
 
 const staticEntries = [
   { url: "",                          priority: 1.0 },

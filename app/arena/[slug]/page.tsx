@@ -4,7 +4,7 @@ import { createClient } from "@/lib/supabase";
 import type { ArenaGame } from "@/lib/arena-brackets";
 import ArenaSlugClient from "./arena-slug-client";
 
-const BASE = "https://scoutgamer.com";
+const BASE = "https://www.scoutgamer.com";
 
 // Yayında olan tüm slug'ları build time'da oluştur (SSG)
 export async function generateStaticParams() {
@@ -99,13 +99,7 @@ export async function generateMetadata({
   return {
     title: `${gameTitle} | Arena — Scout Gamer`,
     description: gameDesc,
-    alternates: {
-      canonical,
-      languages: {
-        tr: `${BASE}/arena/${slug}`,
-        en: `${BASE}/arena/${slug}?lang=en`,
-      },
-    },
+    alternates: { canonical },
     openGraph: {
       title: `${gameTitle} | Scout Gamer Arena`,
       description: gameDesc,

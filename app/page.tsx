@@ -398,6 +398,8 @@ export default function HomePage() {
       <SiteHeader />
       <div style={{ paddingTop: "68px" }} />
 
+      <h1 className="sr-only">Scout Gamer — Football × Game Culture</h1>
+
       {/* ── Hero Slider ── */}
       {slides.length > 0 && (
         <section className="relative w-full overflow-hidden grain" style={{ height: "78vh", minHeight: 580 }}>
@@ -438,9 +440,9 @@ export default function HomePage() {
                         {CAT_LABEL[item.slide.category] ?? item.slide.category}
                       </span>
                     </div>
-                    <h1 className="display" style={{ fontSize: "clamp(2.4rem, 5.5vw, 4.8rem)", fontWeight: 700, letterSpacing: "-0.04em", lineHeight: 1.08, margin: "0 0 20px", paddingBottom: "0.14em", textWrap: "balance", maxWidth: 820, background: "linear-gradient(135deg, var(--accent) 0%, var(--accent-2) 60%, var(--accent-3) 100%)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", backgroundClip: "text" }}>
+                    <h2 className="display" style={{ fontSize: "clamp(2.4rem, 5.5vw, 4.8rem)", fontWeight: 700, letterSpacing: "-0.04em", lineHeight: 1.08, margin: "0 0 20px", paddingBottom: "0.14em", textWrap: "balance", maxWidth: 820, background: "linear-gradient(135deg, var(--accent) 0%, var(--accent-2) 60%, var(--accent-3) 100%)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", backgroundClip: "text" }}>
                       {item.slide.title_en || item.slide.title}
-                    </h1>
+                    </h2>
                     <p className="hidden sm:block line-clamp-3" style={{ fontSize: 17, lineHeight: 1.6, color: "var(--ink-200)", maxWidth: 600, marginBottom: 36 }}>
                       {(() => {
                         const raw = item.slide.content_en || item.slide.content;
@@ -469,7 +471,7 @@ export default function HomePage() {
                         {item.eyebrow}
                       </span>
                     </div>
-                    <h1
+                    <h2
                       className="display"
                       style={{
                         fontSize: "clamp(2.4rem, 5.5vw, 4.8rem)",
@@ -487,7 +489,7 @@ export default function HomePage() {
                       }}
                     >
                       {item.title}
-                    </h1>
+                    </h2>
                     <p
                       style={{
                         fontSize: 17,
@@ -512,9 +514,9 @@ export default function HomePage() {
                     <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 24 }}>
                       <span className="chip solid" style={{ background: "var(--amber)", borderColor: "var(--amber)", color: "var(--ink-900)" }}>Arena</span>
                     </div>
-                    <h1 className="display" style={{ fontSize: "clamp(2.4rem, 5.5vw, 4.8rem)", fontWeight: 700, letterSpacing: "-0.04em", lineHeight: 1.08, margin: "0 0 20px", paddingBottom: "0.14em", textWrap: "balance", maxWidth: 820, background: "linear-gradient(135deg, var(--amber) 0%, var(--accent) 100%)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", backgroundClip: "text" }}>
+                    <h2 className="display" style={{ fontSize: "clamp(2.4rem, 5.5vw, 4.8rem)", fontWeight: 700, letterSpacing: "-0.04em", lineHeight: 1.08, margin: "0 0 20px", paddingBottom: "0.14em", textWrap: "balance", maxWidth: 820, background: "linear-gradient(135deg, var(--amber) 0%, var(--accent) 100%)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", backgroundClip: "text" }}>
                       {item.title}
-                    </h1>
+                    </h2>
                     <p style={{ fontSize: 17, lineHeight: 1.6, color: "var(--ink-200)", maxWidth: 600, marginBottom: 36 }}>{item.teaser}</p>
                     <Link href={item.href} className="btn btn-solid" style={{ background: "var(--amber)", borderColor: "var(--amber)" }}>Play →</Link>
                   </div>
