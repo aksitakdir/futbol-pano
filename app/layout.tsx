@@ -37,7 +37,6 @@ export const metadata: Metadata = {
     siteName: "Scout Gamer",
     locale: "en_US",
     url: "https://www.scoutgamer.com",
-    images: [{ url: "https://www.scoutgamer.com/og-image.png", width: 1200, height: 630, alt: "Scout Gamer" }],
   },
   twitter: {
     card: "summary_large_image",
