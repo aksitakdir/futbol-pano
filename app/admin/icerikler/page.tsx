@@ -802,7 +802,7 @@ export default function IceriklerPage() {
                             disabled={isActioning}
                             className={`${ACTION_BTN} border-rose-500/50 bg-rose-500/15 text-rose-200 hover:bg-rose-500/25`}
                           >
-                            Sil
+                            Delete
                           </button>
                         </>
                       )}

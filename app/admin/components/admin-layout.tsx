@@ -146,7 +146,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       <main className="flex min-h-screen items-center justify-center bg-slate-950 text-slate-100">
         <div className="flex items-center gap-2 text-sm text-slate-400">
           <span className="h-5 w-5 animate-spin rounded-full border-2 border-emerald-400 border-t-transparent" />
-          Yükleniyor...
+          Loading...
         </div>
       </main>
     );
@@ -201,14 +201,14 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
             className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-[13px] text-slate-500 transition hover:text-rose-400"
           >
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4" /><polyline points="16 17 21 12 16 7" /><line x1="21" y1="12" x2="9" y2="12" /></svg>
-            Çıkış Yap
+            Sign Out
           </button>
         </div>
       </aside>
 
       {/* Main column */}
       <div className="flex min-h-0 min-w-0 flex-1 flex-col">
-        {/* Mobil üst bar — logo sol, site + menü sağ */}
+        {/* Mobile top bar */}
         <header className="flex shrink-0 items-center justify-between gap-3 border-b border-slate-800/60 bg-slate-900/50 px-4 py-3 lg:hidden">
           <Link href="/admin" className="flex min-w-0 items-center gap-2">
             <div className="h-6 w-6 shrink-0 rounded-lg bg-gradient-to-tr from-emerald-400 to-cyan-500" />
@@ -228,14 +228,14 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
               type="button"
               onClick={() => setSidebarOpen(!sidebarOpen)}
               className="rounded-lg border border-slate-700/60 p-2 text-slate-400"
-              aria-label="Menü"
+              aria-label="Menu"
             >
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="3" y1="12" x2="21" y2="12" /><line x1="3" y1="6" x2="21" y2="6" /><line x1="3" y1="18" x2="21" y2="18" /></svg>
             </button>
           </div>
         </header>
 
-        {/* Masaüstü — siteye çıkış sağ üst */}
+        {/* Desktop — view site link */}
         <div className="hidden shrink-0 items-center justify-end border-b border-slate-800/60 bg-slate-900/40 px-6 py-2.5 lg:flex">
           <Link
             href="/"
@@ -271,7 +271,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                 className="flex items-center gap-2 rounded-lg px-3 py-2 text-[13px] text-slate-500 hover:text-rose-400"
               >
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4" /><polyline points="16 17 21 12 16 7" /><line x1="21" y1="12" x2="9" y2="12" /></svg>
-                Çıkış Yap
+                Sign Out
               </button>
             </nav>
           </div>

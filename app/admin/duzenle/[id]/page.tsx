@@ -10,6 +10,7 @@ import AdminLayout from "../../components/admin-layout";
 import SectionsEditor, { type SectionBlock } from "../../components/sections-editor";
 import ArticleDestinationField from "@/app/components/article-destination-field";
 import {
+  adminHubPath,
   categoryPublicPath,
   destinationFromHubTags,
   hubTagsFromDestination,
@@ -140,6 +141,7 @@ export default function DuzenlePage() {
 
   const publishScope = publishScopeForCategory(category);
   const hubTags = hubTagsFromDestination(publishScope, crossPostHubs);
+  const backHref = adminHubPath(publishScope) ?? (category === "radar" ? "/admin/radar" : "/admin/icerikler");
 
   // Sections JSON (block editor)
   const [sectionsBlocks, setSectionsBlocks] = useState<SectionBlock[]>([]);
@@ -368,7 +370,7 @@ export default function DuzenlePage() {
     }
 
     setSaving(false);
-    router.push(category === "radar" ? "/admin/radar" : "/admin/icerikler");
+    router.push(backHref);
   }
 
   const statsFilled = [statPace, statShooting, statPassing, statDribbling, statDefending, statPhysical].filter(v => v !== "").length;
@@ -393,10 +395,10 @@ export default function DuzenlePage() {
             <p className="text-xs text-slate-400">Save changes or publish directly</p>
           </div>
           <Link
-            href={category === "radar" ? "/admin/radar" : "/admin/icerikler"}
+            href={backHref}
             className="rounded-lg border border-slate-700/60 px-3 py-1.5 text-xs font-medium text-slate-400 transition hover:border-slate-600 hover:text-slate-200"
           >
-            {category === "radar" ? "← Back to Radar" : "← Back to Articles"}
+            ← Back
           </Link>
         </div>
 
@@ -837,7 +839,7 @@ export default function DuzenlePage() {
               {saving ? "Saving..." : "Save & Publish"}
             </button>
             <Link
-              href={category === "radar" ? "/admin/radar" : "/admin/icerikler"}
+              href={backHref}
               className="rounded-lg border border-slate-700/80 bg-slate-900/70 px-6 py-2.5 text-sm font-medium text-slate-400 transition hover:border-slate-600 hover:text-slate-200"
             >
               Cancel
