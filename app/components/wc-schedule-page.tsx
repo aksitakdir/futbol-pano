@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import Link from "next/link";
 import SiteHeader from "./site-header";
 import SiteFooter from "./site-footer";
@@ -51,6 +51,44 @@ function TeamFlag({ code, size = 24 }: { code: string; size?: number }) {
   );
 }
 
+/* ── Timezone helpers ── */
+
+/** Convert match date + ET kick-off to a UTC Date. EDT = UTC−4 in summer. */
+function matchToUtc(date: string, time?: string): Date {
+  if (!time) return new Date(date + "T19:00:00Z");
+  const [h, m] = time.split(":").map(Number);
+  const utcH = h + 4;
+  const carry = utcH >= 24 ? 1 : 0;
+  const iso = `${date}T${String(utcH % 24).padStart(2, "0")}:${String(m).padStart(2, "0")}:00Z`;
+  const d = new Date(iso);
+  if (carry) d.setUTCDate(d.getUTCDate() + 1);
+  return d;
+}
+
+/** Format kick-off in user's local timezone (e.g. "21:00", "9:00 PM"). */
+function formatLocalKickoff(utc: Date): string {
+  return utc.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+}
+
+/** Get local date key (YYYY-MM-DD) for grouping. */
+function localDateKey(utc: Date): string {
+  return utc.toLocaleDateString("en-CA");
+}
+
+/** Get user's timezone abbreviation + IANA name. */
+function getTimezoneLabel(): string {
+  try {
+    const tz = Intl.DateTimeFormat().resolvedOptions().timeZone;
+    const abbr = new Date("2026-06-15T12:00:00Z")
+      .toLocaleTimeString("en-US", { timeZoneName: "short" })
+      .split(" ")
+      .pop() ?? "";
+    return `${abbr} — ${tz.replace(/_/g, " ")}`;
+  } catch {
+    return "Local Time";
+  }
+}
+
 type ViewMode = "date" | "group" | "knockout";
 
 const ALL_GROUP_IDS: WcGroupId[] = ["A","B","C","D","E","F","G","H","I","J","K","L"];
@@ -58,8 +96,9 @@ const ALL_GROUP_IDS: WcGroupId[] = ["A","B","C","D","E","F","G","H","I","J","K",
 const KNOCKOUT_ROUNDS: WcRound[] = ["r32","r16","qf","sf","third","final"];
 
 function formatDateHeading(iso: string): string {
-  const d = new Date(iso + "T12:00:00Z");
-  return d.toLocaleDateString("en-US", { weekday: "long", month: "long", day: "numeric", timeZone: "UTC" });
+  const [y, m, d] = iso.split("-").map(Number);
+  const date = new Date(y, m - 1, d);
+  return date.toLocaleDateString("en-US", { weekday: "long", month: "long", day: "numeric" });
 }
 
 function daysUntilKickoff(): number {
@@ -79,6 +118,13 @@ function allTeamCodes(): { code: string; name: string }[] {
 export default function WcSchedulePage({ teamFilter }: { teamFilter?: string }) {
   const [view, setView] = useState<ViewMode>("date");
   const [selectedTeam, setSelectedTeam] = useState<string>(teamFilter ?? "");
+  const [mounted, setMounted] = useState(false);
+  const [tzLabel, setTzLabel] = useState("ET — Eastern Time");
+
+  useEffect(() => {
+    setMounted(true);
+    setTzLabel(getTimezoneLabel());
+  }, []);
 
   const teams = useMemo(allTeamCodes, []);
   const days = useMemo(daysUntilKickoff, []);
@@ -93,12 +139,17 @@ export default function WcSchedulePage({ teamFilter }: { teamFilter?: string }) 
   const matchesByDate = useMemo(() => {
     const map = new Map<string, WcMatch[]>();
     for (const m of filtered) {
-      const bucket = map.get(m.date) ?? [];
+      const utc = matchToUtc(m.date, m.time);
+      const key = mounted && m.time ? localDateKey(utc) : m.date;
+      const bucket = map.get(key) ?? [];
       bucket.push(m);
-      map.set(m.date, bucket);
+      map.set(key, bucket);
+    }
+    for (const [, arr] of map) {
+      arr.sort((a, b) => matchToUtc(a.date, a.time).getTime() - matchToUtc(b.date, b.time).getTime());
     }
     return [...map.entries()].sort(([a], [b]) => a.localeCompare(b));
-  }, [filtered]);
+  }, [filtered, mounted]);
 
   const groupMatches = useMemo(
     () => filtered.filter((m) => m.round === "group"),
@@ -276,6 +327,34 @@ export default function WcSchedulePage({ teamFilter }: { teamFilter?: string }) 
         </PageShell>
       </div>
 
+      {/* ── Timezone indicator ── */}
+      <div style={{ borderBottom: "1px solid var(--sg-border)", background: "var(--sg-surface)" }}>
+        <PageShell style={{ paddingTop: 10, paddingBottom: 10 }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap" }}>
+            <span style={{ fontSize: 12, color: "var(--sg-text-muted)" }}>
+              🕐
+            </span>
+            <span className="mono" style={{ fontSize: 10, letterSpacing: "0.1em", color: "var(--sg-text-muted)" }}>
+              ALL TIMES IN YOUR LOCAL TIMEZONE
+            </span>
+            <span
+              className="mono"
+              style={{
+                fontSize: 10,
+                letterSpacing: "0.08em",
+                color: "var(--wc-teal)",
+                padding: "2px 8px",
+                borderRadius: 4,
+                background: "color-mix(in oklch, var(--wc-teal) 10%, transparent)",
+                border: "1px solid color-mix(in oklch, var(--wc-teal) 20%, transparent)",
+              }}
+            >
+              {tzLabel}
+            </span>
+          </div>
+        </PageShell>
+      </div>
+
       {/* ── View Toggle ── */}
       <PageShell style={{ paddingTop: 32, paddingBottom: 0 }}>
         <div style={{ display: "flex", gap: 4, marginBottom: 32 }}>
@@ -375,7 +454,7 @@ export default function WcSchedulePage({ teamFilter }: { teamFilter?: string }) 
                 </div>
                 <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
                   {matches.map((m) => (
-                    <MatchCard key={m.id} match={m} highlight={selectedTeam} />
+                    <MatchCard key={m.id} match={m} highlight={selectedTeam} mounted={mounted} />
                   ))}
                 </div>
               </div>
@@ -400,7 +479,7 @@ export default function WcSchedulePage({ teamFilter }: { teamFilter?: string }) 
             {ALL_GROUP_IDS
               .filter((gid) => !selectedTeam || WC_GROUPS[gid].some((t) => t.code === selectedTeam))
               .map((gid) => (
-                <GroupCard key={gid} groupId={gid} matches={groupMatches.filter((m) => m.group === gid)} highlight={selectedTeam} />
+                <GroupCard key={gid} groupId={gid} matches={groupMatches.filter((m) => m.group === gid)} highlight={selectedTeam} mounted={mounted} />
               ))}
           </div>
         )}
@@ -432,7 +511,7 @@ export default function WcSchedulePage({ teamFilter }: { teamFilter?: string }) 
                   </div>
                   <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
                     {matches.map((m) => (
-                      <MatchCard key={m.id} match={m} highlight={selectedTeam} />
+                      <MatchCard key={m.id} match={m} highlight={selectedTeam} mounted={mounted} />
                     ))}
                   </div>
                 </div>
@@ -488,12 +567,15 @@ export default function WcSchedulePage({ teamFilter }: { teamFilter?: string }) 
 }
 
 /* ── Match Card ── */
-function MatchCard({ match, highlight }: { match: WcMatch; highlight?: string }) {
+function MatchCard({ match, highlight, mounted }: { match: WcMatch; highlight?: string; mounted?: boolean }) {
   const isGroup = match.round === "group";
   const isFinal = match.round === "final";
   const homeName = match.home ? getTeamName(match.home) : (match.homeLabel ?? "TBD");
   const awayName = match.away ? getTeamName(match.away) : (match.awayLabel ?? "TBD");
   const dateLabel = new Date(match.date + "T12:00:00Z").toLocaleDateString("en-US", { month: "short", day: "numeric", timeZone: "UTC" });
+
+  const utc = matchToUtc(match.date, match.time);
+  const localTime = match.time && mounted ? formatLocalKickoff(utc) : match.time ?? "TBC";
 
   return (
     <div
@@ -523,9 +605,25 @@ function MatchCard({ match, highlight }: { match: WcMatch; highlight?: string })
           </span>
         </div>
 
-        <div style={{ flexShrink: 0, padding: "0 12px", textAlign: "center" }}>
-          <div className="mono" style={{ fontSize: 11, fontWeight: 700, color: "var(--sg-text-muted)", letterSpacing: "0.08em" }}>
-            vs
+        <div
+          style={{
+            flexShrink: 0,
+            padding: "0 14px",
+            textAlign: "center",
+            minWidth: 60,
+          }}
+        >
+          <div
+            className="mono"
+            style={{
+              fontSize: 15,
+              fontWeight: 700,
+              color: match.time ? "var(--sg-text-primary)" : "var(--sg-text-muted)",
+              letterSpacing: "0.04em",
+              lineHeight: 1,
+            }}
+          >
+            {localTime}
           </div>
         </div>
 
@@ -573,7 +671,7 @@ function MatchCard({ match, highlight }: { match: WcMatch; highlight?: string })
 }
 
 /* ── Group Card ── */
-function GroupCard({ groupId, matches, highlight }: { groupId: WcGroupId; matches: WcMatch[]; highlight?: string }) {
+function GroupCard({ groupId, matches, highlight, mounted }: { groupId: WcGroupId; matches: WcMatch[]; highlight?: string; mounted?: boolean }) {
   const teams = WC_GROUPS[groupId];
 
   return (
@@ -644,51 +742,68 @@ function GroupCard({ groupId, matches, highlight }: { groupId: WcGroupId; matche
 
       {/* Matches */}
       <div style={{ padding: "8px 12px" }}>
-        {matches.map((m) => (
-          <div
-            key={m.id}
-            style={{
-              display: "flex",
-              alignItems: "center",
-              gap: 6,
-              padding: "8px 6px",
-              borderBottom: "1px solid color-mix(in oklch, var(--sg-border) 50%, transparent)",
-              fontSize: 13,
-            }}
-          >
-            <span className="mono" style={{ fontSize: 9, color: "var(--sg-text-muted)", width: 55, flexShrink: 0, letterSpacing: "0.06em" }}>
-              {new Date(m.date + "T12:00:00Z").toLocaleDateString("en-US", { month: "short", day: "numeric", timeZone: "UTC" })}
-            </span>
-            <TeamFlag code={m.home} size={16} />
-            <span
+        {matches.map((m) => {
+          const utc = matchToUtc(m.date, m.time);
+          const localTime = m.time && mounted ? formatLocalKickoff(utc) : m.time ?? "TBC";
+          return (
+            <div
+              key={m.id}
               style={{
-                flex: 1,
-                fontWeight: highlight === m.home ? 700 : 400,
-                color: highlight === m.home ? "var(--wc-gold)" : "var(--sg-text-primary)",
-                overflow: "hidden",
-                textOverflow: "ellipsis",
-                whiteSpace: "nowrap",
+                display: "flex",
+                alignItems: "center",
+                gap: 6,
+                padding: "8px 6px",
+                borderBottom: "1px solid color-mix(in oklch, var(--sg-border) 50%, transparent)",
+                fontSize: 13,
               }}
             >
-              {getTeamName(m.home)}
-            </span>
-            <span className="mono" style={{ fontSize: 10, color: "var(--sg-text-muted)", padding: "0 4px" }}>v</span>
-            <span
-              style={{
-                flex: 1,
-                textAlign: "right",
-                fontWeight: highlight === m.away ? 700 : 400,
-                color: highlight === m.away ? "var(--wc-gold)" : "var(--sg-text-primary)",
-                overflow: "hidden",
-                textOverflow: "ellipsis",
-                whiteSpace: "nowrap",
-              }}
-            >
-              {getTeamName(m.away)}
-            </span>
-            <TeamFlag code={m.away} size={16} />
-          </div>
-        ))}
+              <span className="mono" style={{ fontSize: 9, color: "var(--sg-text-muted)", width: 55, flexShrink: 0, letterSpacing: "0.06em" }}>
+                {new Date(m.date + "T12:00:00Z").toLocaleDateString("en-US", { month: "short", day: "numeric", timeZone: "UTC" })}
+              </span>
+              <span
+                className="mono"
+                style={{
+                  fontSize: 10,
+                  fontWeight: 600,
+                  color: "var(--wc-teal)",
+                  width: 42,
+                  flexShrink: 0,
+                  textAlign: "center",
+                }}
+              >
+                {localTime}
+              </span>
+              <TeamFlag code={m.home} size={16} />
+              <span
+                style={{
+                  flex: 1,
+                  fontWeight: highlight === m.home ? 700 : 400,
+                  color: highlight === m.home ? "var(--wc-gold)" : "var(--sg-text-primary)",
+                  overflow: "hidden",
+                  textOverflow: "ellipsis",
+                  whiteSpace: "nowrap",
+                }}
+              >
+                {getTeamName(m.home)}
+              </span>
+              <span className="mono" style={{ fontSize: 10, color: "var(--sg-text-muted)", padding: "0 4px" }}>v</span>
+              <span
+                style={{
+                  flex: 1,
+                  textAlign: "right",
+                  fontWeight: highlight === m.away ? 700 : 400,
+                  color: highlight === m.away ? "var(--wc-gold)" : "var(--sg-text-primary)",
+                  overflow: "hidden",
+                  textOverflow: "ellipsis",
+                  whiteSpace: "nowrap",
+                }}
+              >
+                {getTeamName(m.away)}
+              </span>
+              <TeamFlag code={m.away} size={16} />
+            </div>
+          );
+        })}
       </div>
     </div>
   );
