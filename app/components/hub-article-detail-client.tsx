@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { supabase } from "@/lib/supabase";
 import ArticleLayoutEn from "./article-layout-en";
-import { HUBS, type HubId } from "@/lib/hub-config";
+import { CATEGORY_ACCENT } from "@/lib/category-config";
 import type { SectionBlock } from "@/lib/section-blocks";
 
 type ContentRow = {
@@ -25,12 +25,13 @@ type ContentRow = {
   accent?: string;
   sections_json?: SectionBlock[] | null;
   players_json?: string | null;
-  hub_tags?: string[] | null;
 };
 
-const HUB_ACCENTS: Record<HubId, string> = {
-  "wc-2026": "amber",
-  transfer: "cyan",
+type NavKey = "wc-2026" | "transfer" | "radar" | "lists" | "tactics-lab";
+
+const BACK_CONFIG: Record<string, { path: string; title: string; navKey: NavKey }> = {
+  "wc-2026": { path: "/world-cup-2026", title: "World Cup 2026", navKey: "wc-2026" },
+  transfer: { path: "/transfers", title: "Transfers", navKey: "transfer" },
 };
 
 export default function HubArticleDetailClient({
@@ -38,12 +39,12 @@ export default function HubArticleDetailClient({
   hubId,
 }: {
   slug: string;
-  hubId: HubId;
+  hubId: string;
 }) {
   const [article, setArticle] = useState<ContentRow | null>(null);
   const [loading, setLoading] = useState(true);
   const [notFound, setNotFound] = useState(false);
-  const hub = HUBS[hubId].en;
+  const config = BACK_CONFIG[hubId] ?? { path: "/", title: "Home", navKey: "radar" as NavKey };
 
   useEffect(() => {
     if (!slug) return;
@@ -51,7 +52,6 @@ export default function HubArticleDetailClient({
       .from("contents")
       .select("*")
       .eq("slug", slug)
-      .or(`category.eq.${hubId},hub_tags.cs.{${hubId}}`)
       .eq("status", "yayinda")
       .maybeSingle()
       .then(({ data, error }) => {
@@ -59,7 +59,7 @@ export default function HubArticleDetailClient({
         else setArticle(data as ContentRow);
         setLoading(false);
       });
-  }, [slug, hubId]);
+  }, [slug]);
 
   if (loading) {
     return (
@@ -73,8 +73,8 @@ export default function HubArticleDetailClient({
     return (
       <main className="flex min-h-screen flex-col items-center justify-center" style={{ background: "var(--sg-bg)", color: "var(--sg-text-primary)" }}>
         <h1 className="mb-2 text-2xl font-bold">404</h1>
-        <Link href={hub.basePath} style={{ color: "var(--sg-primary)", fontSize: 13 }}>
-          ← Back to {hub.pillarTitle}
+        <Link href={config.path} style={{ color: "var(--sg-primary)", fontSize: 13 }}>
+          ← Back to {config.title}
         </Link>
       </main>
     );
@@ -90,19 +90,18 @@ export default function HubArticleDetailClient({
       category={hubId}
       date={article.created_at}
       slug={article.slug}
-      activeNav={hubId}
-      backHref={hub.basePath}
-      backLabel={`Back to ${hub.pillarTitle}`}
+      activeNav={config.navKey}
+      backHref={config.path}
+      backLabel={`Back to ${config.title}`}
       youtubeId={article.youtube_id}
       coverImage={article.cover_image}
       newsQuery={article.news_query}
       youtubeQuery1={article.youtube_query_1}
       youtubeQuery2={article.youtube_query_2}
       heroVariant={article.hero_variant ?? "text-only"}
-      accentOverride={article.accent ?? HUB_ACCENTS[hubId]}
+      accentOverride={article.accent ?? CATEGORY_ACCENT[hubId] ?? "emerald"}
       sectionsJson={Array.isArray(article.sections_json) ? article.sections_json : null}
       playersJson={article.players_json}
-      hubId={hubId}
     />
   );
 }

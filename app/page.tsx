@@ -13,7 +13,7 @@ import { arenaPath, type ArenaGame } from "@/lib/arena-brackets";
 import HomeRecentCarousel from "./components/home-recent-carousel";
 import HomeHubPromo from "./components/home-hub-promo";
 import HomeWcSquads from "./components/home-wc-squads";
-import { HUBS, categoryArticlePath } from "@/lib/hub-config";
+import { categoryArticlePath } from "@/lib/category-config";
 import {
   DEFAULT_HERO_SLIDER,
   enabledHeroCategories,
@@ -63,8 +63,8 @@ function categoryPath(cat: string): string {
   if (cat === "listeler") return "/lists";
   if (cat === "radar") return "/radar";
   if (cat === "taktik-lab") return "/tactics-lab";
-  if (cat === "wc-2026") return HUBS["wc-2026"].en.basePath;
-  if (cat === "transfer") return HUBS.transfer.en.basePath;
+  if (cat === "wc-2026") return "/world-cup-2026";
+  if (cat === "transfer") return "/transfers";
   return categoryArticlePath(cat, "").replace(/\/$/, "") || "/";
 }
 
@@ -133,9 +133,9 @@ const WC_HERO: HeroWcSlide = {
   kind: "wc",
   slideKey: "wc-2026-promo",
   eyebrow: "FIFA WORLD CUP 2026",
-  title: HUBS["wc-2026"].en.pillarTitle,
-  teaser: HUBS["wc-2026"].en.pillarDescription,
-  href: HUBS["wc-2026"].en.basePath,
+  title: "World Cup 2026",
+  teaser: "Squads, scout analysis, and tournament lists — not headlines, scout reports.",
+  href: "/world-cup-2026",
 };
 
 function pickArenaSlide(arenaGames: ArenaGame[]): HeroArenaSlide | null {

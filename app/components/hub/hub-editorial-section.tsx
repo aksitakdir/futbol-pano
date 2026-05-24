@@ -5,15 +5,14 @@ import EditorialContentFeed from "@/app/components/editorial-content-feed";
 import PageShell from "@/app/components/page-shell";
 import type { EditorialArticle } from "@/lib/editorial-article";
 import { supabase } from "@/lib/supabase";
-import type { HubId } from "@/lib/hub-config";
-import { HUB_TAG } from "@/lib/hub-config";
+import type { ContentCategory } from "@/lib/category-config";
 import type { CoverStoryScope } from "@/lib/cover-story";
 import { EDITORIAL_ARTICLE_SELECT } from "@/lib/cover-story-store";
 
 const PAGE_SIZE = 12;
 
 type Props = {
-  hubId: HubId;
+  hubId: ContentCategory;
   locale?: string;
   accent: string;
   category?: string;
@@ -22,7 +21,7 @@ type Props = {
 };
 
 export default function HubEditorialSection({ hubId, accent, category, limit, compact = false }: Props) {
-  const tag = HUB_TAG[hubId];
+  const tag = hubId;
   const [articles, setArticles] = useState<EditorialArticle[]>([]);
   const [loading, setLoading] = useState(true);
   const [loadingMore, setLoadingMore] = useState(false);

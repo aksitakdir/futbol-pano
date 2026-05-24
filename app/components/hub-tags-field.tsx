@@ -1,57 +1,16 @@
 "use client";
 
-import { HUBS, type HubId } from "@/lib/hub-config";
-
-const HUB_OPTIONS: { id: HubId; label: string; desc: string }[] = [
-  { id: "wc-2026", label: "World Cup 2026", desc: "Shown on WC 2026 hub and sub-pages" },
-  { id: "transfer", label: "Transfers Hub", desc: "Shown on Transfers hub and sub-pages" },
-];
+/**
+ * @deprecated Hub tags are no longer used. Articles are categorized
+ * directly via the category field. This stub exists only to prevent
+ * build errors from any remaining imports.
+ */
 
 type Props = {
   value: string[];
   onChange: (tags: string[]) => void;
 };
 
-export default function HubTagsField({ value, onChange }: Props) {
-  function toggle(hubId: HubId) {
-    const tag = HUBS[hubId].tag;
-    if (value.includes(tag)) {
-      onChange(value.filter((t) => t !== tag));
-    } else {
-      onChange([...value, tag]);
-    }
-  }
-
-  return (
-    <div>
-      <label className="mb-1.5 block text-xs font-semibold text-slate-300">Content Hubs</label>
-      <div className="flex flex-col gap-2">
-        {HUB_OPTIONS.map((opt) => {
-          const checked = value.includes(HUBS[opt.id].tag);
-          return (
-            <label
-              key={opt.id}
-              className={[
-                "flex cursor-pointer items-start gap-3 rounded-lg border px-3 py-2.5 transition",
-                checked
-                  ? "border-emerald-500/50 bg-emerald-500/10"
-                  : "border-slate-700/80 bg-slate-900/60 hover:border-slate-600",
-              ].join(" ")}
-            >
-              <input
-                type="checkbox"
-                checked={checked}
-                onChange={() => toggle(opt.id)}
-                className="mt-0.5 accent-emerald-500"
-              />
-              <span>
-                <span className="block text-xs font-medium text-slate-200">{opt.label}</span>
-                <span className="block text-[10px] text-slate-500">{opt.desc}</span>
-              </span>
-            </label>
-          );
-        })}
-      </div>
-    </div>
-  );
+export default function HubTagsField({ value: _value, onChange: _onChange }: Props) {
+  return null;
 }

@@ -7,14 +7,11 @@ import TransferAbPollCard from "@/app/components/transfer/transfer-ab-poll-card"
 import HubArenaStrip from "@/app/components/hub/hub-arena-strip";
 import HubEditorialSection from "@/app/components/hub/hub-editorial-section";
 import PageShell from "@/app/components/page-shell";
-import { getHubConfig } from "@/lib/hub-config";
 import { TRANSFER_AB_POLLS } from "@/lib/transfer-polls";
 
 type Props = { locale?: string };
 
 export default function TransferAbPage(_props: Props) {
-  const hub = getHubConfig("transfer");
-
   return (
     <main className="theme-transfer" style={{ background: "var(--sg-bg)", color: "var(--sg-text-primary)", minHeight: "100vh" }}>
       <SiteHeader activeNav="transfer" />
@@ -22,7 +19,7 @@ export default function TransferAbPage(_props: Props) {
 
       <header className="transfer-hero grain">
         <PageShell className="sg-page-shell--hero">
-          <Link href={hub.basePath} className="mono transfer-squad-back">← {hub.pillarTitle}</Link>
+          <Link href="/transfers" className="mono transfer-squad-back">← Transfers</Link>
           <div className="eyebrow transfer-eyebrow" style={{ marginTop: 28 }}>TRANSFER POLL</div>
           <h1 className="display grad-text" style={{ fontSize: "clamp(40px, 6vw, 64px)", fontWeight: 700, letterSpacing: "-0.04em", margin: "12px 0 16px" }}>
             Will they go?

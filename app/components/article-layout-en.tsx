@@ -13,7 +13,7 @@ import { supabase } from "@/lib/supabase";
 import { stripHtml, contentLooksLikeHtml } from "@/lib/utils";
 import { normalizeYoutubeId } from "@/lib/youtube-id";
 import { tocFromSections, type SectionBlock } from "@/lib/section-blocks";
-import type { HubId } from "@/lib/hub-config";
+import type { ContentCategory } from "@/lib/category-config";
 import ArticlePlayerEmbed from "./article-player-embed";
 
 type SidebarItem = { id: string; title: string; title_en?: string; slug: string; category: string; created_at: string; };
@@ -112,7 +112,7 @@ type Props = {
   playersJson?: string | null;
   showNewsSection?: boolean; children?: React.ReactNode;
   excerptContent?: string; isPending?: boolean;
-  hubId?: HubId;
+  hubId?: ContentCategory;
 };
 
 export default function ArticleLayoutEn({

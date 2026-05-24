@@ -5,7 +5,6 @@ import { createPortal } from "react-dom";
 import Link from "next/link";
 import { useRouter, usePathname } from "next/navigation";
 import { supabase } from "@/lib/supabase";
-import { HUBS } from "@/lib/hub-config";
 
 type Props = { activeNav?: string; maxWidth?: string; forceEn?: boolean };
 type SearchResult = { id: string; title: string; title_en?: string; slug: string; category: string; };
@@ -41,8 +40,8 @@ function navHrefMatches(pathname: string, href: string): boolean {
 
 const NAV_ITEMS = [
   { href: "/", label: "HOME", key: "home" },
-  { href: HUBS["wc-2026"].en.basePath, label: HUBS["wc-2026"].en.navLabel, key: "wc-2026" },
-  { href: HUBS.transfer.en.basePath, label: HUBS.transfer.en.navLabel, key: "transfer" },
+  { href: "/world-cup-2026", label: "WC 2026", key: "wc-2026" },
+  { href: "/transfers", label: "TRANSFERS", key: "transfer" },
   { href: "/radar", label: "RADAR", key: "radar" },
   { href: "/lists", label: "LISTS", key: "lists" },
   { href: "/arena", label: "ARENA", key: "arena" },

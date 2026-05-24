@@ -10,24 +10,50 @@ import HubArenaStrip from "./hub/hub-arena-strip";
 import HubEditorialSection from "./hub/hub-editorial-section";
 import HubFeaturedArenaBanner from "./hub/hub-featured-arena-banner";
 import TransferWireFeed from "./hub/transfer-wire-feed";
-import { getHubConfig, type HubId } from "@/lib/hub-config";
 import { WC_2026_HERO_BG } from "@/lib/wc-2026-brand";
-import type { HubPillarCopy } from "@/lib/hub-types";
+
+const PAGE_CONFIG = {
+  "wc-2026": {
+    navKey: "wc-2026" as const,
+    accent: "var(--wc-gold)",
+    themeClass: "theme-wc-2026",
+    kadrolarPath: "/world-cup-2026/squads",
+    defaults: {
+      pillarEyebrow: "TOURNAMENT",
+      pillarTitle: "World Cup 2026",
+      pillarDescription:
+        "Squads, scout analysis, and tournament lists — not headlines, scout reports.",
+    },
+  },
+  transfer: {
+    navKey: "transfer" as const,
+    accent: "var(--transfer-cyan)",
+    themeClass: "theme-transfer",
+    kadrolarPath: "/transfers",
+    defaults: {
+      pillarEyebrow: "TRANSFERS",
+      pillarTitle: "Transfers",
+      pillarDescription:
+        "Transfer Wire — rumors from trusted public sources, scout analysis, and confirmed deals.",
+    },
+  },
+};
+
+type PillarCopy = {
+  navLabel?: string;
+  pillarEyebrow?: string;
+  pillarTitle?: string;
+  pillarDescription?: string;
+};
 
 type Props = {
-  hubId: HubId;
-  /** @deprecated kept for backwards compat during migration — always EN */
+  hubId: "wc-2026" | "transfer";
   locale?: string;
 };
 
 export default function HubPillarPage({ hubId }: Props) {
-  const defaults = getHubConfig(hubId);
-  const [copy, setCopy] = useState<HubPillarCopy>({
-    navLabel: defaults.navLabel,
-    pillarEyebrow: defaults.pillarEyebrow,
-    pillarTitle: defaults.pillarTitle,
-    pillarDescription: defaults.pillarDescription,
-  });
+  const cfg = PAGE_CONFIG[hubId];
+  const [copy, setCopy] = useState<PillarCopy>(cfg.defaults);
 
   useEffect(() => {
     fetch(`/api/hub-settings?hub=${hubId}&locale=en`)
@@ -36,15 +62,12 @@ export default function HubPillarPage({ hubId }: Props) {
       .catch(() => {});
   }, [hubId]);
 
-  const hub = { ...defaults, ...copy };
+  const hub = { ...cfg.defaults, ...copy };
   const isWc = hubId === "wc-2026";
-  const themeClass = isWc ? "theme-wc-2026" : "theme-transfer";
-  const accent = isWc ? "var(--wc-gold)" : "var(--transfer-cyan)";
-  const navKey = isWc ? "wc-2026" : "transfer";
 
   return (
-    <main className={themeClass} style={{ background: "var(--sg-bg)", color: "var(--sg-text-primary)", minHeight: "100vh" }}>
-      <SiteHeader activeNav={navKey} />
+    <main className={cfg.themeClass} style={{ background: "var(--sg-bg)", color: "var(--sg-text-primary)", minHeight: "100vh" }}>
+      <SiteHeader activeNav={cfg.navKey} />
       <div style={{ paddingTop: "68px" }} />
 
       <header
@@ -60,7 +83,7 @@ export default function HubPillarPage({ hubId }: Props) {
           <p className="hub-pillar-description">{hub.pillarDescription}</p>
           <div className="hub-pillar-ctas flex flex-wrap items-center gap-x-6 gap-y-3">
             {isWc ? (
-              <Link href={defaults.kadrolarPath} className="btn btn-solid" style={{ background: "var(--wc-magenta)", borderColor: "var(--wc-magenta)" }}>
+              <Link href={cfg.kadrolarPath} className="btn btn-solid" style={{ background: "var(--wc-magenta)", borderColor: "var(--wc-magenta)" }}>
                 48 Team Squads →
               </Link>
             ) : (
@@ -78,12 +101,12 @@ export default function HubPillarPage({ hubId }: Props) {
         </div>
       ) : null}
 
-      {isWc ? <HubEditorialSection hubId={hubId} locale="en" accent={accent} /> : null}
+      {isWc ? <HubEditorialSection hubId={hubId} locale="en" accent={cfg.accent} /> : null}
 
       {isWc ? (
         <PageShell as="section" className="sg-page-shell--section" style={{ paddingTop: 0 }}>
           <div className="eyebrow" style={{ marginBottom: 24 }}>48 TEAMS</div>
-          <WcTeamGrid locale="en" kadrolarBasePath={defaults.kadrolarPath} />
+          <WcTeamGrid locale="en" kadrolarBasePath={cfg.kadrolarPath} />
         </PageShell>
       ) : null}
 

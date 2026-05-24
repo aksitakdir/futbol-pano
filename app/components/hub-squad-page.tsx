@@ -9,7 +9,6 @@ import WcSquadDisplay from "./wc/wc-squad-display";
 import WcTeamFlag from "./wc/wc-team-flag";
 import HubEditorialSection from "./hub/hub-editorial-section";
 import HubArenaStrip from "./hub/hub-arena-strip";
-import { getHubConfig } from "@/lib/hub-config";
 import { getWcTeam } from "@/lib/wc-2026-teams";
 import { loadWcSquad, type WcSquadListPlayer } from "@/lib/wc-squad-loader";
 import { WC_2026_GRADIENT } from "@/lib/wc-2026-brand";
@@ -20,7 +19,6 @@ type Props = {
 };
 
 export default function HubSquadPage({ countrySlug }: Props) {
-  const hub = getHubConfig("wc-2026");
   const team = getWcTeam(countrySlug);
   const [players, setPlayers] = useState<WcSquadListPlayer[]>([]);
   const [loading, setLoading] = useState(true);
@@ -56,7 +54,7 @@ export default function HubSquadPage({ countrySlug }: Props) {
 
       <header style={{ background: `${WC_2026_GRADIENT}, var(--sg-surface-low)`, borderBottom: "1px solid var(--sg-border)" }}>
         <PageShell className="sg-page-shell--section">
-          <Link href={hub.kadrolarPath} className="mono wc-squad-back">{copy.back}</Link>
+          <Link href="/world-cup-2026/squads" className="mono wc-squad-back">{copy.back}</Link>
           <div style={{ display: "flex", alignItems: "center", gap: 20, marginTop: 20 }}>
             <WcTeamFlag slug={countrySlug} name={teamName} size="lg" />
             <div>

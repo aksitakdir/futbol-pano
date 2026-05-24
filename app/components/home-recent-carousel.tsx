@@ -4,7 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { getCategoryImage } from "@/lib/category-images";
-import { categoryArticlePath } from "@/lib/hub-config";
+import { categoryArticlePath } from "@/lib/category-config";
 import { ContentHighlightPills } from "./content-highlight-pills";
 import { extractArticleHighlights } from "@/lib/content-highlight-tags";
 

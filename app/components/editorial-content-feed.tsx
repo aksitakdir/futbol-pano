@@ -5,7 +5,7 @@ import Link from "next/link";
 import { ContentHighlightPills } from "./content-highlight-pills";
 import { stripHtml, estimateReadMinutes } from "@/lib/utils";
 import { extractArticleHighlights, HIGHLIGHT_CARD_ACCENTS_CYCLE } from "@/lib/content-highlight-tags";
-import { categoryArticlePath, CAT_LABEL } from "@/lib/hub-config";
+import { categoryArticlePath, CAT_LABEL } from "@/lib/category-config";
 import { editorialBody, editorialTitle, type EditorialArticle } from "@/lib/editorial-article";
 
 export type { EditorialArticle };

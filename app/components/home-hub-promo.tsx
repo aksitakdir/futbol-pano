@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { HUBS, categoryArticlePath } from "@/lib/hub-config";
+import { categoryArticlePath } from "@/lib/category-config";
 
 type HubArticlePreview = { title: string; slug: string; category: string; };
 
@@ -16,28 +16,25 @@ function articleHref(category: string, slug: string): string {
 }
 
 export default function HomeHubPromo({ wcArticles, transferArticles }: Props) {
-  const wc = HUBS["wc-2026"].en;
-  const tr = HUBS.transfer.en;
-
   return (
     <section style={{ borderTop: "1px solid var(--sg-border)", background: "var(--sg-surface-low)" }}>
       <div className="sg-editorial-shell" style={{ paddingTop: 72, paddingBottom: 72 }}>
         <div className="eyebrow" style={{ marginBottom: 28 }}>TOURNAMENT & TRANSFERS</div>
         <div className="grid grid-cols-1 gap-8 lg:grid-cols-2">
           <HubCard
-            accent={HUBS["wc-2026"].accent}
-            title={wc.pillarTitle}
-            description={wc.pillarDescription}
-            hubHref={wc.basePath}
-            cta="WC 2026 HUB"
+            accent="var(--amber)"
+            title="World Cup 2026"
+            description="Squads, scout analysis, and tournament lists — not headlines, scout reports."
+            hubHref="/world-cup-2026"
+            cta="WC 2026"
             articles={wcArticles}
           />
           <HubCard
-            accent={HUBS.transfer.accent}
-            title={tr.pillarTitle}
-            description={tr.pillarDescription}
-            hubHref={tr.basePath}
-            cta="TRANSFER HUB"
+            accent="var(--cyan)"
+            title="Transfers"
+            description="Transfer Wire — rumors from trusted public sources, scout analysis, and confirmed deals."
+            hubHref="/transfers"
+            cta="TRANSFERS"
             articles={transferArticles}
           />
         </div>
@@ -57,8 +54,8 @@ function HubCard({ accent, title, description, hubHref, cta, articles }: {
       <p style={{ fontSize: 15, lineHeight: 1.55, color: "var(--sg-text-secondary)", margin: "0 0 20px" }}>{description}</p>
       {articles.length > 0 ? (
         <ul style={{ listStyle: "none", margin: "0 0 20px", padding: 0 }}>
-          {articles.slice(0, 3).map((a) => (
-            <li key={a.slug} style={{ marginBottom: 10 }}>
+          {articles.slice(0, 3).map((a, i) => (
+            <li key={`${a.slug}-${i}`} style={{ marginBottom: 10 }}>
               <Link href={articleHref(a.category, a.slug)} style={{ fontSize: 14, color: "var(--sg-text-primary)", textDecoration: "none" }} className="u-link">
                 <span className="mono" style={{ fontSize: 9, letterSpacing: "0.12em", color: accent, marginRight: 8 }}>Latest</span>
                 {a.title}

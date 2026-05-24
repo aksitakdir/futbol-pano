@@ -9,16 +9,8 @@ import RichTextEditor from "@/app/components/rich-text-editor";
 import AdminLayout from "../../components/admin-layout";
 import SectionsEditor, { type SectionBlock } from "../../components/sections-editor";
 import ArticleDestinationField from "@/app/components/article-destination-field";
-import {
-  adminHubPath,
-  categoryPublicPath,
-  destinationFromHubTags,
-  hubTagsFromDestination,
-  publishScopeForCategory,
-  type ContentCategory,
-} from "@/lib/article-destination";
+import { type ContentCategory, categoryPublicPath, isContentCategory } from "@/lib/category-config";
 import { hasBlockContent } from "@/lib/section-blocks";
-import type { HubId } from "@/lib/hub-config";
 import CoverStoryField from "@/app/components/cover-story-field";
 import {
   activeCoverScopesForContent,
@@ -101,7 +93,6 @@ export default function DuzenlePage() {
   const [titleEn, setTitleEn] = useState("");
   const [slug, setSlug] = useState("");
   const [category, setCategory] = useState<ContentCategory>("listeler");
-  const [crossPostHubs, setCrossPostHubs] = useState<HubId[]>([]);
   const [content, setContent] = useState("");
   const [contentEn, setContentEn] = useState("");
   const [youtubeId, setYoutubeId] = useState("");
@@ -139,9 +130,7 @@ export default function DuzenlePage() {
   const [heroVariant, setHeroVariant] = useState("text-only");
   const [accentColor, setAccentColor] = useState("emerald");
 
-  const publishScope = publishScopeForCategory(category);
-  const hubTags = hubTagsFromDestination(publishScope, crossPostHubs);
-  const backHref = adminHubPath(publishScope) ?? (category === "radar" ? "/admin/radar" : "/admin/icerikler");
+  const backHref = category === "radar" ? "/admin/radar" : "/admin/icerikler";
 
   // Sections JSON (block editor)
   const [sectionsBlocks, setSectionsBlocks] = useState<SectionBlock[]>([]);
@@ -216,9 +205,9 @@ export default function DuzenlePage() {
       setContentEn(row.content_en ?? "");
       setHeroVariant(row.hero_variant ?? "text-only");
       setAccentColor(row.accent ?? "emerald");
-      const dest = destinationFromHubTags(row.hub_tags, data.category);
-      setCrossPostHubs(dest.crossPostHubs);
-      setCategory(dest.category);
+      const cat = data.category as string;
+      if (isContentCategory(cat)) setCategory(cat);
+      else setCategory("radar");
 
       const pins = await fetchCoverStoryPinsFromApi();
       setCoverStoryScopes(activeCoverScopesForContent(pins, id));
@@ -346,7 +335,7 @@ export default function DuzenlePage() {
       hero_variant: heroVariant,
       accent: accentColor,
       sections_json: usingBlocks && sectionsBlocks.length > 0 ? sectionsBlocks : null,
-      hub_tags: hubTags.length > 0 ? hubTags : [],
+      hub_tags: [],
     };
 
     if (publish) updateData.status = "yayinda";
@@ -435,9 +424,7 @@ export default function DuzenlePage() {
 
           <ArticleDestinationField
             category={category}
-            crossPostHubs={crossPostHubs}
             onCategoryChange={setCategory}
-            onCrossPostHubsChange={setCrossPostHubs}
             slugPreview={slug}
           />
 

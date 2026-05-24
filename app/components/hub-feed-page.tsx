@@ -4,61 +4,44 @@ import SiteHeader from "./site-header";
 import SiteFooter from "./site-footer";
 import CategoryPageHeader from "./category-page-header";
 import HubEditorialSection from "./hub/hub-editorial-section";
-import { getHubConfig, type HubId } from "@/lib/hub-config";
 
 type FeedKind = "radar" | "listeler";
 
 type Props = {
-  hubId: HubId;
+  hubId: "wc-2026" | "transfer";
   locale?: string;
   feed: FeedKind;
 };
 
-export default function HubFeedPage({ hubId, feed }: Props) {
-  const hub = getHubConfig(hubId);
-  const isWc = hubId === "wc-2026";
-  const accent = isWc ? "var(--wc-gold)" : "var(--transfer-cyan)";
-  const themeClass = isWc ? "theme-wc-2026" : "theme-transfer";
-  const navKey = isWc ? "wc-2026" : "transfer";
+const PAGE_CONFIG: Record<string, { title: string; accent: string; themeClass: string; navKey: string; basePath: string }> = {
+  "wc-2026": { title: "World Cup 2026", accent: "var(--wc-gold)", themeClass: "theme-wc-2026", navKey: "wc-2026", basePath: "/world-cup-2026" },
+  transfer: { title: "Transfers", accent: "var(--transfer-cyan)", themeClass: "theme-transfer", navKey: "transfer", basePath: "/transfers" },
+};
 
+export default function HubFeedPage({ hubId, feed }: Props) {
+  const cfg = PAGE_CONFIG[hubId] ?? PAGE_CONFIG["wc-2026"];
   const titles = {
     radar: "Radar",
     listeler: "Lists",
-    back: `← ${hub.pillarTitle}`,
+    back: `← ${cfg.title}`,
     desc:
       feed === "radar"
-        ? "Player-focused scout pieces in this hub — same editorial layout as the main Radar."
-        : "Curated lists in tournament or transfer context — same format as site Lists.",
+        ? "Player-focused scout pieces — same editorial layout as the main Radar."
+        : "Curated list articles.",
   };
 
   return (
-    <main className={themeClass} style={{ background: "var(--sg-bg)", color: "var(--sg-text-primary)", minHeight: "100vh" }}>
-      <SiteHeader activeNav={navKey} />
+    <main className={cfg.themeClass} style={{ background: "var(--sg-bg)", color: "var(--sg-text-primary)", minHeight: "100vh" }}>
+      <SiteHeader activeNav={cfg.navKey} />
       <div style={{ paddingTop: "68px" }} />
-
       <CategoryPageHeader
-        eyebrow={hub.pillarEyebrow}
-        title={
-          feed === "radar" ? (
-            <>
-              <span className="grad-text">{hub.pillarTitle}</span>
-              <span style={{ display: "block", fontSize: "0.55em", marginTop: 8, opacity: 0.85 }}>{titles[feed]}</span>
-            </>
-          ) : (
-            <>
-              {hub.pillarTitle}
-              <span className="grad-text" style={{ display: "block", fontSize: "0.55em", marginTop: 8 }}>{titles[feed]}</span>
-            </>
-          )
-        }
-        description={titles.desc}
-        accent={accent}
-        backHref={hub.basePath}
+        backHref={cfg.basePath}
         backLabel={titles.back}
+        eyebrow={cfg.title.toUpperCase()}
+        title={titles[feed]}
+        description={titles.desc}
       />
-
-      <HubEditorialSection hubId={hubId} locale="en" accent={accent} category={feed} />
-
+      <HubEditorialSection hubId={hubId} locale="en" accent={cfg.accent} category={feed === "radar" ? "radar" : "listeler"} />
       <div style={{ paddingBottom: 80 }} />
       <SiteFooter maxWidth="max-w-7xl" />
     </main>

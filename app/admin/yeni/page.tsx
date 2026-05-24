@@ -9,17 +9,8 @@ import RichTextEditor from "@/app/components/rich-text-editor";
 import AdminLayout from "../components/admin-layout";
 import SectionsEditor, { type SectionBlock } from "../components/sections-editor";
 import ArticleDestinationField from "@/app/components/article-destination-field";
-import {
-  adminHubPath,
-  hubTagsFromDestination,
-  isEditorialCategory,
-  isHubCategory,
-  isPublishScope,
-  publishScopeForCategory,
-  type ContentCategory,
-} from "@/lib/article-destination";
+import { type ContentCategory, isContentCategory } from "@/lib/category-config";
 import { hasBlockContent } from "@/lib/section-blocks";
-import type { HubId } from "@/lib/hub-config";
 import CoverStoryField from "@/app/components/cover-story-field";
 import {
   coverScopesForCategory,
@@ -77,7 +68,6 @@ function NewArticleForm() {
   const [title, setTitle] = useState("");
   const [slug, setSlug] = useState("");
   const [category, setCategory] = useState<ContentCategory>("radar");
-  const [crossPostHubs, setCrossPostHubs] = useState<HubId[]>([]);
   const [content, setContent] = useState("");
   const [youtubeId, setYoutubeId] = useState("");
   const [coverImage, setCoverImage] = useState("");
@@ -115,21 +105,15 @@ function NewArticleForm() {
   const [contentMode, setContentMode] = useState<"rich" | "blocks">("rich");
   const [coverStoryScopes, setCoverStoryScopes] = useState<CoverStoryScope[]>([]);
 
-  const publishScope = publishScopeForCategory(category);
-  const hubTags = hubTagsFromDestination(publishScope, crossPostHubs);
-
   useEffect(() => {
     const allowed = coverScopesForCategory(category);
     setCoverStoryScopes((prev) => prev.filter((scope) => allowed.includes(scope)));
   }, [category]);
 
   useEffect(() => {
-    const h = searchParams.get("hub");
     const c = searchParams.get("category");
     const m = searchParams.get("mode");
-    if (isHubCategory(h)) setCategory(h);
-    else if (isPublishScope(h) && h !== "main") setCategory(h);
-    else if (isEditorialCategory(c)) setCategory(c);
+    if (isContentCategory(c)) setCategory(c);
     if (m === "blocks") setContentMode("blocks");
   }, [searchParams]);
 
@@ -216,7 +200,7 @@ function NewArticleForm() {
       hero_variant: heroVariant,
       accent: accentColor,
       sections_json: usingBlocks && sectionsBlocks.length > 0 ? sectionsBlocks : null,
-      hub_tags: hubTags.length > 0 ? hubTags : [],
+      hub_tags: [],
       status: "bekliyor",
     }).select("id").single();
     if (insertError || !inserted?.id) {
@@ -233,10 +217,10 @@ function NewArticleForm() {
         return;
       }
     }
-    router.push(adminHubPath(publishScope) ?? (category === "radar" ? "/admin/radar" : "/admin/icerikler"));
+    router.push(category === "radar" ? "/admin/radar" : "/admin/icerikler");
   }
 
-  const backHref = adminHubPath(publishScope) ?? (category === "radar" ? "/admin/radar" : "/admin/icerikler");
+  const backHref = category === "radar" ? "/admin/radar" : "/admin/icerikler";
   const statsFilled = [statPace, statShooting, statPassing, statDribbling, statDefending, statPhysical].filter(v => v !== "").length;
 
   return (
@@ -271,9 +255,7 @@ function NewArticleForm() {
 
           <ArticleDestinationField
             category={category}
-            crossPostHubs={crossPostHubs}
             onCategoryChange={setCategory}
-            onCrossPostHubsChange={setCrossPostHubs}
             slugPreview={slug}
           />
 

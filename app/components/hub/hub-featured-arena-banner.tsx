@@ -5,10 +5,9 @@ import Link from "next/link";
 import { supabase } from "@/lib/supabase";
 import { arenaPath, CARD_COLOR_MAP, type ArenaGame } from "@/lib/arena-brackets";
 import { featuredArenaSlug } from "@/lib/hub-arena-featured";
-import type { HubId } from "@/lib/hub-config";
 import PageShell from "@/app/components/page-shell";
 
-type Props = { hubId: HubId; locale?: string };
+type Props = { hubId: string; locale?: string };
 
 export default function HubFeaturedArenaBanner({ hubId }: Props) {
   const slug = featuredArenaSlug(hubId);

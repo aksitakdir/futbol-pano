@@ -1,46 +1,28 @@
-export type HubId = "wc-2026" | "transfer";
+/**
+ * @deprecated — Use `@/lib/category-config` instead. This file is a
+ * backward-compat shim kept during the hub→category migration and will be
+ * removed once all consumers are updated.
+ */
+export {
+  type ContentCategory as HubId,
+  categoryArticlePath,
+  CAT_LABEL,
+  categoryPublicPath,
+  CATEGORY_ACCENT,
+} from "@/lib/category-config";
 
-export type HubLocale = "en";
-
-export type HubNavKey = "wc-2026" | "transfer";
-
-export const HUB_TAG: Record<HubId, string> = {
-  "wc-2026": "wc-2026",
-  transfer: "transfer",
-};
-
-type HubLocaleConfig = {
-  basePath: string;
-  navLabel: string;
-  pillarTitle: string;
-  pillarEyebrow: string;
-  pillarDescription: string;
-  radarPath: string;
-  listelerPath: string;
-  kadrolarPath: string;
-  taktikPath: string;
-  transferPollPath?: string;
-};
-
-export type HubConfig = {
-  id: HubId;
-  tag: string;
-  accent: string;
-  navKey: HubNavKey;
-  en: HubLocaleConfig;
-};
-
-export const HUBS: Record<HubId, HubConfig> = {
+/** @deprecated kept only for backward compat during migration */
+export const HUBS = {
   "wc-2026": {
-    id: "wc-2026",
+    id: "wc-2026" as const,
     tag: "wc-2026",
     accent: "var(--amber)",
-    navKey: "wc-2026",
+    navKey: "wc-2026" as const,
     en: {
       basePath: "/world-cup-2026",
       navLabel: "WC 2026",
       pillarTitle: "World Cup 2026",
-      pillarEyebrow: "TOURNAMENT HUB",
+      pillarEyebrow: "TOURNAMENT",
       pillarDescription:
         "Squads, scout analysis, and tournament lists — not headlines, scout reports.",
       radarPath: "/world-cup-2026/radar",
@@ -50,15 +32,15 @@ export const HUBS: Record<HubId, HubConfig> = {
     },
   },
   transfer: {
-    id: "transfer",
+    id: "transfer" as const,
     tag: "transfer",
     accent: "var(--cyan)",
-    navKey: "transfer",
+    navKey: "transfer" as const,
     en: {
       basePath: "/transfers",
       navLabel: "TRANSFERS",
       pillarTitle: "Transfers",
-      pillarEyebrow: "TRANSFER HUB",
+      pillarEyebrow: "TRANSFERS",
       pillarDescription:
         "Transfer Wire — rumors from trusted public sources, scout analysis, and confirmed deals.",
       radarPath: "/transfers/radar",
@@ -70,24 +52,14 @@ export const HUBS: Record<HubId, HubConfig> = {
   },
 };
 
-export function getHubConfig(hubId: HubId, _locale?: HubLocale): HubLocaleConfig & { id: HubId; tag: string; accent: string } {
+/** @deprecated */
+export function getHubConfig(hubId: "wc-2026" | "transfer") {
   const hub = HUBS[hubId];
   return { ...hub.en, id: hub.id, tag: hub.tag, accent: hub.accent };
 }
 
-export function categoryArticlePath(category: string, slug: string): string {
-  if (category === "wc-2026") return `${HUBS["wc-2026"].en.basePath}/${slug}`;
-  if (category === "transfer") return `${HUBS.transfer.en.basePath}/${slug}`;
-  if (category === "listeler") return `/lists/${slug}`;
-  if (category === "radar") return `/radar/${slug}`;
-  if (category === "taktik-lab") return `/tactics-lab/${slug}`;
-  return `/lists/${slug}`;
-}
-
-export const CAT_LABEL: Record<string, string> = {
-  listeler: "Lists",
-  radar: "Radar",
-  "taktik-lab": "Tactics Lab",
-  "wc-2026": "World Cup 2026",
-  transfer: "Transfers",
+/** @deprecated */
+export const HUB_TAG: Record<string, string> = {
+  "wc-2026": "wc-2026",
+  transfer: "transfer",
 };

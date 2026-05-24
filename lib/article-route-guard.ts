@@ -1,4 +1,4 @@
-import { categoryArticlePath } from "@/lib/hub-config";
+import { categoryArticlePath } from "@/lib/category-config";
 
 /** Redirect to the article's canonical URL when opened on the wrong section route. */
 export function redirectToCanonicalArticle(category: string, slug: string, expectedCategory: string): boolean {

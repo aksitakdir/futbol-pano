@@ -1,6 +1,3 @@
-import type { HubId } from "@/lib/hub-config";
-
-/** WC 2026 ana arena oyunu */
 export const WC_2026_ARENA_SLUG = "dk-2026-sampiyonu";
 
 /** Popüler kulüpler — team_slug ile arena_games eşleşir (admin'de oluşturun) */
@@ -55,7 +52,7 @@ export const TRANSFER_TEAM_ARENA_SLUGS: {
   },
 ];
 
-export function featuredArenaSlug(hubId: HubId): string | null {
+export function featuredArenaSlug(hubId: string): string | null {
   if (hubId === "wc-2026") return WC_2026_ARENA_SLUG;
   return null;
 }

@@ -4,7 +4,6 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { supabase } from "@/lib/supabase";
 import ArticleLayoutEn from "../../components/article-layout-en";
-import { primaryHubId } from "@/lib/hub-from-tags";
 import type { SectionBlock } from "@/lib/section-blocks";
 import { redirectToCanonicalArticle } from "@/lib/article-route-guard";
 
@@ -84,7 +83,7 @@ export default function TaktikLabDetailClient({ slug }: { slug: string }) {
       accentOverride={article.accent ?? "cyan"}
       sectionsJson={Array.isArray(article.sections_json) ? article.sections_json : null}
       playersJson={article.players_json}
-      hubId={primaryHubId(article.hub_tags)}
+      hubId={undefined}
     />
   );
 }

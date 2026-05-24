@@ -5,10 +5,8 @@ import Link from "next/link";
 import { supabase } from "@/lib/supabase";
 import { arenaPath, CARD_COLOR_MAP, type ArenaGame } from "@/lib/arena-brackets";
 import PageShell from "@/app/components/page-shell";
-import type { HubId } from "@/lib/hub-config";
-
 type Props = {
-  hubId: HubId;
+  hubId: string;
   locale?: string;
   teamSlug?: string;
 };

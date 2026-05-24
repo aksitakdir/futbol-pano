@@ -1,19 +1,18 @@
 import Link from "next/link";
-import { getHubConfig, type HubId } from "@/lib/hub-config";
+import { categoryPublicPath, CAT_LABEL } from "@/lib/category-config";
 
 type Props = {
-  hubId: HubId;
+  hubId: string;
   locale?: string;
 };
 
-/** Shown on category article pages when content belongs to a hub */
 export default function HubArticleBreadcrumb({ hubId }: Props) {
-  const hub = getHubConfig(hubId);
-  const label = "← Back to hub";
+  const basePath = categoryPublicPath(hubId);
+  const title = CAT_LABEL[hubId] ?? hubId;
 
   return (
     <Link
-      href={hub.basePath}
+      href={basePath}
       className="mono"
       style={{
         display: "inline-block",
@@ -24,7 +23,7 @@ export default function HubArticleBreadcrumb({ hubId }: Props) {
         textDecoration: "none",
       }}
     >
-      {label}: {hub.pillarTitle}
+      ← Back to {title}
     </Link>
   );
 }

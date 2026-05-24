@@ -7,7 +7,6 @@ import ArticleLayoutEn from "../../components/article-layout-en";
 import RadarPlayerFocusPanel from "../../components/radar-player-focus-panel";
 import { type PlayerCardData } from "../../components/player-card";
 import { stripHtml } from "@/lib/utils";
-import { primaryHubId } from "@/lib/hub-from-tags";
 import type { SectionBlock } from "@/lib/section-blocks";
 import { redirectToCanonicalArticle } from "@/lib/article-route-guard";
 
@@ -144,7 +143,7 @@ export default function RadarDetailClient({ slug }: { slug: string }) {
       accentOverride={article.accent ?? "sky"}
       sectionsJson={Array.isArray(article.sections_json) ? article.sections_json : null}
       playersJson={article.players_json}
-      hubId={primaryHubId(article.hub_tags)}
+      hubId={undefined}
     >
       {playerCard ? (
         <RadarPlayerFocusPanel
