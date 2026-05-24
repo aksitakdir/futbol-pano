@@ -11,6 +11,24 @@ export type HeroSliderSettings = {
 
 export type RecentCountSettings = { count: number };
 
+export type CustomHeroSlide = {
+  id: string;
+  title: string;
+  teaser: string;
+  href: string;
+  eyebrow: string;
+  image?: string;
+  accentColor?: string;
+  enabled: boolean;
+};
+
+export function normalizeCustomSlides(raw: unknown): CustomHeroSlide[] {
+  if (!Array.isArray(raw)) return [];
+  return raw.filter(
+    (s): s is CustomHeroSlide => s && typeof s === "object" && typeof s.title === "string" && typeof s.href === "string",
+  );
+}
+
 export const DEFAULT_HERO_SLIDER: HeroSliderSettings = {
   radar: true,
   listeler: true,

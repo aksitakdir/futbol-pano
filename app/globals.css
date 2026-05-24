@@ -134,6 +134,9 @@ button { font-family: inherit; cursor: pointer; }
   border-color: var(--accent); font-weight: 600;
 }
 .btn-solid:hover { background: transparent; color: var(--accent); }
+.btn-solid[style*="background"]:hover {
+  background: transparent !important;
+}
 
 /* ─── Chips ─────────────────────────────────────────────────────── */
 .chip {

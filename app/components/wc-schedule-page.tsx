@@ -493,128 +493,80 @@ function MatchCard({ match, highlight }: { match: WcMatch; highlight?: string })
   const isFinal = match.round === "final";
   const homeName = match.home ? getTeamName(match.home) : (match.homeLabel ?? "TBD");
   const awayName = match.away ? getTeamName(match.away) : (match.awayLabel ?? "TBD");
+  const dateLabel = new Date(match.date + "T12:00:00Z").toLocaleDateString("en-US", { month: "short", day: "numeric", timeZone: "UTC" });
 
   return (
     <div
       style={{
-        display: "flex",
-        alignItems: "center",
-        gap: 0,
-        padding: "12px 16px",
+        padding: "14px 16px 10px",
         borderRadius: 10,
         border: "1px solid var(--sg-border)",
         background: "var(--sg-surface)",
-        borderLeft: `3px solid ${isFinal ? "var(--wc-gold)" : isGroup ? "var(--sg-border)" : "var(--wc-teal)"}`,
-        position: "relative",
-        overflow: "hidden",
+        borderLeft: `3px solid ${isFinal ? "var(--wc-gold)" : isGroup ? "color-mix(in oklch, var(--wc-gold) 30%, var(--sg-border))" : "var(--wc-teal)"}`,
       }}
     >
-      {/* Group badge */}
-      {match.group && (
-        <div
-          className="mono"
-          style={{
-            position: "absolute",
-            top: 6,
-            right: 10,
-            fontSize: 9,
-            letterSpacing: "0.12em",
-            color: "var(--wc-gold)",
-            opacity: 0.7,
-          }}
-        >
-          GRP {match.group}
+      {/* Teams row */}
+      <div style={{ display: "flex", alignItems: "center", gap: 0, marginBottom: 8 }}>
+        <div style={{ flex: 1, display: "flex", alignItems: "center", gap: 8, minWidth: 0 }}>
+          {match.home && <TeamFlag code={match.home} size={24} />}
+          <span
+            style={{
+              fontWeight: highlight && match.home === highlight ? 700 : 500,
+              fontSize: 14,
+              color: highlight && match.home === highlight ? "var(--wc-gold)" : "var(--sg-text-primary)",
+              overflow: "hidden",
+              textOverflow: "ellipsis",
+              whiteSpace: "nowrap",
+            }}
+          >
+            {homeName}
+          </span>
         </div>
-      )}
-      {!isGroup && (
-        <div
-          className="mono"
-          style={{
-            position: "absolute",
-            top: 6,
-            right: 10,
-            fontSize: 9,
-            letterSpacing: "0.12em",
-            color: "var(--wc-teal)",
-            opacity: 0.8,
-          }}
-        >
-          {WC_ROUND_LABELS[match.round].toUpperCase()}
-        </div>
-      )}
 
-      {/* Home */}
-      <div style={{ flex: 1, display: "flex", alignItems: "center", gap: 8, minWidth: 0 }}>
-        {match.home && <TeamFlag code={match.home} size={24} />}
-        <span
-          style={{
-            fontWeight: highlight && match.home === highlight ? 700 : 500,
-            fontSize: 14,
-            color: highlight && match.home === highlight ? "var(--wc-gold)" : "var(--sg-text-primary)",
-            overflow: "hidden",
-            textOverflow: "ellipsis",
-            whiteSpace: "nowrap",
-          }}
-        >
-          {homeName}
+        <div style={{ flexShrink: 0, padding: "0 12px", textAlign: "center" }}>
+          <div className="mono" style={{ fontSize: 11, fontWeight: 700, color: "var(--sg-text-muted)", letterSpacing: "0.08em" }}>
+            vs
+          </div>
+        </div>
+
+        <div style={{ flex: 1, display: "flex", alignItems: "center", gap: 8, justifyContent: "flex-end", minWidth: 0 }}>
+          <span
+            style={{
+              fontWeight: highlight && match.away === highlight ? 700 : 500,
+              fontSize: 14,
+              color: highlight && match.away === highlight ? "var(--wc-gold)" : "var(--sg-text-primary)",
+              overflow: "hidden",
+              textOverflow: "ellipsis",
+              whiteSpace: "nowrap",
+              textAlign: "right",
+            }}
+          >
+            {awayName}
+          </span>
+          {match.away && <TeamFlag code={match.away} size={24} />}
+        </div>
+      </div>
+
+      {/* Meta row */}
+      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 8 }}>
+        <span className="mono" style={{ fontSize: 9, letterSpacing: "0.06em", color: "var(--sg-text-muted)" }}>
+          {match.venue} · {match.city}
         </span>
-      </div>
-
-      {/* VS */}
-      <div style={{ flexShrink: 0, padding: "0 12px", textAlign: "center" }}>
-        <div className="mono" style={{ fontSize: 11, fontWeight: 700, color: "var(--sg-text-muted)", letterSpacing: "0.08em" }}>
-          vs
+        <div style={{ display: "flex", gap: 10, alignItems: "center", flexShrink: 0 }}>
+          {match.group && (
+            <span className="mono" style={{ fontSize: 9, letterSpacing: "0.1em", color: "var(--wc-gold)", opacity: 0.8 }}>
+              GRP {match.group}
+            </span>
+          )}
+          {!isGroup && (
+            <span className="mono" style={{ fontSize: 9, letterSpacing: "0.1em", color: "var(--wc-teal)" }}>
+              {WC_ROUND_LABELS[match.round].toUpperCase()}
+            </span>
+          )}
+          <span className="mono" style={{ fontSize: 9, letterSpacing: "0.06em", color: "var(--sg-text-muted)", opacity: 0.5 }}>
+            {dateLabel} · M{match.id}
+          </span>
         </div>
-      </div>
-
-      {/* Away */}
-      <div style={{ flex: 1, display: "flex", alignItems: "center", gap: 8, justifyContent: "flex-end", minWidth: 0 }}>
-        <span
-          style={{
-            fontWeight: highlight && match.away === highlight ? 700 : 500,
-            fontSize: 14,
-            color: highlight && match.away === highlight ? "var(--wc-gold)" : "var(--sg-text-primary)",
-            overflow: "hidden",
-            textOverflow: "ellipsis",
-            whiteSpace: "nowrap",
-            textAlign: "right",
-          }}
-        >
-          {awayName}
-        </span>
-        {match.away && <TeamFlag code={match.away} size={24} />}
-      </div>
-
-      {/* Venue */}
-      <div
-        className="mono"
-        style={{
-          position: "absolute",
-          bottom: 4,
-          left: 19,
-          fontSize: 9,
-          letterSpacing: "0.06em",
-          color: "var(--sg-text-muted)",
-          opacity: 0.7,
-        }}
-      >
-        {match.venue} · {match.city}
-      </div>
-
-      {/* Match # */}
-      <div
-        className="mono"
-        style={{
-          position: "absolute",
-          bottom: 4,
-          right: 10,
-          fontSize: 9,
-          letterSpacing: "0.06em",
-          color: "var(--sg-text-muted)",
-          opacity: 0.5,
-        }}
-      >
-        M{match.id}
       </div>
     </div>
   );

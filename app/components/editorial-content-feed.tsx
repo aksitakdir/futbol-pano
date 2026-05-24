@@ -116,7 +116,7 @@ export default function EditorialContentFeed({
       {rest.length > 0 ? (
         <>
           <div className="eyebrow" style={{ marginBottom: 16 }}>{labels.gridEyebrow}</div>
-          <div className="editorial-feed-grid" style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 16, marginBottom: 48 }}>
+          <div className="editorial-feed-grid" style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(min(100%, 260px), 1fr))", gap: 16, marginBottom: 48 }}>
             {rest.map((article, idx) => {
               const body = editorialBody(article, "en");
               const title = editorialTitle(article, "en");

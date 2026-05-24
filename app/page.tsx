@@ -19,7 +19,9 @@ import {
   enabledHeroCategories,
   normalizeHeroSlider,
   normalizeRecentCount,
+  normalizeCustomSlides,
   type HeroSliderSettings,
+  type CustomHeroSlide,
 } from "@/lib/site-settings";
 import {
   prioritizeHeroContent,
@@ -127,7 +129,16 @@ type HeroWcSlide = {
   href: string;
   eyebrow: string;
 };
-type HeroSlide = HeroContentSlide | HeroArenaSlide | HeroWcSlide;
+type HeroCustomSlide = {
+  kind: "custom";
+  slideKey: string;
+  title: string;
+  teaser: string;
+  href: string;
+  eyebrow: string;
+  image?: string;
+};
+type HeroSlide = HeroContentSlide | HeroArenaSlide | HeroWcSlide | HeroCustomSlide;
 
 const WC_HERO: HeroWcSlide = {
   kind: "wc",
@@ -148,15 +159,31 @@ function mergeHeroSlides(
   content: { slide: SlideContent; slideKey: string }[],
   arenaGames: ArenaGame[],
   heroSettings: HeroSliderSettings,
+  customSlides: CustomHeroSlide[] = [],
 ): HeroSlide[] {
   const arena = heroSettings.arena ? pickArenaSlide(arenaGames) : null;
   const items: HeroSlide[] = content.map(({ slide, slideKey }) => ({ kind: "content", slide, slideKey }));
   const out: HeroSlide[] = heroSettings.wcPromo ? [WC_HERO, ...items] : [...items];
-  if (!items.length && !arena) return heroSettings.wcPromo ? [WC_HERO] : [];
+
+  const activeCustom: HeroCustomSlide[] = customSlides
+    .filter((s) => s.enabled && s.title && s.href)
+    .map((s) => ({
+      kind: "custom",
+      slideKey: s.id,
+      title: s.title,
+      teaser: s.teaser,
+      href: s.href,
+      eyebrow: s.eyebrow || "FEATURED",
+      image: s.image,
+    }));
+  for (const cs of activeCustom) {
+    const at = Math.min(1, out.length);
+    out.splice(at, 0, cs);
+  }
+
+  if (!items.length && !arena && !activeCustom.length) return heroSettings.wcPromo ? [WC_HERO] : [];
   if (arena) {
-    const insertAt = heroSettings.wcPromo
-      ? 1 + Math.floor(Math.random() * Math.max(1, out.length - 1))
-      : Math.floor(Math.random() * Math.max(1, out.length + 1));
+    const insertAt = Math.floor(Math.random() * Math.max(1, out.length + 1));
     out.splice(insertAt, 0, arena);
   }
   return out;
@@ -224,7 +251,7 @@ export default function HomePage() {
       const settingsRes = await supabase
         .from("site_settings")
         .select("key, value")
-        .in("key", ["hero_slider", "recent_count"]);
+        .in("key", ["hero_slider", "recent_count", "hero_custom_slides"]);
 
       const pinsRes = await fetch("/api/cover-stories", { cache: "no-store" });
       const pinsJson = pinsRes.ok
@@ -233,10 +260,12 @@ export default function HomePage() {
 
       let heroSettings = { ...DEFAULT_HERO_SLIDER };
       let articleCount = 6;
+      let customSlideData: CustomHeroSlide[] = [];
       let homepageCoverId: string | undefined = pinsJson.pins?.homepage;
       for (const row of settingsRes.data ?? []) {
         if (row.key === "hero_slider") heroSettings = normalizeHeroSlider(row.value);
         if (row.key === "recent_count") articleCount = normalizeRecentCount(row.value);
+        if (row.key === "hero_custom_slides") customSlideData = normalizeCustomSlides(row.value);
       }
 
       const enabledCategories = enabledHeroCategories(heroSettings);
@@ -285,7 +314,7 @@ export default function HomePage() {
         return;
       }
 
-      setSlides(mergeHeroSlides(buildHeroSlides(filtered, sliderCount, homepageCoverId), arenaGames, heroSettings));
+      setSlides(mergeHeroSlides(buildHeroSlides(filtered, sliderCount, homepageCoverId), arenaGames, heroSettings, customSlideData));
     }
     load();
   }, []);
@@ -406,7 +435,9 @@ export default function HomePage() {
           <div className="absolute inset-0 z-0">
             {slides[activeSlide]?.kind === "content" && (slides[activeSlide] as HeroContentSlide).slide.cover_image ? (
               <img key={(slides[activeSlide] as HeroContentSlide).slide.cover_image} src={(slides[activeSlide] as HeroContentSlide).slide.cover_image!} alt="" className="w-full h-full object-cover" style={{ filter: "brightness(0.48) saturate(0.85)" }} />
-            ) : slides[activeSlide]?.kind === "wc" ? (
+            ) : slides[activeSlide]?.kind === "custom" && (slides[activeSlide] as HeroCustomSlide).image ? (
+              <img key={(slides[activeSlide] as HeroCustomSlide).image} src={(slides[activeSlide] as HeroCustomSlide).image!} alt="" className="w-full h-full object-cover" style={{ filter: "brightness(0.42) saturate(0.9)" }} />
+            ) : slides[activeSlide]?.kind === "wc" || slides[activeSlide]?.kind === "custom" ? (
               <div
                 key="wc-hero-bg"
                 className="absolute inset-0"
@@ -507,6 +538,21 @@ export default function HomePage() {
                       style={{ background: "var(--amber)", borderColor: "var(--amber)", color: "var(--ink-900)" }}
                     >
                       Explore WC 2026 →
+                    </Link>
+                  </div>
+                ) : item.kind === "custom" ? (
+                  <div className="page-enter" key={`custom-${i}`}>
+                    <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 24 }}>
+                      <span className="chip solid" style={{ background: "var(--amber)", borderColor: "var(--amber)", color: "var(--ink-900)" }}>
+                        {item.eyebrow}
+                      </span>
+                    </div>
+                    <h2 className="display" style={{ fontSize: "clamp(2.4rem, 5.5vw, 4.8rem)", fontWeight: 700, letterSpacing: "-0.04em", lineHeight: 1.08, margin: "0 0 20px", paddingBottom: "0.14em", textWrap: "balance", maxWidth: 820, background: "linear-gradient(135deg, #f5d020 0%, #fff 45%, #c9a227 100%)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", backgroundClip: "text" }}>
+                      {item.title}
+                    </h2>
+                    <p style={{ fontSize: 17, lineHeight: 1.6, color: "var(--ink-200)", maxWidth: 600, marginBottom: 36 }}>{item.teaser}</p>
+                    <Link href={item.href} className="btn btn-solid" style={{ background: "var(--amber)", borderColor: "var(--amber)", color: "var(--ink-900)" }}>
+                      Explore →
                     </Link>
                   </div>
                 ) : (
