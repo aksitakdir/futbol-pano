@@ -1,5 +1,4 @@
-// Her kategori için varsayılan görsel havuzu
-// Unsplash ücretsiz görseller — ilerleyen dönemde Midjourney görselleriyle değiştirilecek
+// Default fallback images per category (Unsplash free photos)
 
 const CATEGORY_IMAGES: Record<string, string[]> = {
   radar: [
@@ -7,7 +6,7 @@ const CATEGORY_IMAGES: Record<string, string[]> = {
     "https://images.unsplash.com/photo-1579952363873-27f3bade9f55?w=800&q=80",
     "https://images.unsplash.com/photo-1508098682722-e99c43a406b2?w=800&q=80",
     "https://images.unsplash.com/photo-1543326727-cf6c39e8f84c?w=800&q=80",
-    "https://images.unsplash.com/photo-1551958219-acbc595a8fe3?w=800&q=80",
+    "https://images.unsplash.com/photo-1570498839593-e565b39455fc?w=800&q=80",
   ],
   listeler: [
     "https://images.unsplash.com/photo-1522778119026-d647f0596c20?w=800&q=80",
@@ -28,7 +27,7 @@ const CATEGORY_IMAGES: Record<string, string[]> = {
 export function getCategoryImage(category: string, seed?: string): string {
   const images = CATEGORY_IMAGES[category] ?? CATEGORY_IMAGES.radar;
   if (!images.length) return "";
-  // Seed varsa (slug gibi) deterministik seç — aynı içerik hep aynı görseli göstersin
+  // Deterministic pick when a seed (e.g. slug) is provided
   if (seed) {
     let hash = 0;
     for (let i = 0; i < seed.length; i++) {

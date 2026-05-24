@@ -56,9 +56,14 @@ export default function HomeWcSquads() {
           <h2 className="display" style={{ fontSize: "clamp(24px, 4vw, 36px)", fontWeight: 700, letterSpacing: "-0.03em", margin: 0 }}>
             All 48 Squad Pages
           </h2>
-          <Link href={WC_BASE_PATH} className="mono u-link" style={{ fontSize: 12, letterSpacing: "0.14em", color: "var(--sg-text-muted)", whiteSpace: "nowrap" }}>
-            VIEW HUB →
-          </Link>
+          <div style={{ display: "flex", gap: 16, alignItems: "baseline" }}>
+            <Link href="/world-cup-2026/schedule" className="mono u-link" style={{ fontSize: 12, letterSpacing: "0.14em", color: "var(--sg-secondary)", whiteSpace: "nowrap" }}>
+              SCHEDULE →
+            </Link>
+            <Link href={WC_BASE_PATH} className="mono u-link" style={{ fontSize: 12, letterSpacing: "0.14em", color: "var(--sg-text-muted)", whiteSpace: "nowrap" }}>
+              VIEW ALL →
+            </Link>
+          </div>
         </div>
         <p style={{ marginTop: 12, fontSize: 15, color: "var(--sg-text-muted)", maxWidth: "60ch" }}>
           Explore rosters for all 48 World Cup 2026 nations. Squads are updated as official selections are announced.

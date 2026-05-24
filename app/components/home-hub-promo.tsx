@@ -24,10 +24,14 @@ export default function HomeHubPromo({ wcArticles, transferArticles }: Props) {
           <HubCard
             accent="var(--amber)"
             title="World Cup 2026"
-            description="Squads, scout analysis, and tournament lists — not headlines, scout reports."
+            description="Match schedule, squads, scout analysis, and tournament lists — June 11 to July 19."
             hubHref="/world-cup-2026"
             cta="WC 2026"
             articles={wcArticles}
+            extraLinks={[
+              { href: "/world-cup-2026/schedule", label: "Match Schedule" },
+              { href: "/world-cup-2026/squads", label: "48 Squads" },
+            ]}
           />
           <HubCard
             accent="var(--cyan)"
@@ -43,9 +47,10 @@ export default function HomeHubPromo({ wcArticles, transferArticles }: Props) {
   );
 }
 
-function HubCard({ accent, title, description, hubHref, cta, articles }: {
+function HubCard({ accent, title, description, hubHref, cta, articles, extraLinks }: {
   accent: string; title: string; description: string;
   hubHref: string; cta: string; articles: HubArticlePreview[];
+  extraLinks?: { href: string; label: string }[];
 }) {
   return (
     <div style={{ border: "1px solid var(--sg-border)", borderRadius: 20, padding: "clamp(24px, 3vw, 36px)", background: "var(--sg-surface)", position: "relative", overflow: "hidden" }}>
@@ -63,6 +68,20 @@ function HubCard({ accent, title, description, hubHref, cta, articles }: {
             </li>
           ))}
         </ul>
+      ) : null}
+      {extraLinks?.length ? (
+        <div style={{ display: "flex", flexWrap: "wrap", gap: 8, marginBottom: 16 }}>
+          {extraLinks.map((el) => (
+            <Link
+              key={el.href}
+              href={el.href}
+              className="mono u-link"
+              style={{ fontSize: 11, letterSpacing: "0.1em", color: accent, padding: "4px 0" }}
+            >
+              {el.label} →
+            </Link>
+          ))}
+        </div>
       ) : null}
       <Link href={hubHref} className="btn btn-solid" style={{ background: accent, borderColor: accent }}>{cta} →</Link>
     </div>

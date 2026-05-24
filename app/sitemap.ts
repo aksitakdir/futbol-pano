@@ -6,6 +6,7 @@ const base = "https://www.scoutgamer.com";
 const staticEntries = [
   { url: "",                          priority: 1.0 },
   { url: "/world-cup-2026",           priority: 0.92 },
+  { url: "/world-cup-2026/schedule",   priority: 0.90 },
   { url: "/world-cup-2026/squads",    priority: 0.88 },
   { url: "/world-cup-2026/lists",     priority: 0.85 },
   { url: "/transfers",                priority: 0.9 },

@@ -134,7 +134,7 @@ const WC_HERO: HeroWcSlide = {
   slideKey: "wc-2026-promo",
   eyebrow: "FIFA WORLD CUP 2026",
   title: "World Cup 2026",
-  teaser: "Squads, scout analysis, and tournament lists — not headlines, scout reports.",
+  teaser: "Match schedule, squads, and scout analysis — June 11 to July 19, 2026.",
   href: "/world-cup-2026",
 };
 

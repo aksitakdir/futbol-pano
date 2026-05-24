@@ -83,9 +83,14 @@ export default function HubPillarPage({ hubId }: Props) {
           <p className="hub-pillar-description">{hub.pillarDescription}</p>
           <div className="hub-pillar-ctas flex flex-wrap items-center gap-x-6 gap-y-3">
             {isWc ? (
-              <Link href={cfg.kadrolarPath} className="btn btn-solid" style={{ background: "var(--wc-magenta)", borderColor: "var(--wc-magenta)" }}>
-                48 Team Squads →
-              </Link>
+              <>
+                <Link href="/world-cup-2026/schedule" className="btn btn-solid" style={{ background: "var(--wc-gold)", borderColor: "var(--wc-gold)" }}>
+                  Match Schedule →
+                </Link>
+                <Link href={cfg.kadrolarPath} className="btn btn-solid" style={{ background: "var(--wc-magenta)", borderColor: "var(--wc-magenta)" }}>
+                  48 Team Squads →
+                </Link>
+              </>
             ) : (
               <Link href="#transfer-wire" className="btn btn-solid hub-pillar-cta">
                 Transfer Wire →
@@ -102,6 +107,27 @@ export default function HubPillarPage({ hubId }: Props) {
       ) : null}
 
       {isWc ? <HubEditorialSection hubId={hubId} locale="en" accent={cfg.accent} /> : null}
+
+      {isWc ? (
+        <section style={{ borderTop: "1px solid var(--sg-border)", background: "var(--sg-surface-low)" }}>
+          <PageShell as="div" className="sg-page-shell--section">
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", marginBottom: 20, flexWrap: "wrap", gap: 12 }}>
+              <div>
+                <div className="eyebrow" style={{ color: "var(--wc-gold)", marginBottom: 6 }}>MATCH SCHEDULE</div>
+                <h2 className="display" style={{ fontSize: "clamp(22px, 3vw, 30px)", fontWeight: 700, letterSpacing: "-0.03em", margin: 0 }}>
+                  104 Matches · June 11 – July 19
+                </h2>
+              </div>
+              <Link href="/world-cup-2026/schedule" className="btn btn-solid" style={{ background: "var(--wc-gold)", borderColor: "var(--wc-gold)" }}>
+                Full Schedule →
+              </Link>
+            </div>
+            <p style={{ fontSize: 15, lineHeight: 1.55, color: "var(--sg-text-secondary)", margin: "0 0 0", maxWidth: "50ch" }}>
+              Complete fixture list with all group stage, knockout rounds, and the final at MetLife Stadium in New York.
+            </p>
+          </PageShell>
+        </section>
+      ) : null}
 
       {isWc ? (
         <PageShell as="section" className="sg-page-shell--section" style={{ paddingTop: 0 }}>
