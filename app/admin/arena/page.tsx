@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useCallback, useRef } from "react";
 import Link from "next/link";
 import { supabase } from "@/lib/supabase";
 import AdminLayout from "../components/admin-layout";
@@ -70,7 +70,7 @@ const EMPTY_FORM: FormState = {
   team_slug: "",
 };
 
-/** Oyun tipi değişince satır sayısını koruyarak kırp / doldur */
+/** Resize participant rows when game type changes, preserving existing data. */
 function resizeParticipantRows(rows: ParticipantRow[], gameType: ArenaGameType): ParticipantRow[] {
   const n = bracketParticipantCount(gameType);
   const next = rows.slice(0, n).map((r) => ({ ...r }));
@@ -243,6 +243,34 @@ export default function AdminArenaPage() {
     }
   }
 
+  // ── Data verification ──────────────────────────────────────────────────────
+  const [verifying, setVerifying] = useState(false);
+  type VerifyResult = { name: string; matched: boolean; dbClub?: string };
+  const [verifyResults, setVerifyResults] = useState<VerifyResult[] | null>(null);
+
+  async function handleVerifyParticipants() {
+    const names = form.participantRows
+      .map((r) => r.name.trim())
+      .filter(Boolean);
+    if (names.length === 0) return;
+    setVerifying(true);
+    setVerifyResults(null);
+
+    const { data: players } = await supabase
+      .from("fc_players")
+      .select("name,club")
+      .in("name", names);
+    const dbMap = new Map((players ?? []).map((p) => [p.name, p.club]));
+
+    const results: VerifyResult[] = names.map((n) => ({
+      name: n,
+      matched: dbMap.has(n),
+      dbClub: dbMap.get(n),
+    }));
+    setVerifyResults(results);
+    setVerifying(false);
+  }
+
   const inputCls =
     "w-full rounded-lg border border-slate-700/60 bg-slate-800/60 px-3 py-2 text-sm text-slate-100 placeholder-slate-500 outline-none transition focus:border-emerald-500/60";
   const labelCls = "mb-1 block text-[11px] font-semibold uppercase tracking-wider text-slate-400";
@@ -297,7 +325,7 @@ export default function AdminArenaPage() {
                 >
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2 flex-wrap">
-                      <span className="text-sm font-semibold text-slate-100 truncate">{g.title_tr}</span>
+                      <span className="text-sm font-semibold text-slate-100 truncate">{g.title_en || g.title_tr}</span>
                       <span className="text-[10px] text-slate-500 font-mono">/{g.slug}</span>
                     </div>
                     <div className="mt-0.5 flex items-center gap-2 text-[11px] text-slate-500 flex-wrap">
@@ -306,6 +334,12 @@ export default function AdminArenaPage() {
                       <span>{g.participants?.length ?? 0} participants</span>
                       <span>·</span>
                       <span>{new Date(g.created_at).toLocaleDateString("en-US", { day: "numeric", month: "short", year: "numeric" })}</span>
+                      {(() => {
+                        const days = Math.floor((Date.now() - new Date(g.created_at).getTime()) / 86400000);
+                        if (days > 90) return <span className="rounded border border-rose-500/40 bg-rose-500/10 px-1.5 py-0.5 text-[10px] font-semibold text-rose-400">Stale ({days}d)</span>;
+                        if (days > 30) return <span className="rounded border border-amber-500/40 bg-amber-500/10 px-1.5 py-0.5 text-[10px] font-semibold text-amber-400">Review ({days}d)</span>;
+                        return null;
+                      })()}
                     </div>
                   </div>
 
@@ -347,7 +381,7 @@ export default function AdminArenaPage() {
         )}
 
         {/* Form overlay */}
-        {/* Form — tam ekran mobilde; masaüstünde sidebar (w-56) dışında kalır */}
+        {/* Form overlay — full-screen on mobile, offset for sidebar on desktop */}
         {showForm && (
           <div className="fixed inset-0 z-40 flex items-start justify-center overflow-y-auto bg-slate-950/85 px-4 py-8 backdrop-blur-sm lg:inset-y-0 lg:left-56 lg:right-0 lg:top-0 lg:px-6">
             <form
@@ -372,7 +406,7 @@ export default function AdminArenaPage() {
                       className={inputCls}
                       value={form.slug}
                       onChange={(e) => handleField("slug", e.target.value)}
-                      placeholder="gelecek-yildizlar"
+                      placeholder="future-stars"
                       required
                     />
                     {form.title_tr && !form.slug && (
@@ -409,7 +443,7 @@ export default function AdminArenaPage() {
                         handleField("title_tr", e.target.value);
                         if (!form.slug) handleField("slug", toSlug(e.target.value));
                       }}
-                      placeholder="Gelecek Yıldızlar"
+                      placeholder="Future Stars"
                       required
                     />
                   </div>
@@ -454,7 +488,7 @@ export default function AdminArenaPage() {
                       className={inputCls}
                       value={form.hero_title_tr}
                       onChange={(e) => handleField("hero_title_tr", e.target.value)}
-                      placeholder="Gelecek Yıldızlar Turnuvası"
+                      placeholder="Future Stars Tournament"
                     />
                   </div>
                   <div>
@@ -476,7 +510,7 @@ export default function AdminArenaPage() {
                       className={inputCls}
                       value={form.hero_teaser_tr}
                       onChange={(e) => handleField("hero_teaser_tr", e.target.value)}
-                      placeholder="Tek şampiyon. Sen seç."
+                      placeholder="One champion. You decide."
                     />
                   </div>
                   <div>
@@ -531,9 +565,12 @@ export default function AdminArenaPage() {
                       value={form.game_type}
                       onChange={(e) => handleGameTypeChange(e.target.value as ArenaGameType)}
                     >
-                      <option value="random_16">random_16 (16 players, random)</option>
-                      <option value="random_32">random_32 (32 players, random)</option>
-                      <option value="random_64">random_64 (64 players, random)</option>
+                      <option value="random_4">random_4 (4 candidates)</option>
+                      <option value="random_8">random_8 (8 candidates)</option>
+                      <option value="random_16">random_16 (16 candidates)</option>
+                      <option value="random_32">random_32 (32 candidates)</option>
+                      <option value="random_64">random_64 (64 candidates)</option>
+                      <option value="random_128">random_128 (128 candidates)</option>
                       <option value="fixed_8">fixed_8 (8 fixed matchups)</option>
                     </select>
                   </div>
@@ -551,7 +588,7 @@ export default function AdminArenaPage() {
                   </div>
                 </div>
 
-                {/* Katılımcılar — satır başına iki input */}
+                {/* Participants */}
                 <div>
                   <label className={labelCls}>
                     Participants ({bracketParticipantCount(form.game_type)} rows)
@@ -596,10 +633,53 @@ export default function AdminArenaPage() {
                       ))}
                     </div>
                   </div>
-                  <p className="mt-2 text-[10px] text-slate-500">
-                    <strong className="font-semibold text-slate-400">{countFilledParticipants(form.participantRows)}</strong>{" "}
-                    participants · {bracketParticipantCount(form.game_type)} total slots
-                  </p>
+                  <div className="mt-2 flex items-center gap-3">
+                    <p className="text-[10px] text-slate-500">
+                      <strong className="font-semibold text-slate-400">{countFilledParticipants(form.participantRows)}</strong>{" "}
+                      participants · {bracketParticipantCount(form.game_type)} total slots
+                    </p>
+                    {form.game_type !== "fixed_8" && (
+                      <button
+                        type="button"
+                        onClick={handleVerifyParticipants}
+                        disabled={verifying}
+                        className="rounded border border-sky-500/40 bg-sky-500/10 px-2 py-0.5 text-[10px] font-semibold text-sky-300 transition hover:bg-sky-500/20 disabled:opacity-50"
+                      >
+                        {verifying ? "Checking..." : "Verify against DB"}
+                      </button>
+                    )}
+                  </div>
+
+                  {verifyResults && (
+                    <div className="mt-3 rounded-lg border border-slate-800/60 bg-slate-950/40 p-3">
+                      <p className="mb-2 text-[10px] font-semibold uppercase tracking-wider text-slate-400">
+                        Verification Results — {verifyResults.filter((r) => r.matched).length}/{verifyResults.length} matched
+                      </p>
+                      <div className="max-h-48 space-y-1 overflow-y-auto text-[11px]">
+                        {verifyResults.map((r, i) => (
+                          <div key={i} className="flex items-center gap-2">
+                            <span className={r.matched ? "text-emerald-400" : "text-rose-400"}>
+                              {r.matched ? "✓" : "✗"}
+                            </span>
+                            <span className={r.matched ? "text-slate-300" : "text-rose-300 font-semibold"}>
+                              {r.name}
+                            </span>
+                            {r.matched && r.dbClub && (
+                              <span className="text-slate-500">({r.dbClub})</span>
+                            )}
+                            {!r.matched && (
+                              <span className="text-rose-500">— not found in fc_players</span>
+                            )}
+                          </div>
+                        ))}
+                      </div>
+                      {verifyResults.some((r) => !r.matched) && (
+                        <p className="mt-2 text-[10px] text-amber-400">
+                          Unmatched names won&apos;t show player cards. Verify spelling or add them to the database first.
+                        </p>
+                      )}
+                    </div>
+                  )}
                 </div>
               </div>
 
