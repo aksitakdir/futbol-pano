@@ -31,6 +31,10 @@ const nextConfig: NextConfig = {
       { source: "/dunya-kupasi-2026", destination: "/world-cup-2026", permanent: true },
       { source: "/transfer/:path*", destination: "/transfers/:path*", permanent: true },
       { source: "/transfer", destination: "/transfers", permanent: true },
+      // Deleted arena games → arena index
+      { source: "/arena/super-lig-efsaneleri", destination: "/arena", permanent: true },
+      { source: "/arena/turkiyede-en-iyi-yabancilar", destination: "/arena", permanent: true },
+      { source: "/arena/dk-2026-sampiyonu", destination: "/arena", permanent: true },
       // Turkish category slugs → English
       { source: "/kadrolar/:path*", destination: "/world-cup-2026/squads/:path*", permanent: true },
       { source: "/listeler/:path*", destination: "/lists/:path*", permanent: true },
