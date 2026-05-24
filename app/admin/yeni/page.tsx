@@ -386,12 +386,11 @@ function NewArticleForm() {
               className="w-full rounded-lg border border-slate-700/80 bg-slate-900/70 px-4 py-2.5 text-sm text-slate-100 placeholder-slate-500 outline-none transition focus:border-emerald-500/60 focus:ring-1 focus:ring-emerald-500/40" />
           </div>
 
-          {/* Players List (Lists category) */}
-          {category === "listeler" && (
-            <div className="rounded-xl border border-slate-700/60 bg-slate-900/40 p-5">
+          {/* Players List */}
+          <div className="rounded-xl border border-slate-700/60 bg-slate-900/40 p-5">
               <div className="mb-4">
                 <p className="text-xs font-semibold uppercase tracking-[0.18em] text-sky-300/80">Player List</p>
-                <p className="mt-0.5 text-[11px] text-slate-500">Add multiple players for list articles</p>
+                <p className="mt-0.5 text-[11px] text-slate-500">Add multiple players for list content</p>
               </div>
               <div className="relative mb-4">
                 <input type="text" value={playersListSearch} onChange={(e) => setPlayersListSearch(e.target.value)}
@@ -439,7 +438,6 @@ function NewArticleForm() {
                 </div>
               )}
             </div>
-          )}
 
           {/* Player Card */}
           <div className="rounded-xl border border-slate-700/60 bg-slate-900/40 p-5">

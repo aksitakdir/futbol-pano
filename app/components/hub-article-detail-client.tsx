@@ -24,6 +24,7 @@ type ContentRow = {
   hero_variant?: string;
   accent?: string;
   sections_json?: SectionBlock[] | null;
+  players_json?: string | null;
   hub_tags?: string[] | null;
 };
 
@@ -100,6 +101,7 @@ export default function HubArticleDetailClient({
       heroVariant={article.hero_variant ?? "text-only"}
       accentOverride={article.accent ?? HUB_ACCENTS[hubId]}
       sectionsJson={Array.isArray(article.sections_json) ? article.sections_json : null}
+      playersJson={article.players_json}
       hubId={hubId}
     />
   );

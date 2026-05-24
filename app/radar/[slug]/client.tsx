@@ -20,6 +20,7 @@ type ContentRow = {
   news_query?: string; player_name?: string;
   hero_variant?: string; accent?: string;
   sections_json?: SectionBlock[] | null;
+  players_json?: string | null;
   stat_pace?: number; stat_shooting?: number; stat_passing?: number;
   stat_dribbling?: number; stat_defending?: number; stat_physical?: number;
   stat_overall?: number;
@@ -142,6 +143,7 @@ export default function RadarDetailClient({ slug }: { slug: string }) {
       heroVariant={radarHeroVariant(article.hero_variant, !!playerCard)}
       accentOverride={article.accent ?? "sky"}
       sectionsJson={Array.isArray(article.sections_json) ? article.sections_json : null}
+      playersJson={article.players_json}
       hubId={primaryHubId(article.hub_tags)}
     >
       {playerCard ? (

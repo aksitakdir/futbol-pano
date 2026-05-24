@@ -14,6 +14,7 @@ import { stripHtml, contentLooksLikeHtml } from "@/lib/utils";
 import { normalizeYoutubeId } from "@/lib/youtube-id";
 import { tocFromSections, type SectionBlock } from "@/lib/section-blocks";
 import type { HubId } from "@/lib/hub-config";
+import ArticlePlayerEmbed from "./article-player-embed";
 
 type SidebarItem = { id: string; title: string; title_en?: string; slug: string; category: string; created_at: string; };
 export type YouTubeSearchItem = { title: string; thumbnail: string; videoId: string; channelTitle: string; };
@@ -108,6 +109,7 @@ type Props = {
   newsQuery?: string; playerName?: string;
   heroVariant?: string; accentOverride?: string;
   sectionsJson?: SectionBlock[] | null;
+  playersJson?: string | null;
   showNewsSection?: boolean; children?: React.ReactNode;
   excerptContent?: string; isPending?: boolean;
   hubId?: HubId;
@@ -121,6 +123,7 @@ export default function ArticleLayoutEn({
   youtubeQuery1, youtubeQuery2,
   newsQuery, showNewsSection = true, children,
   heroVariant = "text-only", accentOverride, sectionsJson,
+  playersJson,
   hubId,
 }: Props) {
   const [similar, setSimilar] = useState<SidebarItem[]>([]);
@@ -148,6 +151,15 @@ export default function ArticleLayoutEn({
     const withDrop = addDropCap(withIds, accent);
     return { processedHtml: withDrop, toc: extractH2Headings(content) };
   }, [content, accent]);
+
+  const parsedPlayers = useMemo<string[]>(() => {
+    if (!playersJson) return [];
+    try {
+      const arr = JSON.parse(playersJson);
+      if (!Array.isArray(arr)) return [];
+      return arr.map((p: { name?: string }) => p.name).filter((n): n is string => !!n);
+    } catch { return []; }
+  }, [playersJson]);
 
   const structuredToc = useMemo(
     () => (sectionsJson?.length ? tocFromSections(sectionsJson) : []),
@@ -524,6 +536,19 @@ export default function ArticleLayoutEn({
               </ReactMarkdown>
             )}
           </div>
+
+          {parsedPlayers.length > 0 && (
+            <div style={{ marginTop: 48, paddingTop: 40, borderTop: "1px solid var(--sg-border)" }}>
+              <div className="eyebrow" style={{ color: accent, marginBottom: 24 }}>
+                FEATURED PLAYERS
+              </div>
+              <div style={{ display: "flex", flexDirection: "column", gap: 24 }}>
+                {parsedPlayers.map((name) => (
+                  <ArticlePlayerEmbed key={name} playerName={name} locale="en" />
+                ))}
+              </div>
+            </div>
+          )}
 
           {youtubeQuery1?.trim() && (
             <div style={{ marginTop: 48, paddingTop: 48, borderTop: "1px solid var(--sg-border)" }}>

@@ -584,8 +584,7 @@ export default function DuzenlePage() {
             />
           </div>
 
-          {category === "listeler" && (
-            <div className="rounded-xl border border-slate-700/60 bg-slate-900/40 p-5">
+          <div className="rounded-xl border border-slate-700/60 bg-slate-900/40 p-5">
               <div className="mb-4">
                 <p className="text-xs font-semibold uppercase tracking-[0.18em] text-sky-300/80">Player List</p>
                 <p className="mt-0.5 text-[11px] text-slate-500">Add multiple players for list content</p>
@@ -673,7 +672,6 @@ export default function DuzenlePage() {
                 </div>
               )}
             </div>
-          )}
 
           {/* ─── Player Card Section ─────────────────────────────────────────── */}
           <div className="rounded-xl border border-slate-700/60 bg-slate-900/40 p-5">

@@ -17,6 +17,7 @@ type ContentRow = {
   news_query?: string; player_name?: string;
   hero_variant?: string; accent?: string;
   sections_json?: SectionBlock[] | null;
+  players_json?: string | null;
   hub_tags?: string[] | null;
 };
 
@@ -82,6 +83,7 @@ export default function TaktikLabDetailClient({ slug }: { slug: string }) {
       heroVariant={article.hero_variant ?? "pitch-diagram"}
       accentOverride={article.accent ?? "cyan"}
       sectionsJson={Array.isArray(article.sections_json) ? article.sections_json : null}
+      playersJson={article.players_json}
       hubId={primaryHubId(article.hub_tags)}
     />
   );
