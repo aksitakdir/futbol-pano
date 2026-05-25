@@ -110,7 +110,7 @@ export default function HubPillarPage({ hubId }: Props) {
 
       {isWc ? (
         <section style={{ borderTop: "1px solid var(--sg-border)", background: "var(--sg-surface-low)" }}>
-          <PageShell as="div" className="sg-page-shell--section">
+          <PageShell as="div" className="sg-page-shell--section" style={{ paddingTop: 56, paddingBottom: 56 }}>
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", marginBottom: 20, flexWrap: "wrap", gap: 12 }}>
               <div>
                 <div className="eyebrow" style={{ color: "var(--wc-gold)", marginBottom: 6 }}>MATCH SCHEDULE</div>
@@ -123,20 +123,18 @@ export default function HubPillarPage({ hubId }: Props) {
               </Link>
             </div>
             <p style={{ fontSize: 15, lineHeight: 1.55, color: "var(--sg-text-secondary)", margin: "0 0 0", maxWidth: "50ch" }}>
-              Complete fixture list with all group stage, knockout rounds, and the final at MetLife Stadium in New York.
+              Complete fixture list with kick-off times in your local timezone — group stage, Round of 32, quarterfinals, and the final at MetLife Stadium.
             </p>
           </PageShell>
         </section>
       ) : null}
 
       {isWc ? (
-        <PageShell as="section" className="sg-page-shell--section" style={{ paddingTop: 0 }}>
+        <PageShell as="section" className="sg-page-shell--section" style={{ paddingTop: 56, paddingBottom: 56 }}>
           <div className="eyebrow" style={{ marginBottom: 24 }}>48 TEAMS</div>
           <WcTeamGrid locale="en" kadrolarBasePath={cfg.kadrolarPath} />
         </PageShell>
       ) : null}
-
-      {isWc ? <HubFeaturedArenaBanner hubId={hubId} locale="en" /> : null}
 
       <HubArenaStrip hubId={hubId} locale="en" />
 

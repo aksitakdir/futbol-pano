@@ -84,10 +84,14 @@ export async function readTransferWireCache(): Promise<{
     .eq("key", TRANSFER_WIRE_CACHE_KEY)
     .maybeSingle();
 
-  const v = data?.value as CachePayload | null;
-  const headlines = v?.headlines ?? [];
-  const updatedAt = v?.updatedAt ?? null;
-  const lastSyncAt = v?.lastSyncAt ?? updatedAt;
+  let v = data?.value as CachePayload | string | null;
+  if (typeof v === "string") {
+    try { v = JSON.parse(v) as CachePayload; } catch { v = null; }
+  }
+  const parsed = v as CachePayload | null;
+  const headlines = parsed?.headlines ?? [];
+  const updatedAt = parsed?.updatedAt ?? null;
+  const lastSyncAt = parsed?.lastSyncAt ?? updatedAt;
   const empty = headlines.length === 0;
   const age = updatedAt ? Date.now() - new Date(updatedAt).getTime() : Infinity;
   const stale = empty || !updatedAt || age > TRANSFER_WIRE_CACHE_TTL_MS;
