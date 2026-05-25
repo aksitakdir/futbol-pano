@@ -22,9 +22,20 @@ export type CustomHeroSlide = {
   enabled: boolean;
 };
 
+/** Safely parse a Supabase value that may be a JSON string or already parsed. */
+function parseValue<T>(raw: unknown): T | null {
+  if (raw === null || raw === undefined) return null;
+  if (typeof raw === "object") return raw as T;
+  if (typeof raw === "string") {
+    try { return JSON.parse(raw) as T; } catch { return null; }
+  }
+  return null;
+}
+
 export function normalizeCustomSlides(raw: unknown): CustomHeroSlide[] {
-  if (!Array.isArray(raw)) return [];
-  return raw.filter(
+  const parsed = parseValue<CustomHeroSlide[]>(raw);
+  if (!Array.isArray(parsed)) return [];
+  return parsed.filter(
     (s): s is CustomHeroSlide => s && typeof s === "object" && typeof s.title === "string" && typeof s.href === "string",
   );
 }
@@ -51,8 +62,8 @@ export const HERO_SLIDER_TOGGLES: { key: keyof HeroSliderSettings; label: string
 ];
 
 export function normalizeHeroSlider(raw: unknown): HeroSliderSettings {
-  if (!raw || typeof raw !== "object") return { ...DEFAULT_HERO_SLIDER };
-  const o = raw as Record<string, unknown>;
+  const o = parseValue<Record<string, unknown>>(raw);
+  if (!o || typeof o !== "object") return { ...DEFAULT_HERO_SLIDER };
   const out = { ...DEFAULT_HERO_SLIDER };
   for (const key of Object.keys(out) as (keyof HeroSliderSettings)[]) {
     if (key === "sliderCount") {
@@ -66,8 +77,9 @@ export function normalizeHeroSlider(raw: unknown): HeroSliderSettings {
 }
 
 export function normalizeRecentCount(raw: unknown): number {
-  if (!raw || typeof raw !== "object") return 6;
-  const n = Number((raw as RecentCountSettings).count);
+  const o = parseValue<RecentCountSettings>(raw);
+  if (!o || typeof o !== "object") return 6;
+  const n = Number(o.count);
   return n === 3 || n === 6 || n === 9 ? n : 6;
 }
 

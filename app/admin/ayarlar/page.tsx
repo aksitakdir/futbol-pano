@@ -34,7 +34,10 @@ export default function SettingsPage() {
         return;
       }
       for (const row of data ?? []) {
-        if (row.key === "featured_player") setPlayer(row.value as FeaturedPlayer);
+        if (row.key === "featured_player") {
+          const parsed = typeof row.value === "string" ? (() => { try { return JSON.parse(row.value); } catch { return null; } })() : row.value;
+          if (parsed && typeof parsed === "object" && "name" in parsed) setPlayer(parsed as FeaturedPlayer);
+        }
         if (row.key === "hero_slider") setSlider(normalizeHeroSlider(row.value));
         if (row.key === "recent_count") setRecentCount(normalizeRecentCount(row.value));
         if (row.key === "hero_custom_slides") setCustomSlides(normalizeCustomSlides(row.value));
@@ -138,9 +141,9 @@ export default function SettingsPage() {
             </section>
 
             <section className="rounded-xl border border-slate-800/60 bg-slate-900/30 p-5">
-              <h2 className="mb-1 text-sm font-semibold">Hero Slider Count</h2>
+              <h2 className="mb-1 text-sm font-semibold">Hero Banner — Article Slide Count</h2>
               <p className="mb-4 text-[11px] text-slate-500">
-                Max number of article slides in the hero banner (excluding promo slides).
+                How many <strong>article</strong> slides to show in the big hero banner at the top (does not include promo or custom slides).
               </p>
               <div className="flex gap-2">
                 {[3, 5, 7, 9].map((n) => (
@@ -188,43 +191,61 @@ export default function SettingsPage() {
                     </div>
                   </div>
                   <div className="grid grid-cols-2 gap-2 mb-2">
+                    <div>
+                      <label className="mb-1 block text-[10px] font-medium text-slate-500">Title <span className="text-rose-400">*</span></label>
+                      <input
+                        type="text"
+                        value={slide.title}
+                        onChange={(e) => setCustomSlides(customSlides.map((s, i) => i === idx ? { ...s, title: e.target.value } : s))}
+                        placeholder="World Cup 2026 Match Schedule"
+                        className="w-full rounded border border-slate-700/80 bg-slate-800/70 px-2.5 py-1.5 text-xs text-slate-100 placeholder-slate-600 outline-none focus:border-amber-500/60"
+                      />
+                    </div>
+                    <div>
+                      <label className="mb-1 block text-[10px] font-medium text-slate-500">Eyebrow label</label>
+                      <input
+                        type="text"
+                        value={slide.eyebrow}
+                        onChange={(e) => setCustomSlides(customSlides.map((s, i) => i === idx ? { ...s, eyebrow: e.target.value } : s))}
+                        placeholder="MATCH SCHEDULE"
+                        className="w-full rounded border border-slate-700/80 bg-slate-800/70 px-2.5 py-1.5 text-xs text-slate-100 placeholder-slate-600 outline-none focus:border-amber-500/60"
+                      />
+                    </div>
+                  </div>
+                  <div className="mb-2">
+                    <label className="mb-1 block text-[10px] font-medium text-slate-500">Short description</label>
                     <input
                       type="text"
-                      value={slide.title}
-                      onChange={(e) => setCustomSlides(customSlides.map((s, i) => i === idx ? { ...s, title: e.target.value } : s))}
-                      placeholder="Title"
-                      className="rounded border border-slate-700/80 bg-slate-800/70 px-2.5 py-1.5 text-xs text-slate-100 placeholder-slate-600 outline-none focus:border-amber-500/60"
-                    />
-                    <input
-                      type="text"
-                      value={slide.eyebrow}
-                      onChange={(e) => setCustomSlides(customSlides.map((s, i) => i === idx ? { ...s, eyebrow: e.target.value } : s))}
-                      placeholder="Eyebrow (e.g. MATCH SCHEDULE)"
-                      className="rounded border border-slate-700/80 bg-slate-800/70 px-2.5 py-1.5 text-xs text-slate-100 placeholder-slate-600 outline-none focus:border-amber-500/60"
+                      value={slide.teaser}
+                      onChange={(e) => setCustomSlides(customSlides.map((s, i) => i === idx ? { ...s, teaser: e.target.value } : s))}
+                      placeholder="One sentence about the slide"
+                      className="w-full rounded border border-slate-700/80 bg-slate-800/70 px-2.5 py-1.5 text-xs text-slate-100 placeholder-slate-600 outline-none focus:border-amber-500/60"
                     />
                   </div>
-                  <input
-                    type="text"
-                    value={slide.teaser}
-                    onChange={(e) => setCustomSlides(customSlides.map((s, i) => i === idx ? { ...s, teaser: e.target.value } : s))}
-                    placeholder="Short description"
-                    className="mb-2 w-full rounded border border-slate-700/80 bg-slate-800/70 px-2.5 py-1.5 text-xs text-slate-100 placeholder-slate-600 outline-none focus:border-amber-500/60"
-                  />
                   <div className="grid grid-cols-2 gap-2">
-                    <input
-                      type="text"
-                      value={slide.href}
-                      onChange={(e) => setCustomSlides(customSlides.map((s, i) => i === idx ? { ...s, href: e.target.value } : s))}
-                      placeholder="Link (e.g. /world-cup-2026/schedule)"
-                      className="rounded border border-slate-700/80 bg-slate-800/70 px-2.5 py-1.5 text-xs text-slate-100 placeholder-slate-600 outline-none focus:border-amber-500/60"
-                    />
-                    <input
-                      type="text"
-                      value={slide.image ?? ""}
-                      onChange={(e) => setCustomSlides(customSlides.map((s, i) => i === idx ? { ...s, image: e.target.value } : s))}
-                      placeholder="Background image URL (optional)"
-                      className="rounded border border-slate-700/80 bg-slate-800/70 px-2.5 py-1.5 text-xs text-slate-100 placeholder-slate-600 outline-none focus:border-amber-500/60"
-                    />
+                    <div>
+                      <label className="mb-1 block text-[10px] font-medium text-slate-500">Page link <span className="text-rose-400">*</span></label>
+                      <input
+                        type="text"
+                        value={slide.href}
+                        onChange={(e) => setCustomSlides(customSlides.map((s, i) => i === idx ? { ...s, href: e.target.value } : s))}
+                        placeholder="/world-cup-2026/schedule"
+                        className={`w-full rounded border px-2.5 py-1.5 text-xs text-slate-100 placeholder-slate-600 outline-none focus:border-amber-500/60 ${slide.href && !slide.href.startsWith("/") ? "border-rose-500/60 bg-rose-900/20" : "border-slate-700/80 bg-slate-800/70"}`}
+                      />
+                      {slide.href && !slide.href.startsWith("/") && (
+                        <p className="mt-1 text-[9px] text-rose-400">Must start with /</p>
+                      )}
+                    </div>
+                    <div>
+                      <label className="mb-1 block text-[10px] font-medium text-slate-500">Background image URL</label>
+                      <input
+                        type="text"
+                        value={slide.image ?? ""}
+                        onChange={(e) => setCustomSlides(customSlides.map((s, i) => i === idx ? { ...s, image: e.target.value } : s))}
+                        placeholder="https://... (optional)"
+                        className="w-full rounded border border-slate-700/80 bg-slate-800/70 px-2.5 py-1.5 text-xs text-slate-100 placeholder-slate-600 outline-none focus:border-amber-500/60"
+                      />
+                    </div>
                   </div>
                 </div>
               ))}
@@ -238,9 +259,9 @@ export default function SettingsPage() {
             </section>
 
             <section className="rounded-xl border border-slate-800/60 bg-slate-900/30 p-5">
-              <h2 className="mb-1 text-sm font-semibold">Latest Content Count</h2>
+              <h2 className="mb-1 text-sm font-semibold">Below Hero — Latest Content Carousel</h2>
               <p className="mb-4 text-[11px] text-slate-500">
-                How many published articles to show in the Latest Content carousel below the hero.
+                How many articles to show in the horizontal carousel <strong>below</strong> the hero banner.
               </p>
               <div className="flex gap-2">
                 {[3, 6, 9].map((n) => (
