@@ -12,6 +12,7 @@ import {
   WC_ROUND_LABELS,
   WC_VENUES,
   getTeamName,
+  teamCodeToSlug,
   type WcMatch,
   type WcGroupId,
   type WcRound,
@@ -115,7 +116,9 @@ function allTeamCodes(): { code: string; name: string }[] {
   return list.sort((a, b) => a.name.localeCompare(b.name, "en"));
 }
 
-export default function WcSchedulePage({ teamFilter }: { teamFilter?: string }) {
+type FaqItem = { q: string; a: string };
+
+export default function WcSchedulePage({ teamFilter, faqItems }: { teamFilter?: string; faqItems?: FaqItem[] }) {
   const [view, setView] = useState<ViewMode>("date");
   const [selectedTeam, setSelectedTeam] = useState<string>(teamFilter ?? "");
   const [mounted, setMounted] = useState(false);
@@ -526,6 +529,46 @@ export default function WcSchedulePage({ teamFilter }: { teamFilter?: string }) 
         )}
       </PageShell>
 
+      {/* ── Browse by Team (SEO internal links) ── */}
+      <section style={{ borderTop: "1px solid var(--sg-border)", background: "var(--sg-bg)" }}>
+        <PageShell style={{ paddingTop: 48, paddingBottom: 48 }}>
+          <div className="eyebrow" style={{ color: "var(--wc-teal)", marginBottom: 8 }}>BROWSE BY TEAM</div>
+          <h2 className="display" style={{ fontSize: 22, fontWeight: 700, letterSpacing: "-0.03em", margin: "0 0 20px" }}>
+            48 Team Schedules
+          </h2>
+          <div
+            style={{
+              display: "grid",
+              gridTemplateColumns: "repeat(auto-fill, minmax(min(100%, 150px), 1fr))",
+              gap: 6,
+            }}
+          >
+            {teams.map((t) => (
+              <Link
+                key={t.code}
+                href={`/world-cup-2026/schedule/${teamCodeToSlug(t.code)}`}
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 8,
+                  padding: "8px 12px",
+                  borderRadius: 8,
+                  border: "1px solid var(--sg-border)",
+                  background: selectedTeam === t.code ? "color-mix(in oklch, var(--wc-gold) 10%, var(--sg-surface))" : "var(--sg-surface)",
+                  fontSize: 12,
+                  fontWeight: 500,
+                  color: selectedTeam === t.code ? "var(--wc-gold)" : "var(--sg-text-secondary)",
+                  textDecoration: "none",
+                }}
+              >
+                <TeamFlag code={t.code} size={16} />
+                {t.name}
+              </Link>
+            ))}
+          </div>
+        </PageShell>
+      </section>
+
       {/* ── Venues section ── */}
       <section style={{ borderTop: "1px solid var(--sg-border)", background: "var(--sg-surface-low)" }}>
         <PageShell style={{ paddingTop: 64, paddingBottom: 64 }}>
@@ -559,6 +602,79 @@ export default function WcSchedulePage({ teamFilter }: { teamFilter?: string }) 
           </div>
         </PageShell>
       </section>
+
+      {/* ── SEO Content Block ── */}
+      <section style={{ borderTop: "1px solid var(--sg-border)", background: "var(--sg-bg)" }}>
+        <PageShell style={{ paddingTop: 56, paddingBottom: 40 }}>
+          <h2 className="display" style={{ fontSize: "clamp(20px, 3vw, 26px)", fontWeight: 700, letterSpacing: "-0.03em", margin: "0 0 16px" }}>
+            About the FIFA World Cup 2026 Schedule
+          </h2>
+          <div style={{ fontSize: 14, lineHeight: 1.7, color: "var(--sg-text-secondary)", maxWidth: 720 }}>
+            <p style={{ margin: "0 0 14px" }}>
+              The FIFA World Cup 2026 is the first edition to feature 48 teams across 12 groups, expanding the tournament to 104 matches played over 39 days. The group stage runs from June 11 to June 27, followed by the Round of 32, Round of 16, quarterfinals, semifinals, and the final on July 19 at MetLife Stadium in New York/New Jersey.
+            </p>
+            <p style={{ margin: "0 0 14px" }}>
+              Matches are spread across 16 venues in three host countries: 11 stadiums in the United States, 3 in Mexico, and 2 in Canada. Group stage matches typically kick off at four different time slots each day, with the final round of group games featuring simultaneous kick-offs to ensure fair competition.
+            </p>
+            <p style={{ margin: 0 }}>
+              All kick-off times on this page are automatically adjusted to your local timezone. The official FIFA schedule uses Eastern Time (ET) as the reference. Use the team filter above to focus on any specific nation&apos;s path through the tournament.
+            </p>
+          </div>
+        </PageShell>
+      </section>
+
+      {/* ── FAQ Section ── */}
+      {faqItems && faqItems.length > 0 && (
+        <section style={{ borderTop: "1px solid var(--sg-border)", background: "var(--sg-surface-low)" }}>
+          <PageShell style={{ paddingTop: 56, paddingBottom: 56 }}>
+            <div className="eyebrow" style={{ color: "var(--wc-gold)", marginBottom: 8 }}>FAQ</div>
+            <h2 className="display" style={{ fontSize: "clamp(20px, 3vw, 26px)", fontWeight: 700, letterSpacing: "-0.03em", margin: "0 0 28px" }}>
+              Frequently Asked Questions
+            </h2>
+            <div style={{ display: "flex", flexDirection: "column", gap: 16, maxWidth: 720 }}>
+              {faqItems.map((item, i) => (
+                <details
+                  key={i}
+                  style={{
+                    borderRadius: 10,
+                    border: "1px solid var(--sg-border)",
+                    background: "var(--sg-surface)",
+                    overflow: "hidden",
+                  }}
+                >
+                  <summary
+                    style={{
+                      padding: "16px 20px",
+                      cursor: "pointer",
+                      fontWeight: 600,
+                      fontSize: 14,
+                      lineHeight: 1.4,
+                      color: "var(--sg-text-primary)",
+                      listStyle: "none",
+                      display: "flex",
+                      justifyContent: "space-between",
+                      alignItems: "center",
+                    }}
+                  >
+                    {item.q}
+                    <span style={{ fontSize: 18, color: "var(--wc-gold)", marginLeft: 12, flexShrink: 0 }}>+</span>
+                  </summary>
+                  <div
+                    style={{
+                      padding: "0 20px 16px",
+                      fontSize: 13,
+                      lineHeight: 1.65,
+                      color: "var(--sg-text-secondary)",
+                    }}
+                  >
+                    {item.a}
+                  </div>
+                </details>
+              ))}
+            </div>
+          </PageShell>
+        </section>
+      )}
 
       <div style={{ paddingBottom: 40 }} />
       <SiteFooter maxWidth="max-w-7xl" />

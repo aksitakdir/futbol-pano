@@ -283,3 +283,32 @@ export function getAllDates(): string[] {
   const set = new Set(WC_SCHEDULE.map((m) => m.date));
   return [...set].sort();
 }
+
+/** URL-friendly slug for a team code (e.g. "USA" → "usa", "KOR" → "south-korea"). */
+const CODE_TO_SLUG: Record<string, string> = {
+  MEX: "mexico", RSA: "south-africa", KOR: "south-korea", CZE: "czechia",
+  CAN: "canada", BIH: "bosnia-herzegovina", QAT: "qatar", SUI: "switzerland",
+  BRA: "brazil", MAR: "morocco", HAI: "haiti", SCO: "scotland",
+  USA: "usa", PAR: "paraguay", AUS: "australia", TUR: "turkey",
+  GER: "germany", CUW: "curacao", CIV: "ivory-coast", ECU: "ecuador",
+  NED: "netherlands", JPN: "japan", SWE: "sweden", TUN: "tunisia",
+  BEL: "belgium", EGY: "egypt", IRN: "iran", NZL: "new-zealand",
+  ESP: "spain", CPV: "cape-verde", KSA: "saudi-arabia", URU: "uruguay",
+  FRA: "france", SEN: "senegal", IRQ: "iraq", NOR: "norway",
+  ARG: "argentina", ALG: "algeria", AUT: "austria", JOR: "jordan",
+  POR: "portugal", COD: "dr-congo", UZB: "uzbekistan", COL: "colombia",
+  ENG: "england", CRO: "croatia", GHA: "ghana", PAN: "panama",
+};
+const SLUG_TO_CODE = Object.fromEntries(Object.entries(CODE_TO_SLUG).map(([c, s]) => [s, c]));
+
+export function teamCodeToSlug(code: string): string {
+  return CODE_TO_SLUG[code.toUpperCase()] ?? code.toLowerCase();
+}
+
+export function teamSlugToCode(slug: string): string | undefined {
+  return SLUG_TO_CODE[slug.toLowerCase()];
+}
+
+export function getAllTeamSlugs(): string[] {
+  return Object.values(CODE_TO_SLUG);
+}

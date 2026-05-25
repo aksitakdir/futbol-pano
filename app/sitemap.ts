@@ -1,5 +1,6 @@
 import type { MetadataRoute } from "next";
 import { createClient } from "@/lib/supabase";
+import { getAllTeamSlugs } from "@/lib/wc-2026-schedule";
 
 const base = "https://www.scoutgamer.com";
 
@@ -58,5 +59,12 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: 0.72,
   }));
 
-  return [...staticItems, ...articleItems, ...arenaItems];
+  const teamScheduleItems: MetadataRoute.Sitemap = getAllTeamSlugs().map((slug) => ({
+    url: `${base}/world-cup-2026/schedule/${slug}`,
+    lastModified: now,
+    changeFrequency: "weekly" as const,
+    priority: 0.82,
+  }));
+
+  return [...staticItems, ...teamScheduleItems, ...articleItems, ...arenaItems];
 }
