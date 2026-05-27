@@ -25,6 +25,9 @@ export type RawWireItem = {
 const TRANSFER_RE =
   /\b(transfer|signing|signed|deal|loan|move|bid|target|approach|agree|contract|fee|rumou?r|swoop)\b/i;
 
+const NON_SOCCER_RE =
+  /\b(NBA|NFL|NHL|MLB|Formula\s*1?\b|F1\b|IndyCar|NASCAR|Grand Prix|cricket|tennis|boxing|UFC|MMA|rugby|baseball|basketball|ice hockey|american football)\b/i;
+
 const FETCH_HEADERS: HeadersInit = {
   "User-Agent":
     "Mozilla/5.0 (compatible; ScoutGamer/1.0; +https://scoutgamer.com) AppleWebKit/537.36",
@@ -164,7 +167,12 @@ export function resolveWireSource(
 }
 
 function isTransferHeadline(title: string): boolean {
+  if (NON_SOCCER_RE.test(title)) return false;
   return TRANSFER_RE.test(title);
+}
+
+function isSoccerHeadline(title: string): boolean {
+  return !NON_SOCCER_RE.test(title);
 }
 
 async function fetchXml(url: string, timeoutMs = 12000, simple = false): Promise<string | null> {
@@ -209,6 +217,7 @@ async function fetchGoogleNews(): Promise<RawWireItem[]> {
     if (!xml) continue;
     const raw = parseFeedXml(xml, 25);
     for (const r of raw) {
+      if (!isSoccerHeadline(r.title)) continue;
       const { source, sourceLabel } = resolveWireSource(r.title, r.link, r.publisher ?? "");
       out.push({ ...r, source, sourceLabel });
     }
@@ -225,6 +234,7 @@ async function fetchGoogleSiteNews(): Promise<RawWireItem[]> {
     if (!xml) continue;
     const raw = parseFeedXml(xml, 20);
     for (const r of raw) {
+      if (!isSoccerHeadline(r.title)) continue;
       const resolved = resolveWireSource(r.title, r.link, r.publisher ?? sourceLabel);
       out.push({
         ...r,
@@ -268,7 +278,8 @@ async function fetchSkyTransfers(): Promise<RawWireItem[]> {
     const xml = await fetchXml(url);
     if (!xml) continue;
     const raw = parseFeedXml(xml, 45);
-    if (raw.length > 0) return toWireItems(raw, "sky", "Sky Sports");
+    const transfer = raw.filter((r) => isTransferHeadline(r.title));
+    if (transfer.length > 0) return toWireItems(transfer.slice(0, 30), "sky", "Sky Sports");
   }
   return [];
 }
@@ -347,6 +358,7 @@ export async function fetchGoogleNewsFallback(limit = 30): Promise<RawWireItem[]
     if (!xml) continue;
     const raw = parseFeedXml(xml, 40);
     for (const r of raw) {
+      if (!isSoccerHeadline(r.title)) continue;
       const { source, sourceLabel } = resolveWireSource(r.title, r.link, r.publisher ?? "");
       out.push({ ...r, source, sourceLabel });
     }

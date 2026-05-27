@@ -14,6 +14,7 @@ import HomeRecentCarousel from "./components/home-recent-carousel";
 import HomeHubPromo from "./components/home-hub-promo";
 import HomeWcSquads from "./components/home-wc-squads";
 import { categoryArticlePath } from "@/lib/category-config";
+import { getCategoryImage } from "@/lib/category-images";
 import {
   DEFAULT_HERO_SLIDER,
   enabledHeroCategories,
@@ -433,8 +434,8 @@ export default function HomePage() {
       {slides.length > 0 && (
         <section className="relative w-full overflow-hidden grain" style={{ height: "78vh", minHeight: 580 }}>
           <div className="absolute inset-0 z-0">
-            {slides[activeSlide]?.kind === "content" && (slides[activeSlide] as HeroContentSlide).slide.cover_image ? (
-              <img key={(slides[activeSlide] as HeroContentSlide).slide.cover_image} src={(slides[activeSlide] as HeroContentSlide).slide.cover_image!} alt="" className="w-full h-full object-cover" style={{ filter: "brightness(0.48) saturate(0.85)" }} />
+            {slides[activeSlide]?.kind === "content" ? (
+              <img key={(slides[activeSlide] as HeroContentSlide).slide.cover_image ?? (slides[activeSlide] as HeroContentSlide).slide.slug} src={(slides[activeSlide] as HeroContentSlide).slide.cover_image || getCategoryImage((slides[activeSlide] as HeroContentSlide).slide.category, (slides[activeSlide] as HeroContentSlide).slide.slug)} alt="" className="w-full h-full object-cover" style={{ filter: "brightness(0.48) saturate(0.85)" }} />
             ) : slides[activeSlide]?.kind === "custom" && (slides[activeSlide] as HeroCustomSlide).image ? (
               <img key={(slides[activeSlide] as HeroCustomSlide).image} src={(slides[activeSlide] as HeroCustomSlide).image!} alt="" className="w-full h-full object-cover" style={{ filter: "brightness(0.42) saturate(0.9)" }} />
             ) : slides[activeSlide]?.kind === "wc" || slides[activeSlide]?.kind === "custom" ? (

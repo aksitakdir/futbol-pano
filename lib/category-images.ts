@@ -22,6 +22,18 @@ const CATEGORY_IMAGES: Record<string, string[]> = {
     "https://images.unsplash.com/photo-1606925797300-0b35e9d1794e?w=800&q=80",
     "https://images.unsplash.com/photo-1504016798967-59a258cca918?w=800&q=80",
   ],
+  "wc-2026": [
+    "https://images.unsplash.com/photo-1540747913346-19e32dc3e97e?w=800&q=80",
+    "https://images.unsplash.com/photo-1486286701208-1d58e9338013?w=800&q=80",
+    "https://images.unsplash.com/photo-1551958219-acbc608c6377?w=800&q=80",
+    "https://images.unsplash.com/photo-1560272564-c83b66b1ad12?w=800&q=80",
+  ],
+  transfer: [
+    "https://images.unsplash.com/photo-1574629810360-7efbbe195018?w=800&q=80",
+    "https://images.unsplash.com/photo-1522778119026-d647f0596c20?w=800&q=80",
+    "https://images.unsplash.com/photo-1508098682722-e99c43a406b2?w=800&q=80",
+    "https://images.unsplash.com/photo-1579952363873-27f3bade9f55?w=800&q=80",
+  ],
 };
 
 export function getCategoryImage(category: string, seed?: string): string {
