@@ -3,6 +3,8 @@
 import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabase";
 import PlayerCard, { type PlayerCardData } from "./player-card";
+import PlayerRatingBars from "./player-rating-bars";
+import { formatPlayerMetaLine } from "@/lib/player-meta-line";
 
 async function fetchPlayerStats(name: string): Promise<Partial<PlayerCardData> | null> {
   const { data: exact } = await supabase
@@ -23,10 +25,9 @@ async function fetchPlayerStats(name: string): Promise<Partial<PlayerCardData> |
   return fuzzy?.overall ? fuzzy : null;
 }
 
-/** Metin içinde <!-- scout-player:... --> ile işaretlenen yere render edilir */
 export default function ArticlePlayerEmbed({
   playerName,
-  locale = "tr",
+  locale = "en",
 }: {
   playerName: string;
   locale?: "tr" | "en";
@@ -72,19 +73,19 @@ export default function ArticlePlayerEmbed({
       : "https://www.transfermarkt.com.tr/schnellsuche/ergebnis/schnellsuche?query=";
   const gq = locale === "en" ? " footballer" : " futbolcu";
 
-  return (
-    <div
-      className="article-player-embed my-10 flex justify-center"
-      style={{ clear: "both" }}
-      data-scout-embed={playerName.trim()}
-    >
-      {loading ? (
+  if (loading) {
+    return (
+      <div
+        className="article-player-embed my-10 flex justify-center"
+        style={{ clear: "both" }}
+        data-scout-embed={playerName.trim()}
+      >
         <div
           style={{
             width: "100%",
-            maxWidth: 280,
+            maxWidth: 680,
             minHeight: 200,
-            borderRadius: 8,
+            borderRadius: 16,
             border: "1px solid var(--sg-border)",
             background: "var(--sg-surface-low)",
             display: "flex",
@@ -97,18 +98,17 @@ export default function ArticlePlayerEmbed({
             style={{ borderColor: "var(--accent)", borderTopColor: "transparent" }}
           />
         </div>
-      ) : card ? (
-        <div style={{ width: "100%", maxWidth: 280 }}>
-          <PlayerCard
-            player={card}
-            compact
-            animated={false}
-            showScoutNote={false}
-            tmLink={`${tmBase}${encodeURIComponent(card.name)}`}
-            gLink={`https://www.google.com/search?q=${encodeURIComponent(card.name + gq)}`}
-          />
-        </div>
-      ) : (
+      </div>
+    );
+  }
+
+  if (!card) {
+    return (
+      <div
+        className="article-player-embed my-10 flex justify-center"
+        style={{ clear: "both" }}
+        data-scout-embed={playerName.trim()}
+      >
         <div
           style={{
             width: "100%",
@@ -122,9 +122,144 @@ export default function ArticlePlayerEmbed({
             textAlign: "center",
           }}
         >
-          EA FC veritabanında bulunamadı: <strong style={{ color: "var(--sg-text-primary)" }}>{playerName.trim()}</strong>
+          Player not found in EA FC database:{" "}
+          <strong style={{ color: "var(--sg-text-primary)" }}>{playerName.trim()}</strong>
         </div>
-      )}
+      </div>
+    );
+  }
+
+  const metaLine = formatPlayerMetaLine(card, locale);
+  const tmLink = `${tmBase}${encodeURIComponent(card.name)}`;
+  const gLink = `https://www.google.com/search?q=${encodeURIComponent(card.name + gq)}`;
+  const radarLink = `/radar?q=${encodeURIComponent(card.name)}`;
+
+  return (
+    <div
+      className="article-player-embed my-10"
+      style={{ clear: "both" }}
+      data-scout-embed={playerName.trim()}
+    >
+      <div
+        style={{
+          display: "grid",
+          gridTemplateColumns: "minmax(0, 240px) 1fr",
+          gap: 32,
+          alignItems: "start",
+          padding: "28px 24px",
+          borderRadius: 16,
+          border: "1px solid var(--sg-border)",
+          background: "var(--sg-surface-low)",
+        }}
+        className="article-player-panel"
+      >
+        <PlayerCard
+          player={card}
+          compact
+          animated={false}
+          showScoutNote={false}
+          tmLink={tmLink}
+          gLink={gLink}
+        />
+
+        <div style={{ minWidth: 0 }}>
+          <div
+            className="mono"
+            style={{
+              fontSize: 10,
+              letterSpacing: "0.14em",
+              color: "var(--accent, var(--sg-text-muted))",
+              marginBottom: 8,
+              textTransform: "uppercase",
+            }}
+          >
+            PLAYER PROFILE
+          </div>
+
+          <h3
+            className="display"
+            style={{
+              fontSize: "clamp(22px, 3vw, 32px)",
+              fontWeight: 700,
+              letterSpacing: "-0.03em",
+              margin: "0 0 6px",
+              color: "var(--sg-text-primary)",
+            }}
+          >
+            {card.name}
+          </h3>
+
+          <p
+            className="mono"
+            style={{
+              fontSize: 11,
+              letterSpacing: "0.08em",
+              color: "var(--sg-text-muted)",
+              margin: "0 0 20px",
+              lineHeight: 1.5,
+            }}
+          >
+            {metaLine}
+          </p>
+
+          <PlayerRatingBars player={card} locale={locale} />
+
+          <div
+            style={{
+              marginTop: 20,
+              paddingTop: 16,
+              borderTop: "1px solid var(--sg-border)",
+              display: "flex",
+              flexWrap: "wrap",
+              alignItems: "center",
+              gap: 10,
+            }}
+          >
+            <div style={{ display: "flex", alignItems: "baseline", gap: 6 }}>
+              <span
+                className="mono"
+                style={{ fontSize: 10, letterSpacing: "0.1em", color: "var(--sg-text-muted)" }}
+              >
+                OVR
+              </span>
+              <span
+                className="display tabular-nums"
+                style={{ fontSize: 28, fontWeight: 800, color: "var(--accent)", lineHeight: 1 }}
+              >
+                {card.overall}
+              </span>
+            </div>
+
+            <div style={{ marginLeft: "auto", display: "flex", gap: 8 }}>
+              <a
+                href={radarLink}
+                className="btn"
+                style={{ fontSize: 10, padding: "7px 14px", letterSpacing: "0.1em" }}
+              >
+                RADAR →
+              </a>
+              <a
+                href={tmLink}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="btn"
+                style={{ fontSize: 10, padding: "7px 12px", letterSpacing: "0.1em" }}
+              >
+                TM
+              </a>
+              <a
+                href={gLink}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="btn"
+                style={{ fontSize: 10, padding: "7px 12px", letterSpacing: "0.1em" }}
+              >
+                GOOGLE
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   );
 }

@@ -23,10 +23,12 @@ const BLOCK_TYPES: { type: SectionBlock["type"]; label: string; icon: string; de
   { type: "plain", label: "Plain Text", icon: "T", desc: "Paragraphs — no HTML required", color: "lime" },
   { type: "header", label: "Header", icon: "H", desc: "Section heading only (H2/H3, appears in TOC)", color: "violet" },
   { type: "section", label: "Section", icon: "§", desc: "Heading + body content", color: "sky" },
+  { type: "image", label: "Image", icon: "🖼", desc: "Inline image with optional caption", color: "teal" },
+  { type: "list", label: "List", icon: "☰", desc: "Ordered or unordered list", color: "indigo" },
   { type: "pullquote", label: "Pull Quote", icon: "❝", desc: "Italic highlight quote", color: "amber" },
   { type: "callout", label: "Callout", icon: "◈", desc: "Tactical note / info box", color: "rose" },
   { type: "youtube", label: "YouTube", icon: "▶", desc: "Embed a video inline in the article", color: "red" },
-  { type: "player", label: "Player Card", icon: "🃏", desc: "EA FC card at this position in the text", color: "cyan" },
+  { type: "player", label: "Player Card", icon: "🃏", desc: "Rich player profile panel with stats", color: "cyan" },
 ];
 
 const COLOR_MAP: Record<string, string> = {
@@ -38,6 +40,8 @@ const COLOR_MAP: Record<string, string> = {
   rose: "border-rose-500/30 bg-rose-500/5 text-rose-300",
   red: "border-red-500/30 bg-red-500/5 text-red-300",
   cyan: "border-cyan-500/30 bg-cyan-500/5 text-cyan-300",
+  teal: "border-teal-500/30 bg-teal-500/5 text-teal-300",
+  indigo: "border-indigo-500/30 bg-indigo-500/5 text-indigo-300",
 };
 
 function blockMeta(type: SectionBlock["type"]) {
@@ -62,6 +66,10 @@ function defaultBlock(type: SectionBlock["type"]): SectionBlock {
       return { type, url: "" };
     case "player":
       return { type, name: "" };
+    case "image":
+      return { type, src: "", alt: "", caption: "" };
+    case "list":
+      return { type, style: "ul", items: [""] };
   }
 }
 
@@ -107,6 +115,15 @@ function BlockEditor({
             <p className="text-[11px] text-slate-400 italic truncate mt-0.5">
               ❝ {block.text.slice(0, 60)}
               {block.text.length > 60 ? "…" : ""}
+            </p>
+          )}
+          {block.type === "image" && block.src && (
+            <p className="text-[11px] text-slate-400 truncate mt-0.5">{block.alt || block.src}</p>
+          )}
+          {block.type === "list" && block.items.length > 0 && (
+            <p className="text-[11px] text-slate-400 truncate mt-0.5">
+              {block.style === "ol" ? "1." : "•"} {block.items[0]?.slice(0, 50)}
+              {block.items.length > 1 ? ` (+${block.items.length - 1} more)` : ""}
             </p>
           )}
         </div>
@@ -229,6 +246,20 @@ function BlockEditor({
               onChange={(name) => onChange({ ...block, name })}
             />
           )}
+
+          {block.type === "image" && (
+            <ImageBlockEditor
+              block={block}
+              onChange={(b) => onChange(b)}
+            />
+          )}
+
+          {block.type === "list" && (
+            <ListBlockEditor
+              block={block}
+              onChange={(b) => onChange(b)}
+            />
+          )}
         </div>
       )}
     </div>
@@ -311,6 +342,147 @@ function PlayerBlockSearch({ name, onChange }: { name: string; onChange: (name: 
         </div>
       )}
       {!matched && <p className="mt-1 text-[10px] text-slate-500">Type at least 2 characters to search — card renders inline at this position.</p>}
+    </div>
+  );
+}
+
+function ImageBlockEditor({
+  block,
+  onChange,
+}: {
+  block: Extract<SectionBlock, { type: "image" }>;
+  onChange: (b: Extract<SectionBlock, { type: "image" }>) => void;
+}) {
+  return (
+    <div className="space-y-3">
+      <div>
+        <label className="mb-1 block text-[10px] font-semibold text-slate-400 uppercase tracking-wider">
+          Image URL <span className="text-rose-400">*</span>
+        </label>
+        <input
+          type="text"
+          value={block.src}
+          onChange={(e) => onChange({ ...block, src: e.target.value })}
+          placeholder="https://images.unsplash.com/… or /images/…"
+          className="w-full rounded-lg border border-slate-700/80 bg-slate-800/70 px-3 py-2 text-sm text-slate-100 placeholder-slate-500 outline-none focus:border-teal-500/60"
+        />
+      </div>
+      <div>
+        <label className="mb-1 block text-[10px] font-semibold text-slate-400 uppercase tracking-wider">
+          Alt text <span className="text-rose-400">*</span>
+        </label>
+        <input
+          type="text"
+          value={block.alt}
+          onChange={(e) => onChange({ ...block, alt: e.target.value })}
+          placeholder="Describe the image for accessibility & SEO"
+          className="w-full rounded-lg border border-slate-700/80 bg-slate-800/70 px-3 py-2 text-sm text-slate-100 placeholder-slate-500 outline-none focus:border-teal-500/60"
+        />
+      </div>
+      <div>
+        <label className="mb-1 block text-[10px] font-semibold text-slate-400 uppercase tracking-wider">
+          Caption <span className="text-slate-600">(optional)</span>
+        </label>
+        <input
+          type="text"
+          value={block.caption ?? ""}
+          onChange={(e) => onChange({ ...block, caption: e.target.value })}
+          placeholder="Photo credit or context"
+          className="w-full rounded-lg border border-slate-700/80 bg-slate-800/70 px-3 py-2 text-sm text-slate-100 placeholder-slate-500 outline-none focus:border-teal-500/60"
+        />
+      </div>
+      {block.src && (
+        <div className="rounded-lg border border-slate-700/60 overflow-hidden mt-2">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src={block.src}
+            alt={block.alt || "preview"}
+            className="w-full max-h-48 object-cover"
+            onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }}
+          />
+        </div>
+      )}
+    </div>
+  );
+}
+
+function ListBlockEditor({
+  block,
+  onChange,
+}: {
+  block: Extract<SectionBlock, { type: "list" }>;
+  onChange: (b: Extract<SectionBlock, { type: "list" }>) => void;
+}) {
+  function updateItem(index: number, value: string) {
+    const next = [...block.items];
+    next[index] = value;
+    onChange({ ...block, items: next });
+  }
+
+  function addItem() {
+    onChange({ ...block, items: [...block.items, ""] });
+  }
+
+  function removeItem(index: number) {
+    if (block.items.length <= 1) return;
+    onChange({ ...block, items: block.items.filter((_, i) => i !== index) });
+  }
+
+  return (
+    <div className="space-y-3">
+      <div>
+        <label className="mb-1 block text-[10px] font-semibold text-slate-400 uppercase tracking-wider">Style</label>
+        <div className="flex gap-2">
+          {(["ul", "ol"] as const).map((s) => (
+            <button
+              key={s}
+              type="button"
+              onClick={() => onChange({ ...block, style: s })}
+              className={`rounded-lg border px-3 py-1.5 text-xs font-semibold transition ${
+                block.style === s
+                  ? "border-indigo-500/60 bg-indigo-500/15 text-indigo-200"
+                  : "border-slate-700/80 text-slate-500 hover:text-slate-300"
+              }`}
+            >
+              {s === "ul" ? "• Bullet" : "1. Numbered"}
+            </button>
+          ))}
+        </div>
+      </div>
+      <div>
+        <label className="mb-1 block text-[10px] font-semibold text-slate-400 uppercase tracking-wider">Items</label>
+        <div className="space-y-2">
+          {block.items.map((item, i) => (
+            <div key={i} className="flex gap-2 items-center">
+              <span className="text-[10px] text-slate-600 w-5 text-right shrink-0">
+                {block.style === "ol" ? `${i + 1}.` : "•"}
+              </span>
+              <input
+                type="text"
+                value={item}
+                onChange={(e) => updateItem(i, e.target.value)}
+                placeholder={`Item ${i + 1}…`}
+                className="flex-1 rounded-lg border border-slate-700/80 bg-slate-800/70 px-3 py-1.5 text-sm text-slate-100 placeholder-slate-500 outline-none focus:border-indigo-500/60"
+              />
+              <button
+                type="button"
+                onClick={() => removeItem(i)}
+                disabled={block.items.length <= 1}
+                className="text-rose-500 hover:text-rose-300 disabled:opacity-20 text-xs px-1 transition"
+              >
+                ✕
+              </button>
+            </div>
+          ))}
+        </div>
+        <button
+          type="button"
+          onClick={addItem}
+          className="mt-2 text-[10px] font-semibold text-indigo-400 hover:text-indigo-200 transition"
+        >
+          + Add item
+        </button>
+      </div>
     </div>
   );
 }

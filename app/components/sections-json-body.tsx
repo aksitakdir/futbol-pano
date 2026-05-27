@@ -92,6 +92,27 @@ export default function SectionsJsonBody({
         if (sec.type === "player") {
           return <ArticlePlayerEmbed key={i} playerName={sec.name} locale={locale} />;
         }
+        if (sec.type === "image") {
+          return (
+            <figure key={i} className="article-image-block">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src={sec.src} alt={sec.alt || ""} loading="lazy" />
+              {sec.caption ? <figcaption>{sec.caption}</figcaption> : null}
+            </figure>
+          );
+        }
+        if (sec.type === "list") {
+          const Tag = sec.style === "ol" ? "ol" : "ul";
+          return (
+            <Tag key={i} style={{ margin: "20px 0", paddingLeft: 24, lineHeight: 1.7 }}>
+              {sec.items
+                .filter((item) => item.trim())
+                .map((item, j) => (
+                  <li key={j}>{item}</li>
+                ))}
+            </Tag>
+          );
+        }
         return null;
       })}
     </>

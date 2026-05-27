@@ -8,7 +8,9 @@ export type SectionBlock =
   | { type: "pullquote"; text: string }
   | { type: "callout"; html: string }
   | { type: "youtube"; url: string }
-  | { type: "player"; name: string };
+  | { type: "player"; name: string }
+  | { type: "image"; src: string; alt: string; caption?: string }
+  | { type: "list"; style: "ul" | "ol"; items: string[] };
 
 export type TocItem = { text: string; id: string };
 
@@ -45,6 +47,8 @@ export function hasBlockContent(blocks: SectionBlock[]): boolean {
     if (b.type === "pullquote") return b.text.trim().length > 0;
     if (b.type === "youtube") return b.url.trim().length > 0;
     if (b.type === "player") return b.name.trim().length > 0;
+    if (b.type === "image") return b.src.trim().length > 0;
+    if (b.type === "list") return b.items.some((item) => item.trim().length > 0);
     return false;
   });
 }
