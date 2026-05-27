@@ -39,29 +39,24 @@ export async function generateMetadata({
   searchParams: Promise<{ lang?: string; champion?: string }>;
 }): Promise<Metadata> {
   const { slug } = await params;
-  const { lang, champion: championParam } = await searchParams;
-  const isEn = lang === "en";
+  const { champion: championParam } = await searchParams;
   const game = await fetchGame(slug);
   if (!game) return { title: "Arena | Scout Gamer" };
 
-  const gameTitle = isEn ? game.title_en || game.title_tr : game.title_tr;
-  const gameDesc  = isEn ? game.description_en || game.description_tr : game.description_tr;
+  const gameTitle = game.title_en || game.title_tr;
+  const gameDesc  = game.description_en || game.description_tr;
   const canonical = `${BASE}/arena/${slug}`;
 
   // ── Champion result share: special metadata ──────────────────────────────
   if (championParam) {
     const champion = decodeURIComponent(championParam);
-    const shareTitle = isEn
-      ? `My champion in "${gameTitle}": ${champion}!`
-      : `"${gameTitle}" şampiyonum: ${champion}!`;
-    const shareDesc = isEn
-      ? `Who will you pick as champion? Play on Scout Gamer Arena.`
-      : `Sen kimi seçerdin? Scout Gamer Arena'da oyna ve paylaş.`;
+    const shareTitle = `My champion in "${gameTitle}": ${champion}!`;
+    const shareDesc = `Who will you pick as champion? Play on Scout Gamer Arena.`;
     const ogImg = new URL(`${BASE}/arena/${slug}/opengraph-image`);
     ogImg.searchParams.set("t", gameTitle);
     ogImg.searchParams.set("c", game.card_color);
     ogImg.searchParams.set("champion", champion);
-    ogImg.searchParams.set("lang", isEn ? "en" : "tr");
+    ogImg.searchParams.set("lang", "en");
     const ogImgUrl = ogImg.toString();
 
     return {
@@ -86,7 +81,7 @@ export async function generateMetadata({
   }
 
   // ── Default game metadata ────────────────────────────────────────────────
-  const pageUrl = `${BASE}/arena/${slug}${isEn ? "?lang=en" : ""}`;
+  const pageUrl = `${BASE}/arena/${slug}`;
   const names = game.participants.slice(0, 4).map((p) => p.name).join("|");
   const ogImg = new URL(`${BASE}/arena/${slug}/opengraph-image`);
   ogImg.searchParams.set("t", gameTitle);
@@ -124,23 +119,21 @@ export default async function ArenaBracketPage({
   searchParams,
 }: {
   params: Promise<{ slug: string }>;
-  searchParams: Promise<{ lang?: string; champion?: string }>;
+  searchParams: Promise<{ champion?: string }>;
 }) {
   const { slug } = await params;
-  const { lang, champion } = await searchParams;
+  const { champion } = await searchParams;
   const game = await fetchGame(slug);
 
   if (!game) notFound();
 
-  const resolvedLang = lang === "en" ? "en" : "tr";
-
   const jsonLd = {
     "@context": "https://schema.org",
     "@type": "Game",
-    "name": resolvedLang === "en" ? game.title_en || game.title_tr : game.title_tr,
-    "description": resolvedLang === "en" ? game.description_en || game.description_tr : game.description_tr,
+    "name": game.title_en || game.title_tr,
+    "description": game.description_en || game.description_tr,
     "url": `${BASE}/arena/${slug}`,
-    "inLanguage": resolvedLang === "en" ? "en" : "tr",
+    "inLanguage": "en",
     "publisher": { "@type": "Organization", "name": "Scout Gamer", "url": BASE },
     "numberOfPlayers": { "@type": "QuantitativeValue", "minValue": 1, "maxValue": 1 },
   };
@@ -153,7 +146,6 @@ export default async function ArenaBracketPage({
       />
       <ArenaSlugClient
         game={game}
-        lang={resolvedLang}
         canonicalUrl={`${BASE}/arena/${slug}`}
         initialChampion={champion ? decodeURIComponent(champion) : undefined}
       />

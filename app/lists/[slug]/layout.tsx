@@ -9,7 +9,7 @@ const supabase = createClient(
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
   const { slug } = await params;
-  const { data } = await supabase.from("contents").select("title,content,cover_image").eq("slug", slug).eq("status", "yayinda").single();
+  const { data } = await supabase.from("contents").select("title,content,cover_image").eq("slug", slug).eq("status", "published").single();
   if (!data) return { title: "Lists | Scout Gamer" };
   const description = data.content?.replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").trim().slice(0, 160) ?? "";
   return {

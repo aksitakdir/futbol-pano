@@ -20,7 +20,7 @@ export async function articleMetadata(
       .from("contents")
       .select("title,title_en,content,content_en,cover_image,created_at")
       .eq("slug", slug)
-      .eq("status", "yayinda")
+      .eq("status", "published")
       .maybeSingle();
 
     if (!data) return { title: lang === "en" ? "Not Found" : "Bulunamadı" };

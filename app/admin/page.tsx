@@ -19,13 +19,13 @@ type ContentRow = {
 const CATEGORY_LABEL: Record<string, string> = {
   listeler: "Lists",
   radar: "Radar",
-  "taktik-lab": "Tactics Lab",
+  "tactics-lab": "Tactics Lab",
 };
 
 const CATEGORY_COLOR: Record<string, string> = {
   listeler: "text-emerald-400",
   radar: "text-sky-400",
-  "taktik-lab": "text-amber-400",
+  "tactics-lab": "text-amber-400",
 };
 
 export default function AdminDashboard() {
@@ -48,8 +48,8 @@ export default function AdminDashboard() {
     const weekAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
     return {
       total: contents.length,
-      published: contents.filter((c) => c.status === "yayinda").length,
-      pending: contents.filter((c) => c.status === "bekliyor").length,
+      published: contents.filter((c) => c.status === "published").length,
+      pending: contents.filter((c) => c.status === "pending").length,
       thisWeek: contents.filter((c) => new Date(c.created_at) >= weekAgo).length,
     };
   }, [contents]);
@@ -128,10 +128,10 @@ export default function AdminDashboard() {
                         </div>
                       </div>
                       <span className={["shrink-0 rounded-full border px-2 py-0.5 text-[10px] font-semibold",
-                        item.status === "yayinda" ? "border-emerald-500/40 bg-emerald-500/15 text-emerald-300"
-                        : item.status === "bekliyor" ? "border-amber-500/40 bg-amber-500/15 text-amber-300"
+                        item.status === "published" ? "border-emerald-500/40 bg-emerald-500/15 text-emerald-300"
+                        : item.status === "pending" ? "border-amber-500/40 bg-amber-500/15 text-amber-300"
                         : "border-rose-500/40 bg-rose-500/15 text-rose-300"].join(" ")}>
-                        {item.status === "yayinda" ? "Published" : item.status === "bekliyor" ? "Pending" : "Rejected"}
+                        {item.status === "published" ? "Published" : item.status === "pending" ? "Pending" : "Rejected"}
                       </span>
                     </div>
                   ))}

@@ -50,7 +50,7 @@ export default function HubEditorialSection({ hubId, accent, category, limit, co
           .from("contents")
           .select(EDITORIAL_ARTICLE_SELECT)
           .eq("id", pinnedId)
-          .eq("status", "yayinda")
+          .eq("status", "published")
           .maybeSingle();
         pinned = (pinnedRow as EditorialArticle | null) ?? null;
       }
@@ -58,7 +58,7 @@ export default function HubEditorialSection({ hubId, accent, category, limit, co
       let query = supabase
         .from("contents")
         .select(EDITORIAL_ARTICLE_SELECT)
-        .eq("status", "yayinda")
+        .eq("status", "published")
         .or(`category.eq.${hubId},hub_tags.cs.{${tag}}`)
         .order("created_at", { ascending: false })
         .range(0, pageSize - 1);
@@ -93,7 +93,7 @@ export default function HubEditorialSection({ hubId, accent, category, limit, co
     let query = supabase
       .from("contents")
       .select(EDITORIAL_ARTICLE_SELECT)
-      .eq("status", "yayinda")
+      .eq("status", "published")
       .or(`category.eq.${hubId},hub_tags.cs.{${tag}}`)
       .order("created_at", { ascending: false })
       .range(listCount, listCount + PAGE_SIZE - 1);

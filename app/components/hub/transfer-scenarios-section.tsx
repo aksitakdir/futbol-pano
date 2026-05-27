@@ -6,7 +6,7 @@ import PageShell from "@/app/components/page-shell";
 import type { HubTransferScenario } from "@/lib/hub-types";
 import { TRANSFER_SCENARIOS_SORTED } from "@/lib/transfer-scenarios";
 
-type Props = { locale: "tr" | "en" };
+type Props = { locale?: string };
 
 const STATIC: HubTransferScenario[] = TRANSFER_SCENARIOS_SORTED.map((s) => ({
   id: s.id,
@@ -14,8 +14,7 @@ const STATIC: HubTransferScenario[] = TRANSFER_SCENARIOS_SORTED.map((s) => ({
   fromClub: s.fromClub,
   toClub: s.toClub,
   likelihood: s.likelihood,
-  noteTr: s.noteTr,
-  noteEn: s.noteEn,
+  note: s.note,
 }));
 
 export default function TransferScenariosSection({ locale }: Props) {
@@ -34,30 +33,18 @@ export default function TransferScenariosSection({ locale }: Props) {
       .catch(() => {});
   }, []);
 
-  const copy =
-    locale === "tr"
-      ? {
-          eyebrow: "TRANSFER İHTİMALİ",
-          title: "Olası transfer senaryoları",
-          sub:
-            source === "database"
-              ? "Scout sıralaması — admin ve API ile güncellenir."
-              : "Scout sıralaması — çıkış ihtimali ve kulüp uyumu.",
-          likelihood: "İhtimal",
-          abLink: "A mı B mi? Topluluk anketi →",
-        }
-      : {
-          eyebrow: "TRANSFER LIKELIHOOD",
-          title: "Possible transfer scenarios",
-          sub:
-            source === "database"
-              ? "Scout ranking — updated via admin and API."
-              : "Scout ranking — exit probability and club fit.",
-          likelihood: "Likelihood",
-          abLink: "A or B? Community poll →",
-        };
+  const copy = {
+    eyebrow: "TRANSFER LIKELIHOOD",
+    title: "Possible transfer scenarios",
+    sub:
+      source === "database"
+        ? "Scout ranking — updated via admin and API."
+        : "Scout ranking — exit probability and club fit.",
+    likelihood: "Likelihood",
+    abLink: "A or B? Community poll →",
+  };
 
-  const abHref = locale === "en" ? "/en/transfers/will-they-go" : "/transfer/gidecek-mi";
+  const abHref = "/en/transfers/will-they-go";
   const sorted = [...scenarios].sort((a, b) => b.likelihood - a.likelihood);
 
   return (
@@ -75,7 +62,7 @@ export default function TransferScenariosSection({ locale }: Props) {
               <span className="transfer-scenario-rank__clubs mono">
                 {s.fromClub} → {s.toClub}
               </span>
-              <span className="transfer-scenario-rank__note">{locale === "tr" ? s.noteTr : s.noteEn}</span>
+              <span className="transfer-scenario-rank__note">{s.note}</span>
             </div>
             <div className="transfer-scenario-rank__meter-wrap">
               <span className="mono transfer-scenario-rank__pct">{s.likelihood}%</span>

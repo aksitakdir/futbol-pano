@@ -144,7 +144,7 @@ function ListLayout({ row }: { row: ContentRow }) {
   const [similar, setSimilar] = useState<{ id: string; title: string; title_en?: string; slug: string; created_at: string }[]>([]);
 
   useEffect(() => {
-    supabase.from("contents").select("id,title,title_en,slug,category,created_at").eq("status", "yayinda").eq("category", "listeler").neq("slug", row.slug).order("created_at", { ascending: false }).limit(4).then(({ data }) => { if (data) setSimilar(data); });
+    supabase.from("contents").select("id,title,title_en,slug,category,created_at").eq("status", "published").eq("category", "lists").neq("slug", row.slug).order("created_at", { ascending: false }).limit(4).then(({ data }) => { if (data) setSimilar(data); });
     fetch("/api/view", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ slug: row.slug }) }).catch(() => {});
   }, [row.slug]);
 
@@ -283,7 +283,7 @@ export default function ListelerDetailClient({ slug }: { slug: string }) {
 
   useEffect(() => {
     if (!slug) return;
-    supabase.from("contents").select("*").eq("slug", slug).eq("status", "yayinda").single()
+    supabase.from("contents").select("*").eq("slug", slug).eq("status", "published").single()
       .then(({ data, error }) => {
         if (error || !data) {
           setNotFound(true);
@@ -291,7 +291,7 @@ export default function ListelerDetailClient({ slug }: { slug: string }) {
           return;
         }
         const row = data as ContentRow;
-        if (redirectToCanonicalArticle(row.category, row.slug, "listeler")) {
+        if (redirectToCanonicalArticle(row.category, row.slug, "lists")) {
           setRedirecting(true);
           setLoading(false);
           return;

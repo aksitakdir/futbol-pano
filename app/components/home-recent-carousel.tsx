@@ -21,17 +21,17 @@ export type HomeRecentItem = {
 };
 
 const CAT_LABEL: Record<string, string> = {
-  listeler: "Scouting Lists",
+  lists: "Scouting Lists",
   radar: "Radar",
-  "taktik-lab": "Tactics Lab",
+  "tactics-lab": "Tactics Lab",
   "wc-2026": "World Cup 2026",
   transfer: "Transfers",
 };
 
 const CAT_COLOR: Record<string, string> = {
-  listeler: "var(--sg-secondary)",
+  lists: "var(--sg-secondary)",
   radar: "var(--sg-primary)",
-  "taktik-lab": "var(--sg-tertiary)",
+  "tactics-lab": "var(--sg-tertiary)",
   "wc-2026": "var(--amber)",
   transfer: "var(--cyan)",
   arena: "var(--sg-amber)",

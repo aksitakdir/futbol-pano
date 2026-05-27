@@ -64,7 +64,7 @@ async function buildPlayersJson(
   return results.length > 0 ? JSON.stringify(results) : null;
 }
 
-const CATEGORIES = ["radar", "taktik-lab", "listeler"] as const;
+const CATEGORIES = ["radar", "tactics-lab", "lists"] as const;
 type Category = (typeof CATEGORIES)[number];
 
 const FALLBACK_TOPICS: Record<Category, string[]> = {
@@ -76,7 +76,7 @@ const FALLBACK_TOPICS: Record<Category, string[]> = {
     "South American talents making their mark in Europe",
     "Underrated full-backs in the Premier League",
   ],
-  "taktik-lab": [
+  "tactics-lab": [
     "How modern football is evolving beyond formations",
     "The anatomy of a high press",
     "The ball-playing centre-back and why defences are changing",
@@ -84,7 +84,7 @@ const FALLBACK_TOPICS: Record<Category, string[]> = {
     "Why inverted wingers dominate modern attacking play",
     "How gegenpressing changed the game",
   ],
-  listeler: [
+  lists: [
     "The best U21 players in European football right now",
     "Top transfers of the current season ranked",
     "Forwards with the highest xG per 90 in the top five leagues",
@@ -127,7 +127,7 @@ Respond with ONLY this JSON format, nothing else:
 {
   "title": "short compelling English title (no year or season)",
   "slug": "url-friendly-slug",
-  "category": "radar or taktik-lab or listeler",
+  "category": "radar or tactics-lab or lists",
   "content": "HTML content with lead, blockquote, callout, mark as described above. Minimum 500 words.",
   "players": ["Player Name 1", "Player Name 2"],
   "hero_variant": "one of: player-cards | cover-image | pitch-diagram | stat-focus | text-only",
@@ -136,8 +136,8 @@ Respond with ONLY this JSON format, nothing else:
 
 Category guide — follow strictly:
 - radar: current player analysis, transfer news, weekly performance breakdown. "players": the 1 featured player's name. hero_variant: "player-cards" or "stat-focus".
-- taktik-lab: modern positional archetypes, tactical analysis, system breakdown. "players": example players referenced (max 3). hero_variant: "pitch-diagram".
-- listeler: ranking and comparison lists. "players": ALL player names in the list (max 10). If category requested is "listeler", JSON "category" field MUST be "listeler". hero_variant: "player-cards".
+- tactics-lab: modern positional archetypes, tactical analysis, system breakdown. "players": example players referenced (max 3). hero_variant: "pitch-diagram".
+- lists: ranking and comparison lists. "players": ALL player names in the list (max 10). If category requested is "lists", JSON "category" field MUST be "lists". hero_variant: "player-cards".
 
 "players" field is REQUIRED in every response. Do not leave it empty.
 "hero_variant" is REQUIRED — pick the most fitting option for the content type.
@@ -321,14 +321,14 @@ async function generateWithClaude(
   const slug  = typeof parsed.slug  === "string" && parsed.slug.trim()  ? parsed.slug.trim()  : slugify(title);
 
   // Honour the model's choice only if it's valid, else fall back to targetCategory
-  const category = (["radar", "taktik-lab", "listeler"] as string[]).includes(String(parsed.category ?? ""))
+  const category = (["radar", "tactics-lab", "lists"] as string[]).includes(String(parsed.category ?? ""))
     ? (parsed.category as string)
     : targetCategory;
 
   const validHeroVariants = ["player-cards", "cover-image", "pitch-diagram", "stat-focus", "text-only"];
   const hero_variant = validHeroVariants.includes(parsed.hero_variant ?? "")
     ? parsed.hero_variant
-    : (targetCategory === "taktik-lab" ? "pitch-diagram" : "player-cards");
+    : (targetCategory === "tactics-lab" ? "pitch-diagram" : "player-cards");
 
   const validAccents = ["emerald", "cyan", "sky", "rose", "amber", "lime"];
   const accent = validAccents.includes(parsed.accent ?? "") ? parsed.accent : "emerald";
@@ -414,11 +414,11 @@ export async function POST(request: Request) {
         category: finalCategory,
         content: "",
         content_en: generated.content,
-        status: "bekliyor" as const,
+        status: "pending" as const,
         hero_variant: generated.hero_variant ?? "text-only",
         accent: generated.accent ?? "emerald",
         players_json:
-          generated.category === "listeler" && generated.players?.length
+          generated.category === "lists" && generated.players?.length
             ? await buildPlayersJson(supabase, generated.players)
             : null,
       };
@@ -507,11 +507,11 @@ export async function POST(request: Request) {
         category: finalCategory,
         content: "",
         content_en: generated.content,
-        status: "bekliyor" as const,
+        status: "pending" as const,
         hero_variant: generated.hero_variant ?? "text-only",
         accent: generated.accent ?? "emerald",
         players_json:
-          generated.category === "listeler" && generated.players?.length
+          generated.category === "lists" && generated.players?.length
             ? await buildPlayersJson(supabase, generated.players)
             : null,
       };
@@ -639,11 +639,11 @@ export async function POST(request: Request) {
       category: generated.category,
       content: "",
       content_en: generated.content,
-      status: "bekliyor",
+      status: "pending",
       hero_variant: generated.hero_variant ?? "text-only",
       accent: generated.accent ?? "emerald",
       players_json:
-        generated.category === "listeler" && generated.players?.length
+        generated.category === "lists" && generated.players?.length
           ? await buildPlayersJson(supabase, generated.players)
           : null,
     });

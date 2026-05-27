@@ -1,7 +1,7 @@
 export type HeroSliderSettings = {
   radar: boolean;
-  listeler: boolean;
-  "taktik-lab": boolean;
+  lists: boolean;
+  "tactics-lab": boolean;
   "wc-2026": boolean;
   transfer: boolean;
   wcPromo: boolean;
@@ -42,8 +42,8 @@ export function normalizeCustomSlides(raw: unknown): CustomHeroSlide[] {
 
 export const DEFAULT_HERO_SLIDER: HeroSliderSettings = {
   radar: true,
-  listeler: true,
-  "taktik-lab": true,
+  lists: true,
+  "tactics-lab": true,
   "wc-2026": true,
   transfer: true,
   wcPromo: true,
@@ -53,8 +53,8 @@ export const DEFAULT_HERO_SLIDER: HeroSliderSettings = {
 
 export const HERO_SLIDER_TOGGLES: { key: keyof HeroSliderSettings; label: string; hint?: string }[] = [
   { key: "radar", label: "Radar" },
-  { key: "listeler", label: "Lists" },
-  { key: "taktik-lab", label: "Tactics Lab" },
+  { key: "lists", label: "Lists" },
+  { key: "tactics-lab", label: "Tactics Lab" },
   { key: "wc-2026", label: "WC 2026 articles" },
   { key: "transfer", label: "Transfers articles" },
   { key: "wcPromo", label: "WC 2026 promo slide", hint: "Static hub promo — not an article" },
@@ -84,5 +84,5 @@ export function normalizeRecentCount(raw: unknown): number {
 }
 
 export function enabledHeroCategories(settings: HeroSliderSettings): string[] {
-  return (["radar", "listeler", "taktik-lab", "wc-2026", "transfer"] as const).filter((k) => settings[k]);
+  return (["radar", "lists", "tactics-lab", "wc-2026", "transfer"] as const).filter((k) => settings[k]);
 }

@@ -3,21 +3,19 @@
 import { useEffect, useState } from "react";
 import type { LiveScoreMatch } from "@/app/api/wc-live-scores/route";
 
-type Props = { locale: "tr" | "en" };
-
-export default function WcLiveScoresBar({ locale }: Props) {
+export default function WcLiveScoresBar() {
   const [matches, setMatches] = useState<LiveScoreMatch[]>([]);
 
   useEffect(() => {
-    fetch(`/api/wc-live-scores?locale=${locale}`)
+    fetch("/api/wc-live-scores")
       .then((r) => r.json())
       .then((d) => setMatches(d.matches ?? []))
       .catch(() => setMatches([]));
-  }, [locale]);
+  }, []);
 
   if (matches.length === 0) return null;
 
-  const label = locale === "tr" ? "CANLI SKOR" : "LIVE SCORES";
+  const label = "LIVE SCORES";
 
   return (
     <div className="wc-live-scores" role="region" aria-label={label}>
@@ -30,7 +28,7 @@ export default function WcLiveScoresBar({ locale }: Props) {
           {[...matches, ...matches].map((m, i) => (
             <div key={`${m.id}-${i}`} className="wc-live-scores__match">
               <span className="wc-live-scores__comp mono">
-                {locale === "tr" ? m.competitionTr : m.competitionEn}
+                {m.competitionEn}
               </span>
               <span className="wc-live-scores__teams">
                 <span className="mono">{m.homeCode}</span> {m.home}

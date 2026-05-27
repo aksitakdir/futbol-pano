@@ -101,7 +101,7 @@ export default async function ArenaHomePage() {
             <div className="h-px flex-1" style={{ background: "rgba(26,58,92,0.5)" }} />
           </div>
 
-          <ArenaGameGrid games={games} lang="en" />
+          <ArenaGameGrid games={games} />
         </div>
 
         <SiteFooter maxWidth="max-w-7xl" />

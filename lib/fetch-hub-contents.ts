@@ -9,7 +9,7 @@ export async function fetchHubContents(
   let query = supabase
     .from("contents")
     .select("id,title,title_en,slug,category,content,content_en,created_at")
-    .eq("status", "yayinda")
+    .eq("status", "published")
     .contains("hub_tags", [tag])
     .order("created_at", { ascending: false })
     .limit(limit);

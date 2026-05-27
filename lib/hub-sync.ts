@@ -68,8 +68,8 @@ export async function seedTransferScenariosIfEmpty(): Promise<number> {
     from_club: s.fromClub,
     to_club: s.toClub,
     likelihood: s.likelihood,
-    note_tr: s.noteTr,
-    note_en: s.noteEn,
+    note_tr: s.note,
+    note_en: s.note,
     source: "seed",
     is_published: true,
   }));

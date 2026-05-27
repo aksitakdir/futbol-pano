@@ -25,7 +25,6 @@ type CallClaudeOptions = {
   system: string;
   user: string;
   maxTokens?: number;
-  /** Anthropic web search (beta) — güncel kaynaklar */
   webSearch?: boolean;
 };
 
@@ -69,7 +68,6 @@ async function callClaude(apiKey: string, opts: CallClaudeOptions): Promise<stri
     .trim();
 }
 
-/** İlk '[' ile son ']' arasını alır, JSON.parse eder; sonuç array değilse hata fırlatır. */
 function parseJsonArrayFromResponse(raw: string): unknown[] {
   const text = raw
     .replace(/```json\n?/gi, "")
@@ -79,7 +77,7 @@ function parseJsonArrayFromResponse(raw: string): unknown[] {
   const start = text.indexOf("[");
   const end = text.lastIndexOf("]");
   if (start === -1 || end === -1 || end <= start) {
-    throw new Error("Claude yanıtında JSON array sınırları bulunamadı");
+    throw new Error("No JSON array boundaries found in Claude response");
   }
 
   const slice = text.substring(start, end + 1);
@@ -88,17 +86,16 @@ function parseJsonArrayFromResponse(raw: string): unknown[] {
     parsed = JSON.parse(slice);
   } catch (e) {
     const msg = e instanceof Error ? e.message : String(e);
-    throw new Error(`Claude JSON array parse hatası: ${msg}`);
+    throw new Error(`Claude JSON array parse error: ${msg}`);
   }
 
   if (!Array.isArray(parsed)) {
-    throw new Error("Claude yanıtı JSON array değil");
+    throw new Error("Claude response is not a JSON array");
   }
 
   return parsed;
 }
 
-// Sorgu 1 — 5 farklı scout radar oyuncusu (havuz)
 async function updateFeaturedPlayerPool(
   supabaseUrl: string,
   supabaseKey: string,
@@ -107,23 +104,20 @@ async function updateFeaturedPlayerPool(
   const supabase = createClient(supabaseUrl, supabaseKey);
 
   const userPrompt =
-    "Web'i tarayarak 2025-26 sezonunda 23 yaş altı, henüz büyük Avrupa kulüplerinin radarına tam olarak girmemiş, " +
-    "performansıyla dikkat çeken oyuncuları bul. Süper Lig, Portekiz, Hollanda, Belçika, İskoçya, Brezilya Série A, " +
-    "Arjantin Primera, Kolombiya, Meksika, Japonya liglerinde ara. Güncel ve doğru bilgi ver.\n\n" +
-    "TÜM metinler Türkçe olsun. description ve why_watch kesinlikle Türkçe yaz. " +
-    "Tüm açıklayıcı metinler Türkçe olsun: description ve why_watch tamamen Türkçe. " +
-    "position yalnızca şu Türkçe etiketlerden biri olsun: Orta Saha, Forvet, Stoper, Sol Bek, Sağ Bek, Kanat, Ofansif Orta Saha.\n\n" +
-    "TAM OLARAK 5 birbirinden FARKLI oyuncu seç. Yanıtın SADECE JSON array olmalı; başka metin, markdown veya kod bloğu yok. " +
-    "Her eleman şu alanlara sahip olsun: name, club, league, position, age, goals, assists, description, why_watch.\n" +
-    "Oyuncu adı ve kulüp/lig adları resmi yazımla kalabilir; description, why_watch ve position kesinlikle Türkçe.\n" +
-    "Örnek tek eleman: " +
+    "Search the web for under-23 players in the 2025-26 season who have not yet fully entered the radar of top European clubs " +
+    "but are standing out with their performances. Search across the Turkish Süper Lig, Portugal, Netherlands, Belgium, Scotland, " +
+    "Brazil Série A, Argentina Primera, Colombia, Mexico, and Japan leagues. Provide current and accurate information.\n\n" +
+    "ALL text must be in English. Write description and why_watch in English. " +
+    "position must be one of: Midfielder, Forward, Centre-Back, Left-Back, Right-Back, Winger, Attacking Midfielder.\n\n" +
+    "Select EXACTLY 5 DIFFERENT players. Your response must be ONLY a JSON array; no other text, markdown, or code blocks. " +
+    "Each element must have these fields: name, club, league, position, age, goals, assists, description, why_watch.\n" +
+    "Example element: " +
     '{"name":"...","club":"...","league":"...","position":"...","age":"...","goals":"...","assists":"...","description":"...","why_watch":"..."}';
 
   const rawText = await callClaude(apiKey, {
     system:
-      "Sen bir futbol scout uzmanısın. Web aramasıyla güncel verileri doğrula. Yanıtın yalnızca geçerli bir JSON dizisi (array) olmalı. " +
-      "Tüm yanıtları Türkçe ver. TÜM metinler Türkçe olsun; description ve why_watch kesinlikle Türkçe yaz. " +
-      "position alanı Türkçe olsun: Orta Saha, Forvet, Stoper, Sol Bek, Sağ Bek, Kanat, Ofansif Orta Saha.",
+      "You are a football scouting expert. Verify current data via web search. Your response must be only a valid JSON array. " +
+      "All text must be in English. position field must use: Midfielder, Forward, Centre-Back, Left-Back, Right-Back, Winger, Attacking Midfielder.",
     user: userPrompt,
     maxTokens: 3200,
     webSearch: true,
@@ -133,13 +127,13 @@ async function updateFeaturedPlayerPool(
 
   if (parsedRaw.length !== 5) {
     console.warn(
-      `[cron] featured_player_pool: beklenen 5 oyuncu, gelen ${parsedRaw.length}`,
+      `[cron] featured_player_pool: expected 5 players, got ${parsedRaw.length}`,
     );
   }
 
   const normalized = parsedRaw.map((item, idx) => {
     if (item === null || typeof item !== "object") {
-      throw new Error(`featured_player_pool[${idx}] geçerli bir nesne değil`);
+      throw new Error(`featured_player_pool[${idx}] is not a valid object`);
     }
     const o = item as Record<string, unknown>;
     return {
@@ -165,7 +159,7 @@ async function updateFeaturedPlayerPool(
     console.error("[cron] featured_player_pool upsert error:", error.message);
   }
 
-  // Geriye dönük uyumluluk: ilk oyuncuyu eski key'lere de yaz
+  // Backwards compatibility: write the first player to legacy keys
   const first = normalized[0];
   if (first) {
     const entries = [
@@ -191,7 +185,6 @@ async function updateFeaturedPlayerPool(
   return normalized.length;
 }
 
-// Sorgu 2 — 20 oyunculu form havuzu (sayfa her yüklemede 10'u random)
 async function updateFormPlayers(
   supabaseUrl: string,
   supabaseKey: string,
@@ -200,21 +193,22 @@ async function updateFormPlayers(
   const supabase = createClient(supabaseUrl, supabaseKey);
 
   const formPlayersUserPrompt =
-    "Web'i tarayarak güncel maç ve istatistik kaynaklarına dayanarak 2025-26 sezonunda form grafiği yükselen genç oyuncuları belirle. " +
-    "Büyük 5 lig, Portekiz, Hollanda, Brezilya, Arjantin, Türkiye ve diğer önemli liglerden çeşitli seçim yap.\n\n" +
-    "Her oyuncu için club ve league alanları oyuncunun ŞU ANKI kulübü ve bu kulübün oynadığı üst düzey lig olmalı (eski/kiralık kulüp yazma). " +
-    "Örneğin oyuncu Real Madrid'deyse lig La Liga olmalı.\n\n" +
-    "Tüm metin alanları Türkçe olsun. position alanları Türkçe olsun: Forward→Forvet, Midfielder→Orta Saha, Winger→Kanat, Defender→Defans, Goalkeeper→Kaleci, Attacking Midfielder→Ofansif Orta Saha, Defensive Midfielder→Defansif Orta Saha.\n\n" +
-    "Aşağıdaki formatta TAM OLARAK 20 oyuncu listesi döndür. Başka hiçbir şey yazma, sadece JSON array:\n" +
+    "Search the web using current match and stats sources to identify young players whose form is rising in the 2025-26 season. " +
+    "Select a diverse set from the Big 5 leagues, Portugal, Netherlands, Brazil, Argentina, Turkey, and other major leagues.\n\n" +
+    "For each player, the club and league fields must be the player's CURRENT club and the top-level league that club plays in " +
+    "(do not use former/loan clubs). For example, if a player is at Real Madrid, the league should be La Liga.\n\n" +
+    "All text fields must be in English. Use English position labels: Forward, Midfielder, Winger, Defender, Goalkeeper, " +
+    "Attacking Midfielder, Defensive Midfielder.\n\n" +
+    "Return EXACTLY 20 players in the format below. Write nothing else, only the JSON array:\n" +
     "[\n" +
-    '  {"name": "Oyuncu Adı", "club": "Kulüp", "league": "Lig", "position": "Pozisyon", "age": 20, "goals": 5},\n' +
+    '  {"name": "Player Name", "club": "Club", "league": "League", "position": "Position", "age": 20, "goals": 5},\n' +
     "  ...\n" +
     "]";
 
   const rawText = await callClaude(apiKey, {
     system:
-      "Sen bir futbol analiz uzmanısın. Web aramasıyla güncel form verilerini doğrula. Yanıtın yalnızca geçerli bir JSON dizisi (array) olmalı. " +
-      "Tüm yanıtları Türkçe ver. position alanları Türkçe olsun: Forward→Forvet, Midfielder→Orta Saha, Winger→Kanat, Defender→Defans, Goalkeeper→Kaleci, Attacking Midfielder→Ofansif Orta Saha, Defensive Midfielder→Defansif Orta Saha.",
+      "You are a football analytics expert. Verify current form data via web search. Your response must be only a valid JSON array. " +
+      "All text must be in English. Use English position labels: Forward, Midfielder, Winger, Defender, Goalkeeper, Attacking Midfielder, Defensive Midfielder.",
     user: formPlayersUserPrompt,
     maxTokens: 2800,
     webSearch: true,
@@ -224,13 +218,13 @@ async function updateFormPlayers(
 
   if (parsedRaw.length !== 20) {
     console.warn(
-      `[cron] form_players_pool: beklenen 20 oyuncu, gelen ${parsedRaw.length}`,
+      `[cron] form_players_pool: expected 20 players, got ${parsedRaw.length}`,
     );
   }
 
   const normalized = parsedRaw.map((item, idx) => {
     if (item === null || typeof item !== "object") {
-      throw new Error(`form_players_pool[${idx}] geçerli bir nesne değil`);
+      throw new Error(`form_players_pool[${idx}] is not a valid object`);
     }
     const o = item as Record<string, unknown>;
     return {
@@ -253,7 +247,7 @@ async function updateFormPlayers(
     console.error("[cron] form_players_pool upsert error:", error.message);
   }
 
-  // Geriye dönük: ilk 10'u form_players'a da yaz
+  // Backwards compatibility: write first 10 to legacy key
   const { error: e2 } = await supabase
     .from("site_settings")
     .upsert(

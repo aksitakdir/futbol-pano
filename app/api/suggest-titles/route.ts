@@ -15,7 +15,7 @@ Rules:
 - Do NOT include specific years or seasons in the title (e.g. avoid "2024", "2025-26").
 - Do NOT force Turkey, Süper Lig, or Turkish club references unless the keyword explicitly requires it.
 - Focus on global football: La Liga, Premier League, Bundesliga, Serie A, Champions League, etc.
-- Category must be exactly one of: "radar", "taktik-lab", "listeler" (lowercase, hyphenated).
+- Category must be exactly one of: "radar", "tactics-lab", "lists" (lowercase, hyphenated).
 - seo_value: "Yüksek", "Orta", or "Düşük" (assess based on search intent and topic popularity).
 - slug: URL-friendly, lowercase, no special characters, hyphen-separated (e.g. lamine-yamal-radar).
 
@@ -147,15 +147,15 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Geçersiz dizi" }, { status: 502 });
   }
 
-  const validCats = new Set(["radar", "taktik-lab", "listeler"]);
+  const validCats = new Set(["radar", "tactics-lab", "lists"]);
   const validSeo = new Set(["Yüksek", "Orta", "Düşük"]);
 
   const normalized = items
     .slice(0, 8)
     .map((it) => {
       const title = typeof it.title === "string" ? it.title.trim() : "";
-      let category = typeof it.category === "string" ? it.category.trim().toLowerCase() : "listeler";
-      if (!validCats.has(category)) category = "listeler";
+      let category = typeof it.category === "string" ? it.category.trim().toLowerCase() : "lists";
+      if (!validCats.has(category)) category = "lists";
       let seo = typeof it.seo_value === "string" ? it.seo_value.trim() : "Orta";
       if (!validSeo.has(seo)) seo = "Orta";
       let slug = typeof it.slug === "string" ? it.slug.trim().toLowerCase().replace(/[^a-z0-9-]/g, "-").replace(/-+/g, "-").replace(/^-|-$/g, "") : "";

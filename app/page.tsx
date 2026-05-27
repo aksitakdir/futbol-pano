@@ -47,25 +47,25 @@ type FormPlayerWithStats = FormPlayer & Partial<PlayerCardData>;
 type FeaturedPlayer = { name: string; club: string; position: string; age: string; league: string; goals: string; assists: string; description: string; whyWatch: string; };
 
 const CAT_LABEL: Record<string, string> = {
-  listeler: "Scouting Lists",
+  lists: "Scouting Lists",
   radar: "Radar",
-  "taktik-lab": "Tactics Lab",
+  "tactics-lab": "Tactics Lab",
   "wc-2026": "World Cup 2026",
   transfer: "Transfers",
 };
 const CAT_COLOR: Record<string, string> = {
-  listeler: "var(--sg-secondary)",
+  lists: "var(--sg-secondary)",
   radar: "var(--sg-primary)",
-  "taktik-lab": "var(--sg-tertiary)",
+  "tactics-lab": "var(--sg-tertiary)",
   "wc-2026": "var(--amber)",
   transfer: "var(--cyan)",
   arena: "var(--sg-amber)",
 };
 
 function categoryPath(cat: string): string {
-  if (cat === "listeler") return "/lists";
+  if (cat === "lists") return "/lists";
   if (cat === "radar") return "/radar";
-  if (cat === "taktik-lab") return "/tactics-lab";
+  if (cat === "tactics-lab") return "/tactics-lab";
   if (cat === "wc-2026") return "/world-cup-2026";
   if (cat === "transfer") return "/transfers";
   return categoryArticlePath(cat, "").replace(/\/$/, "") || "/";
@@ -273,7 +273,7 @@ export default function HomePage() {
       const { data } = await supabase
         .from("contents")
         .select("id,title,title_en,slug,category,content,content_en,created_at,cover_image")
-        .eq("status", "yayinda")
+        .eq("status", "published")
         .in("category", enabledCategories.length ? enabledCategories : ["radar"])
         .order("created_at", { ascending: false })
         .limit(Math.max(articleCount * 3, 24));
@@ -285,7 +285,7 @@ export default function HomePage() {
           .from("contents")
           .select(EDITORIAL_ARTICLE_SELECT)
           .eq("id", homepageCoverId)
-          .eq("status", "yayinda")
+          .eq("status", "published")
           .maybeSingle();
         if (pinnedRow) {
           filtered = [
@@ -322,8 +322,8 @@ export default function HomePage() {
 
   useEffect(() => {
     void Promise.all([
-      supabase.from("contents").select("title,title_en,slug,category").eq("status", "yayinda").or("category.eq.wc-2026,hub_tags.cs.{wc-2026}").order("created_at", { ascending: false }).limit(3),
-      supabase.from("contents").select("title,title_en,slug,category").eq("status", "yayinda").or("category.eq.transfer,hub_tags.cs.{transfer}").order("created_at", { ascending: false }).limit(3),
+      supabase.from("contents").select("title,title_en,slug,category").eq("status", "published").or("category.eq.wc-2026,hub_tags.cs.{wc-2026}").order("created_at", { ascending: false }).limit(3),
+      supabase.from("contents").select("title,title_en,slug,category").eq("status", "published").or("category.eq.transfer,hub_tags.cs.{transfer}").order("created_at", { ascending: false }).limit(3),
     ]).then(([wcRes, trRes]) => {
       const mapRow = (rows: { title: string; title_en?: string; slug: string; category: string }[]) =>
         rows.map((r) => ({ title: r.title_en?.trim() || r.title, slug: r.slug, category: r.category }));

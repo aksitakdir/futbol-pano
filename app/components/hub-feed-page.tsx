@@ -5,7 +5,7 @@ import SiteFooter from "./site-footer";
 import CategoryPageHeader from "./category-page-header";
 import HubEditorialSection from "./hub/hub-editorial-section";
 
-type FeedKind = "radar" | "listeler";
+type FeedKind = "radar" | "lists";
 
 type Props = {
   hubId: "wc-2026" | "transfer";
@@ -22,7 +22,7 @@ export default function HubFeedPage({ hubId, feed }: Props) {
   const cfg = PAGE_CONFIG[hubId] ?? PAGE_CONFIG["wc-2026"];
   const titles = {
     radar: "Radar",
-    listeler: "Lists",
+    lists: "Lists",
     back: `← ${cfg.title}`,
     desc:
       feed === "radar"
@@ -41,7 +41,7 @@ export default function HubFeedPage({ hubId, feed }: Props) {
         title={titles[feed]}
         description={titles.desc}
       />
-      <HubEditorialSection hubId={hubId} locale="en" accent={cfg.accent} category={feed === "radar" ? "radar" : "listeler"} />
+      <HubEditorialSection hubId={hubId} locale="en" accent={cfg.accent} category={feed === "radar" ? "radar" : "lists"} />
       <div style={{ paddingBottom: 80 }} />
       <SiteFooter maxWidth="max-w-7xl" />
     </main>

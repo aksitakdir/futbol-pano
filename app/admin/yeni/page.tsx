@@ -201,7 +201,7 @@ function NewArticleForm() {
       accent: accentColor,
       sections_json: usingBlocks && sectionsBlocks.length > 0 ? sectionsBlocks : null,
       hub_tags: [],
-      status: "bekliyor",
+      status: "pending",
     }).select("id").single();
     if (insertError || !inserted?.id) {
       setError("Save failed: " + (insertError?.message ?? "No id returned"));

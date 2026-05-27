@@ -52,7 +52,7 @@ async function main() {
   const { data: contents, error } = await supabase
     .from("contents")
     .select("id, title, content, title_en, content_en, slug, category")
-    .eq("status", "yayinda")
+    .eq("status", "published")
     .or("title_en.is.null,content_en.is.null");
 
   if (error) { console.error("Supabase hatası:", error); process.exit(1); }

@@ -28,7 +28,7 @@ export default function TaktikLabDetailClient({ slug }: { slug: string }) {
 
   useEffect(() => {
     if (!slug) return;
-    supabase.from("contents").select("*").eq("slug", slug).eq("status", "yayinda").single()
+    supabase.from("contents").select("*").eq("slug", slug).eq("status", "published").single()
       .then(({ data, error }) => {
         if (error || !data) {
           setNotFound(true);
@@ -36,7 +36,7 @@ export default function TaktikLabDetailClient({ slug }: { slug: string }) {
           return;
         }
         const row = data as ContentRow;
-        if (redirectToCanonicalArticle(row.category, row.slug, "taktik-lab")) {
+        if (redirectToCanonicalArticle(row.category, row.slug, "tactics-lab")) {
           setRedirecting(true);
           setLoading(false);
           return;

@@ -24,33 +24,33 @@ type ContentRow = {
   created_at: string;
 };
 
-type Tab = "all" | "bekliyor" | "yayinda" | "reddedildi";
+type Tab = "all" | "pending" | "published" | "rejected";
 
 const TABS: { key: Tab; label: string }[] = [
   { key: "all", label: "All" },
-  { key: "bekliyor", label: "Pending" },
-  { key: "yayinda", label: "Published" },
-  { key: "reddedildi", label: "Rejected" },
+  { key: "pending", label: "Pending" },
+  { key: "published", label: "Published" },
+  { key: "rejected", label: "Rejected" },
 ];
 
 const CATEGORY_LABEL: Record<string, string> = {
-  listeler: "Lists",
+  lists: "Lists",
   radar: "Radar",
-  "taktik-lab": "Tactics Lab",
+  "tactics-lab": "Tactics Lab",
   "wc-2026": "WC 2026",
   transfer: "Transfers",
 };
 
 const CATEGORY_COLOR: Record<string, string> = {
-  listeler: "bg-sky-500/15 text-sky-300 border-sky-500/40",
+  lists: "bg-sky-500/15 text-sky-300 border-sky-500/40",
   radar: "bg-emerald-500/15 text-emerald-300 border-emerald-500/40",
-  "taktik-lab": "bg-violet-500/15 text-violet-300 border-violet-500/40",
+  "tactics-lab": "bg-violet-500/15 text-violet-300 border-violet-500/40",
 };
 
 const STATUS_CONFIG: Record<string, { label: string; cls: string }> = {
-  bekliyor: { label: "Pending", cls: "bg-amber-500/15 text-amber-300 border-amber-500/40" },
-  yayinda: { label: "Published", cls: "bg-emerald-500/15 text-emerald-300 border-emerald-500/40" },
-  reddedildi: { label: "Rejected", cls: "bg-rose-500/15 text-rose-300 border-rose-500/40" },
+  pending: { label: "Pending", cls: "bg-amber-500/15 text-amber-300 border-amber-500/40" },
+  published: { label: "Published", cls: "bg-emerald-500/15 text-emerald-300 border-emerald-500/40" },
+  rejected: { label: "Rejected", cls: "bg-rose-500/15 text-rose-300 border-rose-500/40" },
 };
 
 type TrendItem = { title: string; traffic: string };
@@ -149,7 +149,7 @@ export default function IceriklerPage() {
   }
 
   async function generateFromSuggestion(s: TitleSuggestion) {
-    if (!["radar", "taktik-lab", "listeler"].includes(s.category)) {
+    if (!["radar", "tactics-lab", "lists"].includes(s.category)) {
       setHubNoticeOk(false);
       setHubNotice("Invalid category — please re-suggest the title.");
       setTimeout(() => setHubNotice(""), 8000);
@@ -173,7 +173,7 @@ export default function IceriklerPage() {
       if (res.ok && data.generated > 0) {
         setHubNoticeOk(true);
         setHubNotice("Article created — switched to Pending tab.");
-        setTab("bekliyor");
+        setTab("pending");
         setSelected(new Set());
         await fetchAll();
       } else {
@@ -220,7 +220,7 @@ export default function IceriklerPage() {
   }, [fetchAll]);
 
   const counts = useMemo(() => {
-    const c = { all: 0, bekliyor: 0, yayinda: 0, reddedildi: 0 };
+    const c = { all: 0, pending: 0, published: 0, rejected: 0 };
     for (const item of allContents) {
       c.all++;
       if (item.status in c) c[item.status as keyof typeof c]++;
@@ -308,9 +308,9 @@ export default function IceriklerPage() {
 
   const emptyMessages: Record<Tab, string> = {
     all: "No articles yet",
-    bekliyor: "No pending articles",
-    yayinda: "No published articles",
-    reddedildi: "No rejected articles",
+    pending: "No pending articles",
+    published: "No published articles",
+    rejected: "No rejected articles",
   };
 
   return (
@@ -610,8 +610,8 @@ export default function IceriklerPage() {
           <div className="mb-4 flex flex-wrap items-center gap-3 rounded-xl border border-emerald-500/30 bg-emerald-500/5 px-4 py-3">
             <span className="text-xs font-semibold text-emerald-300">{selected.size} selected</span>
             <div className="flex flex-wrap gap-2">
-              <button onClick={() => bulkUpdateStatus("yayinda")} className="rounded-lg bg-emerald-500/15 px-3 py-1.5 text-[11px] font-semibold text-emerald-300 transition hover:bg-emerald-500/25">Publish Selected</button>
-              <button onClick={() => bulkUpdateStatus("bekliyor")} className="rounded-lg bg-amber-500/15 px-3 py-1.5 text-[11px] font-semibold text-amber-300 transition hover:bg-amber-500/25">Set Pending</button>
+              <button onClick={() => bulkUpdateStatus("published")} className="rounded-lg bg-emerald-500/15 px-3 py-1.5 text-[11px] font-semibold text-emerald-300 transition hover:bg-emerald-500/25">Publish Selected</button>
+              <button onClick={() => bulkUpdateStatus("pending")} className="rounded-lg bg-amber-500/15 px-3 py-1.5 text-[11px] font-semibold text-amber-300 transition hover:bg-amber-500/25">Set Pending</button>
               <button onClick={bulkDelete} className="rounded-lg bg-rose-500/15 px-3 py-1.5 text-[11px] font-semibold text-rose-300 transition hover:bg-rose-500/25">Delete Selected</button>
             </div>
             <button onClick={() => setSelected(new Set())} className="ml-auto text-[11px] text-slate-400 transition hover:text-slate-200">Clear selection</button>
@@ -649,7 +649,7 @@ export default function IceriklerPage() {
               const isOpen = expandedId === item.id;
               const isChecked = selected.has(item.id);
               const isActioning = actionLoading.has(item.id);
-              const status = STATUS_CONFIG[item.status] ?? STATUS_CONFIG.bekliyor;
+              const status = STATUS_CONFIG[item.status] ?? STATUS_CONFIG.pending;
               const catColor = CATEGORY_COLOR[item.category] ?? "bg-slate-500/15 text-slate-300 border-slate-500/40";
               const preview = contentPreviewSnippet(item.content);
 
@@ -698,11 +698,11 @@ export default function IceriklerPage() {
                         >
                           Edit
                         </Link>
-                        {item.status === "bekliyor" && (
+                        {item.status === "pending" && (
                           <>
                             <button
                               type="button"
-                              onClick={() => updateStatus(item.id, "yayinda")}
+                              onClick={() => updateStatus(item.id, "published")}
                               disabled={isActioning}
                               className={`${ACTION_BTN} border-emerald-500/50 bg-emerald-500/15 text-emerald-200 hover:bg-emerald-500/25`}
                             >
@@ -710,7 +710,7 @@ export default function IceriklerPage() {
                             </button>
                             <button
                               type="button"
-                              onClick={() => updateStatus(item.id, "reddedildi")}
+                              onClick={() => updateStatus(item.id, "rejected")}
                               disabled={isActioning}
                               className={`${ACTION_BTN} border-rose-500/45 bg-rose-500/10 text-rose-300 hover:bg-rose-500/18`}
                             >
@@ -718,21 +718,21 @@ export default function IceriklerPage() {
                             </button>
                           </>
                         )}
-                        {item.status === "yayinda" && (
+                        {item.status === "published" && (
                           <button
                             type="button"
-                            onClick={() => updateStatus(item.id, "bekliyor")}
+                            onClick={() => updateStatus(item.id, "pending")}
                             disabled={isActioning}
                             className={`${ACTION_BTN} border-rose-500/45 bg-rose-500/10 text-rose-300 hover:bg-rose-500/18`}
                           >
                             Unpublish
                           </button>
                         )}
-                        {item.status === "reddedildi" && (
+                        {item.status === "rejected" && (
                           <>
                             <button
                               type="button"
-                              onClick={() => updateStatus(item.id, "bekliyor")}
+                              onClick={() => updateStatus(item.id, "pending")}
                               disabled={isActioning}
                               className={`${ACTION_BTN} border-amber-500/45 bg-amber-500/10 text-amber-300 hover:bg-amber-500/18`}
                             >
@@ -784,18 +784,18 @@ export default function IceriklerPage() {
                       >
                         {isOpen ? "Close" : "Preview"}
                       </button>
-                      {item.status === "bekliyor" && (
+                      {item.status === "pending" && (
                         <>
-                          <button type="button" onClick={() => updateStatus(item.id, "yayinda")} disabled={isActioning} className={`${ACTION_BTN} border-emerald-500/50 bg-emerald-500/15 text-emerald-200 hover:bg-emerald-500/25`}>Publish</button>
-                          <button type="button" onClick={() => updateStatus(item.id, "reddedildi")} disabled={isActioning} className={`${ACTION_BTN} border-rose-500/45 bg-rose-500/10 text-rose-300 hover:bg-rose-500/18`}>Reject</button>
+                          <button type="button" onClick={() => updateStatus(item.id, "published")} disabled={isActioning} className={`${ACTION_BTN} border-emerald-500/50 bg-emerald-500/15 text-emerald-200 hover:bg-emerald-500/25`}>Publish</button>
+                          <button type="button" onClick={() => updateStatus(item.id, "rejected")} disabled={isActioning} className={`${ACTION_BTN} border-rose-500/45 bg-rose-500/10 text-rose-300 hover:bg-rose-500/18`}>Reject</button>
                         </>
                       )}
-                      {item.status === "yayinda" && (
-                        <button type="button" onClick={() => updateStatus(item.id, "bekliyor")} disabled={isActioning} className={`${ACTION_BTN} border-rose-500/45 bg-rose-500/10 text-rose-300 hover:bg-rose-500/18`}>Unpublish</button>
+                      {item.status === "published" && (
+                        <button type="button" onClick={() => updateStatus(item.id, "pending")} disabled={isActioning} className={`${ACTION_BTN} border-rose-500/45 bg-rose-500/10 text-rose-300 hover:bg-rose-500/18`}>Unpublish</button>
                       )}
-                      {item.status === "reddedildi" && (
+                      {item.status === "rejected" && (
                         <>
-                          <button type="button" onClick={() => updateStatus(item.id, "bekliyor")} disabled={isActioning} className={`${ACTION_BTN} border-amber-500/45 bg-amber-500/10 text-amber-300 hover:bg-amber-500/18`}>Restore</button>
+                          <button type="button" onClick={() => updateStatus(item.id, "pending")} disabled={isActioning} className={`${ACTION_BTN} border-amber-500/45 bg-amber-500/10 text-amber-300 hover:bg-amber-500/18`}>Restore</button>
                           <button
                             type="button"
                             onClick={() => deleteItem(item.id)}
@@ -834,7 +834,7 @@ export default function IceriklerPage() {
         {!loading && filtered.length > 0 && (
           <div className="mt-4 flex items-center justify-between text-[11px] text-slate-500">
             <span>{filtered.length} articles</span>
-            <span>{counts.bekliyor} pending · {counts.yayinda} published · {counts.reddedildi} rejected</span>
+            <span>{counts.pending} pending · {counts.published} published · {counts.rejected} rejected</span>
           </div>
         )}
       </div>

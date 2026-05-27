@@ -52,7 +52,7 @@ export default function RadarPage() {
         supabase.from("site_settings").select("value").eq("key", COVER_STORY_SETTINGS_KEY).maybeSingle(),
         supabase.from("contents")
           .select("id,title,title_en,slug,content,content_en,created_at,cover_image")
-          .eq("status", "yayinda").eq("category", "radar")
+          .eq("status", "published").eq("category", "radar")
           .order("created_at", { ascending: false }).range(0, PAGE_SIZE - 1),
       ]);
       const pinnedId = normalizeCoverStories(pinRow?.value).radar;
@@ -79,7 +79,7 @@ export default function RadarPage() {
     setLoadingMore(true);
     const { data } = await supabase.from("contents")
       .select("id,title,title_en,slug,content,content_en,created_at")
-      .eq("status", "yayinda").eq("category", "radar")
+      .eq("status", "published").eq("category", "radar")
       .order("created_at", { ascending: false })
       .range(articles.length, articles.length + PAGE_SIZE - 1);
     const items = data ?? [];

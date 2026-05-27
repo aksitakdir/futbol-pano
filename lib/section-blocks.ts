@@ -66,7 +66,7 @@ export function tocFromSections(blocks: SectionBlock[]): TocItem[] {
 }
 
 /** Categories whose public pages render sections_json */
-export const STRUCTURED_ARTICLE_CATEGORIES = ["radar", "taktik-lab", "listeler"] as const;
+export const STRUCTURED_ARTICLE_CATEGORIES = ["radar", "tactics-lab", "lists"] as const;
 
 export function supportsStructuredSections(category: string): boolean {
   return (STRUCTURED_ARTICLE_CATEGORIES as readonly string[]).includes(category);

@@ -10,14 +10,14 @@ type Props = { activeNav?: string; maxWidth?: string; forceEn?: boolean };
 type SearchResult = { id: string; title: string; title_en?: string; slug: string; category: string; };
 
 function categoryPath(cat: string): string {
-  if (cat === "listeler" || cat === "lists") return "/lists";
+  if (cat === "lists") return "/lists";
   if (cat === "radar") return "/radar";
-  if (cat === "taktik-lab" || cat === "tactics-lab") return "/tactics-lab";
+  if (cat === "tactics-lab") return "/tactics-lab";
   return "/";
 }
 
-const CAT_LABEL: Record<string, string> = { listeler: "Scouting Lists", radar: "Radar", "taktik-lab": "Tactics Lab" };
-const CAT_COLOR: Record<string, string> = { listeler: "var(--cyan)", radar: "var(--emerald)", "taktik-lab": "var(--sky)" };
+const CAT_LABEL: Record<string, string> = { lists: "Scouting Lists", radar: "Radar", "tactics-lab": "Tactics Lab" };
+const CAT_COLOR: Record<string, string> = { lists: "var(--cyan)", radar: "var(--emerald)", "tactics-lab": "var(--sky)" };
 
 function Wordmark() {
   return (
@@ -92,7 +92,7 @@ export default function SiteHeader({ activeNav }: Props) {
   const doSearch = useCallback(async (q: string) => {
     if (!q.trim()) { setResults([]); setSearching(false); return; }
     setSearching(true);
-    const { data } = await supabase.from("contents").select("id,title,title_en,slug,category").eq("status", "yayinda").or(`title.ilike.%${q}%,title_en.ilike.%${q}%`).limit(6);
+    const { data } = await supabase.from("contents").select("id,title,title_en,slug,category").eq("status", "published").or(`title.ilike.%${q}%,title_en.ilike.%${q}%`).limit(6);
     setResults(data ?? []);
     setSearching(false);
     setSelectedIdx(-1);

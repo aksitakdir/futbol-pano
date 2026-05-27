@@ -14,7 +14,6 @@ import type { LeaderboardEntry } from "@/app/arena/actions";
 
 type Props = {
   game: ArenaGame;
-  lang: "tr" | "en";
   canonicalUrl: string;
   initialChampion?: string;
 };
@@ -56,18 +55,15 @@ function ConfettiLayer() {
 function ChampionResultView({
   champion,
   game,
-  lang,
   canonicalUrl,
   onPlay,
 }: {
   champion: string;
   game: ArenaGame;
-  lang: "tr" | "en";
   canonicalUrl: string;
   onPlay: () => void;
 }) {
-  const isEn = lang === "en";
-  const gameTitle = isEn ? game.title_en || game.title_tr : game.title_tr;
+  const gameTitle = game.title_en || game.title_tr;
   const accentColor = CARD_COLOR_MAP[game.card_color as keyof typeof CARD_COLOR_MAP] ?? "#F59E0B";
   const [shared, setShared] = useState(false);
   const [leaderboard, setLeaderboard] = useState<LeaderboardEntry[]>([]);
@@ -78,9 +74,7 @@ function ChampionResultView({
 
   const handleShare = useCallback(() => {
     const shareUrl = `${canonicalUrl}?champion=${encodeURIComponent(champion)}`;
-    const shareText = isEn
-      ? `My champion in "${gameTitle}": ${champion}! Who's yours?`
-      : `"${gameTitle}" şampiyonum: ${champion}! Sen kimi seçerdin?`;
+    const shareText = `My champion in "${gameTitle}": ${champion}! Who's yours?`;
     if (navigator.share) {
       navigator.share({ title: `Scout Gamer Arena`, text: shareText, url: shareUrl }).catch(() => {});
     } else {
@@ -89,7 +83,7 @@ function ChampionResultView({
     }
     setShared(true);
     setTimeout(() => setShared(false), 2500);
-  }, [champion, gameTitle, isEn, canonicalUrl]);
+  }, [champion, gameTitle, canonicalUrl]);
 
   return (
     <div
@@ -134,7 +128,7 @@ function ChampionResultView({
           className="text-xs font-black uppercase tracking-widest"
           style={{ color: accentColor, letterSpacing: "0.18em" }}
         >
-          {isEn ? "Their Champion" : "Şampiyon Seçimi"}
+          Their Champion
         </p>
 
         {/* Champion name */}
@@ -160,9 +154,7 @@ function ChampionResultView({
           animate={{ opacity: 1 }}
           transition={{ delay: 0.35 }}
         >
-          {isEn
-            ? `chosen as champion in "${gameTitle}"`
-            : `"${gameTitle}" turnuvasında şampiyon seçildi`}
+          {`chosen as champion in "${gameTitle}"`}
         </motion.p>
 
         {/* Divider */}
@@ -182,9 +174,7 @@ function ChampionResultView({
           animate={{ opacity: 1 }}
           transition={{ delay: 0.5 }}
         >
-          {isEn
-            ? "Who would YOU pick as champion?"
-            : "Peki sen kimi şampiyon seçerdin?"}
+          Who would YOU pick as champion?
         </motion.p>
 
         {/* CTA buttons */}
@@ -200,7 +190,7 @@ function ChampionResultView({
             className="btn btn-solid"
             style={{ background: accentColor, borderColor: accentColor, padding: "12px 28px" }}
           >
-            {isEn ? "Play & pick yours →" : "Oyna ve seçini yap →"}
+            Play & pick yours →
           </button>
 
           <button
@@ -209,9 +199,7 @@ function ChampionResultView({
             className="btn"
             style={{ borderColor: `${accentColor}60` }}
           >
-            {shared
-              ? isEn ? "✓ Copied!" : "✓ Kopyalandı!"
-              : isEn ? "↗ Share result" : "↗ Sonucu paylaş"}
+            {shared ? "✓ Copied!" : "↗ Share result"}
           </button>
         </motion.div>
 
@@ -227,7 +215,7 @@ function ChampionResultView({
               className="mb-3 text-center text-xs font-black uppercase tracking-[0.2em]"
               style={{ color: "var(--sg-text-muted)" }}
             >
-              {isEn ? "Community picks" : "Topluluk seçimleri"}
+              Community picks
             </p>
             <div className="flex flex-col gap-2">
               {leaderboard.map((entry, i) => {
@@ -278,11 +266,11 @@ function ChampionResultView({
         {/* Back link */}
         <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.8 }}>
           <Link
-            href={isEn ? "/en/arena" : "/arena"}
+            href="/arena"
             className="text-xs transition hover:underline"
             style={{ color: "var(--sg-text-secondary)" }}
           >
-            ← {isEn ? "Browse all arenas" : "Tüm Arenalara Dön"}
+            ← Browse all arenas
           </Link>
         </motion.div>
       </motion.div>
@@ -299,10 +287,9 @@ const CARD_COLOR_MAP: Record<string, string> = {
 
 // ── Main client component ────────────────────────────────────────────────────
 
-export default function ArenaSlugClient({ game, lang, canonicalUrl, initialChampion }: Props) {
-  const isEn = lang === "en";
-  const title = isEn ? game.title_en : game.title_tr;
-  const description = isEn ? game.description_en : game.description_tr;
+export default function ArenaSlugClient({ game, canonicalUrl, initialChampion }: Props) {
+  const title = game.title_en || game.title_tr;
+  const description = game.description_en || game.description_tr;
   const router = useRouter();
 
   const [showResult, setShowResult] = useState(!!initialChampion);
@@ -310,10 +297,10 @@ export default function ArenaSlugClient({ game, lang, canonicalUrl, initialChamp
 
   const handlePlay = useCallback(() => {
     // Strip champion param from URL without a page reload
-    router.replace(`/arena/${game.slug}${isEn ? "?lang=en" : ""}`, { scroll: false });
+    router.replace(`/arena/${game.slug}`, { scroll: false });
     setShowResult(false);
     setDuelKey((k) => k + 1);
-  }, [router, game.slug, isEn]);
+  }, [router, game.slug]);
 
   const remount = useCallback(() => {
     setShowResult(false);
@@ -325,7 +312,7 @@ export default function ArenaSlugClient({ game, lang, canonicalUrl, initialChamp
       className="flex min-h-screen flex-col"
       style={{ background: "var(--sg-bg)", color: "var(--sg-text-primary)" }}
     >
-      <SiteHeader activeNav="arena" maxWidth="max-w-7xl" forceEn={isEn} />
+      <SiteHeader activeNav="arena" maxWidth="max-w-7xl" />
 
       <AnimatePresence mode="wait">
         {showResult && initialChampion ? (
@@ -340,7 +327,6 @@ export default function ArenaSlugClient({ game, lang, canonicalUrl, initialChamp
             <ChampionResultView
               champion={initialChampion}
               game={game}
-              lang={lang}
               canonicalUrl={canonicalUrl}
               onPlay={handlePlay}
             />
@@ -358,7 +344,7 @@ export default function ArenaSlugClient({ game, lang, canonicalUrl, initialChamp
             <div className="sg-site-container pt-[88px] pb-2">
               <Breadcrumb
                 items={[
-                  { label: isEn ? "Arena" : "Oyna & Paylaş", href: isEn ? "/en/arena" : "/arena" },
+                  { label: "Arena", href: "/arena" },
                   { label: title },
                 ]}
               />
@@ -369,14 +355,14 @@ export default function ArenaSlugClient({ game, lang, canonicalUrl, initialChamp
                 href="/arena"
                 className="btn"
               >
-                ← {isEn ? "All Arenas" : "Tüm Arenalar"}
+                ← All Arenas
               </Link>
               <button
                 type="button"
                 onClick={remount}
                 className="btn"
               >
-                🔀 {isEn ? "New Matchups" : "Yeni Eşleşme"}
+                🔀 New Matchups
               </button>
             </div>
 
@@ -399,7 +385,7 @@ export default function ArenaSlugClient({ game, lang, canonicalUrl, initialChamp
                   participants={game.participants}
                   gameType={game.game_type}
                   title={title}
-                  lang={lang}
+                  lang="en"
                   canonicalUrl={canonicalUrl}
                   gameSlug={game.slug}
                 />

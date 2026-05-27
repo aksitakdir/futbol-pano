@@ -92,7 +92,7 @@ export default function DuzenlePage() {
   const [title, setTitle] = useState("");
   const [titleEn, setTitleEn] = useState("");
   const [slug, setSlug] = useState("");
-  const [category, setCategory] = useState<ContentCategory>("listeler");
+  const [category, setCategory] = useState<ContentCategory>("lists");
   const [content, setContent] = useState("");
   const [contentEn, setContentEn] = useState("");
   const [youtubeId, setYoutubeId] = useState("");
@@ -338,7 +338,7 @@ export default function DuzenlePage() {
       hub_tags: [],
     };
 
-    if (publish) updateData.status = "yayinda";
+    if (publish) updateData.status = "published";
 
     const { error: updateError } = await supabase
       .from("contents")

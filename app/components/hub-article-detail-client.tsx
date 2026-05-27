@@ -52,7 +52,7 @@ export default function HubArticleDetailClient({
       .from("contents")
       .select("*")
       .eq("slug", slug)
-      .eq("status", "yayinda")
+      .eq("status", "published")
       .maybeSingle()
       .then(({ data, error }) => {
         if (error || !data) setNotFound(true);

@@ -33,13 +33,13 @@ type ArenaVote = {
 const CATEGORY_LABEL: Record<string, string> = {
   listeler: "Lists",
   radar: "Radar",
-  "taktik-lab": "Tactics Lab",
+  "tactics-lab": "Tactics Lab",
 };
 
 const CATEGORY_COLOR: Record<string, string> = {
   listeler: "emerald",
   radar: "sky",
-  "taktik-lab": "amber",
+  "tactics-lab": "amber",
 };
 
 export default function AnalyticsPage() {
@@ -75,8 +75,8 @@ export default function AnalyticsPage() {
     fetchAll();
   }, []);
 
-  const published = contents.filter((c) => c.status === "yayinda");
-  const pending = contents.filter((c) => c.status === "bekliyor");
+  const published = contents.filter((c) => c.status === "published");
+  const pending = contents.filter((c) => c.status === "pending");
   const totalViews = contents.reduce((sum, c) => sum + (c.view_count ?? 0), 0);
   const generatedLast7d = useMemo(() => {
     // eslint-disable-next-line react-hooks/purity -- “son 7 gün” için duvar saati anlık kullanılır (istemci admin)

@@ -43,7 +43,7 @@ export default function TaktikLabPage() {
   useEffect(() => {
     supabase.from("contents")
       .select("id,title,title_en,slug,content,content_en,created_at")
-      .eq("status", "yayinda").eq("category", "taktik-lab")
+      .eq("status", "published").eq("category", "tactics-lab")
       .order("created_at", { ascending: false })
       .then(({ data }) => { setDbContents(data ?? []); setLoading(false); });
   }, []);

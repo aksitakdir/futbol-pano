@@ -34,8 +34,7 @@ export type HubTransferScenario = {
   fromClub: string;
   toClub: string;
   likelihood: number;
-  noteTr: string;
-  noteEn: string;
+  note: string;
 };
 
 export type HubCompletedTransfer = {
@@ -62,8 +61,7 @@ export function rowToScenario(r: HubTransferScenarioRow): HubTransferScenario {
     fromClub: r.from_club,
     toClub: r.to_club,
     likelihood: r.likelihood,
-    noteTr: r.note_tr ?? "",
-    noteEn: r.note_en ?? "",
+    note: r.note_en ?? r.note_tr ?? "",
   };
 }
 

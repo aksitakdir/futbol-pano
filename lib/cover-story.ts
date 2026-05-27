@@ -8,9 +8,9 @@ export type CoverStoriesMap = Partial<Record<CoverStoryScope, string>>;
 
 export const COVER_STORY_SCOPE_LABELS: Record<CoverStoryScope, string> = {
   homepage: "Homepage hero — first article slide",
-  listeler: "Lists index — cover story",
+  lists: "Lists index — cover story",
   radar: "Radar index — cover story",
-  "taktik-lab": "Tactics Lab index — cover story",
+  "tactics-lab": "Tactics Lab index — cover story",
   "wc-2026": "World Cup 2026 hub — cover story",
   transfer: "Transfers hub — cover story",
 };
@@ -28,9 +28,9 @@ export function normalizeCoverStories(raw: unknown): CoverStoriesMap {
 
 export function categoryToCoverScope(category: string): CoverStoryScope | null {
   if (
-    category === "listeler" ||
+    category === "lists" ||
     category === "radar" ||
-    category === "taktik-lab" ||
+    category === "tactics-lab" ||
     category === "wc-2026" ||
     category === "transfer"
   ) {

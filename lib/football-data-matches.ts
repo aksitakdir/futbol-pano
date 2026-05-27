@@ -22,10 +22,10 @@ function formatDate(d: Date): string {
   return d.toISOString().slice(0, 10);
 }
 
-function teamLabel(team: FdTeam, locale: "tr" | "en"): string {
+function teamLabel(team: FdTeam): string {
   const tla = team.tla?.toUpperCase();
   const wc = WC_TEAMS.find((t) => t.code === tla);
-  if (wc) return locale === "tr" ? wc.nameTr : wc.nameEn;
+  if (wc) return wc.nameEn;
   return team.shortName || team.name || tla || "—";
 }
 
@@ -50,7 +50,7 @@ function formatMinute(m: FdMatch): string {
   if (st === "IN_PLAY" && m.minute != null) return `${m.minute}'`;
   if (st === "SCHEDULED" || st === "TIMED") {
     const d = new Date(m.utcDate);
-    return d.toLocaleTimeString("tr-TR", { hour: "2-digit", minute: "2-digit", timeZone: "Europe/Istanbul" });
+    return d.toLocaleTimeString("en-GB", { hour: "2-digit", minute: "2-digit", timeZone: "UTC" });
   }
   return "";
 }
@@ -66,14 +66,8 @@ function isRelevantMatch(m: FdMatch): boolean {
   return WC_TLA.has(homeTla) && WC_TLA.has(awayTla);
 }
 
-function competitionLabel(m: FdMatch, locale: "tr" | "en"): string {
-  const raw = m.competition?.name ?? "";
-  if (locale === "tr") {
-    if (raw.toLowerCase().includes("world cup")) return "Dünya Kupası";
-    if (raw.toLowerCase().includes("friendly")) return "Hazırlık Maçı";
-    return raw || "Uluslararası";
-  }
-  return raw || "International";
+function competitionLabel(m: FdMatch): string {
+  return m.competition?.name || "International";
 }
 
 export async function fetchFootballDataMatches(apiKey: string): Promise<LiveScoreMatch[]> {
@@ -113,15 +107,14 @@ export async function fetchFootballDataMatches(apiKey: string): Promise<LiveScor
 
   return matches.slice(0, 24).map((m) => ({
     id: String(m.id),
-    home: teamLabel(m.homeTeam, "tr"),
-    away: teamLabel(m.awayTeam, "tr"),
+    home: teamLabel(m.homeTeam),
+    away: teamLabel(m.awayTeam),
     homeCode: m.homeTeam.tla ?? "—",
     awayCode: m.awayTeam.tla ?? "—",
     score: formatScore(m),
     minute: formatMinute(m),
     status: mapStatus(m.status),
-    competitionTr: competitionLabel(m, "tr"),
-    competitionEn: competitionLabel(m, "en"),
+    competitionEn: competitionLabel(m),
   }));
 }
 

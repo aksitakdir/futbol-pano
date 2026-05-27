@@ -57,7 +57,7 @@ export default function ListelerPage() {
   useEffect(() => {
     supabase.from("contents")
       .select("id,title,title_en,slug,content,content_en,created_at")
-      .eq("status", "yayinda").eq("category", "listeler")
+      .eq("status", "published").eq("category", "lists")
       .order("created_at", { ascending: false }).range(0, PAGE_SIZE - 1)
       .then(({ data }) => {
         const items = data ?? [];
@@ -69,7 +69,7 @@ export default function ListelerPage() {
     setLoadingMore(true);
     const { data } = await supabase.from("contents")
       .select("id,title,title_en,slug,content,content_en,created_at")
-      .eq("status", "yayinda").eq("category", "listeler")
+      .eq("status", "published").eq("category", "lists")
       .order("created_at", { ascending: false })
       .range(dbLists.length, dbLists.length + PAGE_SIZE - 1);
     const items = data ?? [];

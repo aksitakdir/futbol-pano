@@ -19,8 +19,8 @@ const staticEntries = [
 
 const CAT_PATHS: Record<string, string> = {
   radar: "radar",
-  listeler: "lists",
-  "taktik-lab": "tactics-lab",
+  lists: "lists",
+  "tactics-lab": "tactics-lab",
   "wc-2026": "world-cup-2026",
   transfer: "transfers",
 };
@@ -30,7 +30,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const supabase = createClient();
 
   const [{ data: articles }, { data: arenaGames }] = await Promise.all([
-    supabase.from("contents").select("slug,category,created_at").eq("status", "yayinda").order("created_at", { ascending: false }),
+    supabase.from("contents").select("slug,category,created_at").eq("status", "published").order("created_at", { ascending: false }),
     supabase.from("arena_games").select("slug,created_at").eq("status", "published"),
   ]);
 

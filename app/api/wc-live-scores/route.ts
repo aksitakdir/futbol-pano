@@ -11,33 +11,30 @@ export type LiveScoreMatch = {
   score: string;
   minute: string;
   status: "live" | "ht" | "ft" | "ns";
-  competitionTr: string;
   competitionEn: string;
 };
 
 const FALLBACK_MATCHES: LiveScoreMatch[] = [
   {
     id: "fb-1",
-    home: "Meksika",
-    away: "ABD",
+    home: "Mexico",
+    away: "USA",
     homeCode: "MEX",
     awayCode: "USA",
     score: "1 — 1",
     minute: "67'",
     status: "live",
-    competitionTr: "Hazırlık Maçı",
     competitionEn: "Friendly",
   },
   {
     id: "fb-2",
-    home: "Brezilya",
-    away: "Arjantin",
+    home: "Brazil",
+    away: "Argentina",
     homeCode: "BRA",
     awayCode: "ARG",
     score: "2 — 0",
     minute: "HT",
     status: "ht",
-    competitionTr: "Hazırlık Maçı",
     competitionEn: "Friendly",
   },
 ];
@@ -45,7 +42,6 @@ const FALLBACK_MATCHES: LiveScoreMatch[] = [
 const CACHE_TTL_MS = 5 * 60 * 1000;
 
 export async function GET(request: Request) {
-  const locale = new URL(request.url).searchParams.get("locale") === "en" ? "en" : "tr";
   const apiKey = process.env.FOOTBALL_DATA_API_KEY;
 
   let cache = await readWcMatchesCache();
@@ -73,9 +69,7 @@ export async function GET(request: Request) {
     source = "fallback";
   }
 
-  if (locale === "en") {
-    matches = localizeMatchesForEn(matches);
-  }
+  matches = localizeMatchesForEn(matches);
 
   return NextResponse.json(
     { matches, source, updatedAt: cache.updatedAt },

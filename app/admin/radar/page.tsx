@@ -30,7 +30,7 @@ export default function AdminRadarPage() {
 
   useEffect(() => { load(); }, [load]);
 
-  const published = rows.filter((r) => r.status === "yayinda").length;
+  const published = rows.filter((r) => r.status === "published").length;
 
   return (
     <AdminLayout>
@@ -80,7 +80,7 @@ export default function AdminRadarPage() {
                     </div>
                     <div className="flex shrink-0 flex-wrap gap-2">
                       <Link href={`/admin/duzenle/${item.id}`} className="rounded-lg border border-amber-500/40 bg-amber-500/10 px-3 py-1.5 text-xs font-semibold text-amber-300 transition hover:bg-amber-500/20">Edit</Link>
-                      {item.status === "yayinda" && (
+                      {item.status === "published" && (
                         <Link href={`/radar/${item.slug}`} target="_blank" rel="noopener noreferrer" className="rounded-lg border border-slate-700/60 px-3 py-1.5 text-xs font-medium text-slate-400 transition hover:text-slate-200">Preview</Link>
                       )}
                     </div>

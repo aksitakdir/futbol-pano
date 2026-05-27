@@ -17,11 +17,9 @@ const ICONS = ["⭐", "🏆", "📋", "🇹🇷", "🌍", "⚽", "🎯", "🔥"]
 
 type Props = {
   games: ArenaGame[];
-  lang?: "tr" | "en";
 };
 
-export default function ArenaGameGrid({ games, lang = "tr" }: Props) {
-  const isEn = lang === "en";
+export default function ArenaGameGrid({ games }: Props) {
 
   return (
     <motion.div
@@ -33,9 +31,9 @@ export default function ArenaGameGrid({ games, lang = "tr" }: Props) {
       {games.map((g, i) => {
         const accent = CARD_COLOR_MAP[g.card_color] ?? "var(--sg-primary)";
         const icon = ICONS[i % ICONS.length];
-        const href = isEn ? arenaPath(g.slug) + "?lang=en" : arenaPath(g.slug);
-        const cardTitle = isEn ? g.title_en : g.title_tr;
-        const cardDesc = isEn ? g.description_en : g.description_tr;
+        const href = arenaPath(g.slug);
+        const cardTitle = g.title_en || g.title_tr;
+        const cardDesc = g.description_en || g.description_tr;
         const pills = extractArticleHighlights([cardTitle, cardDesc].filter(Boolean).join("\n\n"), {
           max: 4,
           seed: g.slug,
@@ -68,7 +66,7 @@ export default function ArenaGameGrid({ games, lang = "tr" }: Props) {
                     <ContentHighlightPills
                       tags={pills}
                       accent={accent}
-                      label={isEn ? "HIGHLIGHTS" : "METİN VURGULARI"}
+                      label="HIGHLIGHTS"
                     />
                   </div>
                 ) : null}
@@ -76,7 +74,7 @@ export default function ArenaGameGrid({ games, lang = "tr" }: Props) {
                   className="btn btn-solid mt-auto w-full justify-center"
                   style={{ background: accent, borderColor: accent }}
                 >
-                  {isEn ? "PLAY →" : "OYNA →"}
+                  PLAY →
                 </div>
               </div>
             </Link>

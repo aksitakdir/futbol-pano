@@ -69,7 +69,7 @@ export default function RadarDetailClient({ slug }: { slug: string }) {
   useEffect(() => {
     if (!slug) return;
     supabase.from("contents").select("*")
-      .eq("slug", slug).eq("status", "yayinda").single()
+      .eq("slug", slug).eq("status", "published").single()
       .then(async ({ data, error }) => {
         if (error || !data) { setNotFound(true); setLoading(false); return; }
         const row = data as ContentRow;

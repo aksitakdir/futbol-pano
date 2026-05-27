@@ -21,22 +21,22 @@ export type YouTubeSearchItem = { title: string; thumbnail: string; videoId: str
 export type NewsItem = { title: string; link: string; source: string; date: string; };
 
 const CATEGORY_LABEL: Record<string, string> = {
-  listeler: "Lists", radar: "Radar", "taktik-lab": "Tactics Lab",
+  lists: "Lists", radar: "Radar", "tactics-lab": "Tactics Lab",
   "wc-2026": "World Cup 2026", transfer: "Transfers",
 };
 
 const CAT_ACCENT: Record<string, string> = {
-  listeler: "var(--emerald)",
+  lists: "var(--emerald)",
   radar: "var(--accent)",
-  "taktik-lab": "var(--sky)",
+  "tactics-lab": "var(--sky)",
   "wc-2026": "var(--amber)",
   transfer: "var(--cyan)",
 };
 
 const CATEGORY_TAGS: Record<string, string[]> = {
   radar: ["Scout Radar", "Player Analysis", "Young Talents"],
-  listeler: ["Curated List", "Scout Note", "Player Profile"],
-  "taktik-lab": ["Tactical Analysis", "Position Archetype", "Modern Football"],
+  lists: ["Curated List", "Scout Note", "Player Profile"],
+  "tactics-lab": ["Tactical Analysis", "Position Archetype", "Modern Football"],
 };
 
 function readTime(text: string): number {
@@ -46,9 +46,9 @@ function readTime(text: string): number {
 function categoryPath(category: string): string {
   if (category === "wc-2026") return "/world-cup-2026";
   if (category === "transfer") return "/transfers";
-  if (category === "listeler") return "/lists";
+  if (category === "lists") return "/lists";
   if (category === "radar") return "/radar";
-  if (category === "taktik-lab") return "/tactics-lab";
+  if (category === "tactics-lab") return "/tactics-lab";
   return "/";
 }
 
@@ -175,7 +175,7 @@ export default function ArticleLayoutEn({
   const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(title + " " + canonicalUrl)}`;
 
   const sidebarHubPromo =
-    category === "taktik-lab"
+    category === "tactics-lab"
       ? {
           eyebrow: "✦ TACTICS LAB",
           title: "Archetypes & structures.",
@@ -193,7 +193,7 @@ export default function ArticleLayoutEn({
 
   useEffect(() => {
     supabase.from("contents").select("id,title,title_en,slug,category,created_at")
-      .eq("status", "yayinda").eq("category", category).neq("slug", slug)
+      .eq("status", "published").eq("category", category).neq("slug", slug)
       .order("created_at", { ascending: false }).limit(4)
       .then(({ data }) => { if (data) setSimilar(data); });
   }, [category, slug]);

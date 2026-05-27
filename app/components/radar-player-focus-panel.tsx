@@ -8,9 +8,7 @@ import { formatPlayerMetaLine } from "@/lib/player-meta-line";
 export type RadarPlayerFocusPanelProps = {
   player: PlayerCardData;
   locale: "tr" | "en";
-  /** Giriş paragrafı (makaleden kısaltılmış düz metin) */
   description?: string | null;
-  /** Oyuncu kartı + rating altında gösterilecek kısa scout notu */
   scoutQuote?: string | null;
   goals?: string | null;
   assists?: string | null;

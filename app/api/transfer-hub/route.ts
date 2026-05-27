@@ -56,8 +56,7 @@ export async function GET(request: Request) {
           fromClub: s.fromClub,
           toClub: s.toClub,
           likelihood: s.likelihood,
-          noteTr: s.noteTr,
-          noteEn: s.noteEn,
+          note: s.note,
         }));
 
   const completedList =

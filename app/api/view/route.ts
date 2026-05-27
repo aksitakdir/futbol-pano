@@ -25,7 +25,7 @@ export async function POST(request: Request) {
         .from("contents")
         .select("view_count")
         .eq("slug", slug)
-        .eq("status", "yayinda")
+        .eq("status", "published")
         .single();
 
       if (row) {
@@ -33,7 +33,7 @@ export async function POST(request: Request) {
           .from("contents")
           .update({ view_count: (row.view_count ?? 0) + 1 })
           .eq("slug", slug)
-          .eq("status", "yayinda");
+          .eq("status", "published");
       }
     }
 

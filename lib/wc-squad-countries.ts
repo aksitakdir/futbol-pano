@@ -39,11 +39,6 @@ export function resolveWcCountry(slug: string, locale: "tr" | "en"): { slug: str
   return { slug: row.slug, name: locale === "tr" ? row.nameTr : row.nameEn };
 }
 
-/** Unique countries for index (TR slugs) */
-export const WC_COUNTRIES_INDEX_TR = WC_COUNTRIES.filter((c) =>
-  ["turkiye", "almanya", "ingiltere", "fransa", "brezilya", "arjantin", "ispanya", "abd", "meksika", "kanada", "portekiz", "hollanda", "italya", "belcika"].includes(c.slug),
-);
-
-export const WC_COUNTRIES_INDEX_EN = WC_COUNTRIES.filter((c) =>
+export const WC_COUNTRIES_INDEX = WC_COUNTRIES.filter((c) =>
   ["turkey", "germany", "england", "france", "brazil", "argentina", "spain", "usa", "mexico", "canada", "portugal", "netherlands", "italy", "belgium"].includes(c.slug),
 );

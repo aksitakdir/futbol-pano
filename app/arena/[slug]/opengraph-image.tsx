@@ -28,13 +28,12 @@ export default async function OgImage({
   const gameTitle  = decodeURIComponent(sp.t ?? "Arena");
   const accent     = CARD_COLORS[sp.c ?? "amber"] ?? "#f9bd22";
   const championName = sp.champion ? decodeURIComponent(sp.champion) : null;
-  const isEn       = sp.lang === "en";
 
   // ── Champion result card ────────────────────────────────────────────────────
   if (championName) {
-    const label   = isEn ? "MY CHAMPION" : "ŞAMPİYONUM";
-    const cta     = isEn ? "Who's yours? Play →  scoutgamer.com/arena" : "Seninki kim? Oyna →  scoutgamer.com/arena";
-    const subline = isEn ? `in "${gameTitle}"` : `"${gameTitle}" turnuvasında`;
+    const label   = "MY CHAMPION";
+    const cta     = "Who's yours? Play →  scoutgamer.com/arena";
+    const subline = `in "${gameTitle}"`;
 
     return new ImageResponse(
       (
@@ -109,7 +108,7 @@ export default async function OgImage({
   }
 
   // ── Default game listing card ───────────────────────────────────────────────
-  const description = decodeURIComponent(sp.d ?? "Şampiyonunu seç ve paylaş.");
+  const description = decodeURIComponent(sp.d ?? "Pick your champion and share.");
   const names = sp.n ? decodeURIComponent(sp.n).split("|").filter(Boolean) : [];
   const total = Number(sp.cnt ?? 0);
   const extra = total > names.length ? total - names.length : 0;

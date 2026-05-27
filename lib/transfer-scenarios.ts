@@ -1,4 +1,3 @@
-/** Olası transfer ihtimalleri — scout sıralaması (statik; cron ile genişletilebilir) */
 export type TransferScenario = {
   id: string;
   rank: number;
@@ -6,8 +5,7 @@ export type TransferScenario = {
   fromClub: string;
   toClub: string;
   likelihood: number;
-  noteTr: string;
-  noteEn: string;
+  note: string;
 };
 
 export const TRANSFER_SCENARIOS: TransferScenario[] = [
@@ -18,8 +16,7 @@ export const TRANSFER_SCENARIOS: TransferScenario[] = [
     fromClub: "Napoli",
     toClub: "Galatasaray",
     likelihood: 72,
-    noteTr: "Kulüp görüşmeleri sürüyor; scout uyumu yüksek.",
-    noteEn: "Talks ongoing; strong tactical fit score.",
+    note: "Talks ongoing; strong tactical fit score.",
   },
   {
     id: "2",
@@ -28,8 +25,7 @@ export const TRANSFER_SCENARIOS: TransferScenario[] = [
     fromClub: "Real Madrid",
     toClub: "Arsenal",
     likelihood: 38,
-    noteTr: "Kiralık + satın alma senaryosu konuşuluyor.",
-    noteEn: "Loan-with-option structure rumoured.",
+    note: "Loan-with-option structure rumoured.",
   },
   {
     id: "3",
@@ -38,8 +34,7 @@ export const TRANSFER_SCENARIOS: TransferScenario[] = [
     fromClub: "Real Madrid",
     toClub: "PSG",
     likelihood: 34,
-    noteTr: "Sözleşme uzatma pazarlığına bağlı çıkış ihtimali.",
-    noteEn: "Exit tied to contract renewal talks.",
+    note: "Exit tied to contract renewal talks.",
   },
   {
     id: "4",
@@ -48,8 +43,7 @@ export const TRANSFER_SCENARIOS: TransferScenario[] = [
     fromClub: "Bayern",
     toClub: "Manchester United",
     likelihood: 28,
-    noteTr: "Premier geri dönüş spekülasyonu; maliyet yüksek.",
-    noteEn: "Premier return rumour; fee structure heavy.",
+    note: "Premier return rumour; fee structure heavy.",
   },
   {
     id: "5",
@@ -58,8 +52,7 @@ export const TRANSFER_SCENARIOS: TransferScenario[] = [
     fromClub: "Manchester City",
     toClub: "Real Madrid",
     likelihood: 22,
-    noteTr: "Oyun süresi tartışması tetikleyici faktör.",
-    noteEn: "Minutes debate as trigger factor.",
+    note: "Minutes debate as trigger factor.",
   },
   {
     id: "6",
@@ -68,8 +61,7 @@ export const TRANSFER_SCENARIOS: TransferScenario[] = [
     fromClub: "Real Madrid",
     toClub: "Manchester City",
     likelihood: 18,
-    noteTr: "Düşük öncelikli ama medya gündemi.",
-    noteEn: "Low priority; media noise only.",
+    note: "Low priority; media noise only.",
   },
   {
     id: "7",
@@ -78,8 +70,7 @@ export const TRANSFER_SCENARIOS: TransferScenario[] = [
     fromClub: "Real Madrid",
     toClub: "Liverpool",
     likelihood: 12,
-    noteTr: "Spekülatif; sözleşme stabil.",
-    noteEn: "Speculative; contract stable.",
+    note: "Speculative; contract stable.",
   },
   {
     id: "8",
@@ -88,8 +79,7 @@ export const TRANSFER_SCENARIOS: TransferScenario[] = [
     fromClub: "Barcelona",
     toClub: "PSG",
     likelihood: 9,
-    noteTr: "Çıkış maddesi yok; uzun vadeli.",
-    noteEn: "No release clause story; long-term.",
+    note: "No release clause story; long-term.",
   },
 ];
 
