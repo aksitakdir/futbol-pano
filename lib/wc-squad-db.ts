@@ -41,6 +41,7 @@ export async function saveWcSquadTeam(teamSlug: string, rows: WcSquadDraftRow[])
   const { error: delErr } = await supabase.from("wc_squad_players").delete().eq("team_slug", teamSlug);
   if (delErr) return { ok: false, error: delErr.message };
 
+  const seen = new Set<string>();
   const payload = rows
     .filter((r) => r.player_name.trim())
     .map((r, i) => ({
@@ -51,7 +52,13 @@ export async function saveWcSquadTeam(teamSlug: string, rows: WcSquadDraftRow[])
       club: r.club.trim() || "",
       sort_order: r.sort_order ?? i,
       overall_override: r.overall_override,
-    }));
+    }))
+    .filter((r) => {
+      const key = r.player_name.toLowerCase();
+      if (seen.has(key)) return false;
+      seen.add(key);
+      return true;
+    });
 
   if (payload.length === 0) return { ok: true };
 
