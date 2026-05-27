@@ -118,7 +118,7 @@ function flattenGroups(g: Record<PositionBucket, WcSquadDraftRow[]>): WcSquadDra
 }
 
 export default function AdminKadrolarPage() {
-  const [teamSlug, setTeamSlug] = useState("turkiye");
+  const [teamSlug, setTeamSlug] = useState("turkiye" as string);
   const [groups, setGroups] = useState<Record<PositionBucket, WcSquadDraftRow[]>>(() =>
     groupByBucket([]),
   );

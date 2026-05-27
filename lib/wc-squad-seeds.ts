@@ -1,4 +1,4 @@
-/** Statik kadro iskeleti — admin / Faz 2 DB gelene kadar */
+/** Static squad skeleton — fallback until admin enters via paste */
 export type WcSquadSeedPlayer = {
   name: string;
   position: string;
@@ -25,7 +25,7 @@ export const WC_SQUAD_SEEDS: Record<string, WcSquadSeedPlayer[]> = {
     { name: "Cengiz Ünder", position: "RW", club: "Fenerbahçe" },
     { name: "Burak Yılmaz", position: "ST", club: "Beşiktaş" },
   ],
-  almanya: [
+  germany: [
     { name: "Manuel Neuer", position: "GK", club: "Bayern" },
     { name: "Marc-André ter Stegen", position: "GK", club: "Barcelona" },
     { name: "Antonio Rüdiger", position: "CB", club: "Real Madrid" },
@@ -37,7 +37,7 @@ export const WC_SQUAD_SEEDS: Record<string, WcSquadSeedPlayer[]> = {
     { name: "Niclas Füllkrug", position: "ST", club: "Borussia Dortmund" },
     { name: "Harry Kane", position: "ST", club: "Bayern" },
   ],
-  brezilya: [
+  brazil: [
     { name: "Alisson", position: "GK", club: "Liverpool" },
     { name: "Marquinhos", position: "CB", club: "PSG" },
     { name: "Gabriel", position: "CB", club: "Arsenal" },
@@ -48,7 +48,7 @@ export const WC_SQUAD_SEEDS: Record<string, WcSquadSeedPlayer[]> = {
     { name: "Endrick", position: "ST", club: "Real Madrid" },
     { name: "Richarlison", position: "ST", club: "Tottenham" },
   ],
-  arjantin: [
+  argentina: [
     { name: "Emiliano Martínez", position: "GK", club: "Aston Villa" },
     { name: "Cristian Romero", position: "CB", club: "Tottenham" },
     { name: "Lisandro Martínez", position: "CB", club: "Manchester United" },
@@ -59,7 +59,7 @@ export const WC_SQUAD_SEEDS: Record<string, WcSquadSeedPlayer[]> = {
     { name: "Lautaro Martínez", position: "ST", club: "Inter" },
     { name: "Julián Álvarez", position: "ST", club: "Atlético Madrid" },
   ],
-  abd: [
+  usa: [
     { name: "Matt Turner", position: "GK", club: "Nottingham Forest" },
     { name: "Sergiño Dest", position: "RB", club: "PSV" },
     { name: "Tyler Adams", position: "CDM", club: "Bournemouth" },
@@ -68,7 +68,7 @@ export const WC_SQUAD_SEEDS: Record<string, WcSquadSeedPlayer[]> = {
     { name: "Gio Reyna", position: "CAM", club: "Borussia Dortmund" },
     { name: "Folarin Balogun", position: "ST", club: "Monaco" },
   ],
-  fransa: [
+  france: [
     { name: "Mike Maignan", position: "GK", club: "Milan" },
     { name: "William Saliba", position: "CB", club: "Arsenal" },
     { name: "Dayot Upamecano", position: "CB", club: "Bayern" },
@@ -77,7 +77,7 @@ export const WC_SQUAD_SEEDS: Record<string, WcSquadSeedPlayer[]> = {
     { name: "Ousmane Dembélé", position: "RW", club: "PSG" },
     { name: "Olivier Giroud", position: "ST", club: "AC Milan" },
   ],
-  ingiltere: [
+  england: [
     { name: "Jordan Pickford", position: "GK", club: "Everton" },
     { name: "John Stones", position: "CB", club: "Manchester City" },
     { name: "Declan Rice", position: "CDM", club: "Arsenal" },

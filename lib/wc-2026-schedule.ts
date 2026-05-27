@@ -289,7 +289,7 @@ const CODE_TO_SLUG: Record<string, string> = {
   MEX: "mexico", RSA: "south-africa", KOR: "south-korea", CZE: "czechia",
   CAN: "canada", BIH: "bosnia-herzegovina", QAT: "qatar", SUI: "switzerland",
   BRA: "brazil", MAR: "morocco", HAI: "haiti", SCO: "scotland",
-  USA: "usa", PAR: "paraguay", AUS: "australia", TUR: "turkey",
+  USA: "usa", PAR: "paraguay", AUS: "australia", TUR: "turkiye",
   GER: "germany", CUW: "curacao", CIV: "ivory-coast", ECU: "ecuador",
   NED: "netherlands", JPN: "japan", SWE: "sweden", TUN: "tunisia",
   BEL: "belgium", EGY: "egypt", IRN: "iran", NZL: "new-zealand",

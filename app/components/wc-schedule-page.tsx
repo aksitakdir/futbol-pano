@@ -276,18 +276,14 @@ export default function WcSchedulePage({ teamFilter, faqItems }: { teamFilter?: 
           <div
             style={{
               display: "flex",
+              flexWrap: "wrap",
               gap: 6,
-              overflowX: "auto",
-              paddingBottom: 6,
-              WebkitOverflowScrolling: "touch",
-              scrollbarWidth: "thin",
             }}
           >
             <button
               onClick={() => setSelectedTeam("")}
               className="mono"
               style={{
-                flexShrink: 0,
                 padding: "6px 14px",
                 borderRadius: 999,
                 fontSize: 11,
@@ -296,7 +292,6 @@ export default function WcSchedulePage({ teamFilter, faqItems }: { teamFilter?: 
                 border: `1px solid ${!selectedTeam ? "var(--wc-gold)" : "var(--sg-border)"}`,
                 background: !selectedTeam ? "color-mix(in oklch, var(--wc-gold) 15%, transparent)" : "transparent",
                 color: !selectedTeam ? "var(--wc-gold)" : "var(--sg-text-muted)",
-                whiteSpace: "nowrap",
               }}
             >
               All Matches
@@ -307,7 +302,6 @@ export default function WcSchedulePage({ teamFilter, faqItems }: { teamFilter?: 
                 onClick={() => setSelectedTeam(t.code === selectedTeam ? "" : t.code)}
                 className="mono"
                 style={{
-                  flexShrink: 0,
                   padding: "4px 10px",
                   borderRadius: 999,
                   fontSize: 10,
@@ -319,7 +313,6 @@ export default function WcSchedulePage({ teamFilter, faqItems }: { teamFilter?: 
                   display: "flex",
                   alignItems: "center",
                   gap: 6,
-                  whiteSpace: "nowrap",
                 }}
               >
                 <TeamFlag code={t.code} size={16} />
