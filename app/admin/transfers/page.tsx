@@ -75,11 +75,8 @@ export default function AdminTransfersPage() {
         source: "manual",
         updated_at: new Date().toISOString(),
       };
-      if (row.isNew || row.id.startsWith("new-")) {
-        await supabase.from("hub_completed_transfers").insert(payload);
-      } else {
-        await supabase.from("hub_completed_transfers").update(payload).eq("id", row.id);
-      }
+      const isNew = row.isNew || row.id.startsWith("new-");
+      await saveCompletedTransfer(payload, isNew ? undefined : row.id);
     }
     setMessage("Confirmed deals saved.");
     await fetchCompleted();
@@ -109,7 +106,7 @@ export default function AdminTransfersPage() {
 
   async function deleteCompleted(id: string) {
     if (!confirm("Delete this deal?")) return;
-    await supabase.from("hub_completed_transfers").delete().eq("id", id);
+    await deleteCompletedTransfer(id);
     fetchCompleted();
   }
 

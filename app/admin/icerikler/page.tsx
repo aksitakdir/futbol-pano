@@ -245,9 +245,9 @@ export default function IceriklerPage() {
 
   async function updateStatus(id: string, newStatus: string) {
     setActionLoading((prev) => new Set(prev).add(id));
-    const { error } = await supabase.from("contents").update({ status: newStatus }).eq("id", id);
-    if (error) {
-      console.error("Supabase update error:", error);
+    const result = await updateContentStatus([id], newStatus);
+    if (!result.ok) {
+      console.error("Status update error:", result.error);
     } else {
       setAllContents((prev) => prev.map((c) => (c.id === id ? { ...c, status: newStatus } : c)));
       setSelected((prev) => { const next = new Set(prev); next.delete(id); return next; });
@@ -258,8 +258,8 @@ export default function IceriklerPage() {
   async function deleteItem(id: string) {
     if (!confirm("This article will be permanently deleted. Are you sure?")) return;
     setActionLoading((prev) => new Set(prev).add(id));
-    const { error } = await supabase.from("contents").delete().eq("id", id);
-    if (!error) {
+    const result = await deleteContents([id]);
+    if (result.ok) {
       setAllContents((prev) => prev.filter((c) => c.id !== id));
       setSelected((prev) => { const next = new Set(prev); next.delete(id); return next; });
     }
@@ -270,9 +270,9 @@ export default function IceriklerPage() {
     const ids = Array.from(selected);
     if (ids.length === 0) return;
     setActionLoading(new Set(ids));
-    const { error } = await supabase.from("contents").update({ status: newStatus }).in("id", ids);
-    if (error) {
-      console.error("Supabase bulk update error:", error);
+    const result = await updateContentStatus(ids, newStatus);
+    if (!result.ok) {
+      console.error("Bulk status update error:", result.error);
     } else {
       setAllContents((prev) => prev.map((c) => (ids.includes(c.id) ? { ...c, status: newStatus } : c)));
       setSelected(new Set());
@@ -285,9 +285,9 @@ export default function IceriklerPage() {
     if (ids.length === 0) return;
     if (!confirm(`${ids.length} articles will be permanently deleted. Are you sure?`)) return;
     setActionLoading(new Set(ids));
-    const { error } = await supabase.from("contents").delete().in("id", ids);
-    if (error) {
-      console.error("Supabase bulk delete error:", error);
+    const result = await deleteContents(ids);
+    if (!result.ok) {
+      console.error("Bulk delete error:", result.error);
     } else {
       setAllContents((prev) => prev.filter((c) => !ids.includes(c.id)));
       setSelected(new Set());

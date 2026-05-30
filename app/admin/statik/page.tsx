@@ -46,8 +46,8 @@ export default function StaticContentPage() {
   async function seedArchetypes() {
     setSaving(true);
     const inserts = SEED_ARCHETYPES.map((a) => ({ type: a.type, name: a.name, description: a.description, slug: a.slug, position_tag: a.position_tag, sort_order: a.sort_order }));
-    const { error } = await supabase.from("static_contents").insert(inserts);
-    if (error) { console.error("Seed error:", error); setMessage("Seed failed: " + error.message); }
+    const result = await seedStaticContents(inserts);
+    if (!result.ok) { console.error("Seed error:", result.error); setMessage("Seed failed: " + result.error); }
     else { setMessage("Default archetypes added."); fetchItems(); }
     setSaving(false);
     setTimeout(() => setMessage(""), 3000);
@@ -71,13 +71,9 @@ export default function StaticContentPage() {
     let hasError = false;
     for (const item of currentItems) {
       const payload = { type: item.type, name: item.name, description: item.description, slug: item.slug, position_tag: item.position_tag, sort_order: item.sort_order };
-      if (item.isNew || item.id.startsWith("new-")) {
-        const { error } = await supabase.from("static_contents").insert(payload);
-        if (error) { console.error(error); hasError = true; }
-      } else {
-        const { error } = await supabase.from("static_contents").update(payload).eq("id", item.id);
-        if (error) { console.error(error); hasError = true; }
-      }
+      const isNew = item.isNew || item.id.startsWith("new-");
+      const result = await saveStaticContent(payload, isNew ? undefined : item.id);
+      if (!result.ok) { console.error(result.error); hasError = true; }
     }
     setMessage(hasError ? "Some records could not be updated." : "Changes saved.");
     if (!hasError) fetchItems();
@@ -88,8 +84,8 @@ export default function StaticContentPage() {
   async function deleteItem(id: string) {
     if (id.startsWith("new-")) { removeItem(id); return; }
     if (!confirm("Are you sure you want to delete this item?")) return;
-    const { error } = await supabase.from("static_contents").delete().eq("id", id);
-    if (error) { console.error(error); setMessage("Delete failed."); }
+    const result = await deleteStaticContent(id);
+    if (!result.ok) { console.error(result.error); setMessage("Delete failed."); }
     else { setItems((prev) => prev.filter((i) => i.id !== id)); setMessage("Item deleted."); }
     setTimeout(() => setMessage(""), 3000);
   }

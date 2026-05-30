@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import AdminLayout from "../components/admin-layout";
 import { supabase } from "@/lib/supabase";
+import { saveSiteSettings } from "./actions";
 import {
   DEFAULT_HERO_SLIDER,
   HERO_SLIDER_TOGGLES,
@@ -50,15 +51,14 @@ export default function SettingsPage() {
     setSaving(true);
     setMessage("");
     try {
-      const results = await Promise.all([
-        supabase.from("site_settings").upsert({ key: "featured_player", value: player, updated_at: new Date().toISOString() }),
-        supabase.from("site_settings").upsert({ key: "hero_slider", value: slider, updated_at: new Date().toISOString() }),
-        supabase.from("site_settings").upsert({ key: "recent_count", value: { count: recentCount }, updated_at: new Date().toISOString() }),
-        supabase.from("site_settings").upsert({ key: "hero_custom_slides", value: customSlides, updated_at: new Date().toISOString() }),
-      ]);
-      const hasError = results.some((r) => r.error);
-      setMessage(hasError ? "Some settings could not be saved." : "Settings saved successfully.");
-      results.forEach((r) => r.error && console.error(r.error));
+      const result = await saveSiteSettings({
+        featured_player: player,
+        hero_slider: slider,
+        recent_count: recentCount,
+        hero_custom_slides: customSlides,
+      });
+      setMessage(result.ok ? "Settings saved successfully." : "Some settings could not be saved.");
+      if (!result.ok) console.error(result.error);
     } catch {
       setMessage("Unexpected error occurred.");
     }
