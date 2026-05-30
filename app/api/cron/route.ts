@@ -271,7 +271,9 @@ export async function GET(request: NextRequest) {
   const origin      = new URL(request.url).origin;
   const apiKey      = process.env.ANTHROPIC_API_KEY ?? "";
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL ?? "";
-  const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ?? "";
+  // Server-only cron: prefer service-role so writes survive RLS lockdown.
+  const supabaseKey =
+    process.env.SUPABASE_SERVICE_ROLE_KEY ?? process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ?? "";
 
   const originHub = origin;
   const [contentResult, playerResult, formResult, hubResult] = await Promise.allSettled([

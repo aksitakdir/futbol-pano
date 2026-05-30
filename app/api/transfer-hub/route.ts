@@ -9,7 +9,11 @@ import { seedCompletedTransfersIfEmpty, seedTransferScenariosIfEmpty, syncComple
 const CACHE_TTL_MS = 60 * 60 * 1000;
 
 function supabase() {
-  return createClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!);
+  // Server-only route: prefer service-role so writes survive RLS lockdown.
+  return createClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.SUPABASE_SERVICE_ROLE_KEY ?? process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+  );
 }
 
 export async function GET(request: Request) {

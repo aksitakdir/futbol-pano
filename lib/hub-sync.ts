@@ -8,7 +8,11 @@ import type { LiveScoreMatch } from "@/app/api/wc-live-scores/route";
 
 function supabaseAdmin() {
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL!;
-  const key = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
+  // Server-only sync/seed code: prefer the service-role key so these writes
+  // keep working once RLS is locked down. Falls back to anon for local dev.
+  const key =
+    process.env.SUPABASE_SERVICE_ROLE_KEY ??
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
   return createClient(url, key);
 }
 

@@ -68,7 +68,9 @@ function htmlToSectionsJson(html: string): Section[] {
 
 export async function POST(request: Request) {
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-  const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+  // Server-only route: prefer service-role so writes survive RLS lockdown.
+  const supabaseKey =
+    process.env.SUPABASE_SERVICE_ROLE_KEY ?? process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
   if (!supabaseUrl || !supabaseKey) {
     return NextResponse.json({ error: "Supabase config missing" }, { status: 500 });
   }
