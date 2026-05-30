@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import AdminLayout from "../components/admin-layout";
 import { supabase } from "@/lib/supabase";
+import { seedStaticContents, saveStaticContent, deleteStaticContent } from "./actions";
 
 type StaticItem = {
   id: string;

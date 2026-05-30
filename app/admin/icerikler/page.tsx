@@ -3,6 +3,7 @@
 import { useEffect, useState, useCallback, useMemo } from "react";
 import Link from "next/link";
 import { supabase } from "@/lib/supabase";
+import { updateContentStatus, deleteContents } from "./actions";
 import AdminLayout from "../components/admin-layout";
 import { stripHtml } from "@/lib/utils";
 

@@ -17,6 +17,7 @@ import {
   type CoverStoryScope,
 } from "@/lib/cover-story";
 import { saveCoverStoryPinsViaApi } from "@/lib/cover-story-admin";
+import { createContent } from "../content-actions";
 
 function isContentEmpty(html: string): boolean {
   if (!html?.trim()) return true;
@@ -176,7 +177,7 @@ function NewArticleForm() {
     const usingBlocks = contentMode === "blocks";
     const bodyHtml = usingBlocks ? PLACEHOLDER_HTML : content.trim();
     const saveCategory = category;
-    const { data: inserted, error: insertError } = await supabase.from("contents").insert({
+    const createResult = await createContent({
       title: title.trim(),
       title_en: title.trim(),
       slug: slug.trim(),
@@ -202,15 +203,15 @@ function NewArticleForm() {
       sections_json: usingBlocks && sectionsBlocks.length > 0 ? sectionsBlocks : null,
       hub_tags: [],
       status: "pending",
-    }).select("id").single();
-    if (insertError || !inserted?.id) {
-      setError("Save failed: " + (insertError?.message ?? "No id returned"));
+    });
+    if (!createResult.ok || !createResult.id) {
+      setError("Save failed: " + (createResult.error ?? "No id returned"));
       setSaving(false);
       return;
     }
 
     if (coverStoryScopes.length > 0) {
-      const pinResult = await saveCoverStoryPinsViaApi(inserted.id, saveCategory, coverStoryScopes);
+      const pinResult = await saveCoverStoryPinsViaApi(createResult.id, saveCategory, coverStoryScopes);
       if (!pinResult.ok) {
         setError(`Article saved but cover story failed: ${pinResult.error}`);
         setSaving(false);

@@ -5,7 +5,8 @@ import AdminLayout from "../components/admin-layout";
 import { WC_TEAMS } from "@/lib/wc-2026-teams";
 import { POSITION_BUCKET_ORDER, positionBucket, positionBucketLabel, type PositionBucket } from "@/lib/position-buckets";
 import { WC_SQUAD_SEEDS } from "@/lib/wc-squad-seeds";
-import { fetchWcSquadFromDb, saveWcSquadTeam, type WcSquadDraftRow } from "@/lib/wc-squad-db";
+import { fetchWcSquadFromDb, type WcSquadDraftRow } from "@/lib/wc-squad-db";
+import { saveWcSquad } from "./actions";
 
 const POSITION_PRESETS = [
   "GK", "CB", "LB", "RB", "LWB", "RWB", "CDM", "CM", "CAM", "LM", "RM", "LW", "RW", "ST", "CF",
@@ -184,7 +185,7 @@ export default function AdminKadrolarPage() {
   async function handleSave() {
     setSaving(true);
     setMessage(null);
-    const result = await saveWcSquadTeam(teamSlug, flattenGroups(groups));
+    const result = await saveWcSquad(teamSlug, flattenGroups(groups));
     setSaving(false);
     setMessage(result.ok ? "Squad saved." : `Error: ${result.error}`);
     if (result.ok) loadTeam(teamSlug);

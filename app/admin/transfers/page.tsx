@@ -4,6 +4,7 @@ import { useCallback, useEffect, useState } from "react";
 import AdminLayout from "../components/admin-layout";
 import { supabase } from "@/lib/supabase";
 import { adminSyncTransferWire } from "./transfer-wire-actions";
+import { saveCompletedTransfer, deleteCompletedTransfer } from "./transfer-crud-actions";
 
 type CompletedRow = {
   id: string;
