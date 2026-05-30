@@ -3,6 +3,7 @@
 import { useEffect, useState, useCallback, useRef } from "react";
 import Link from "next/link";
 import { supabase } from "@/lib/supabase";
+import { saveArenaGame, deleteArenaGame } from "./actions";
 import AdminLayout from "../components/admin-layout";
 import {
   CARD_COLOR_OPTIONS,
@@ -213,16 +214,11 @@ export default function AdminArenaPage() {
       team_slug: form.team_slug.trim() || null,
     };
 
-    let error;
-    if (editingId) {
-      ({ error } = await supabase.from("arena_games").update(payload).eq("id", editingId));
-    } else {
-      ({ error } = await supabase.from("arena_games").insert(payload));
-    }
+    const result = await saveArenaGame(payload, editingId ?? undefined);
 
     setSaving(false);
-    if (error) {
-      showToast(`Error: ${error.message}`, false);
+    if (!result.ok) {
+      showToast(`Error: ${result.error}`, false);
     } else {
       showToast(editingId ? "Updated!" : "Added!");
       closeForm();
@@ -233,10 +229,10 @@ export default function AdminArenaPage() {
   async function handleDelete(id: string) {
     if (!confirm("Are you sure you want to delete this arena game?")) return;
     setDeleting(id);
-    const { error } = await supabase.from("arena_games").delete().eq("id", id);
+    const result = await deleteArenaGame(id);
     setDeleting(null);
-    if (error) {
-      showToast(`Could not delete: ${error.message}`, false);
+    if (!result.ok) {
+      showToast(`Could not delete: ${result.error}`, false);
     } else {
       showToast("Deleted.");
       loadGames();
