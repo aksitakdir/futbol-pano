@@ -126,8 +126,13 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     setCheckedStorage(true);
   }, []);
 
-  function handleLogout() {
-    document.cookie = "admin_session=; Max-Age=0; path=/";
+  async function handleLogout() {
+    // sg_admin is httpOnly — only the server can clear it.
+    try {
+      await fetch("/api/admin/logout", { method: "POST" });
+    } catch {
+      // ignore — redirect anyway
+    }
     window.location.href = "/";
   }
 
