@@ -3,6 +3,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import { supabase } from "@/lib/supabase";
 import type { SectionBlock } from "@/lib/section-blocks";
+import { parseMarkupToBlocks } from "@/lib/parse-blocks";
 
 type FcPlayerResult = {
   name: string;
@@ -574,10 +575,29 @@ function HtmlTextArea({ value, onChange, placeholder }: { value: string; onChang
 
 export default function SectionsEditor({ value, onChange }: Props) {
   const [addOpen, setAddOpen] = useState(false);
+  const [importOpen, setImportOpen] = useState(false);
+  const [importText, setImportText] = useState("");
+  const [importMsg, setImportMsg] = useState("");
 
   function addBlock(type: SectionBlock["type"]) {
     onChange([...value, defaultBlock(type)]);
     setAddOpen(false);
+  }
+
+  /**
+   * Parse the pasted markup into blocks and append them. Player blocks carry
+   * the typed name; the per-block player search resolves it (semi-automatic).
+   */
+  function handleImport() {
+    const parsed = parseMarkupToBlocks(importText);
+    if (parsed.length === 0) {
+      setImportMsg("No recognizable content found.");
+      return;
+    }
+    onChange([...value, ...parsed]);
+    setImportText("");
+    setImportOpen(false);
+    setImportMsg("");
   }
 
   function updateBlock(index: number, block: SectionBlock) {
@@ -607,7 +627,50 @@ export default function SectionsEditor({ value, onChange }: Props) {
             <span className={`text-[10px] font-semibold ${COLOR_MAP[bt.color]?.split(" ")[2]}`}>{bt.label}</span>
           </div>
         ))}
+        <button
+          type="button"
+          onClick={() => setImportOpen((v) => !v)}
+          className="ml-auto inline-flex items-center gap-1.5 rounded-full border border-emerald-600/50 bg-emerald-500/10 px-3 py-0.5 text-[10px] font-semibold text-emerald-300 transition hover:bg-emerald-500/20"
+        >
+          ⇊ Import from text
+        </button>
       </div>
+
+      {importOpen && (
+        <div className="space-y-2 rounded-xl border border-emerald-600/30 bg-emerald-500/5 p-3">
+          <p className="text-[11px] leading-relaxed text-slate-400">
+            Paste marked-up text; a blank line separates blocks.{" "}
+            <code className="text-slate-300"># H2</code> ·{" "}
+            <code className="text-slate-300">## H3</code> ·{" "}
+            <code className="text-slate-300">&gt; quote</code> ·{" "}
+            <code className="text-slate-300">- list item</code> ·{" "}
+            <code className="text-slate-300">![alt](url)</code> ·{" "}
+            <code className="text-slate-300">@video: url</code> ·{" "}
+            <code className="text-slate-300">@player: Name</code> ·{" "}
+            <code className="text-slate-300">@lead:</code> ·{" "}
+            <code className="text-slate-300">@callout:</code> · plain text = paragraph.
+          </p>
+          <textarea
+            value={importText}
+            onChange={(e) => setImportText(e.target.value)}
+            rows={10}
+            placeholder={"# Section title\n\nA paragraph of text.\n\n> A pull quote\n\n- first point\n- second point\n\n![alt](https://example.com/img.jpg)\n\n@player: L. Yamal\n\n@video: https://youtu.be/xxxxxxxxxxx"}
+            className="w-full rounded-lg border border-slate-700/80 bg-slate-900/70 px-3 py-2 font-mono text-xs text-slate-100 placeholder-slate-600 outline-none resize-y focus:border-emerald-500/60"
+          />
+          <div className="flex items-center gap-3">
+            <button
+              type="button"
+              onClick={handleImport}
+              disabled={!importText.trim()}
+              className="rounded-lg bg-emerald-500 px-4 py-1.5 text-xs font-semibold text-slate-950 transition hover:bg-emerald-400 disabled:cursor-not-allowed disabled:opacity-50"
+            >
+              Parse &amp; append
+            </button>
+            {importMsg && <span className="text-[11px] text-amber-300">{importMsg}</span>}
+            <span className="text-[11px] text-slate-500">Blocks are appended below; edit them as usual.</span>
+          </div>
+        </div>
+      )}
 
       {value.length === 0 && (
         <div className="rounded-xl border border-dashed border-slate-700 py-10 text-center">
