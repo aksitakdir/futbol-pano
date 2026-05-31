@@ -130,7 +130,7 @@ export default function DuzenlePage() {
   const [heroVariant, setHeroVariant] = useState("text-only");
   const [accentColor, setAccentColor] = useState("emerald");
 
-  const backHref = category === "radar" ? "/admin/radar" : "/admin/icerikler";
+  const backHref = category === "radar" ? "/admin/radar" : "/admin/articles";
 
   // Sections JSON (block editor)
   const [sectionsBlocks, setSectionsBlocks] = useState<SectionBlock[]>([]);

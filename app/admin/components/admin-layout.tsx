@@ -19,7 +19,7 @@ const NAV_ITEMS = [
     ),
   },
   {
-    href: "/admin/icerikler",
+    href: "/admin/articles",
     label: "Articles",
     icon: (
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -51,7 +51,7 @@ const NAV_ITEMS = [
     ),
   },
   {
-    href: "/admin/ayarlar",
+    href: "/admin/settings",
     label: "Settings",
     icon: (
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -61,7 +61,7 @@ const NAV_ITEMS = [
     ),
   },
   {
-    href: "/admin/statik",
+    href: "/admin/static",
     label: "Static Content",
     icon: (
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -82,7 +82,7 @@ const NAV_ITEMS = [
     ),
   },
   {
-    href: "/admin/kadrolar",
+    href: "/admin/squads",
     label: "WC Squads",
     icon: (
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">

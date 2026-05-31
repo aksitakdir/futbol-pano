@@ -42,7 +42,7 @@ export default function AdminRadarPage() {
             <p className="mt-2 text-[11px] text-slate-500">Published: <span className="text-emerald-400">{published}</span> · Total: {rows.length}</p>
           </div>
           <div className="flex flex-wrap gap-2">
-            <Link href="/admin/yeni?category=radar" className="rounded-lg bg-emerald-500 px-4 py-2 text-xs font-semibold text-slate-950 transition hover:bg-emerald-400">
+            <Link href="/admin/new?category=radar" className="rounded-lg bg-emerald-500 px-4 py-2 text-xs font-semibold text-slate-950 transition hover:bg-emerald-400">
               + New Radar Article
             </Link>
             <Link href="/radar" target="_blank" rel="noopener noreferrer" className="rounded-lg border border-slate-700/60 px-3 py-2 text-xs font-medium text-slate-400 transition hover:border-slate-600 hover:text-slate-200">
@@ -56,7 +56,7 @@ export default function AdminRadarPage() {
         ) : rows.length === 0 ? (
           <div className="rounded-xl border border-dashed border-slate-700/60 bg-slate-900/30 px-6 py-12 text-center">
             <p className="text-sm text-slate-400">No radar articles yet.</p>
-            <Link href="/admin/yeni?category=radar" className="mt-3 inline-block text-xs font-semibold text-emerald-400 hover:underline">Add first article</Link>
+            <Link href="/admin/new?category=radar" className="mt-3 inline-block text-xs font-semibold text-emerald-400 hover:underline">Add first article</Link>
           </div>
         ) : (
           <div className="space-y-3">
@@ -79,7 +79,7 @@ export default function AdminRadarPage() {
                       <code className="mt-2 block truncate text-[10px] text-slate-600">/{item.slug}</code>
                     </div>
                     <div className="flex shrink-0 flex-wrap gap-2">
-                      <Link href={`/admin/duzenle/${item.id}`} className="rounded-lg border border-amber-500/40 bg-amber-500/10 px-3 py-1.5 text-xs font-semibold text-amber-300 transition hover:bg-amber-500/20">Edit</Link>
+                      <Link href={`/admin/edit/${item.id}`} className="rounded-lg border border-amber-500/40 bg-amber-500/10 px-3 py-1.5 text-xs font-semibold text-amber-300 transition hover:bg-amber-500/20">Edit</Link>
                       {item.status === "published" && (
                         <Link href={`/radar/${item.slug}`} target="_blank" rel="noopener noreferrer" className="rounded-lg border border-slate-700/60 px-3 py-1.5 text-xs font-medium text-slate-400 transition hover:text-slate-200">Preview</Link>
                       )}

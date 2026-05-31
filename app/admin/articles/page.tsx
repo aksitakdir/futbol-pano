@@ -343,7 +343,7 @@ export default function IceriklerPage() {
               Latest Trends
             </button>
             <Link
-              href="/admin/yeni"
+              href="/admin/new"
               className="rounded-lg bg-emerald-500 px-4 py-2 text-xs font-semibold text-slate-950 transition hover:bg-emerald-400"
             >
               + New Article
@@ -694,7 +694,7 @@ export default function IceriklerPage() {
                     <div className="flex flex-col items-end justify-center gap-1.5 border-l border-slate-700/50 bg-slate-900/70 py-2 pl-3 pr-2">
                       <div className="flex flex-col items-end gap-1.5">
                         <Link
-                          href={`/admin/duzenle/${item.id}`}
+                          href={`/admin/edit/${item.id}`}
                           className={`${ACTION_BTN} border-emerald-500/40 bg-emerald-500/10 text-emerald-300 hover:border-emerald-500/60 hover:bg-emerald-500/18`}
                         >
                           Edit
@@ -773,7 +773,7 @@ export default function IceriklerPage() {
                     </div>
                     <div className="flex flex-wrap items-center gap-1.5 pl-6">
                       <Link
-                        href={`/admin/duzenle/${item.id}`}
+                        href={`/admin/edit/${item.id}`}
                         className={`${ACTION_BTN} border-emerald-500/40 bg-emerald-500/10 text-emerald-300 hover:border-emerald-500/60 hover:bg-emerald-500/18`}
                       >
                         Edit

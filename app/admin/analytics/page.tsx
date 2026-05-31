@@ -226,7 +226,7 @@ export default function AnalyticsPage() {
                         <td className="px-5 py-3 font-mono text-xs text-slate-500">{i + 1}</td>
                         <td className="px-5 py-3">
                           <Link
-                            href={`/admin/duzenle/${c.id}`}
+                            href={`/admin/edit/${c.id}`}
                             className="line-clamp-1 font-medium text-slate-100 transition hover:text-emerald-300"
                           >
                             {c.title}
@@ -343,7 +343,7 @@ export default function AnalyticsPage() {
                           {CATEGORY_LABEL[c.category] ?? c.category} · {c.hero_variant ?? "text-only"}
                         </p>
                       </div>
-                      <Link href={`/admin/duzenle/${c.id}`} className="text-[11px] font-medium text-emerald-400 transition hover:text-emerald-300">
+                      <Link href={`/admin/edit/${c.id}`} className="text-[11px] font-medium text-emerald-400 transition hover:text-emerald-300">
                         Edit →
                       </Link>
                     </div>

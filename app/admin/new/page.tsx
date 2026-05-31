@@ -218,10 +218,10 @@ function NewArticleForm() {
         return;
       }
     }
-    router.push(category === "radar" ? "/admin/radar" : "/admin/icerikler");
+    router.push(category === "radar" ? "/admin/radar" : "/admin/articles");
   }
 
-  const backHref = category === "radar" ? "/admin/radar" : "/admin/icerikler";
+  const backHref = category === "radar" ? "/admin/radar" : "/admin/articles";
   const statsFilled = [statPace, statShooting, statPassing, statDribbling, statDefending, statPhysical].filter(v => v !== "").length;
 
   return (
