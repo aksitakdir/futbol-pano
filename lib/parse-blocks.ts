@@ -8,18 +8,24 @@ import type { SectionBlock } from "@/lib/section-blocks";
  * carry only a name; the editor's existing player search resolves them
  * (semi-automatic), so no DB lookup happens here.
  *
- * Syntax (a blank line separates blocks):
- *   # Heading            -> header (H2, shows in TOC)
- *   ## Heading           -> header (H3)
- *   plain text           -> plain  (consecutive lines = one paragraph)
- *   > Quote              -> pullquote
- *   - item / * item      -> list (ul; consecutive items grouped)
- *   1. item              -> list (ol; consecutive items grouped)
- *   ![alt](url)          -> image
- *   @video: <url or id>  -> youtube
- *   @player: Name, Name2 -> one player block per name
- *   @lead: text          -> intro (lead paragraph)
- *   @callout: text       -> callout (info box)
+ * Block syntax (a blank line separates blocks):
+ *   # Heading              -> header (H2, shows in TOC)
+ *   ## Heading             -> header (H3)
+ *   plain text             -> plain  (consecutive lines = one paragraph)
+ *   > Quote                -> pullquote
+ *   - item / * item        -> list (ul; consecutive items grouped)
+ *   1. item                -> list (ol; consecutive items grouped)
+ *   ![alt](url)            -> image
+ *   @video: <url or id>    -> youtube
+ *   @player: Name, Name2   -> one player block per name
+ *   @lead: text…           -> intro   (lead paragraph; multi-line until blank)
+ *   @callout: text…        -> callout (info box; multi-line until blank)
+ *   @section: Heading      -> section (heading + body; body = lines until blank)
+ *     body line…
+ *
+ * Inline formatting (only in HTML-rendered blocks — plain / intro / callout /
+ * section body; not in headings, quotes, or list items):
+ *   **bold**   *italic*   [text](url)
  */
 
 const IMAGE_RE = /^!\[([^\]]*)\]\(([^)]+)\)\s*$/;
@@ -34,6 +40,25 @@ function escapeHtml(s: string): string {
   return s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
 }
 
+/** Convert **bold**, *italic*, [text](url) to HTML (escaping the rest). */
+export function inlineToHtml(text: string): string {
+  let s = escapeHtml(text);
+  // links first, so * inside URLs isn't treated as emphasis
+  s = s.replace(
+    /\[([^\]]+)\]\(([^)]+)\)/g,
+    (_m, label, url) => `<a href="${url}" target="_blank" rel="noopener noreferrer">${label}</a>`,
+  );
+  s = s.replace(/\*\*([^*]+)\*\*/g, "<strong>$1</strong>");
+  s = s.replace(/\*([^*]+)\*/g, "<em>$1</em>");
+  return s;
+}
+
+/** Join collected body lines into one inline-formatted <p> (empty -> ""). */
+function bodyToHtml(lines: string[]): string {
+  const text = lines.join(" ").replace(/\s+/g, " ").trim();
+  return text ? `<p>${inlineToHtml(text)}</p>` : "";
+}
+
 export function parseMarkupToBlocks(input: string): SectionBlock[] {
   const lines = (input ?? "").replace(/\r\n?/g, "\n").split("\n");
   const blocks: SectionBlock[] = [];
@@ -44,8 +69,10 @@ export function parseMarkupToBlocks(input: string): SectionBlock[] {
 
   const flushPara = () => {
     if (para.length > 0) {
-      const text = para.join("\n").trim();
-      if (text) blocks.push({ type: "plain", text });
+      const text = para.join(" ").replace(/\s+/g, " ").trim();
+      // plain renders through plainTextToHtml, which passes HTML through, so
+      // inline markup becomes real tags.
+      if (text) blocks.push({ type: "plain", text: inlineToHtml(text) });
       para = [];
     }
   };
@@ -61,8 +88,19 @@ export function parseMarkupToBlocks(input: string): SectionBlock[] {
     flushList();
   };
 
-  for (const raw of lines) {
-    const line = raw.trim();
+  /** Collect following non-blank lines (advancing i). Returns [lines, newIndex]. */
+  function collectBody(startIndex: number): [string[], number] {
+    const body: string[] = [];
+    let j = startIndex;
+    while (j < lines.length && lines[j].trim() !== "") {
+      body.push(lines[j].trim());
+      j++;
+    }
+    return [body, j];
+  }
+
+  for (let i = 0; i < lines.length; i++) {
+    const line = lines[i].trim();
 
     if (line === "") {
       flushAll();
@@ -83,6 +121,36 @@ export function parseMarkupToBlocks(input: string): SectionBlock[] {
     }
     if (listItems.length > 0) flushList();
 
+    // Section: heading line + following body lines until a blank line
+    if (/^@section:/i.test(line)) {
+      flushAll();
+      const heading = afterMarker(line, /^@section:/i);
+      const [body, next] = collectBody(i + 1);
+      blocks.push({ type: "section", heading, html: bodyToHtml(body) });
+      i = next - 1;
+      continue;
+    }
+
+    // Lead paragraph: first-line content + following lines until blank
+    if (/^@lead:/i.test(line)) {
+      flushAll();
+      const first = afterMarker(line, /^@lead:/i);
+      const [rest, next] = collectBody(i + 1);
+      blocks.push({ type: "intro", html: bodyToHtml([first, ...rest]) });
+      i = next - 1;
+      continue;
+    }
+
+    // Callout: first-line content + following lines until blank
+    if (/^@callout:/i.test(line)) {
+      flushAll();
+      const first = afterMarker(line, /^@callout:/i);
+      const [rest, next] = collectBody(i + 1);
+      blocks.push({ type: "callout", html: bodyToHtml([first, ...rest]) });
+      i = next - 1;
+      continue;
+    }
+
     // Headings: # -> H2, ## or more -> H3
     if (/^#\s+/.test(line)) {
       flushAll();
@@ -95,7 +163,7 @@ export function parseMarkupToBlocks(input: string): SectionBlock[] {
       continue;
     }
 
-    // Quote
+    // Quote (plain text — rendered as React text, no inline HTML)
     if (/^>\s+/.test(line)) {
       flushAll();
       blocks.push({ type: "pullquote", text: afterMarker(line, /^>\s+/) });
@@ -125,20 +193,6 @@ export function parseMarkupToBlocks(input: string): SectionBlock[] {
         .map((n) => n.trim())
         .filter(Boolean);
       for (const name of names) blocks.push({ type: "player", name });
-      continue;
-    }
-
-    // Lead paragraph
-    if (/^@lead:/i.test(line)) {
-      flushAll();
-      blocks.push({ type: "intro", html: `<p>${escapeHtml(afterMarker(line, /^@lead:/i))}</p>` });
-      continue;
-    }
-
-    // Callout
-    if (/^@callout:/i.test(line)) {
-      flushAll();
-      blocks.push({ type: "callout", html: `<p>${escapeHtml(afterMarker(line, /^@callout:/i))}</p>` });
       continue;
     }
 

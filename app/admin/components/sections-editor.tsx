@@ -648,7 +648,13 @@ export default function SectionsEditor({ value, onChange }: Props) {
             <code className="text-slate-300">@video: url</code> ·{" "}
             <code className="text-slate-300">@player: Name</code> ·{" "}
             <code className="text-slate-300">@lead:</code> ·{" "}
-            <code className="text-slate-300">@callout:</code> · plain text = paragraph.
+            <code className="text-slate-300">@callout:</code> ·{" "}
+            <code className="text-slate-300">@section: Heading</code> + body lines · plain text = paragraph.
+            <br />
+            Inline (in paragraphs/lead/callout/section):{" "}
+            <code className="text-slate-300">**bold**</code>{" "}
+            <code className="text-slate-300">*italic*</code>{" "}
+            <code className="text-slate-300">[text](url)</code>
           </p>
           <textarea
             value={importText}
