@@ -18,6 +18,7 @@ import {
   type CoverStoryScope,
 } from "@/lib/cover-story";
 import { fetchCoverStoryPinsFromApi, saveCoverStoryPinsViaApi } from "@/lib/cover-story-admin";
+import { updateContent } from "../../content-actions";
 
 const PLACEHOLDER_HTML = "<p></p>";
 
@@ -340,13 +341,10 @@ export default function DuzenlePage() {
 
     if (publish) updateData.status = "published";
 
-    const { error: updateError } = await supabase
-      .from("contents")
-      .update(updateData)
-      .eq("id", id);
+    const updateResult = await updateContent(id, updateData);
 
-    if (updateError) {
-      setError("Update error: " + updateError.message);
+    if (!updateResult.ok) {
+      setError("Update error: " + updateResult.error);
       setSaving(false);
       return;
     }
