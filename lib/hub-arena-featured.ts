@@ -37,18 +37,18 @@ export const TRANSFER_TEAM_ARENA_SLUGS: {
     fallbackTitleEn: "Who should Liverpool sign?",
   },
   {
-    teamSlug: "galatasaray",
-    nameTr: "Galatasaray",
-    nameEn: "Galatasaray",
-    fallbackTitleTr: "Galatasaray kimi transfer etmeli?",
-    fallbackTitleEn: "Who should Galatasaray sign?",
+    teamSlug: "arsenal",
+    nameTr: "Arsenal",
+    nameEn: "Arsenal",
+    fallbackTitleTr: "Arsenal kimi transfer etmeli?",
+    fallbackTitleEn: "Who should Arsenal sign?",
   },
   {
-    teamSlug: "fenerbahce",
-    nameTr: "Fenerbahçe",
-    nameEn: "Fenerbahçe",
-    fallbackTitleTr: "Fenerbahçe kimi transfer etmeli?",
-    fallbackTitleEn: "Who should Fenerbahçe sign?",
+    teamSlug: "bayern-munich",
+    nameTr: "Bayern München",
+    nameEn: "Bayern München",
+    fallbackTitleTr: "Bayern kimi transfer etmeli?",
+    fallbackTitleEn: "Who should Bayern sign?",
   },
 ];
 

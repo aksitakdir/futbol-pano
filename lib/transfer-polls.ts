@@ -13,11 +13,10 @@ export type TransferAbPoll = {
 export const TRANSFER_AB_POLLS: TransferAbPoll[] = [
   {
     id: "1",
-    slug: "osimhen-galatasaray",
+    slug: "osimhen-next-club",
     playerName: "Victor Osimhen",
-    clubA: "Galatasaray",
-    clubB: "Chelsea",
-    teamSlug: "galatasaray",
+    clubA: "Chelsea",
+    clubB: "Al-Hilal",
     hubTags: ["transfer"],
   },
   {

@@ -19,7 +19,7 @@ const PAGE_SIZE = 9;
 
 const STATIC_LISTS = [
   { slug: "en-iyi-10-genc-stoper", title: "Top 10 Young Centre-Backs", description: "Detailed analysis of players fitting the modern CB profile under 23 across European leagues.", accent: "var(--cyan)" },
-  { slug: "super-lig-gizli-isimler", title: "Hidden Gems of the Süper Lig", description: "Names just entering the radar of major clubs, standing out on the data side.", accent: "var(--emerald)" },
+  { slug: "super-lig-gizli-isimler", title: "Hidden Gems of World Football", description: "Under-the-radar names from across the top leagues, standing out on the data side.", accent: "var(--emerald)" },
   { slug: "surpriz-isimler-2025", title: "Surprise Performers of 2025", description: "Players who exceeded expectations in 2025, making statistical breakthroughs.", accent: "var(--sky)" },
 ];
 
