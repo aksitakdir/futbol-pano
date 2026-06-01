@@ -1,8 +1,8 @@
 "use client";
 
-import { useEffect, useState, useCallback, useMemo } from "react";
+import { Suspense, useEffect, useState, useCallback, useMemo } from "react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 import { supabase } from "@/lib/supabase";
 import { updateContentStatus, deleteContents } from "./actions";
 import AdminLayout from "../components/admin-layout";
@@ -86,16 +86,10 @@ const SEO_VALUE_STYLE: Record<string, string> = {
 const ACTION_BTN =
   "inline-flex h-7 shrink-0 items-center justify-center rounded-full border px-2.5 text-[10px] font-semibold tracking-wide transition disabled:pointer-events-none disabled:opacity-45";
 
-export default function IceriklerPage() {
-  const pathname = usePathname();
-  const [categoryFilter, setCategoryFilter] = useState<string | null>(null);
-
-  // Read ?category= without useSearchParams (which would require a Suspense
-  // boundary). Re-reads on navigation via pathname dependency.
-  useEffect(() => {
-    if (typeof window === "undefined") return;
-    setCategoryFilter(new URLSearchParams(window.location.search).get("category"));
-  }, [pathname]);
+function IceriklerPageInner() {
+  // Reactive to ?category= changes (query-only nav doesn't change pathname).
+  const searchParams = useSearchParams();
+  const categoryFilter = searchParams.get("category");
 
   const [allContents, setAllContents] = useState<ContentRow[]>([]);
   const [loading, setLoading] = useState(false);
@@ -863,5 +857,13 @@ export default function IceriklerPage() {
         )}
       </div>
     </AdminLayout>
+  );
+}
+
+export default function IceriklerPage() {
+  return (
+    <Suspense fallback={null}>
+      <IceriklerPageInner />
+    </Suspense>
   );
 }

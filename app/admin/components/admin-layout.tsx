@@ -1,8 +1,8 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useSearchParams } from "next/navigation";
 
 
 const ICON = {
@@ -126,9 +126,11 @@ const NAV_GROUPS: NavGroup[] = [
   },
 ];
 
-export default function AdminLayout({ children }: { children: React.ReactNode }) {
+function AdminLayoutInner({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
-  const [currentCategory, setCurrentCategory] = useState<string | null>(null);
+  // Reactive to ?category= changes (query-only nav doesn't change pathname),
+  // so nav highlighting updates instantly without a refresh.
+  const currentCategory = useSearchParams().get("category");
   const [authed, setAuthed] = useState(false);
   const [checkedStorage, setCheckedStorage] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -138,14 +140,6 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     setAuthed(true);
     setCheckedStorage(true);
   }, []);
-
-  // Track the ?category= param for nav highlighting without useSearchParams
-  // (which would force every admin page into a Suspense boundary). Updates on
-  // navigation since `pathname` changes trigger a re-render.
-  useEffect(() => {
-    if (typeof window === "undefined") return;
-    setCurrentCategory(new URLSearchParams(window.location.search).get("category"));
-  }, [pathname]);
 
   async function handleLogout() {
     // sg_admin is httpOnly — only the server can clear it.
@@ -326,5 +320,13 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         </main>
       </div>
     </div>
+  );
+}
+
+export default function AdminLayout({ children }: { children: React.ReactNode }) {
+  return (
+    <Suspense fallback={null}>
+      <AdminLayoutInner>{children}</AdminLayoutInner>
+    </Suspense>
   );
 }
