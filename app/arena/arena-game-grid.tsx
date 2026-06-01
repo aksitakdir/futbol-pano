@@ -13,7 +13,7 @@ const fadeUp = {
   visible: { opacity: 1, y: 0, transition: { duration: 0.55, ease: easeOut } },
 };
 
-const ICONS = ["⭐", "🏆", "📋", "🇹🇷", "🌍", "⚽", "🎯", "🔥"];
+const ICONS = ["⭐", "🏆", "📋", "🌍", "⚽", "🎯", "🔥", "🥇"];
 
 type Props = {
   games: ArenaGame[];
