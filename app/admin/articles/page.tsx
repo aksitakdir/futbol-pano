@@ -2,6 +2,7 @@
 
 import { useEffect, useState, useCallback, useMemo } from "react";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { supabase } from "@/lib/supabase";
 import { updateContentStatus, deleteContents } from "./actions";
 import AdminLayout from "../components/admin-layout";
@@ -86,6 +87,16 @@ const ACTION_BTN =
   "inline-flex h-7 shrink-0 items-center justify-center rounded-full border px-2.5 text-[10px] font-semibold tracking-wide transition disabled:pointer-events-none disabled:opacity-45";
 
 export default function IceriklerPage() {
+  const pathname = usePathname();
+  const [categoryFilter, setCategoryFilter] = useState<string | null>(null);
+
+  // Read ?category= without useSearchParams (which would require a Suspense
+  // boundary). Re-reads on navigation via pathname dependency.
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    setCategoryFilter(new URLSearchParams(window.location.search).get("category"));
+  }, [pathname]);
+
   const [allContents, setAllContents] = useState<ContentRow[]>([]);
   const [loading, setLoading] = useState(false);
   const [actionLoading, setActionLoading] = useState<Set<string>>(new Set());
@@ -231,6 +242,7 @@ export default function IceriklerPage() {
 
   const filtered = useMemo(() => {
     let list = allContents;
+    if (categoryFilter) list = list.filter((c) => c.category === categoryFilter);
     if (tab !== "all") list = list.filter((c) => c.status === tab);
     if (search.trim()) {
       const q = search.toLowerCase();
@@ -242,7 +254,7 @@ export default function IceriklerPage() {
       );
     }
     return list;
-  }, [allContents, tab, search]);
+  }, [allContents, tab, search, categoryFilter]);
 
   async function updateStatus(id: string, newStatus: string) {
     setActionLoading((prev) => new Set(prev).add(id));
@@ -321,8 +333,19 @@ export default function IceriklerPage() {
         <div className="sticky top-0 z-30 -mx-1 mb-4 rounded-xl border border-slate-700/60 bg-slate-950/90 px-3 py-3 shadow-[0_8px_30px_rgba(0,0,0,0.35)] backdrop-blur-md sm:-mx-0 sm:px-4">
           <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
           <div>
-            <h1 className="text-xl font-bold">Content Management</h1>
-            <p className="text-xs text-slate-400">View, edit and manage all publications</p>
+            <h1 className="text-xl font-bold">
+              {categoryFilter ? `${CATEGORY_LABEL[categoryFilter] ?? categoryFilter} Articles` : "Content Management"}
+            </h1>
+            <p className="text-xs text-slate-400">
+              {categoryFilter ? (
+                <>
+                  Showing only <span className="text-slate-300">{CATEGORY_LABEL[categoryFilter] ?? categoryFilter}</span>.{" "}
+                  <Link href="/admin/articles" className="text-emerald-400 hover:underline">Show all →</Link>
+                </>
+              ) : (
+                "View, edit and manage all publications"
+              )}
+            </p>
           </div>
           <div className="flex flex-wrap items-center gap-2">
             <div className="relative">

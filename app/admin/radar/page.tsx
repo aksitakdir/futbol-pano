@@ -9,9 +9,9 @@ import { stripHtml, estimateReadMinutes } from "@/lib/utils";
 type Row = { id: string; title: string; title_en?: string; slug: string; content: string; status: string; created_at: string; };
 
 const STATUS_LABEL: Record<string, { label: string; cls: string }> = {
-  bekliyor: { label: "Pending", cls: "bg-amber-500/15 text-amber-300 border-amber-500/40" },
-  yayinda: { label: "Published", cls: "bg-emerald-500/15 text-emerald-300 border-emerald-500/40" },
-  reddedildi: { label: "Rejected", cls: "bg-rose-500/15 text-rose-300 border-rose-500/40" },
+  pending: { label: "Pending", cls: "bg-amber-500/15 text-amber-300 border-amber-500/40" },
+  published: { label: "Published", cls: "bg-emerald-500/15 text-emerald-300 border-emerald-500/40" },
+  rejected: { label: "Rejected", cls: "bg-rose-500/15 text-rose-300 border-rose-500/40" },
 };
 
 export default function AdminRadarPage() {
@@ -61,7 +61,7 @@ export default function AdminRadarPage() {
         ) : (
           <div className="space-y-3">
             {rows.map((item) => {
-              const st = STATUS_LABEL[item.status] ?? STATUS_LABEL.bekliyor;
+              const st = STATUS_LABEL[item.status] ?? STATUS_LABEL.pending;
               const preview = stripHtml(item.content).replace(/\s+/g, " ").trim().slice(0, 120);
               const mins = estimateReadMinutes(item.content);
               return (

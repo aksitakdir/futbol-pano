@@ -21,25 +21,30 @@ type ContentRow = {
 
 type ArenaGame = {
   id: string;
-  player_a: string;
-  player_b: string;
+  slug: string;
+  title_en: string;
+  title_tr: string;
   created_at: string;
 };
 
 type ArenaVote = {
-  game_id: string;
+  game_slug: string;
 };
 
 const CATEGORY_LABEL: Record<string, string> = {
-  listeler: "Lists",
+  lists: "Lists",
   radar: "Radar",
   "tactics-lab": "Tactics Lab",
+  "wc-2026": "World Cup 2026",
+  transfer: "Transfers",
 };
 
 const CATEGORY_COLOR: Record<string, string> = {
-  listeler: "emerald",
+  lists: "emerald",
   radar: "sky",
   "tactics-lab": "amber",
+  "wc-2026": "amber",
+  transfer: "sky",
 };
 
 export default function AnalyticsPage() {
@@ -61,10 +66,10 @@ export default function AnalyticsPage() {
           .limit(50),
         supabase
           .from("arena_games")
-          .select("id,player_a,player_b,created_at")
+          .select("id,slug,title_en,title_tr,created_at")
           .order("created_at", { ascending: false })
           .limit(20),
-        supabase.from("arena_votes").select("game_id"),
+        supabase.from("arena_votes").select("game_slug"),
       ]);
 
       setContents((contentsData as ContentRow[]) ?? []);
@@ -87,9 +92,9 @@ export default function AnalyticsPage() {
 
   const votesByGame: Record<string, number> = {};
   arenaVotes.forEach((v) => {
-    votesByGame[v.game_id] = (votesByGame[v.game_id] ?? 0) + 1;
+    votesByGame[v.game_slug] = (votesByGame[v.game_slug] ?? 0) + 1;
   });
-  const gamesWithVotes = arenaGames.map((g) => ({ ...g, votes: votesByGame[g.id] ?? 0 })).sort((a, b) => b.votes - a.votes);
+  const gamesWithVotes = arenaGames.map((g) => ({ ...g, votes: votesByGame[g.slug] ?? 0 })).sort((a, b) => b.votes - a.votes);
 
   const byCategory: Record<string, number> = {};
   published.forEach((c) => {
@@ -260,7 +265,7 @@ export default function AnalyticsPage() {
                       <span className="w-5 text-center font-mono text-xs text-slate-500">{i + 1}</span>
                       <div className="min-w-0 flex-1">
                         <p className="truncate text-sm font-semibold text-slate-100">
-                          {g.player_a} <span className="text-slate-500">vs</span> {g.player_b}
+                          {g.title_en || g.title_tr || g.slug}
                         </p>
                         <p className="text-[11px] text-slate-500">{new Date(g.created_at).toLocaleDateString("en-US")}</p>
                       </div>
