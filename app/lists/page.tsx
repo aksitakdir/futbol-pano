@@ -17,19 +17,6 @@ type Content = {
 
 const PAGE_SIZE = 9;
 
-const STATIC_LISTS = [
-  { slug: "en-iyi-10-genc-stoper", title: "Top 10 Young Centre-Backs", description: "Detailed analysis of players fitting the modern CB profile under 23 across European leagues.", accent: "var(--cyan)" },
-  { slug: "super-lig-gizli-isimler", title: "Hidden Gems of World Football", description: "Under-the-radar names from across the top leagues, standing out on the data side.", accent: "var(--emerald)" },
-  { slug: "surpriz-isimler-2025", title: "Surprise Performers of 2025", description: "Players who exceeded expectations in 2025, making statistical breakthroughs.", accent: "var(--sky)" },
-];
-
-const STATIC_LIST_PILLS = new Map(
-  STATIC_LISTS.map((list) => [
-    list.slug,
-    extractArticleHighlights(list.description, { max: 4, seed: list.slug, titleHint: list.title }),
-  ]),
-);
-
 const LIST_COVER_ACCENT = "var(--emerald)";
 
 function listSummary(item: Content, max = 200): string {
@@ -197,30 +184,6 @@ export default function ListelerPage() {
           </section>
         )}
 
-        <section>
-          <div className="eyebrow" style={{ marginBottom: 20 }}>FEATURED LISTS</div>
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 16 }}>
-            {STATIC_LISTS.map((list) => (
-              <Link key={list.slug} href={`/lists/${list.slug}`}
-                className="lift" style={{ background: "var(--sg-surface)", border: "1px solid var(--sg-border)", borderRadius: 12, overflow: "hidden", cursor: "pointer", textDecoration: "none" }}>
-                <div style={{ height: 2, background: list.accent }} />
-                <div style={{ padding: 28 }}>
-                  <div className="mono" style={{ fontSize: 10, letterSpacing: "0.18em", color: list.accent, marginBottom: 24 }}>CURATED LIST</div>
-                  <h3 className="display" style={{ fontSize: 22, fontWeight: 600, lineHeight: 1.1, letterSpacing: "-0.02em", margin: 0, textWrap: "balance", color: "var(--sg-text-primary)" }}>{list.title}</h3>
-                  <p style={{ fontSize: 14, color: "var(--sg-text-secondary)", marginTop: 12, lineHeight: 1.5 }}>{list.description}</p>
-                  {STATIC_LIST_PILLS.get(list.slug)?.length ? (
-                    <div style={{ marginTop: 14 }}>
-                      <ContentHighlightPills tags={STATIC_LIST_PILLS.get(list.slug) ?? []} accent={list.accent} label="HIGHLIGHTS" />
-                    </div>
-                  ) : null}
-                  <div style={{ marginTop: 20, paddingTop: 16, borderTop: "1px solid var(--sg-border)" }}>
-                    <span className="mono u-link" style={{ fontSize: 11, letterSpacing: "0.16em", color: list.accent }}>READ →</span>
-                  </div>
-                </div>
-              </Link>
-            ))}
-          </div>
-        </section>
       </div>
 
       <SiteFooter maxWidth="max-w-7xl" />
