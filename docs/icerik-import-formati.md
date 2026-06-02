@@ -114,6 +114,38 @@ veya numaralı:
 - **Yarı otomatik:** sistem ismi `fc_players` veritabanında arar; editörde
   doğrulayıp düzeltebilirsin. İsmi olabildiğince tam ve doğru yaz.
 
+### Karşılaştırma (Versus / vs.)
+```
+@vs: Sol Başlık | Sağ Başlık
+sol madde 1 | sağ madde 1
+sol madde 2 | sağ madde 2
+```
+- İki sütunlu karşılaştırma kartı (ör. Messi vs Ronaldo), ortada "VS".
+- İlk satır: `@vs: Sol | Sağ` → iki tarafın başlığı (dikey çizgi `|` ile ayrılır).
+- Sonraki her satır bir madde çifti: `sol | sağ`. Boş satıra kadar sürer.
+- Bir taraf boş bırakılabilir (ör. `sadece sol madde |`); boş maddeler
+  görmezden gelinir.
+- Madde başına `- ` koyabilirsin (zorunlu değil): `- sol | - sağ`.
+- Madde içinde satır içi biçimlendirme **çalışmaz** (düz metin).
+
+### SSS (FAQ)
+```
+@faq: Sıkça Sorulan Sorular
+Soru metni? Cevap metni.
+İkinci soru? İkinci cevap.
+Soru işareti yoksa böl | Cevap böyle de verilebilir.
+```
+- Soru-cevap listesi; sayfada açılır-kapanır (`<details>`) olarak render edilir.
+- **SEO için FAQPage structured data (JSON-LD)** otomatik eklenir → Google'da
+  zengin sonuç / "Bunları da merak ediyor olabilirsiniz" şansı.
+- İlk satır: `@faq: Başlık` → opsiyonel başlık (içindekiler/TOC'a girer). Başlık
+  istemiyorsan sadece `@faq:` yaz.
+- Sonraki her satır bir Q&A. İki yazım da geçerli:
+  - `Soru? Cevap` → ilk soru işaretinden böler.
+  - `Soru | Cevap` → dikey çizgiyle böler (soru işareti yoksa kullan).
+- **Önemli:** Hem soru hem cevap dolu olmalı; cevabı boş olan sorular SEO
+  schema'ya **dahil edilmez** (Google'a bozuk veri gitmesin diye).
+
 ---
 
 ## 3. Satır İçi Biçimlendirme
@@ -156,6 +188,15 @@ Top sürme, son pas ve soğukkanlılık konusunda yaşına göre olağanüstü.
 
 @player: L. Yamal
 
+@vs: Yamal | Mbappé
+17 yaşında çıkış | Erken olgunluk
+Sol kanat ustası | Bitiricilik
+Barcelona | Real Madrid
+
+@faq: Sıkça Sorulan Sorular
+Yamal kaç yaşında? 2007 doğumlu, takımın en genç yıldızı.
+Hangi mevkide oynuyor? Sağ kanat ve onuncu bölgede etkili.
+
 ![Yamal gol sevinci](https://example.com/yamal.jpg)
 
 @video: https://youtu.be/abcdef12345
@@ -164,8 +205,8 @@ Top sürme, son pas ve soğukkanlılık konusunda yaşına göre olağanüstü.
 ```
 
 Yukarıdaki metin sırasıyla şu bloklara dönüşür:
-intro → header(H2) → section → list(ul) → pullquote → player → image →
-youtube → callout.
+intro → header(H2) → section → list(ul) → pullquote → player → vs → faq →
+image → youtube → callout.
 
 ---
 
@@ -178,6 +219,10 @@ youtube → callout.
 - [ ] Oyuncu isimlerini olabildiğince **tam ve doğru** yazdım.
 - [ ] Video için geçerli bir YouTube URL'i ya da ID verdim.
 - [ ] Görsel için geçerli bir URL verdim.
+- [ ] `@vs:` kullandıysam başlık satırında `|` ile iki tarafı ayırdım, madde
+      satırlarında da `sol | sağ` formatını korudum.
+- [ ] `@faq:` kullandıysam her soru için **dolu bir cevap** yazdım (boş cevaplı
+      sorular SEO schema'ya alınmaz).
 - [ ] Tanımlı olmayan bir sözdizimi **uydurmadım**.
 
 ---
@@ -198,4 +243,6 @@ youtube → callout.
 | `![alt](url)` | Görsel | — |
 | `@video: url\|id` | YouTube | — |
 | `@player: A, B` | Oyuncu kartı (her isim ayrı) | — |
+| `@vs: Sol \| Sağ` + `l \| r` satırları | Versus (iki sütun karşılaştırma) | Hayır |
+| `@faq: Başlık` + `Soru? Cevap` satırları | SSS (Q&A + SEO schema) | Hayır |
 ```
