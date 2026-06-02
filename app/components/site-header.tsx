@@ -5,6 +5,7 @@ import { createPortal } from "react-dom";
 import Link from "next/link";
 import { useRouter, usePathname } from "next/navigation";
 import { supabase } from "@/lib/supabase";
+import SgKeycap from "./sg-keycap";
 
 type Props = { activeNav?: string; maxWidth?: string; forceEn?: boolean };
 type SearchResult = { id: string; title: string; title_en?: string; slug: string; category: string; };
@@ -22,9 +23,7 @@ const CAT_COLOR: Record<string, string> = { lists: "var(--cyan)", radar: "var(--
 function Wordmark() {
   return (
     <Link href="/" className="flex items-center gap-2.5 leading-none">
-      <div style={{ width: 34, height: 30, borderRadius: 6, flexShrink: 0, background: "linear-gradient(135deg, var(--accent), var(--accent-2), var(--accent-3))", display: "flex", alignItems: "center", justifyContent: "center" }}>
-        <span style={{ fontFamily: "var(--font-display)", fontSize: 12, fontWeight: 700, letterSpacing: "-0.04em", color: "var(--ink-900)" }}>SG</span>
-      </div>
+      <SgKeycap size={34} />
       <div>
         <div style={{ fontFamily: "var(--font-display)", fontSize: 17, fontWeight: 700, letterSpacing: "-0.025em", lineHeight: 1, color: "var(--sg-text-primary)" }}>Scout Gamer</div>
         <div style={{ fontFamily: "var(--font-mono-stack)", fontSize: 9, letterSpacing: "0.18em", color: "var(--sg-text-muted)", marginTop: 2 }}>FOOTBALL × GAME CULTURE</div>

@@ -3,6 +3,7 @@
 import { Suspense, useEffect, useState } from "react";
 import Link from "next/link";
 import { usePathname, useSearchParams } from "next/navigation";
+import SgKeycap from "@/app/components/sg-keycap";
 
 
 const ICON = {
@@ -193,7 +194,7 @@ function AdminLayoutInner({ children }: { children: React.ReactNode }) {
           href="/admin"
           className="flex items-center gap-2 border-b border-slate-800/60 px-5 py-4 transition hover:bg-slate-800/30"
         >
-          <div className="h-7 w-7 shrink-0 rounded-lg bg-gradient-to-tr from-emerald-400 to-cyan-500" />
+          <SgKeycap size={30} />
           <span className="bg-gradient-to-r from-emerald-400 to-sky-500 bg-clip-text text-xs font-semibold tracking-widest text-transparent">
             ADMIN
           </span>
@@ -240,7 +241,7 @@ function AdminLayoutInner({ children }: { children: React.ReactNode }) {
         {/* Mobile top bar */}
         <header className="flex shrink-0 items-center justify-between gap-3 border-b border-slate-800/60 bg-slate-900/50 px-4 py-3 lg:hidden">
           <Link href="/admin" className="flex min-w-0 items-center gap-2">
-            <div className="h-6 w-6 shrink-0 rounded-lg bg-gradient-to-tr from-emerald-400 to-cyan-500" />
+            <SgKeycap size={26} />
             <span className="bg-gradient-to-r from-emerald-400 to-sky-500 bg-clip-text text-xs font-semibold tracking-widest text-transparent">
               ADMIN
             </span>
