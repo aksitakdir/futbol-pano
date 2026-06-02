@@ -19,6 +19,7 @@ import {
 } from "@/lib/cover-story";
 import { fetchCoverStoryPinsFromApi, saveCoverStoryPinsViaApi } from "@/lib/cover-story-admin";
 import { updateContent } from "../../content-actions";
+import SocialCardsPanel from "../../components/social-cards-panel";
 
 const PLACEHOLDER_HTML = "<p></p>";
 
@@ -387,6 +388,17 @@ export default function DuzenlePage() {
           >
             ← Back
           </Link>
+        </div>
+
+        {/* Social share cards — manual, post-publish */}
+        <div className="mb-5">
+          <SocialCardsPanel
+            title={titleEn || title}
+            category={category}
+            coverImage={coverImage}
+            slug={slug}
+            publicUrl={`${categoryPublicPath(category)}/${slug.trim()}`}
+          />
         </div>
 
         <div className="space-y-5">
