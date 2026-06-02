@@ -3,6 +3,9 @@ import { ImageResponse } from "next/og";
 export const size = { width: 32, height: 32 };
 export const contentType = "image/png";
 
+// Keycap-style favicon: dark key body with a hard bottom edge + cyan "SG".
+// (next/og / satori does not support background-clip:text gradients, so the
+// legend is a solid accent color rather than the gradient used on the site.)
 export default function Icon() {
   return new ImageResponse(
     (
@@ -10,67 +13,39 @@ export default function Icon() {
         style={{
           width: 32,
           height: 32,
-          background: "#060f1e",
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
-          position: "relative",
+          background: "#060f1e",
         }}
       >
-        {/* Köşe aksanı */}
+        {/* key body */}
         <div
           style={{
-            position: "absolute",
-            top: 0,
-            left: 0,
-            width: 8,
-            height: 2,
-            background: "#46f1c5",
-          }}
-        />
-        <div
-          style={{
-            position: "absolute",
-            top: 0,
-            left: 0,
-            width: 2,
-            height: 8,
-            background: "#46f1c5",
-          }}
-        />
-        <div
-          style={{
-            position: "absolute",
-            bottom: 0,
-            right: 0,
-            width: 8,
-            height: 2,
-            background: "#5b8dee",
-          }}
-        />
-        <div
-          style={{
-            position: "absolute",
-            bottom: 0,
-            right: 0,
-            width: 2,
-            height: 8,
-            background: "#5b8dee",
-          }}
-        />
-        {/* SG metni */}
-        <span
-          style={{
-            color: "#46f1c5",
-            fontSize: 13,
-            fontWeight: 800,
-            letterSpacing: "-0.05em",
-            fontFamily: "sans-serif",
-            lineHeight: 1,
+            width: 28,
+            height: 28,
+            borderRadius: 7,
+            background: "linear-gradient(180deg, #1f2f42, #0c1623)",
+            borderBottom: "3px solid #060d16",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
           }}
         >
-          SG
-        </span>
+          <span
+            style={{
+              color: "#2fe6c4",
+              fontSize: 13,
+              fontWeight: 800,
+              letterSpacing: "-0.05em",
+              fontFamily: "sans-serif",
+              lineHeight: 1,
+              marginTop: -2,
+            }}
+          >
+            SG
+          </span>
+        </div>
       </div>
     ),
     { ...size },

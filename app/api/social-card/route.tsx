@@ -41,27 +41,33 @@ function fitTitle(raw: string, max: number): string {
   return (lastSpace > max * 0.6 ? cut.slice(0, lastSpace) : cut).trimEnd() + "…";
 }
 
+// Keycap-style logo. next/og (satori) doesn't support background-clip:text,
+// so the "SG" legend uses a solid accent color instead of the site gradient.
 function Logo({ scale = 1 }: { scale?: number }) {
+  const s = 46 * scale;
   return (
     <div style={{ display: "flex", alignItems: "center", gap: 12 * scale }}>
       <div
         style={{
-          width: 44 * scale,
-          height: 44 * scale,
-          borderRadius: 10 * scale,
-          background: "linear-gradient(135deg, #00d4aa, #22d3ee)",
+          width: s,
+          height: s,
+          borderRadius: 11 * scale,
+          background: "linear-gradient(180deg, #1f2f42, #0c1623)",
+          borderBottom: `${Math.max(2, 4 * scale)}px solid #060d16`,
+          boxShadow: `0 ${4 * scale}px ${8 * scale}px rgba(0,0,0,0.5)`,
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
-          fontSize: 17 * scale,
-          fontWeight: 700,
-          color: "#060f1e",
+          fontSize: 18 * scale,
+          fontWeight: 800,
+          letterSpacing: "-0.04em",
+          color: "#2fe6c4",
         }}
       >
         SG
       </div>
       <div style={{ display: "flex", flexDirection: "column" }}>
-        <span style={{ fontSize: 22 * scale, fontWeight: 700, color: "#e8f4ff", letterSpacing: "-0.02em" }}>
+        <span style={{ fontSize: 22 * scale, fontWeight: 800, color: "#e8f4ff", letterSpacing: "-0.02em" }}>
           Scout Gamer
         </span>
         <span style={{ fontSize: 10 * scale, color: "#9fc2d8", letterSpacing: "0.22em", fontFamily: "monospace" }}>
@@ -141,11 +147,11 @@ export async function GET(req: Request) {
           <span
             style={{
               fontSize: titleSize,
-              fontWeight: 800,
+              fontWeight: 900,
               color: "#ffffff",
-              letterSpacing: "-0.025em",
-              lineHeight: 1.08,
-              textShadow: "0 2px 24px rgba(0,0,0,0.65)",
+              letterSpacing: "-0.03em",
+              lineHeight: 1.06,
+              textShadow: "0 2px 24px rgba(0,0,0,0.7)",
             }}
           >
             {title}
