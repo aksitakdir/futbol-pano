@@ -30,6 +30,8 @@ const BLOCK_TYPES: { type: SectionBlock["type"]; label: string; icon: string; de
   { type: "callout", label: "Callout", icon: "◈", desc: "Tactical note / info box", color: "rose" },
   { type: "youtube", label: "YouTube", icon: "▶", desc: "Embed a video inline in the article", color: "red" },
   { type: "player", label: "Player Card", icon: "🃏", desc: "Rich player profile panel with stats", color: "cyan" },
+  { type: "vs", label: "Versus", icon: "⚔", desc: "Two-column comparison (A vs B)", color: "amber" },
+  { type: "faq", label: "FAQ", icon: "❓", desc: "Q&A list with SEO rich-result schema", color: "violet" },
 ];
 
 const COLOR_MAP: Record<string, string> = {
@@ -71,6 +73,10 @@ function defaultBlock(type: SectionBlock["type"]): SectionBlock {
       return { type, src: "", alt: "", caption: "" };
     case "list":
       return { type, style: "ul", items: [""] };
+    case "vs":
+      return { type, left: { title: "", items: [""] }, right: { title: "", items: [""] } };
+    case "faq":
+      return { type, heading: "", items: [{ q: "", a: "" }] };
   }
 }
 
@@ -125,6 +131,16 @@ function BlockEditor({
             <p className="text-[11px] text-slate-400 truncate mt-0.5">
               {block.style === "ol" ? "1." : "•"} {block.items[0]?.slice(0, 50)}
               {block.items.length > 1 ? ` (+${block.items.length - 1} more)` : ""}
+            </p>
+          )}
+          {block.type === "vs" && (block.left.title || block.right.title) && (
+            <p className="text-[11px] text-slate-400 truncate mt-0.5">
+              {block.left.title || "—"} <span className="text-slate-600">vs</span> {block.right.title || "—"}
+            </p>
+          )}
+          {block.type === "faq" && (
+            <p className="text-[11px] text-slate-400 truncate mt-0.5">
+              {block.items.filter((it) => it.q.trim()).length} question(s)
             </p>
           )}
         </div>
@@ -261,8 +277,160 @@ function BlockEditor({
               onChange={(b) => onChange(b)}
             />
           )}
+
+          {block.type === "vs" && (
+            <VsBlockEditor block={block} onChange={(b) => onChange(b)} />
+          )}
+
+          {block.type === "faq" && (
+            <FaqBlockEditor block={block} onChange={(b) => onChange(b)} />
+          )}
         </div>
       )}
+    </div>
+  );
+}
+
+function VsBlockEditor({
+  block,
+  onChange,
+}: {
+  block: Extract<SectionBlock, { type: "vs" }>;
+  onChange: (b: Extract<SectionBlock, { type: "vs" }>) => void;
+}) {
+  function updateSide(side: "left" | "right", patch: Partial<{ title: string; items: string[] }>) {
+    onChange({ ...block, [side]: { ...block[side], ...patch } });
+  }
+  function updateItem(side: "left" | "right", index: number, value: string) {
+    const next = [...block[side].items];
+    next[index] = value;
+    updateSide(side, { items: next });
+  }
+  function addItem(side: "left" | "right") {
+    updateSide(side, { items: [...block[side].items, ""] });
+  }
+  function removeItem(side: "left" | "right", index: number) {
+    if (block[side].items.length <= 1) return;
+    updateSide(side, { items: block[side].items.filter((_, i) => i !== index) });
+  }
+
+  const sideEditor = (side: "left" | "right", label: string) => (
+    <div className="flex-1 rounded-lg border border-slate-700/60 bg-slate-900/40 p-3">
+      <label className="mb-1 block text-[10px] font-semibold uppercase tracking-wider text-amber-300/80">{label}</label>
+      <input
+        type="text"
+        value={block[side].title}
+        onChange={(e) => updateSide(side, { title: e.target.value })}
+        placeholder="Title (e.g. Messi)"
+        className="mb-2 w-full rounded-lg border border-slate-700/80 bg-slate-800/70 px-3 py-2 text-sm text-slate-100 placeholder-slate-500 outline-none focus:border-amber-500/60"
+      />
+      <div className="space-y-1.5">
+        {block[side].items.map((item, i) => (
+          <div key={i} className="flex items-center gap-2">
+            <span className="w-3 shrink-0 text-center text-[10px] text-slate-600">•</span>
+            <input
+              type="text"
+              value={item}
+              onChange={(e) => updateItem(side, i, e.target.value)}
+              placeholder={`Point ${i + 1}…`}
+              className="flex-1 rounded-lg border border-slate-700/80 bg-slate-800/70 px-3 py-1.5 text-sm text-slate-100 placeholder-slate-500 outline-none focus:border-amber-500/60"
+            />
+            <button
+              type="button"
+              onClick={() => removeItem(side, i)}
+              disabled={block[side].items.length <= 1}
+              className="px-1 text-xs text-rose-500 transition hover:text-rose-300 disabled:opacity-20"
+            >
+              ✕
+            </button>
+          </div>
+        ))}
+      </div>
+      <button
+        type="button"
+        onClick={() => addItem(side)}
+        className="mt-2 text-[10px] font-semibold text-amber-400 transition hover:text-amber-200"
+      >
+        + Add point
+      </button>
+    </div>
+  );
+
+  return (
+    <div className="flex flex-col gap-3 sm:flex-row">
+      {sideEditor("left", "Left side")}
+      {sideEditor("right", "Right side")}
+    </div>
+  );
+}
+
+function FaqBlockEditor({
+  block,
+  onChange,
+}: {
+  block: Extract<SectionBlock, { type: "faq" }>;
+  onChange: (b: Extract<SectionBlock, { type: "faq" }>) => void;
+}) {
+  function updateItem(index: number, patch: Partial<{ q: string; a: string }>) {
+    const next = block.items.map((it, i) => (i === index ? { ...it, ...patch } : it));
+    onChange({ ...block, items: next });
+  }
+  function addItem() {
+    onChange({ ...block, items: [...block.items, { q: "", a: "" }] });
+  }
+  function removeItem(index: number) {
+    if (block.items.length <= 1) return;
+    onChange({ ...block, items: block.items.filter((_, i) => i !== index) });
+  }
+
+  return (
+    <div className="space-y-3">
+      <div>
+        <label className="mb-1 block text-[10px] font-semibold uppercase tracking-wider text-slate-400">Heading (optional, appears in TOC)</label>
+        <input
+          type="text"
+          value={block.heading ?? ""}
+          onChange={(e) => onChange({ ...block, heading: e.target.value })}
+          placeholder="Frequently Asked Questions"
+          className="w-full rounded-lg border border-slate-700/80 bg-slate-800/70 px-3 py-2 text-sm text-slate-100 placeholder-slate-500 outline-none focus:border-violet-500/60"
+        />
+      </div>
+      {block.items.map((item, i) => (
+        <div key={i} className="rounded-lg border border-slate-700/60 bg-slate-900/40 p-3">
+          <div className="mb-1.5 flex items-center justify-between">
+            <span className="text-[10px] font-semibold uppercase tracking-wider text-violet-300/80">Q{i + 1}</span>
+            <button
+              type="button"
+              onClick={() => removeItem(i)}
+              disabled={block.items.length <= 1}
+              className="text-xs text-rose-500 transition hover:text-rose-300 disabled:opacity-20"
+            >
+              ✕ Remove
+            </button>
+          </div>
+          <input
+            type="text"
+            value={item.q}
+            onChange={(e) => updateItem(i, { q: e.target.value })}
+            placeholder="Question…"
+            className="mb-2 w-full rounded-lg border border-slate-700/80 bg-slate-800/70 px-3 py-2 text-sm font-medium text-slate-100 placeholder-slate-500 outline-none focus:border-violet-500/60"
+          />
+          <textarea
+            value={item.a}
+            onChange={(e) => updateItem(i, { a: e.target.value })}
+            placeholder="Answer…"
+            rows={3}
+            className="w-full resize-y rounded-lg border border-slate-700/80 bg-slate-800/70 px-3 py-2 text-sm text-slate-100 placeholder-slate-500 outline-none focus:border-violet-500/60"
+          />
+        </div>
+      ))}
+      <button
+        type="button"
+        onClick={addItem}
+        className="text-[11px] font-semibold text-violet-400 transition hover:text-violet-200"
+      >
+        + Add question
+      </button>
     </div>
   );
 }

@@ -22,6 +22,10 @@ import type { SectionBlock } from "@/lib/section-blocks";
  *   @callout: text…        -> callout (info box; multi-line until blank)
  *   @section: Heading      -> section (heading + body; body = lines until blank)
  *     body line…
+ *   @vs: Left | Right      -> versus (two columns); body lines "L | R" = points
+ *     point A | point B
+ *   @faq: Optional heading -> FAQ; body lines "Q? answer" or "Q | A"
+ *     Question? Answer text
  *
  * Inline formatting (only in HTML-rendered blocks — plain / intro / callout /
  * section body; not in headings, quotes, or list items):
@@ -127,6 +131,52 @@ export function parseMarkupToBlocks(input: string): SectionBlock[] {
       const heading = afterMarker(line, /^@section:/i);
       const [body, next] = collectBody(i + 1);
       blocks.push({ type: "section", heading, html: bodyToHtml(body) });
+      i = next - 1;
+      continue;
+    }
+
+    // Versus: @vs: Left Title | Right Title, then body lines.
+    // Body lines "L | R" become paired bullet points (either side may be empty).
+    if (/^@vs:/i.test(line)) {
+      flushAll();
+      const titles = afterMarker(line, /^@vs:/i).split("|");
+      const left = { title: (titles[0] ?? "").trim(), items: [] as string[] };
+      const right = { title: (titles[1] ?? "").trim(), items: [] as string[] };
+      const [body, next] = collectBody(i + 1);
+      for (const raw of body) {
+        const b = raw.replace(/^[-*]\s+/, "");
+        const [l, r] = b.split("|");
+        if ((l ?? "").trim()) left.items.push(l.trim());
+        if ((r ?? "").trim()) right.items.push(r.trim());
+      }
+      if (left.items.length === 0) left.items.push("");
+      if (right.items.length === 0) right.items.push("");
+      blocks.push({ type: "vs", left, right });
+      i = next - 1;
+      continue;
+    }
+
+    // FAQ: @faq: optional heading, then body lines.
+    // Each body line "Q? answer" (split on first "?") or "Q | A" is one item.
+    if (/^@faq:/i.test(line)) {
+      flushAll();
+      const heading = afterMarker(line, /^@faq:/i);
+      const [body, next] = collectBody(i + 1);
+      const items: { q: string; a: string }[] = [];
+      for (const raw of body) {
+        const b = raw.replace(/^[-*]\s+/, "").trim();
+        if (!b) continue;
+        if (b.includes("|")) {
+          const [q, ...a] = b.split("|");
+          items.push({ q: q.trim(), a: a.join("|").trim() });
+        } else if (b.includes("?")) {
+          const idx = b.indexOf("?");
+          items.push({ q: b.slice(0, idx + 1).trim(), a: b.slice(idx + 1).trim() });
+        } else {
+          items.push({ q: b, a: "" });
+        }
+      }
+      if (items.length > 0) blocks.push({ type: "faq", heading: heading || undefined, items });
       i = next - 1;
       continue;
     }

@@ -1,5 +1,8 @@
 /** Structured article blocks stored in contents.sections_json */
 
+export type VsSide = { title: string; items: string[] };
+export type FaqItem = { q: string; a: string };
+
 export type SectionBlock =
   | { type: "intro"; html: string }
   | { type: "plain"; text: string }
@@ -10,7 +13,9 @@ export type SectionBlock =
   | { type: "youtube"; url: string }
   | { type: "player"; name: string }
   | { type: "image"; src: string; alt: string; caption?: string }
-  | { type: "list"; style: "ul" | "ol"; items: string[] };
+  | { type: "list"; style: "ul" | "ol"; items: string[] }
+  | { type: "vs"; left: VsSide; right: VsSide }
+  | { type: "faq"; heading?: string; items: FaqItem[] };
 
 export type TocItem = { text: string; id: string };
 
@@ -49,6 +54,17 @@ export function hasBlockContent(blocks: SectionBlock[]): boolean {
     if (b.type === "player") return b.name.trim().length > 0;
     if (b.type === "image") return b.src.trim().length > 0;
     if (b.type === "list") return b.items.some((item) => item.trim().length > 0);
+    if (b.type === "vs") {
+      return (
+        b.left.title.trim().length > 0 ||
+        b.right.title.trim().length > 0 ||
+        b.left.items.some((i) => i.trim().length > 0) ||
+        b.right.items.some((i) => i.trim().length > 0)
+      );
+    }
+    if (b.type === "faq") {
+      return b.items.some((i) => i.q.trim().length > 0 && i.a.trim().length > 0);
+    }
     return false;
   });
 }
@@ -59,6 +75,8 @@ export function tocFromSections(blocks: SectionBlock[]): TocItem[] {
     if (sec.type === "section" && sec.heading.trim()) {
       items.push({ text: sec.heading.trim(), id: headingToId(sec.heading) });
     } else if (sec.type === "header" && sec.heading.trim()) {
+      items.push({ text: sec.heading.trim(), id: headingToId(sec.heading) });
+    } else if (sec.type === "faq" && sec.heading?.trim()) {
       items.push({ text: sec.heading.trim(), id: headingToId(sec.heading) });
     }
   }

@@ -113,6 +113,91 @@ export default function SectionsJsonBody({
             </Tag>
           );
         }
+        if (sec.type === "vs") {
+          const col = (side: typeof sec.left, accentColor: string) => (
+            <div
+              style={{
+                flex: 1,
+                minWidth: 0,
+                background: "var(--sg-surface)",
+                border: "1px solid var(--sg-border)",
+                borderTop: `3px solid ${accentColor}`,
+                borderRadius: 12,
+                padding: "20px 18px",
+              }}
+            >
+              <p style={{ margin: "0 0 12px", fontWeight: 700, fontSize: 17, color: "var(--sg-text-primary)" }}>
+                {side.title}
+              </p>
+              <ul style={{ margin: 0, paddingLeft: 18, lineHeight: 1.7, color: "var(--sg-text-secondary)" }}>
+                {side.items.filter((it) => it.trim()).map((it, j) => (
+                  <li key={j}>{it}</li>
+                ))}
+              </ul>
+            </div>
+          );
+          return (
+            <div key={i} style={{ margin: "28px 0" }}>
+              <div style={{ display: "flex", gap: 14, alignItems: "stretch", flexWrap: "wrap" }}>
+                {col(sec.left, "var(--sg-primary)")}
+                <div
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    fontWeight: 800,
+                    fontSize: 14,
+                    letterSpacing: "0.08em",
+                    color: "var(--sg-text-muted)",
+                  }}
+                >
+                  VS
+                </div>
+                {col(sec.right, "var(--sg-secondary)")}
+              </div>
+            </div>
+          );
+        }
+        if (sec.type === "faq") {
+          const valid = sec.items.filter((it) => it.q.trim() && it.a.trim());
+          if (valid.length === 0) return null;
+          const faqId = sec.heading ? headingToId(sec.heading) : undefined;
+          const schema = {
+            "@context": "https://schema.org",
+            "@type": "FAQPage",
+            mainEntity: valid.map((it) => ({
+              "@type": "Question",
+              name: it.q.trim(),
+              acceptedAnswer: { "@type": "Answer", text: it.a.trim() },
+            })),
+          };
+          return (
+            <div key={i} style={{ margin: "32px 0" }}>
+              {sec.heading?.trim() ? <h2 id={faqId}>{sec.heading}</h2> : null}
+              <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+                {valid.map((it, j) => (
+                  <details
+                    key={j}
+                    style={{
+                      background: "var(--sg-surface)",
+                      border: "1px solid var(--sg-border)",
+                      borderRadius: 10,
+                      padding: "14px 16px",
+                    }}
+                  >
+                    <summary style={{ cursor: "pointer", fontWeight: 600, color: "var(--sg-text-primary)" }}>
+                      {it.q}
+                    </summary>
+                    <p style={{ margin: "10px 0 0", lineHeight: 1.65, color: "var(--sg-text-secondary)" }}>
+                      {it.a}
+                    </p>
+                  </details>
+                ))}
+              </div>
+              {/* FAQ structured data for rich results */}
+              <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }} />
+            </div>
+          );
+        }
         return null;
       })}
     </>

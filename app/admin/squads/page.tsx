@@ -232,11 +232,13 @@ export default function AdminKadrolarPage() {
               className="admin-input"
               style={{ padding: "10px 12px" }}
             >
-              {WC_TEAMS.map((t) => (
-                <option key={t.slug} value={t.slug}>
-                  {t.nameEn} ({t.code})
-                </option>
-              ))}
+              {[...WC_TEAMS]
+                .sort((a, b) => a.nameEn.localeCompare(b.nameEn))
+                .map((t) => (
+                  <option key={t.slug} value={t.slug}>
+                    {t.nameEn} ({t.code})
+                  </option>
+                ))}
             </select>
           </label>
           <button type="button" className="btn" onClick={handleImportSeed} disabled={loading}>
