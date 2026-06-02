@@ -25,8 +25,8 @@ editör bloklarına dönüştürür.
 
 ### Başlık (Heading)
 ```
-# Ana Başlık
-## Alt Başlık
+# Main Heading
+## Sub Heading
 ```
 - `#` → H2 başlık (yazının içindekiler/TOC listesine girer).
 - `##` (veya daha fazla `#`) → H3 başlık.
@@ -34,17 +34,17 @@ editör bloklarına dönüştürür.
 
 ### Paragraf (Plain)
 ```
-Bu bir paragraftır. Aynı bloğa ait
-ardışık satırlar tek bir paragrafta birleştirilir.
+This is a paragraph. Consecutive lines in the same
+block are merged into a single paragraph.
 ```
 - Arada boş satır olmayan ardışık düz metin satırları **tek paragraf** olur.
 - Satır içi biçimlendirme **çalışır** (bkz. Bölüm 3).
 
 ### Bölüm (Section) — başlık + gövde
 ```
-@section: Bölüm Başlığı
-Bu başlığın altındaki gövde metni.
-Bir sonraki boş satıra kadar süren tüm satırlar gövdeye girer.
+@section: Section Heading
+Body text under this heading.
+All lines until the next blank line go into the body.
 ```
 - Başlık + gövdeyi tek blokta birleştirir; başlık TOC'a girer.
 - Gövdede satır içi biçimlendirme **çalışır**.
@@ -52,8 +52,8 @@ Bir sonraki boş satıra kadar süren tüm satırlar gövdeye girer.
 
 ### Lead / Giriş Paragrafı (Intro)
 ```
-@lead: Yazının vurgulu açılış paragrafı.
-Birden fazla satır olabilir; boş satıra kadar devam eder.
+@lead: The article's bold opening paragraph.
+It can span multiple lines; continues until a blank line.
 ```
 - Büyük puntolu, drop-cap'li açılış metni.
 - Çok satırlı: boş satıra kadar tüm satırları alır.
@@ -61,29 +61,29 @@ Birden fazla satır olabilir; boş satıra kadar devam eder.
 
 ### Callout / Bilgi Kutusu
 ```
-@callout: Taktik notu ya da öne çıkan bilgi kutusu.
-Bu da çok satırlı olabilir.
+@callout: A tactical note or highlighted info box.
+This can also span multiple lines.
 ```
 - Vurgulu bilgi/uyarı kutusu.
 - Çok satırlı (boş satıra kadar). Satır içi biçimlendirme **çalışır**.
 
 ### Alıntı (Pull Quote)
 ```
-> Bu bir vurgulu alıntıdır.
+> This is a highlighted pull quote.
 ```
 - İtalik, öne çıkan alıntı bloğu.
 - **Tek satır.** Satır içi biçimlendirme **çalışmaz** (düz metin).
 
 ### Liste (List)
 ```
-- Birinci madde
-- İkinci madde
-- Üçüncü madde
+- First item
+- Second item
+- Third item
 ```
 veya numaralı:
 ```
-1. Birinci madde
-2. İkinci madde
+1. First item
+2. Second item
 ```
 - `-` veya `*` → madde imli (ul) liste.
 - `1.` `2.` (veya `1)` `2)`) → numaralı (ol) liste.
@@ -92,7 +92,7 @@ veya numaralı:
 
 ### Görsel (Image)
 ```
-![alt metni](https://ornek.com/gorsel.jpg)
+![alt text](https://example.com/image.jpg)
 ```
 - Standart markdown görsel sözdizimi. `alt` boş bırakılabilir: `![](url)`.
 
@@ -116,9 +116,9 @@ veya numaralı:
 
 ### Karşılaştırma (Versus / vs.)
 ```
-@vs: Sol Başlık | Sağ Başlık
-sol madde 1 | sağ madde 1
-sol madde 2 | sağ madde 2
+@vs: Left Title | Right Title
+left point 1 | right point 1
+left point 2 | right point 2
 ```
 - İki sütunlu karşılaştırma kartı (ör. Messi vs Ronaldo), ortada "VS".
 - İlk satır: `@vs: Sol | Sağ` → iki tarafın başlığı (dikey çizgi `|` ile ayrılır).
@@ -130,10 +130,10 @@ sol madde 2 | sağ madde 2
 
 ### SSS (FAQ)
 ```
-@faq: Sıkça Sorulan Sorular
-Soru metni? Cevap metni.
-İkinci soru? İkinci cevap.
-Soru işareti yoksa böl | Cevap böyle de verilebilir.
+@faq: Frequently Asked Questions
+First question? Answer text here.
+Second question? Another answer.
+No question mark, split here | Answer can be given this way too.
 ```
 - Soru-cevap listesi; sayfada açılır-kapanır (`<details>`) olarak render edilir.
 - **SEO için FAQPage structured data (JSON-LD)** otomatik eklenir → Google'da
@@ -155,9 +155,9 @@ Yalnızca HTML olarak render edilen bloklarda çalışır:
 (Başlık, alıntı ve liste maddelerinde çalışmaz — oralarda düz metin kullan.)
 
 ```
-**kalın**           -> kalın
-*italik*            -> italik
-[bağlantı](https://ornek.com)  -> tıklanabilir link (yeni sekmede açılır)
+**bold**            -> kalın
+*italic*            -> italik
+[link text](https://example.com)  -> tıklanabilir link (yeni sekmede açılır)
 ```
 
 - Linkler `target="_blank" rel="noopener noreferrer"` ile açılır.
@@ -169,39 +169,39 @@ Yalnızca HTML olarak render edilen bloklarda çalışır:
 ## 4. Tam Örnek
 
 ```
-@lead: Bu sezon Avrupa'nın en çok konuşulan genç yıldızı **Lamine Yamal**,
-Barcelona forması altında çıtayı her maç biraz daha yükseltiyor.
+@lead: The most talked-about young star in Europe this season, **Lamine Yamal**,
+keeps raising the bar with every match in a Barcelona shirt.
 
-# Sezona Damga Vuran Çıkış
+# A Breakout That Defined the Season
 
-Yamal, bu sezon *istikrarıyla* öne çıktı. Detaylı istatistikler için
-[resmi sayfa](https://example.com) incelenebilir.
+Yamal stood out with his *consistency* this season. See the
+[official page](https://example.com) for detailed stats.
 
-@section: Güçlü Yönleri
-Top sürme, son pas ve soğukkanlılık konusunda yaşına göre olağanüstü.
+@section: Strengths
+Exceptional for his age in dribbling, final passing and composure.
 
-- Çift ayak kullanımı
-- Yüksek futbol IQ'su
-- Bire bir etkinliği
+- Two-footed ability
+- High footballing IQ
+- One-on-one effectiveness
 
-> Yaşının çok ötesinde bir olgunluk sergiliyor.
+> He shows a maturity well beyond his years.
 
 @player: L. Yamal
 
 @vs: Yamal | Mbappé
-17 yaşında çıkış | Erken olgunluk
-Sol kanat ustası | Bitiricilik
+Breakout at 17 | Early maturity
+Left-wing maestro | Clinical finishing
 Barcelona | Real Madrid
 
-@faq: Sıkça Sorulan Sorular
-Yamal kaç yaşında? 2007 doğumlu, takımın en genç yıldızı.
-Hangi mevkide oynuyor? Sağ kanat ve onuncu bölgede etkili.
+@faq: Frequently Asked Questions
+How old is Yamal? Born in 2007, the youngest star on the team.
+What position does he play? Effective on the right wing and in the number-ten role.
 
-![Yamal gol sevinci](https://example.com/yamal.jpg)
+![Yamal goal celebration](https://example.com/yamal.jpg)
 
 @video: https://youtu.be/abcdef12345
 
-@callout: Bir sonraki maç bu **hafta sonu** oynanacak.
+@callout: The next match is this **weekend**.
 ```
 
 Yukarıdaki metin sırasıyla şu bloklara dönüşür:
