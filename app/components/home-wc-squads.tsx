@@ -20,15 +20,20 @@ export default function HomeWcSquads() {
 
   useEffect(() => {
     async function load() {
-      const { data } = await supabase
-        .from("wc_squad_players")
-        .select("team_slug", { count: "exact" });
-
+      // Page through all rows — a plain select caps at 1000, which silently
+      // dropped teams once the table grew past that (e.g. turkiye, tunisia).
       const countMap: Record<string, number> = {};
-      if (data) {
+      const PAGE = 1000;
+      for (let from = 0; ; from += PAGE) {
+        const { data, error } = await supabase
+          .from("wc_squad_players")
+          .select("team_slug")
+          .range(from, from + PAGE - 1);
+        if (error || !data || data.length === 0) break;
         for (const row of data as { team_slug: string }[]) {
           countMap[row.team_slug] = (countMap[row.team_slug] ?? 0) + 1;
         }
+        if (data.length < PAGE) break;
       }
 
       const enriched = WC_TEAMS.map((t) => ({
