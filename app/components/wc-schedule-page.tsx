@@ -400,6 +400,13 @@ export default function WcSchedulePage({ teamFilter, faqItems }: { teamFilter?: 
                   GROUP {selectedTeamGroup}
                 </div>
               </div>
+              <Link
+                href={`/world-cup-2026/squads/${teamCodeToSlug(selectedTeam)}`}
+                className="mono"
+                style={{ marginLeft: "auto", fontSize: 11, letterSpacing: "0.1em", color: "var(--wc-gold)", whiteSpace: "nowrap" }}
+              >
+                VIEW SQUAD →
+              </Link>
             </div>
             <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
               {WC_GROUPS[selectedTeamGroup].filter((t) => t.code !== selectedTeam).map((t) => (

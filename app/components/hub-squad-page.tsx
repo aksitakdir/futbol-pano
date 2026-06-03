@@ -54,7 +54,12 @@ export default function HubSquadPage({ countrySlug }: Props) {
 
       <header style={{ background: `${WC_2026_GRADIENT}, var(--sg-surface-low)`, borderBottom: "1px solid var(--sg-border)" }}>
         <PageShell className="sg-page-shell--section">
-          <Link href="/world-cup-2026/squads" className="mono wc-squad-back">{copy.back}</Link>
+          <div style={{ display: "flex", flexWrap: "wrap", alignItems: "center", gap: 16 }}>
+            <Link href="/world-cup-2026/squads" className="mono wc-squad-back">{copy.back}</Link>
+            <Link href={`/world-cup-2026/schedule/${countrySlug}`} className="mono wc-squad-back" style={{ color: "var(--wc-gold)" }}>
+              {teamName} fixtures →
+            </Link>
+          </div>
           <div style={{ display: "flex", alignItems: "center", gap: 20, marginTop: 20 }}>
             <WcTeamFlag slug={countrySlug} name={teamName} size="lg" />
             <div>
