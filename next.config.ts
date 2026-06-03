@@ -35,6 +35,12 @@ const nextConfig: NextConfig = {
       { source: "/arena/super-lig-efsaneleri", destination: "/arena", permanent: true },
       { source: "/arena/turkiyede-en-iyi-yabancilar", destination: "/arena", permanent: true },
       { source: "/arena/dk-2026-sampiyonu", destination: "/arena", permanent: true },
+      // Deleted Turkish-slug radar articles → radar index
+      { source: "/radar/avrupa-liglerinde-one-cikan-genc-oyuncular-scouting", destination: "/radar", permanent: true },
+      { source: "/radar/avrupa-gizli-cevherleri-genç-yildizlar", destination: "/radar", permanent: true },
+      { source: "/radar/avrupa-yukselen-cevher-genc-yildizlar", destination: "/radar", permanent: true },
+      { source: "/radar/avrupa-liglerinde-2025-26-sezonunun-en-parlak-genc-yetenekleri", destination: "/radar", permanent: true },
+      { source: "/radar/avrupa-yeni-yuz-parlayan-gencler", destination: "/radar", permanent: true },
       // Turkish category slugs → English
       { source: "/kadrolar/:path*", destination: "/world-cup-2026/squads/:path*", permanent: true },
       { source: "/listeler/:path*", destination: "/lists/:path*", permanent: true },
