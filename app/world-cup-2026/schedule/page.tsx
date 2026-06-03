@@ -1,6 +1,44 @@
 import WcSchedulePage from "../../components/wc-schedule-page";
 import type { Metadata } from "next";
 import Script from "next/script";
+import {
+  getUpcomingMatches,
+  getTeamName,
+  teamCodeToSlug,
+  type WcMatch,
+} from "@/lib/wc-2026-schedule";
+
+const BASE = "https://www.scoutgamer.com";
+
+/** ISO 8601 kick-off in ET (UTC-4 in June/July) for a match. */
+function matchIsoStart(m: WcMatch): string {
+  const [h, mn] = (m.time ?? "00:00").split(":").map(Number);
+  return `${m.date}T${String(h).padStart(2, "0")}:${String(mn).padStart(2, "0")}:00-04:00`;
+}
+
+/** Per-match SportsEvent JSON-LD for the next N fixtures (crawlable events). */
+function buildMatchEventSchemas(today = new Date(), limit = 8) {
+  return getUpcomingMatches(today, limit).map((m) => ({
+    "@context": "https://schema.org",
+    "@type": "SportsEvent",
+    name: `${getTeamName(m.home)} vs ${getTeamName(m.away)} — FIFA World Cup 2026`,
+    sport: "Football",
+    startDate: matchIsoStart(m),
+    eventStatus: "https://schema.org/EventScheduled",
+    eventAttendanceMode: "https://schema.org/OfflineEventAttendanceMode",
+    location: {
+      "@type": "Place",
+      name: m.venue,
+      address: { "@type": "PostalAddress", addressLocality: m.city },
+    },
+    competitor: [
+      { "@type": "SportsTeam", name: getTeamName(m.home), url: `${BASE}/world-cup-2026/schedule/${teamCodeToSlug(m.home)}` },
+      { "@type": "SportsTeam", name: getTeamName(m.away), url: `${BASE}/world-cup-2026/schedule/${teamCodeToSlug(m.away)}` },
+    ],
+    superEvent: { "@type": "SportsEvent", name: "FIFA World Cup 2026" },
+    url: `${BASE}/world-cup-2026/schedule`,
+  }));
+}
 
 export const metadata: Metadata = {
   title: "World Cup 2026 Schedule & Fixtures — All 104 Matches | Scout Gamer",
@@ -89,7 +127,7 @@ function buildJsonLd() {
     url: "https://www.scoutgamer.com/world-cup-2026/schedule",
   };
 
-  return [faqSchema, eventSchema];
+  return [faqSchema, eventSchema, ...buildMatchEventSchemas()];
 }
 
 export default function Page() {

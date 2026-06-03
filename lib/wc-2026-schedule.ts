@@ -255,6 +255,67 @@ export function getMatchesByDate(date: string): WcMatch[] {
   return WC_SCHEDULE.filter((m) => m.date === date);
 }
 
+/** Tournament start/end (YYYY-MM-DD), derived from the fixture list. */
+export const WC_FIRST_DATE = "2026-06-11";
+export const WC_LAST_DATE = "2026-07-19";
+
+/** YYYY-MM-DD for a Date (UTC date part). */
+function isoDate(d: Date): string {
+  return d.toISOString().slice(0, 10);
+}
+
+/** Add n days to a YYYY-MM-DD string. */
+function addDays(date: string, n: number): string {
+  const d = new Date(`${date}T00:00:00Z`);
+  d.setUTCDate(d.getUTCDate() + n);
+  return isoDate(d);
+}
+
+export type WcScheduleState = "pre" | "live" | "post";
+
+/** Where "today" sits relative to the tournament window. */
+export function getScheduleState(today = new Date()): WcScheduleState {
+  const t = isoDate(today);
+  if (t < WC_FIRST_DATE) return "pre";
+  if (t > WC_LAST_DATE) return "post";
+  return "live";
+}
+
+/** Whole days from `today` until the opener (>=0; 0 once it's started). */
+export function daysUntilKickoff(today = new Date()): number {
+  const start = new Date(`${WC_FIRST_DATE}T00:00:00Z`).getTime();
+  const now = new Date(`${isoDate(today)}T00:00:00Z`).getTime();
+  return Math.max(0, Math.round((start - now) / 86_400_000));
+}
+
+function sortByKickoff(a: WcMatch, b: WcMatch): number {
+  return a.date === b.date
+    ? (a.time ?? "").localeCompare(b.time ?? "")
+    : a.date.localeCompare(b.date);
+}
+
+/** Matches on `today`'s date. */
+export function getTodaysMatches(today = new Date()): WcMatch[] {
+  return getMatchesByDate(isoDate(today)).sort(sortByKickoff);
+}
+
+/** Matches on `today` + 1. */
+export function getTomorrowsMatches(today = new Date()): WcMatch[] {
+  return getMatchesByDate(addDays(isoDate(today), 1)).sort(sortByKickoff);
+}
+
+/**
+ * The next `limit` matches at/after `today`. Before the tournament this is the
+ * openers; during it, it skips finished days and shows what's coming up.
+ */
+export function getUpcomingMatches(today = new Date(), limit = 6): WcMatch[] {
+  const t = isoDate(today);
+  return [...WC_SCHEDULE]
+    .filter((m) => m.date >= t)
+    .sort(sortByKickoff)
+    .slice(0, limit);
+}
+
 export function getMatchesByGroup(group: WcGroupId): WcMatch[] {
   return WC_SCHEDULE.filter((m) => m.group === group);
 }
