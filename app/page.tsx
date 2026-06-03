@@ -431,6 +431,22 @@ export default function HomePage() {
 
       <h1 className="sr-only">Scout Gamer — Football × Game Culture</h1>
 
+      {/* Hero placeholder — reserves the hero's height while data loads so the
+          sections below don't render first and cause a layout shift. */}
+      {slides.length === 0 && (
+        <section
+          aria-hidden="true"
+          className="relative w-full overflow-hidden"
+          style={{
+            height: "78vh",
+            minHeight: 580,
+            background: "linear-gradient(120deg, var(--ink-800) 0%, var(--ink-900) 100%)",
+          }}
+        >
+          <div className="absolute inset-0" style={{ background: "linear-gradient(to top, var(--sg-bg) 0%, transparent 40%)" }} />
+        </section>
+      )}
+
       {/* ── Hero Slider ── */}
       {slides.length > 0 && (
         <section className="relative w-full overflow-hidden grain" style={{ height: "78vh", minHeight: 580 }}>
