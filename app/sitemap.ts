@@ -1,6 +1,7 @@
 import type { MetadataRoute } from "next";
 import { createClient } from "@/lib/supabase";
 import { getAllTeamSlugs } from "@/lib/wc-2026-schedule";
+import { WC_TEAMS } from "@/lib/wc-2026-teams";
 
 const base = "https://www.scoutgamer.com";
 
@@ -66,5 +67,15 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: 0.82,
   }));
 
-  return [...staticItems, ...teamScheduleItems, ...articleItems, ...arenaItems];
+  // 48 per-team squad pages — high-intent search ("<country> world cup squad")
+  // during the hype window. Uses WC_TEAMS, the same source the squad routes
+  // (getWcTeam) and homepage links resolve against.
+  const teamSquadItems: MetadataRoute.Sitemap = WC_TEAMS.map((t) => ({
+    url: `${base}/world-cup-2026/squads/${t.slug}`,
+    lastModified: now,
+    changeFrequency: "weekly" as const,
+    priority: 0.84,
+  }));
+
+  return [...staticItems, ...teamScheduleItems, ...teamSquadItems, ...articleItems, ...arenaItems];
 }
