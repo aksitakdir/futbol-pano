@@ -13,6 +13,7 @@ import { arenaPath, type ArenaGame } from "@/lib/arena-brackets";
 import HomeRecentCarousel from "./components/home-recent-carousel";
 import HomeHubPromo from "./components/home-hub-promo";
 import HomeWcSquads from "./components/home-wc-squads";
+import HomeWcMatches from "./components/home-wc-matches";
 import { categoryArticlePath } from "@/lib/category-config";
 import { getCategoryImage } from "@/lib/category-images";
 import {
@@ -589,6 +590,9 @@ export default function HomePage() {
       {recentItems.length > 0 && <HomeRecentCarousel items={recentItems} locale="en" />}
 
       <HomeHubPromo locale="en" wcArticles={wcHubPreview} transferArticles={transferHubPreview} />
+
+      {/* ── WC 2026 Upcoming Matches ── */}
+      <HomeWcMatches />
 
       {/* ── WC 2026 Squad Grid ── */}
       <HomeWcSquads />
