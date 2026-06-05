@@ -9,7 +9,7 @@ import RichTextEditor from "@/app/components/rich-text-editor";
 import AdminLayout from "../../components/admin-layout";
 import SectionsEditor, { type SectionBlock } from "../../components/sections-editor";
 import ArticleDestinationField from "@/app/components/article-destination-field";
-import { type ContentCategory, categoryPublicPath, isContentCategory } from "@/lib/category-config";
+import { type ContentCategory, categoryPublicPath, categoryArticlePath, isContentCategory } from "@/lib/category-config";
 import { hasBlockContent } from "@/lib/section-blocks";
 import CoverStoryField from "@/app/components/cover-story-field";
 import {
@@ -382,12 +382,25 @@ export default function DuzenlePage() {
             <h1 className="text-xl font-bold">Edit Article</h1>
             <p className="text-xs text-slate-400">Save changes or publish directly</p>
           </div>
-          <Link
-            href={backHref}
-            className="rounded-lg border border-slate-700/60 px-3 py-1.5 text-xs font-medium text-slate-400 transition hover:border-slate-600 hover:text-slate-200"
-          >
-            ← Back
-          </Link>
+          <div className="flex items-center gap-2">
+            {slug.trim() && (
+              <a
+                href={categoryArticlePath(category, slug.trim())}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-1.5 rounded-lg border border-sky-500/40 bg-sky-500/10 px-3 py-1.5 text-xs font-medium text-sky-300 transition hover:bg-sky-500/20"
+              >
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6" /><polyline points="15 3 21 3 21 9" /><line x1="10" y1="14" x2="21" y2="3" /></svg>
+                View on site
+              </a>
+            )}
+            <Link
+              href={backHref}
+              className="rounded-lg border border-slate-700/60 px-3 py-1.5 text-xs font-medium text-slate-400 transition hover:border-slate-600 hover:text-slate-200"
+            >
+              ← Back
+            </Link>
+          </div>
         </div>
 
         {/* Social share cards — manual, post-publish */}

@@ -669,7 +669,7 @@ function IceriklerPageInner() {
               const isActioning = actionLoading.has(item.id);
               const status = STATUS_CONFIG[item.status] ?? STATUS_CONFIG.pending;
               const catColor = CATEGORY_COLOR[item.category] ?? "bg-slate-500/15 text-slate-300 border-slate-500/40";
-              const preview = contentPreviewSnippet(item.content);
+              const preview = contentPreviewSnippet(item.content_en || item.content);
 
               return (
                 <div key={item.id} className={["border-b border-slate-700/40 last:border-b-0 transition", isChecked ? "bg-emerald-500/[0.03]" : ""].join(" ")}>
@@ -833,9 +833,9 @@ function IceriklerPageInner() {
                       <p className="mb-2 text-[10px] font-semibold uppercase tracking-widest text-slate-500">Content preview</p>
                       <p className="mb-3 text-xs font-medium text-slate-200" title={item.title_en || item.title}>{item.title_en || item.title}</p>
                       <div className="max-h-[min(28rem,calc(100vh-16rem))] overflow-y-auto rounded-lg border border-slate-700/50 bg-slate-950/50 p-4 text-[13px] leading-relaxed text-slate-300">
-                        {item.content ? (
+                        {(item.content_en || item.content) ? (
                           <div className="whitespace-pre-wrap break-words [word-break:break-word]">
-                            {item.content}
+                            {item.content_en || item.content}
                           </div>
                         ) : (
                           "— No content —"
