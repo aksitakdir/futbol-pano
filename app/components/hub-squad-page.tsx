@@ -52,11 +52,30 @@ export default function HubSquadPage({ countrySlug }: Props) {
       <SiteHeader activeNav="wc-2026" />
       <div style={{ paddingTop: "68px" }} />
 
-      <header style={{ background: `${WC_2026_GRADIENT}, var(--sg-surface-low)`, borderBottom: "1px solid var(--sg-border)" }}>
-        <PageShell className="sg-page-shell--section">
-          <div style={{ display: "flex", flexWrap: "wrap", alignItems: "center", gap: 16 }}>
-            <Link href="/world-cup-2026/squads" className="mono wc-squad-back">{copy.back}</Link>
-            <Link href={`/world-cup-2026/schedule/${countrySlug}`} className="mono wc-squad-back" style={{ color: "var(--wc-gold)" }}>
+      <header style={{ position: "relative", overflow: "hidden", borderBottom: "1px solid var(--sg-border)" }}>
+        {/* WC gradient background — subdued behind dark overlay */}
+        <div style={{ position: "absolute", inset: 0, background: WC_2026_GRADIENT, opacity: 0.75 }} />
+        <div style={{ position: "absolute", inset: 0, background: "var(--sg-bg)", opacity: 0.15 }} />
+        <PageShell className="sg-page-shell--section" style={{ position: "relative", zIndex: 1 }}>
+          <div style={{ display: "flex", flexWrap: "wrap", alignItems: "center", gap: 12 }}>
+            <Link href="/world-cup-2026/squads" className="mono wc-squad-back" style={{ color: "#fff" }}>{copy.back}</Link>
+            <Link
+              href={`/world-cup-2026/schedule/${countrySlug}`}
+              style={{
+                display: "inline-flex",
+                alignItems: "center",
+                gap: 6,
+                padding: "6px 16px",
+                borderRadius: 999,
+                background: "var(--wc-gold)",
+                color: "#0d1117",
+                fontSize: 11,
+                fontWeight: 700,
+                letterSpacing: "0.08em",
+                textDecoration: "none",
+                fontFamily: "var(--font-mono-stack)",
+              }}
+            >
               {teamName} fixtures →
             </Link>
           </div>
@@ -69,7 +88,7 @@ export default function HubSquadPage({ countrySlug }: Props) {
               </h1>
             </div>
           </div>
-          <p className="mono" style={{ fontSize: 10, color: "var(--sg-text-muted)", marginTop: 16, letterSpacing: "0.12em" }}>
+          <p className="mono" style={{ fontSize: 10, color: "rgba(255,255,255,0.85)", marginTop: 16, letterSpacing: "0.12em" }}>
             {copy.updated}
           </p>
         </PageShell>

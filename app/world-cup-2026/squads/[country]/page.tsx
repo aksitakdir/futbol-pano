@@ -1,26 +1,41 @@
 import { notFound } from "next/navigation";
 import HubSquadPage from "../../../components/hub-squad-page";
 import { getWcTeam } from "@/lib/wc-2026-teams";
+import { getAllTeamSlugs } from "@/lib/wc-2026-schedule";
 import { loadWcSquad } from "@/lib/wc-squad-loader";
 
 type Props = { params: Promise<{ country: string }> };
 
 const BASE = "https://www.scoutgamer.com";
 
+export async function generateStaticParams() {
+  return getAllTeamSlugs().map((slug) => ({ country: slug }));
+}
+
+export const revalidate = 86400; // ISR — refresh every 24 h
+
 export async function generateMetadata({ params }: Props) {
   const { country } = await params;
   const team = getWcTeam(country);
   if (!team) return { title: "Squad | Scout Gamer" };
   const name = team.nameEn;
-  const title = `${name} World Cup 2026 Squad & Roster | Scout Gamer`;
-  const description = `${name}'s full FIFA World Cup 2026 squad: confirmed roster by position with clubs and scout ratings. ${name} player list for the 2026 World Cup.`;
+  const title = `${name} National Football Team — World Cup 2026 Squad & Roster | Scout Gamer`;
+  const description = `${name} national football team's full FIFA World Cup 2026 squad: confirmed roster by position with clubs and scout ratings. ${name} player list for the 2026 World Cup.`;
   const url = `${BASE}/world-cup-2026/squads/${country}`;
   return {
     title,
     description,
     alternates: { canonical: url },
-    openGraph: { title, description, url, type: "article" },
-    twitter: { card: "summary_large_image", title, description },
+    keywords: [
+      `${name.toLowerCase()} national football team`,
+      `${name.toLowerCase()} world cup 2026`,
+      `${name.toLowerCase()} world cup 2026 squad`,
+      `${name.toLowerCase()} squad roster`,
+      `${name.toLowerCase()} players world cup`,
+      "world cup 2026 squads",
+    ],
+    openGraph: { title: `${name} National Football Team — World Cup 2026 Squad`, description, url, type: "article" },
+    twitter: { card: "summary_large_image", title: `${name} National Football Team — World Cup 2026 Squad`, description },
   };
 }
 
