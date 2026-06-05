@@ -171,12 +171,28 @@ async function fetchEspnSoccer(): Promise<RawTrend[]> {
     while ((match = itemRegex.exec(xml)) !== null) {
       const block = match[1];
       const titleMatch = block.match(/<title[^>]*>([\s\S]*?)<\/title>/i);
+      const descMatch = block.match(/<description[^>]*>([\s\S]*?)<\/description>/i);
       const linkMatch = block.match(/<link[^>]*>([\s\S]*?)<\/link>/i);
 
-      const rawTitle = titleMatch ? decodeEntities(stripCdata(titleMatch[1])) : "";
+      let rawTitle = titleMatch ? decodeEntities(stripCdata(titleMatch[1])) : "";
+      // ESPN truncates titles with "..." — use description as context
+      const desc = descMatch ? decodeEntities(stripCdata(descMatch[1])).replace(/<[^>]+>/g, "").trim() : "";
       // Strip emoji prefixes ESPN sometimes uses
-      const title = rawTitle.replace(/^[\u{1F4C8}\u{1F525}\u{26BD}\u{1F3C6}]\s*/u, "").trim();
+      rawTitle = rawTitle.replace(/^[\u{1F4C8}\u{1F525}\u{26BD}\u{1F3C6}]\s*/u, "").trim();
+      // ESPN truncates titles — recover from description
+      if (rawTitle.endsWith("...") || rawTitle.endsWith("…") || rawTitle.endsWith("..")) {
+        if (desc && desc.length > 10) {
+          // Use first sentence of description as a fuller headline
+          const firstSentence = desc.match(/^(.{20,}?)[.!?]/)?.[1];
+          if (firstSentence && firstSentence.length <= 120) {
+            rawTitle = firstSentence.trim();
+          } else if (desc.length <= 140) {
+            rawTitle = desc;
+          }
+        }
+      }
       const link = linkMatch ? stripCdata(linkMatch[1]).trim() : "";
+      const title = rawTitle;
 
       if (title) items.push({ title, traffic: "ESPN", link, source: "espn" });
     }
