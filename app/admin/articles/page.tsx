@@ -55,7 +55,7 @@ const STATUS_CONFIG: Record<string, { label: string; cls: string }> = {
   rejected: { label: "Rejected", cls: "bg-rose-500/15 text-rose-300 border-rose-500/40" },
 };
 
-type TrendItem = { title: string; traffic: string };
+type TrendItem = { title: string; traffic: string; seoScore?: number; source?: string };
 
 type TitleSuggestion = {
   title: string;
@@ -546,7 +546,7 @@ function IceriklerPageInner() {
                 <>
                   {trends.length > 0 ? (
                     <div className="mb-4">
-                      <p className="mb-2 text-[10px] font-semibold uppercase tracking-widest text-emerald-400">Football / Sports Trends</p>
+                      <p className="mb-2 text-[10px] font-semibold uppercase tracking-widest text-emerald-400">Global Football Trends (SEO ranked)</p>
                       <div className="space-y-1.5">
                         {trends.map((t, i) => (
                           <button
@@ -556,10 +556,18 @@ function IceriklerPageInner() {
                               setCcKeyword(t.title);
                               setTrendsOpen(false);
                             }}
-                            className="flex w-full items-center justify-between rounded-lg border border-slate-700/60 bg-slate-900/40 px-3 py-2 text-left transition hover:border-sky-500/40 hover:bg-slate-900/70"
+                            className="flex w-full items-center justify-between gap-2 rounded-lg border border-slate-700/60 bg-slate-900/40 px-3 py-2 text-left transition hover:border-sky-500/40 hover:bg-slate-900/70"
                           >
                             <span className="text-xs font-medium text-slate-200">{t.title}</span>
-                            {t.traffic && <span className="shrink-0 text-[10px] text-slate-500">{t.traffic}</span>}
+                            <div className="flex shrink-0 items-center gap-2">
+                              {t.seoScore != null && (
+                                <span className={`rounded-full px-1.5 py-0.5 text-[9px] font-bold ${t.seoScore >= 60 ? "bg-emerald-500/20 text-emerald-300" : t.seoScore >= 30 ? "bg-amber-500/20 text-amber-300" : "bg-slate-500/20 text-slate-400"}`}>
+                                  SEO {t.seoScore}
+                                </span>
+                              )}
+                              {t.source && <span className="text-[9px] text-slate-600">{t.source}</span>}
+                              {t.traffic && <span className="text-[10px] text-slate-500">{t.traffic}</span>}
+                            </div>
                           </button>
                         ))}
                       </div>

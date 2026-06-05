@@ -111,9 +111,9 @@ export async function GET(req: Request) {
   const isPortrait = h > w;
   const isStory = format === "story";
 
-  // Tune sizing per format
-  const pad = isStory ? 64 : 48;
-  const bottomPad = isStory ? 340 : isPortrait ? 180 : pad;
+  // Tune sizing per format — square/story need more padding for Instagram crop safety
+  const pad = isStory ? 64 : isPortrait ? 56 : 48;
+  const bottomPad = isStory ? 340 : isPortrait ? 200 : pad;
   const titleSize = isStory ? 60 : isPortrait ? 56 : 46;
   const maxTitleChars = isStory ? 90 : isPortrait ? 80 : 95;
   const title = fitTitle(rawTitle, maxTitleChars);
