@@ -20,7 +20,7 @@ const ACCENT = "linear-gradient(90deg, #00d4aa, #22d3ee, #FFB81C)";
 
 const FORMATS: Record<string, { w: number; h: number }> = {
   x: { w: 1200, h: 675 },
-  square: { w: 1080, h: 1080 },
+  square: { w: 1080, h: 1350 },
   story: { w: 1080, h: 1920 },
 };
 
@@ -108,14 +108,17 @@ export async function GET(req: Request) {
 
   const { w, h } = FORMATS[format] ?? FORMATS.x;
   const category = CATEGORY_LABEL[categoryKey] ?? (categoryKey ? categoryKey.toUpperCase() : "");
-  const isPortrait = h > w;
   const isStory = format === "story";
+  const isSquare = format === "square";
 
-  // Tune sizing per format — square/story need more padding for Instagram crop safety
-  const pad = isStory ? 64 : isPortrait ? 56 : 48;
-  const bottomPad = isStory ? 340 : isPortrait ? 200 : pad;
-  const titleSize = isStory ? 60 : isPortrait ? 56 : 46;
-  const maxTitleChars = isStory ? 90 : isPortrait ? 80 : 95;
+  // Tune sizing per format
+  // Instagram grid crops square (1:1) to ~4:5 thumbnail → ~10% cut top & bottom
+  // Safe zone: keep content within top 12%–88% vertically
+  const pad = isStory ? 64 : isSquare ? 56 : 48;
+  const topPad = isSquare ? 56 : pad - 8;
+  const bottomPad = isStory ? 340 : isSquare ? 80 : pad;
+  const titleSize = isStory ? 60 : isSquare ? 56 : 46;
+  const maxTitleChars = isStory ? 90 : isSquare ? 80 : 95;
   const title = fitTitle(rawTitle, maxTitleChars);
 
   return new ImageResponse(
@@ -145,7 +148,7 @@ export async function GET(req: Request) {
             bottom: 0,
             left: 0,
             width: "100%",
-            height: isStory ? "65%" : isPortrait ? "55%" : "50%",
+            height: isStory ? "65%" : isSquare ? "55%" : "50%",
             display: "flex",
             background: "linear-gradient(0deg, rgba(6,15,30,0.95) 0%, rgba(6,15,30,0.55) 45%, rgba(6,15,30,0) 100%)",
           }}
@@ -155,7 +158,7 @@ export async function GET(req: Request) {
         <div style={{ position: "absolute", top: 0, left: 0, width: "100%", height: isStory ? 8 : 6, background: ACCENT }} />
 
         {/* Top-left logo */}
-        <div style={{ position: "absolute", top: pad - 8, left: pad, display: "flex" }}>
+        <div style={{ position: "absolute", top: topPad, left: pad, display: "flex" }}>
           <Logo scale={isStory ? 1.2 : 1} />
         </div>
 
@@ -164,7 +167,7 @@ export async function GET(req: Request) {
           <div
             style={{
               position: "absolute",
-              top: pad - 4,
+              top: topPad + 4,
               right: pad,
               display: "flex",
               padding: isStory ? "10px 18px" : "7px 14px",

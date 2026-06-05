@@ -15,7 +15,7 @@ type Format = { key: string; label: string; w: number; h: number };
 
 const FORMATS: Format[] = [
   { key: "x", label: "X / Twitter (16:9)", w: 1200, h: 675 },
-  { key: "square", label: "Instagram post (1:1)", w: 1080, h: 1080 },
+  { key: "square", label: "Instagram post (4:5)", w: 1080, h: 1350 },
   { key: "story", label: "Instagram story (9:16)", w: 1080, h: 1920 },
 ];
 
@@ -135,10 +135,10 @@ export default function SocialCardsPanel({ title, category, coverImage, slug, pu
       <div className="space-y-2">
         <div
           className="overflow-hidden rounded-lg border border-slate-700/60 bg-slate-900/60"
-          style={{ aspectRatio: `${activeFormat.w} / ${activeFormat.h}`, maxWidth: activeFormat.h > activeFormat.w ? 280 : "100%", margin: "0 auto" }}
+          style={{ aspectRatio: `${activeFormat.w} / ${activeFormat.h}`, maxWidth: activeFormat.h > activeFormat.w ? 360 : "100%", margin: "0 auto" }}
         >
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src={previewUrl} alt="Social card preview" className="h-full w-full object-contain" />
+          <img src={previewUrl} alt="Social card preview" className="h-full w-full object-cover" />
         </div>
         <div className="flex justify-center">
           <button

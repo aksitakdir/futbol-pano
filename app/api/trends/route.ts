@@ -156,24 +156,31 @@ async function fetchGoogleTrends(geo: string): Promise<RawTrend[]> {
   }
 }
 
-/** Reddit r/soccer hot posts (public JSON, no auth). */
-async function fetchRedditSoccer(): Promise<RawTrend[]> {
+/** ESPN Soccer RSS — always returns football content. */
+async function fetchEspnSoccer(): Promise<RawTrend[]> {
   try {
-    const res = await fetch("https://www.reddit.com/r/soccer/hot.json?limit=25", {
-      headers: { "User-Agent": "ScoutGamer/1.0 (content-trends)" },
+    const res = await fetch("https://www.espn.com/espn/rss/soccer/news", {
       next: { revalidate: 1800 },
     });
     if (!res.ok) return [];
-    const data = await res.json();
-    const posts = data?.data?.children ?? [];
-    return posts
-      .filter((p: { data: { stickied: boolean } }) => !p.data.stickied)
-      .map((p: { data: { title: string; ups: number; permalink: string } }) => ({
-        title: p.data.title,
-        traffic: `${Math.round(p.data.ups / 1000)}k upvotes`,
-        link: `https://reddit.com${p.data.permalink}`,
-        source: "reddit",
-      }));
+    const xml = await res.text();
+
+    const items: RawTrend[] = [];
+    const itemRegex = /<item>([\s\S]*?)<\/item>/gi;
+    let match;
+    while ((match = itemRegex.exec(xml)) !== null) {
+      const block = match[1];
+      const titleMatch = block.match(/<title[^>]*>([\s\S]*?)<\/title>/i);
+      const linkMatch = block.match(/<link[^>]*>([\s\S]*?)<\/link>/i);
+
+      const rawTitle = titleMatch ? decodeEntities(stripCdata(titleMatch[1])) : "";
+      // Strip emoji prefixes ESPN sometimes uses
+      const title = rawTitle.replace(/^[\u{1F4C8}\u{1F525}\u{26BD}\u{1F3C6}]\s*/u, "").trim();
+      const link = linkMatch ? stripCdata(linkMatch[1]).trim() : "";
+
+      if (title) items.push({ title, traffic: "ESPN", link, source: "espn" });
+    }
+    return items.slice(0, 20);
   } catch {
     return [];
   }
@@ -184,18 +191,19 @@ async function fetchRedditSoccer(): Promise<RawTrend[]> {
 export async function GET() {
   try {
     // Fetch all sources in parallel
-    const [trendsUS, trendsGB, trendsGlobal, reddit] = await Promise.all([
+    const [trendsUS, trendsGB, trendsGlobal, espn] = await Promise.all([
       fetchGoogleTrends("US"),
       fetchGoogleTrends("GB"),
       fetchGoogleTrends(""),     // global
-      fetchRedditSoccer(),
+      fetchEspnSoccer(),
     ]);
 
     // Merge all raw trends
-    const allRaw: RawTrend[] = [...trendsUS, ...trendsGB, ...trendsGlobal, ...reddit];
+    const allRaw: RawTrend[] = [...trendsUS, ...trendsGB, ...trendsGlobal];
 
-    // Filter football-related only
-    const footballRaw = allRaw.filter((t) => isFootballRelated(t.title));
+    // ESPN is already football — combine with filtered Google Trends
+    const footballFromGoogle = allRaw.filter((t) => isFootballRelated(t.title));
+    const footballRaw = [...espn, ...footballFromGoogle];
 
     // Score and sort
     const scored: TrendItem[] = footballRaw.map((t) => ({
