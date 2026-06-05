@@ -45,32 +45,53 @@ function fitTitle(raw: string, max: number): string {
 // so the "SG" legend uses a solid accent color instead of the site gradient.
 function Logo({ scale = 1 }: { scale?: number }) {
   const s = 46 * scale;
+  const r = s * 0.2;
   return (
     <div style={{ display: "flex", alignItems: "center", gap: 12 * scale }}>
-      <div
-        style={{
-          width: s,
-          height: s,
-          borderRadius: 11 * scale,
-          background: "linear-gradient(180deg, #1f2f42, #0c1623)",
-          borderBottom: `${Math.max(2, 4 * scale)}px solid #060d16`,
-          boxShadow: `0 ${4 * scale}px ${8 * scale}px rgba(0,0,0,0.5)`,
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          fontSize: 18 * scale,
-          fontWeight: 800,
-          letterSpacing: "-0.04em",
-          color: "#2fe6c4",
-        }}
-      >
-        SG
+      {/* Keycap */}
+      <div style={{ position: "relative", width: s, height: s, display: "flex" }}>
+        <div
+          style={{
+            position: "absolute",
+            inset: 0,
+            borderRadius: r,
+            background: "linear-gradient(180deg, #1a2738, #0c1623)",
+            boxShadow: `0 ${s * 0.07}px 0 0 #060d16, 0 ${s * 0.13}px ${s * 0.22}px rgba(0,0,0,0.55)`,
+          }}
+        />
+        <div
+          style={{
+            position: "absolute",
+            left: "9%",
+            right: "9%",
+            top: "7%",
+            bottom: "18%",
+            borderRadius: r * 0.8,
+            background: "linear-gradient(180deg, #233447, rgba(22,36,54,0))",
+            boxShadow: "inset 0 1px 1px rgba(255,255,255,0.18)",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+          }}
+        >
+          <span
+            style={{
+              fontSize: s * 0.34,
+              fontWeight: 800,
+              letterSpacing: "-0.04em",
+              color: "#2fe6c4",
+            }}
+          >
+            SG
+          </span>
+        </div>
       </div>
+      {/* Wordmark — matches site-header.tsx */}
       <div style={{ display: "flex", flexDirection: "column" }}>
-        <span style={{ fontSize: 22 * scale, fontWeight: 800, color: "#e8f4ff", letterSpacing: "-0.02em" }}>
+        <span style={{ fontSize: 17 * scale, fontWeight: 700, letterSpacing: "-0.025em", lineHeight: 1, color: "#e8f4ff" }}>
           Scout Gamer
         </span>
-        <span style={{ fontSize: 10 * scale, color: "#9fc2d8", letterSpacing: "0.22em", fontFamily: "monospace" }}>
+        <span style={{ fontSize: 9 * scale, letterSpacing: "0.18em", color: "#9fc2d8", marginTop: 2 * scale, fontFamily: "monospace" }}>
           FOOTBALL × GAME CULTURE
         </span>
       </div>
@@ -92,6 +113,7 @@ export async function GET(req: Request) {
 
   // Tune sizing per format
   const pad = isStory ? 64 : 48;
+  const bottomPad = isStory ? 340 : isPortrait ? 180 : pad;
   const titleSize = isStory ? 60 : isPortrait ? 56 : 46;
   const maxTitleChars = isStory ? 90 : isPortrait ? 80 : 95;
   const title = fitTitle(rawTitle, maxTitleChars);
@@ -104,13 +126,28 @@ export async function GET(req: Request) {
           <img src={cover} alt="" style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover" }} />
         ) : null}
 
-        {/* Legibility gradient — stronger at the bottom where the title sits */}
+        {/* Top fade — logo & pill legibility */}
         <div
           style={{
             position: "absolute",
-            inset: 0,
-            background:
-              "linear-gradient(180deg, rgba(6,15,30,0.55) 0%, rgba(6,15,30,0.05) 32%, rgba(6,15,30,0.72) 74%, rgba(6,15,30,0.96) 100%)",
+            top: 0,
+            left: 0,
+            width: "100%",
+            height: "40%",
+            display: "flex",
+            background: "linear-gradient(180deg, rgba(6,15,30,0.85) 0%, rgba(6,15,30,0.4) 50%, rgba(6,15,30,0) 100%)",
+          }}
+        />
+        {/* Bottom fade — title legibility */}
+        <div
+          style={{
+            position: "absolute",
+            bottom: 0,
+            left: 0,
+            width: "100%",
+            height: isStory ? "65%" : isPortrait ? "55%" : "50%",
+            display: "flex",
+            background: "linear-gradient(0deg, rgba(6,15,30,0.95) 0%, rgba(6,15,30,0.55) 45%, rgba(6,15,30,0) 100%)",
           }}
         />
 
@@ -143,7 +180,7 @@ export async function GET(req: Request) {
         ) : null}
 
         {/* Bottom: title + domain */}
-        <div style={{ position: "absolute", left: pad, right: pad, bottom: pad, display: "flex", flexDirection: "column", gap: isStory ? 18 : 12 }}>
+        <div style={{ position: "absolute", left: pad, right: pad, bottom: bottomPad, display: "flex", flexDirection: "column", gap: isStory ? 18 : 12 }}>
           <span
             style={{
               fontSize: titleSize,
@@ -151,7 +188,7 @@ export async function GET(req: Request) {
               color: "#ffffff",
               letterSpacing: "-0.03em",
               lineHeight: 1.06,
-              textShadow: "0 2px 24px rgba(0,0,0,0.7)",
+              textShadow: "0 2px 24px rgba(0,0,0,0.7), 0 1px 0 rgba(0,0,0,0.5)",
             }}
           >
             {title}
