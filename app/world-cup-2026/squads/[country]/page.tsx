@@ -55,8 +55,13 @@ function buildSquadJsonLd(
     memberOf: {
       "@type": "SportsEvent",
       name: "FIFA World Cup 2026",
+      description: "The 23rd FIFA World Cup, hosted across the United States, Mexico, and Canada with 48 teams.",
       startDate: "2026-06-11",
       endDate: "2026-07-19",
+      eventStatus: "https://schema.org/EventScheduled",
+      location: { "@type": "Place", name: "United States, Mexico & Canada" },
+      organizer: { "@type": "Organization", name: "FIFA", url: "https://www.fifa.com" },
+      image: `${BASE}/world-cup-2026/opengraph-image`,
     },
     athlete: players.slice(0, 30).map((p) => ({
       "@type": "Person",

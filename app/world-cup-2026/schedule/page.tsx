@@ -22,6 +22,7 @@ function buildMatchEventSchemas(today = new Date(), limit = 8) {
     "@context": "https://schema.org",
     "@type": "SportsEvent",
     name: `${getTeamName(m.home)} vs ${getTeamName(m.away)} — FIFA World Cup 2026`,
+    description: `${getTeamName(m.home)} vs ${getTeamName(m.away)} in the FIFA World Cup 2026 at ${m.venue}, ${m.city}.`,
     sport: "Football",
     startDate: matchIsoStart(m),
     eventStatus: "https://schema.org/EventScheduled",
@@ -31,10 +32,24 @@ function buildMatchEventSchemas(today = new Date(), limit = 8) {
       name: m.venue,
       address: { "@type": "PostalAddress", addressLocality: m.city },
     },
+    performer: [
+      { "@type": "SportsTeam", name: `${getTeamName(m.home)} national football team`, url: `${BASE}/world-cup-2026/schedule/${teamCodeToSlug(m.home)}` },
+      { "@type": "SportsTeam", name: `${getTeamName(m.away)} national football team`, url: `${BASE}/world-cup-2026/schedule/${teamCodeToSlug(m.away)}` },
+    ],
     competitor: [
       { "@type": "SportsTeam", name: getTeamName(m.home), url: `${BASE}/world-cup-2026/schedule/${teamCodeToSlug(m.home)}` },
       { "@type": "SportsTeam", name: getTeamName(m.away), url: `${BASE}/world-cup-2026/schedule/${teamCodeToSlug(m.away)}` },
     ],
+    organizer: { "@type": "Organization", name: "FIFA", url: "https://www.fifa.com" },
+    image: `${BASE}/world-cup-2026/opengraph-image`,
+    offers: {
+      "@type": "Offer",
+      url: "https://www.fifa.com/en/tournaments/mens/worldcup/26/tickets",
+      availability: "https://schema.org/InStock",
+      price: "0",
+      priceCurrency: "USD",
+      validFrom: "2025-01-01",
+    },
     superEvent: { "@type": "SportsEvent", name: "FIFA World Cup 2026" },
     url: `${BASE}/world-cup-2026/schedule`,
   }));
@@ -123,7 +138,17 @@ function buildJsonLd() {
       { "@type": "Place", name: "Estadio Azteca", address: { "@type": "PostalAddress", addressLocality: "Mexico City", addressCountry: "MX" } },
     ],
     organizer: { "@type": "Organization", name: "FIFA", url: "https://www.fifa.com" },
+    performer: { "@type": "Organization", name: "48 National Football Teams" },
     competitor: { "@type": "SportsTeam", name: "48 National Teams" },
+    image: `${BASE}/world-cup-2026/opengraph-image`,
+    offers: {
+      "@type": "Offer",
+      url: "https://www.fifa.com/en/tournaments/mens/worldcup/26/tickets",
+      availability: "https://schema.org/InStock",
+      price: "0",
+      priceCurrency: "USD",
+      validFrom: "2025-01-01",
+    },
     url: "https://www.scoutgamer.com/world-cup-2026/schedule",
   };
 
