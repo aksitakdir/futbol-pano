@@ -40,8 +40,8 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    site: "@scoutgamer",
-    creator: "@scoutgamer",
+    site: "@scoutgamerx",
+    creator: "@scoutgamerx",
   },
 };
 

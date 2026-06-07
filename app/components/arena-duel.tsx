@@ -364,7 +364,7 @@ export default function ArenaDuel({ participants, gameType, title, lang = "tr", 
     if (typeof navigator !== "undefined" && navigator.share) {
       navigator.share({ title: shareTitle, url: shareUrl }).catch(() => {});
     } else {
-      const twitterUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(shareTitle + "\n" + shareUrl)}`;
+      const twitterUrl = `https://x.com/intent/tweet?text=${encodeURIComponent(shareTitle + "\n" + shareUrl)}`;
       window.open(twitterUrl, "_blank", "noopener,noreferrer");
     }
   }, [champion, title, isEn, canonicalUrl]);

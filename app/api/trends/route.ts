@@ -127,11 +127,14 @@ interface RawTrend {
   source: string;
 }
 
+type FetchOpts = { cache: "no-store" } | { next: { revalidate: number } };
+const DEFAULT_FETCH_OPTS: FetchOpts = { next: { revalidate: 1800 } };
+
 /** Google Trends RSS for a given geo. */
-async function fetchGoogleTrends(geo: string): Promise<RawTrend[]> {
+async function fetchGoogleTrends(geo: string, opts: FetchOpts = DEFAULT_FETCH_OPTS): Promise<RawTrend[]> {
   try {
     const url = `https://trends.google.com/trending/rss?geo=${geo}`;
-    const res = await fetch(url, { next: { revalidate: 1800 } });
+    const res = await fetch(url, opts);
     if (!res.ok) return [];
     const xml = await res.text();
 
@@ -157,11 +160,9 @@ async function fetchGoogleTrends(geo: string): Promise<RawTrend[]> {
 }
 
 /** ESPN Soccer RSS — always returns football content. */
-async function fetchEspnSoccer(): Promise<RawTrend[]> {
+async function fetchEspnSoccer(opts: FetchOpts = DEFAULT_FETCH_OPTS): Promise<RawTrend[]> {
   try {
-    const res = await fetch("https://www.espn.com/espn/rss/soccer/news", {
-      next: { revalidate: 1800 },
-    });
+    const res = await fetch("https://www.espn.com/espn/rss/soccer/news", opts);
     if (!res.ok) return [];
     const xml = await res.text();
 
@@ -204,14 +205,17 @@ async function fetchEspnSoccer(): Promise<RawTrend[]> {
 
 /* ── Main handler ── */
 
-export async function GET() {
+export async function GET(req: Request) {
+  const fresh = new URL(req.url).searchParams.get("fresh") === "1";
+  const opts: FetchOpts = fresh ? { cache: "no-store" } : DEFAULT_FETCH_OPTS;
+
   try {
     // Fetch all sources in parallel
     const [trendsUS, trendsGB, trendsGlobal, espn] = await Promise.all([
-      fetchGoogleTrends("US"),
-      fetchGoogleTrends("GB"),
-      fetchGoogleTrends(""),     // global
-      fetchEspnSoccer(),
+      fetchGoogleTrends("US", opts),
+      fetchGoogleTrends("GB", opts),
+      fetchGoogleTrends("", opts),     // global
+      fetchEspnSoccer(opts),
     ]);
 
     // Merge all raw trends
@@ -238,12 +242,19 @@ export async function GET() {
       .slice(0, 8)
       .map((t) => t.title);
 
-    return NextResponse.json({
+    const body = {
       total_scanned: allRaw.length,
       football_trends: top.length,
       trends: top,
       all_sample: nonFootball,
-    });
+      ...(fresh ? { refreshed_at: new Date().toISOString() } : {}),
+    };
+
+    const headers: HeadersInit = fresh
+      ? { "Cache-Control": "no-store, max-age=0" }
+      : {};
+
+    return NextResponse.json(body, { headers });
   } catch (err) {
     console.error("Trends fetch error:", err);
     return NextResponse.json(

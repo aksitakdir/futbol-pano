@@ -78,7 +78,7 @@ function ChampionResultView({
     if (navigator.share) {
       navigator.share({ title: `Scout Gamer Arena`, text: shareText, url: shareUrl }).catch(() => {});
     } else {
-      const tweet = `https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText)}&url=${encodeURIComponent(shareUrl)}`;
+      const tweet = `https://x.com/intent/tweet?text=${encodeURIComponent(shareText)}&url=${encodeURIComponent(shareUrl)}`;
       window.open(tweet, "_blank", "noopener,noreferrer");
     }
     setShared(true);

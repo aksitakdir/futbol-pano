@@ -51,8 +51,8 @@ Email
 hello@scoutgamer.com
 
 Social
-Twitter/X: @ScoutGamer
-Instagram: @scoutgamer
+Twitter/X: @scoutgamerx
+Instagram: @scoutgamer_fc
 
 Partnerships
 For content or partnerships: hello@scoutgamer.com
@@ -88,14 +88,14 @@ export default function SiteFooter(_props?: Props) {
                 Consumable quality with understandable sophistication. Where football scouting meets gaming culture.
               </p>
               <div className="mt-6 flex gap-2">
-                <a href="https://x.com/ScoutGamer" target="_blank" rel="noopener noreferrer"
+                <a href="https://x.com/scoutgamerx" target="_blank" rel="noopener noreferrer"
                   className="flex h-8 w-8 items-center justify-center transition hover:opacity-70"
                   style={{ border: "1px solid var(--sg-border)", borderRadius: 999, color: "var(--sg-text-muted)" }}>
                   <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor">
                     <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
                   </svg>
                 </a>
-                <a href="https://instagram.com" target="_blank" rel="noopener noreferrer"
+                <a href="https://www.instagram.com/scoutgamer_fc/" target="_blank" rel="noopener noreferrer"
                   className="flex h-8 w-8 items-center justify-center transition hover:opacity-70"
                   style={{ border: "1px solid var(--sg-border)", borderRadius: 999, color: "var(--sg-text-muted)" }}>
                   <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
@@ -137,8 +137,8 @@ export default function SiteFooter(_props?: Props) {
               <div className="eyebrow mb-4">FOLLOW</div>
               <div className="flex flex-col gap-2.5">
                 {[
-                  { href: "https://x.com/ScoutGamer", label: "X / TWITTER" },
-                  { href: "https://instagram.com", label: "INSTAGRAM" },
+                  { href: "https://x.com/scoutgamerx", label: "X / TWITTER" },
+                  { href: "https://www.instagram.com/scoutgamer_fc/", label: "INSTAGRAM" },
                 ].map(l => (
                   <a key={l.href} href={l.href} target="_blank" rel="noopener noreferrer"
                     className="mono u-link transition hover:opacity-80"
