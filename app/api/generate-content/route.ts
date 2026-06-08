@@ -244,7 +244,7 @@ Respond with ONLY this JSON, nothing else:
 
 Category rules:
 - **radar**: Player deep-dives, form analysis, transfer context. "players": the 1-2 featured players. "featured_player": the main subject. hero_variant: "player-cards".
-- **tactics-lab**: System breakdowns, tactical evolution, positional analysis. "players": example players (max 3). "featured_player": the best example player. hero_variant: "pitch-diagram".
+- **tactics-lab**: System breakdowns, tactical evolution, positional analysis. "players": example players (max 3). "featured_player": the best example player. hero_variant: "pitch-diagram". When verified formation data is provided (e.g. "4-2-3-1 (18x)"), reference those EXACT formations — do NOT invent formation usage stats.
 - **lists**: Curated rankings with analysis per entry. "players": ALL ranked players (max 10). "featured_player": the #1 ranked player. hero_variant: "player-cards".
 
 Accent mood: emerald=evergreen, cyan=tactical/analytical, sky=player spotlight, rose=debate/controversy, amber=heritage/history, lime=breakout/underdog.
@@ -319,6 +319,7 @@ function extractEntities(topic: string): { players: string[]; teams: string[] } 
 async function buildStatsContext(
   topic: string,
   maxRequests = 6,
+  category?: string,
 ): Promise<string> {
   if (!process.env.FOOTBALL_API_KEY) {
     console.log("[stats-context] FOOTBALL_API_KEY not set, skipping enrichment");
@@ -327,6 +328,30 @@ async function buildStatsContext(
 
   const { players, teams } = extractEntities(topic);
   console.log(`[stats-context] Extracted entities — players: [${players.join(", ")}], teams: [${teams.join(", ")}]`);
+
+  // For tactics-lab: if no teams found but topic mentions formations/tactics,
+  // try to infer teams from context or fetch a default set of formation data
+  if (category === "tactics-lab" && teams.length === 0) {
+    // Look for league-specific terms to infer a top team for formation data
+    const topicLower = topic.toLowerCase();
+    const tacticsTeamHints: [string[], string][] = [
+      [["premier league", "english football", "epl"], "manchester-city"],
+      [["la liga", "spanish football", "tiki-taka"], "barcelona"],
+      [["bundesliga", "german football"], "bayern-munich"],
+      [["serie a", "italian football", "calcio"], "inter-milan"],
+      [["ligue 1", "french football"], "psg"],
+      [["pressing", "gegenpressing", "klopp"], "liverpool"],
+      [["possession", "pep", "guardiola"], "manchester-city"],
+      [["counter-attack", "counter attack", "transition"], "real-madrid"],
+    ];
+    for (const [keywords, teamSlug] of tacticsTeamHints) {
+      if (keywords.some((k) => topicLower.includes(k))) {
+        teams.push(teamSlug);
+        console.log(`[stats-context] Tactics-lab: inferred team ${teamSlug} from topic keywords`);
+        break;
+      }
+    }
+  }
 
   if (players.length === 0 && teams.length === 0) {
     console.log("[stats-context] No entities found in topic, skipping");
@@ -480,7 +505,7 @@ async function generateWithClaude(
     : "";
 
   // Faz 4: Fetch verified stats from api-football to enrich content
-  const statsContext = await buildStatsContext(topic);
+  const statsContext = await buildStatsContext(topic, 6, targetCategory);
 
   const userMessage =
     `Topic: ${topic}. ` +
