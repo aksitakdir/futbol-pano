@@ -234,16 +234,25 @@ Respond with ONLY this JSON, nothing else:
   "category": "radar | tactics-lab | lists",
   "content": "Full article in block markup format as described above",
   "players": ["Player Name 1", "Player Name 2"],
-  "hero_variant": "player-cards | cover-image | pitch-diagram | stat-focus | text-only",
-  "accent": "emerald | cyan | sky | rose | amber | lime"
+  "featured_player": "Main Player Name (the single most important player in the article — used for hero card)",
+  "hero_variant": "player-cards | cover-image | pitch-diagram | text-only",
+  "accent": "emerald | cyan | sky | rose | amber | lime",
+  "youtube_query_1": "best search query to find a relevant highlight/analysis video on YouTube (e.g. 'Haaland goals 2025 highlights')",
+  "youtube_query_2": "optional second YouTube search query — different angle (e.g. 'Manchester City tactical analysis')",
+  "news_query": "Google News search keyword for related articles (e.g. 'Erling Haaland')"
 }
 
 Category rules:
-- **radar**: Player deep-dives, form analysis, transfer context. "players": the 1-2 featured players. hero_variant: "player-cards" or "stat-focus".
-- **tactics-lab**: System breakdowns, tactical evolution, positional analysis. "players": example players (max 3). hero_variant: "pitch-diagram".
-- **lists**: Curated rankings with analysis per entry. "players": ALL ranked players (max 10). hero_variant: "player-cards".
+- **radar**: Player deep-dives, form analysis, transfer context. "players": the 1-2 featured players. "featured_player": the main subject. hero_variant: "player-cards".
+- **tactics-lab**: System breakdowns, tactical evolution, positional analysis. "players": example players (max 3). "featured_player": the best example player. hero_variant: "pitch-diagram".
+- **lists**: Curated rankings with analysis per entry. "players": ALL ranked players (max 10). "featured_player": the #1 ranked player. hero_variant: "player-cards".
 
-Accent mood: emerald=evergreen, cyan=tactical/analytical, sky=player spotlight, rose=debate/controversy, amber=heritage/history, lime=breakout/underdog.`;
+Accent mood: emerald=evergreen, cyan=tactical/analytical, sky=player spotlight, rose=debate/controversy, amber=heritage/history, lime=breakout/underdog.
+
+youtube_query rules:
+- youtube_query_1: The most relevant video search — player highlights, match analysis, or tactical breakdown
+- youtube_query_2: A complementary angle — different player, team context, or pundit analysis. Can be empty string if not needed.
+- news_query: The main person or topic name for Google News sidebar`;
 }
 
 // ─── API-Football stat enrichment ────────────────────────────────────
@@ -456,8 +465,12 @@ async function generateWithClaude(
   content: string;
   sectionsJson: import("@/lib/section-blocks").SectionBlock[];
   players?: string[];
+  featured_player?: string;
   hero_variant?: string;
   accent?: string;
+  youtube_query_1?: string;
+  youtube_query_2?: string;
+  news_query?: string;
 }> {
   const apiKey = process.env.ANTHROPIC_API_KEY;
   if (!apiKey) throw new Error("ANTHROPIC_API_KEY not configured");
@@ -553,7 +566,7 @@ async function generateWithClaude(
     throw new Error("No valid JSON object found in response");
   }
 
-  let parsed: { title?: string; slug?: string; category?: string; content?: string; players?: unknown; hero_variant?: string; accent?: string };
+  let parsed: { title?: string; slug?: string; category?: string; content?: string; players?: unknown; featured_player?: string; hero_variant?: string; accent?: string; youtube_query_1?: string; youtube_query_2?: string; news_query?: string };
   try {
     parsed = JSON.parse(jsonStr);
   } catch (parseErr) {
@@ -584,19 +597,30 @@ async function generateWithClaude(
     ? (parsed.category as string)
     : targetCategory;
 
-  const validHeroVariants = ["player-cards", "cover-image", "pitch-diagram", "stat-focus", "text-only"];
-  const hero_variant = validHeroVariants.includes(parsed.hero_variant ?? "")
+  const validHeroVariants = ["player-cards", "cover-image", "pitch-diagram", "text-only"];
+  let hero_variant = validHeroVariants.includes(parsed.hero_variant ?? "")
     ? parsed.hero_variant
     : (targetCategory === "tactics-lab" ? "pitch-diagram" : "player-cards");
+  // Merge deprecated stat-focus → player-cards
+  if (hero_variant === "stat-focus") hero_variant = "player-cards";
 
   const validAccents = ["emerald", "cyan", "sky", "rose", "amber", "lime"];
   const accent = validAccents.includes(parsed.accent ?? "") ? parsed.accent : "emerald";
 
+  // Extract new auto-fill fields
+  const featured_player = typeof parsed.featured_player === "string" && parsed.featured_player.trim()
+    ? parsed.featured_player.trim()
+    : (players[0] ?? undefined);
+  const youtube_query_1 = typeof parsed.youtube_query_1 === "string" ? parsed.youtube_query_1.trim() : "";
+  const youtube_query_2 = typeof parsed.youtube_query_2 === "string" ? parsed.youtube_query_2.trim() : "";
+  const news_query = typeof parsed.news_query === "string" ? parsed.news_query.trim()
+    : (featured_player ?? title);
+
   // Parse block markup → SectionBlock[] for sections_json
   const sectionsJson = parseMarkupToBlocks(content);
 
-  console.log(`[generate-content] Generated — title: "${title}", category: ${category}, hero: ${hero_variant}, blocks: ${sectionsJson.length}`);
-  return { title, slug, category, content, sectionsJson, players, hero_variant, accent };
+  console.log(`[generate-content] Generated — title: "${title}", category: ${category}, hero: ${hero_variant}, blocks: ${sectionsJson.length}, player: ${featured_player ?? "none"}`);
+  return { title, slug, category, content, sectionsJson, players, featured_player, hero_variant, accent, youtube_query_1, youtube_query_2, news_query };
 }
 
 function isValidSlug(s: string): boolean {
@@ -682,6 +706,10 @@ export async function POST(request: Request) {
         status: "pending" as const,
         hero_variant: generated.hero_variant ?? "text-only",
         accent: generated.accent ?? "emerald",
+        player_name: generated.featured_player ?? null,
+        youtube_query_1: generated.youtube_query_1 || null,
+        youtube_query_2: generated.youtube_query_2 || null,
+        news_query: generated.news_query || null,
         players_json:
           generated.category === "lists" && generated.players?.length
             ? await buildPlayersJson(supabase, generated.players)
@@ -776,6 +804,10 @@ export async function POST(request: Request) {
         status: "pending" as const,
         hero_variant: generated.hero_variant ?? "text-only",
         accent: generated.accent ?? "emerald",
+        player_name: generated.featured_player ?? null,
+        youtube_query_1: generated.youtube_query_1 || null,
+        youtube_query_2: generated.youtube_query_2 || null,
+        news_query: generated.news_query || null,
         players_json:
           generated.category === "lists" && generated.players?.length
             ? await buildPlayersJson(supabase, generated.players)
@@ -909,6 +941,10 @@ export async function POST(request: Request) {
       status: "pending",
       hero_variant: generated.hero_variant ?? "text-only",
       accent: generated.accent ?? "emerald",
+      player_name: generated.featured_player ?? null,
+      youtube_query_1: generated.youtube_query_1 || null,
+      youtube_query_2: generated.youtube_query_2 || null,
+      news_query: generated.news_query || null,
       players_json:
         generated.category === "lists" && generated.players?.length
           ? await buildPlayersJson(supabase, generated.players)

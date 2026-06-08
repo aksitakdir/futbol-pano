@@ -122,10 +122,12 @@ export default function ArticleLayoutEn({
   excerptContent: _excerptContent, isPending: _isPending,
   youtubeQuery1, youtubeQuery2,
   newsQuery, showNewsSection = true, children,
-  heroVariant = "text-only", accentOverride, sectionsJson,
+  heroVariant: heroVariantRaw = "text-only", accentOverride, sectionsJson,
   playersJson,
   hubId,
 }: Props) {
+  // Backward compat: merge deprecated stat-focus → player-cards
+  const heroVariant = heroVariantRaw === "stat-focus" ? "player-cards" : heroVariantRaw;
   const [similar, setSimilar] = useState<SidebarItem[]>([]);
   const [youtubeVideos1, setYoutubeVideos1] = useState<YouTubeSearchItem[] | null>(null);
   const [youtubeVideos2, setYoutubeVideos2] = useState<YouTubeSearchItem[] | null>(null);
@@ -439,23 +441,49 @@ export default function ArticleLayoutEn({
                     ))}
                   </svg>
                 </div>
-              ) : heroVariant === "stat-focus" && children ? (
-                <div style={{ width: "100%", maxWidth: 320 }}>{children}</div>
               ) : (
+                /* Typographic hero fallback — category-specific accent design */
                 <div style={{
-                  width: "100%", maxWidth: 320,
-                  border: "1px solid var(--sg-border)", borderRadius: 4, overflow: "hidden",
-                  background: "linear-gradient(135deg, var(--sg-surface) 0%, var(--sg-surface-low) 100%)",
-                  aspectRatio: "3/4", display: "flex", alignItems: "center", justifyContent: "center",
+                  width: "100%", maxWidth: 340,
+                  borderRadius: 8, overflow: "hidden",
+                  background: `linear-gradient(145deg, var(--sg-surface) 0%, color-mix(in oklch, ${accent} 8%, var(--sg-surface-low)) 100%)`,
+                  border: `1px solid color-mix(in oklch, ${accent} 20%, transparent)`,
+                  aspectRatio: "4/5", display: "flex", flexDirection: "column",
+                  alignItems: "center", justifyContent: "center",
+                  position: "relative",
+                  padding: "32px 24px",
                 }}>
-                  <div style={{ textAlign: "center" }}>
-                    <div className="display" style={{
-                      fontSize: 80, fontWeight: 700, color: accent, opacity: 0.15,
-                      lineHeight: 1, letterSpacing: "-0.05em",
-                    }}>SG</div>
-                    <div className="mono" style={{ fontSize: 10, letterSpacing: "0.2em", color: "var(--sg-text-muted)", marginTop: 8 }}>
-                      SCOUT GAMER
-                    </div>
+                  {/* Top accent line */}
+                  <div style={{
+                    position: "absolute", top: 0, left: "15%", right: "15%",
+                    height: 3, borderRadius: "0 0 3px 3px",
+                    background: accent, opacity: 0.6,
+                  }} />
+                  {/* Category icon/symbol */}
+                  <div className="display" style={{
+                    fontSize: 72, fontWeight: 800, color: accent, opacity: 0.12,
+                    lineHeight: 1, letterSpacing: "-0.05em", marginBottom: 16,
+                  }}>
+                    {category === "tactics-lab" ? "⬡" : category === "lists" ? "≡" : category === "radar" ? "◎" : "SG"}
+                  </div>
+                  {/* Category label */}
+                  <div className="mono" style={{
+                    fontSize: 10, letterSpacing: "0.22em",
+                    textTransform: "uppercase",
+                    color: accent, opacity: 0.7,
+                    marginBottom: 8,
+                  }}>
+                    {catLabel}
+                  </div>
+                  {/* Decorative line */}
+                  <div style={{
+                    width: 48, height: 2, borderRadius: 1,
+                    background: accent, opacity: 0.3,
+                    marginBottom: 12,
+                  }} />
+                  {/* Mini brand */}
+                  <div className="mono" style={{ fontSize: 9, letterSpacing: "0.18em", color: "var(--sg-text-muted)" }}>
+                    SCOUT GAMER
                   </div>
                 </div>
               )}

@@ -30,8 +30,7 @@ const HERO_VARIANTS = [
   { value: "player-cards", label: "🃏 Player Card", desc: "Radar/Lists" },
   { value: "cover-image", label: "🖼 Cover Image", desc: "Full-width hero" },
   { value: "pitch-diagram", label: "⬡ Pitch Diagram", desc: "Tactics Lab" },
-  { value: "stat-focus", label: "📊 Stat Focus", desc: "Radar" },
-  { value: "text-only", label: "✍ Text Only", desc: "Minimal" },
+  { value: "text-only", label: "✍ Text Only", desc: "Typographic hero" },
 ];
 
 const ACCENT_COLORS = [
@@ -426,16 +425,16 @@ function NewArticleForm() {
           <div className="rounded-xl border border-slate-700/60 bg-slate-900/40 p-5">
             <div className="mb-4 flex items-center justify-between">
               <div>
-                <p className="text-xs font-semibold uppercase tracking-[0.18em] text-emerald-300/80">Player Card</p>
-                <p className="mt-0.5 text-[11px] text-slate-500">Auto-filled from EA FC 26 database — override if needed</p>
+                <p className="text-xs font-semibold uppercase tracking-[0.18em] text-emerald-300/80">Hero Player</p>
+                <p className="mt-0.5 text-[11px] text-slate-500">Featured player for the hero section — auto-filled from EA FC 26</p>
               </div>
               {playerMatched && <button type="button" onClick={clearPlayer} className="text-[11px] text-rose-400 hover:text-rose-300">Clear</button>}
             </div>
             <div className="relative mb-4">
-              <label className="mb-1.5 block text-xs font-semibold text-slate-300">Focus Player</label>
+              <label className="mb-1.5 block text-xs font-semibold text-slate-300">Featured Player</label>
               <input type="text" value={playerSearch}
                 onChange={(e) => { setPlayerSearch(e.target.value); setPlayerMatched(null); }}
-                placeholder="Type player name — auto-matches from EA FC 26"
+                placeholder="Type player name — auto-finds from EA FC 26"
                 className="w-full rounded-lg border border-slate-700/80 bg-slate-900/70 px-4 py-2.5 text-sm text-slate-100 placeholder-slate-500 outline-none transition focus:border-emerald-500/60 focus:ring-1 focus:ring-emerald-500/40" />
               {playerSearching && <div className="absolute right-3 top-9 h-4 w-4 animate-spin rounded-full border-2 border-emerald-400 border-t-transparent" />}
               {playerResults.length > 0 && (
