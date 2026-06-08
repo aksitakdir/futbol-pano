@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { createClient, type SupabaseClient } from "@supabase/supabase-js";
 import { parseMarkupToBlocks } from "@/lib/parse-blocks";
+import { getPlayerContext, getTeamContext, TEAM_IDS, LEAGUE_IDS } from "@/lib/api-football-stats";
 
 type FcPlayerRow = {
   name: string;
@@ -134,6 +135,15 @@ You write with authority but never arrogance. You surprise the reader with insig
 9. **Voice and opinion**: Take positions. "This is the most underrated signing of the window" is more engaging than "This could be considered an important signing." Be confident in your analysis.
 10. **Sensory writing**: Describe how football *feels* — the weight of a cross, the geometry of a pressing trap, the moment a defender's hips commit. The reader should visualize the pitch.
 
+## VERIFIED STATISTICS
+
+When verified player/team statistics are provided at the end of the user message (marked as "VERIFIED STATISTICS from api-football.com"), use these numbers with confidence — they are real, current-season data. Calculate per-90 metrics, shot accuracy percentages, and goal contributions from the raw data. Prefer these verified stats over web search results when available.
+
+If verified stats are provided for a player, use @stat: blocks with a title to showcase 2-4 key numbers prominently:
+@stat: Scoring Profile
+- 22 | Goals | Premier League 2024-25
+- 0.72 | Goals per 90 | Elite conversion rate
+
 ## IMPORTANT FORMATTING RULES
 
 - Do NOT include citation tags, source references, or any markup like <cite>, [citation], or similar. Write clean prose.
@@ -169,7 +179,8 @@ The section heading and its body text are together. Good for structured analysis
 What is X's xG per 90? 0.82 — third highest in the league
 How many progressive carries? 4.7 per 90, up from 3.1 last season
 
-@stat: 94.2% | Pass Completion | Highest in Europe's top five leagues
+@stat: Card Group Title (optional, no pipe — becomes the header)
+- 94.2% | Pass Completion | Highest in Europe's top five leagues
 - 0.82 | xG per 90 | Up 34% from last season
 - 4.7 | Progressive Carries | Redefining the midfield role
 
@@ -233,6 +244,152 @@ Category rules:
 - **lists**: Curated rankings with analysis per entry. "players": ALL ranked players (max 10). hero_variant: "player-cards".
 
 Accent mood: emerald=evergreen, cyan=tactical/analytical, sky=player spotlight, rose=debate/controversy, amber=heritage/history, lime=breakout/underdog.`;
+}
+
+// ─── API-Football stat enrichment ────────────────────────────────────
+
+/**
+ * Extract likely player and team names from the topic text.
+ * Uses simple heuristics — capitalised multi-word sequences and known teams.
+ */
+function extractEntities(topic: string): { players: string[]; teams: string[] } {
+  // Known teams — match by display name or slug
+  const knownTeamNames: Record<string, string> = {};
+  for (const slug of Object.keys(TEAM_IDS)) {
+    const display = slug.replace(/-/g, " ");
+    knownTeamNames[display] = slug;
+  }
+
+  const topicLower = topic.toLowerCase();
+  const teams: string[] = [];
+  for (const [display, slug] of Object.entries(knownTeamNames)) {
+    if (topicLower.includes(display)) teams.push(slug);
+  }
+
+  // Player names — look for Capitalised multi-word phrases (2-3 words)
+  // that aren't common English words. Simple heuristic.
+  const skipWords = new Set([
+    "the", "how", "why", "what", "who", "when", "top", "best", "most",
+    "new", "next", "premier", "league", "champions", "world", "cup",
+    "football", "soccer", "player", "team", "season", "match", "game",
+    "transfer", "signing", "tactical", "analysis", "breakout", "rising",
+    "star", "young", "generation", "modern", "defensive", "attacking",
+    "midfield", "forward", "striker", "winger", "goalkeeper", "defender",
+    "tactics", "pressing", "build", "counter", "false", "inverted",
+    "club", "europe", "european", "england", "spain", "germany", "italy",
+    "france", "turkey", "brazil", "argentina", "portugal", "netherlands",
+  ]);
+
+  const players: string[] = [];
+  // Match "Firstname Lastname" patterns (supports de/da/van/von particles)
+  const namePattern = /(?:^|[\s,;:(])([A-Z][a-z]+\s+(?:(?:de|da|van|von|el|al|di|dos|del)\s+)?[A-Z][a-z]+(?:\s+[A-Z][a-z]+)?)/g;
+  let match;
+  while ((match = namePattern.exec(topic)) !== null) {
+    const candidate = match[1].trim();
+    const words = candidate.toLowerCase().split(/\s+/);
+    // Skip if first or all words are common English/football terms
+    if (skipWords.has(words[0])) continue;
+    if (words.every((w) => skipWords.has(w))) continue;
+    // Skip known team names
+    if (teams.some((t) => candidate.toLowerCase().includes(t.replace(/-/g, " ")))) continue;
+    // Skip league names
+    const candidateLower = candidate.toLowerCase();
+    if (candidateLower.includes("premier league") || candidateLower.includes("champions league") ||
+        candidateLower.includes("europa league") || candidateLower.includes("world cup")) continue;
+    players.push(candidate);
+  }
+
+  return { players: [...new Set(players)].slice(0, 3), teams: [...new Set(teams)].slice(0, 2) };
+}
+
+/**
+ * Build a verified stats context block by fetching data from api-football.
+ * Budget-aware: caps at maxRequests to stay within daily quota.
+ * Returns a formatted text block or empty string.
+ */
+async function buildStatsContext(
+  topic: string,
+  maxRequests = 6,
+): Promise<string> {
+  if (!process.env.FOOTBALL_API_KEY) {
+    console.log("[stats-context] FOOTBALL_API_KEY not set, skipping enrichment");
+    return "";
+  }
+
+  const { players, teams } = extractEntities(topic);
+  console.log(`[stats-context] Extracted entities — players: [${players.join(", ")}], teams: [${teams.join(", ")}]`);
+
+  if (players.length === 0 && teams.length === 0) {
+    console.log("[stats-context] No entities found in topic, skipping");
+    return "";
+  }
+
+  const sections: string[] = [];
+  let requestsUsed = 0;
+
+  // Fetch player stats (2 requests each: search + fetch)
+  for (const name of players) {
+    if (requestsUsed + 2 > maxRequests) break;
+    try {
+      console.log(`[stats-context] Fetching stats for player: ${name}`);
+      const ctx = await getPlayerContext(name);
+      requestsUsed += 2;
+      if (ctx) {
+        sections.push(ctx);
+        console.log(`[stats-context] Got stats for ${name}`);
+      } else {
+        console.log(`[stats-context] No data found for ${name}`);
+      }
+    } catch (err) {
+      console.warn(`[stats-context] Error fetching ${name}:`, err);
+      requestsUsed += 1; // count partial
+    }
+  }
+
+  // Fetch team stats (1 request each)
+  // Try to find the right league for each team
+  const teamLeagueMap: Record<string, string> = {
+    "manchester-city": "premier-league", "arsenal": "premier-league",
+    "liverpool": "premier-league", "chelsea": "premier-league",
+    "manchester-united": "premier-league", "tottenham": "premier-league",
+    "real-madrid": "la-liga", "barcelona": "la-liga", "atletico-madrid": "la-liga",
+    "bayern-munich": "bundesliga", "borussia-dortmund": "bundesliga",
+    "juventus": "serie-a", "inter-milan": "serie-a", "ac-milan": "serie-a",
+    "psg": "ligue-1",
+    "galatasaray": "super-lig", "fenerbahce": "super-lig", "besiktas": "super-lig",
+  };
+
+  for (const teamSlug of teams) {
+    if (requestsUsed + 1 > maxRequests) break;
+    const leagueSlug = teamLeagueMap[teamSlug];
+    if (!leagueSlug) continue;
+    try {
+      console.log(`[stats-context] Fetching stats for team: ${teamSlug}`);
+      const ctx = await getTeamContext(teamSlug, leagueSlug);
+      requestsUsed += 1;
+      if (ctx) {
+        sections.push(ctx);
+        console.log(`[stats-context] Got stats for ${teamSlug}`);
+      }
+    } catch (err) {
+      console.warn(`[stats-context] Error fetching team ${teamSlug}:`, err);
+    }
+  }
+
+  if (sections.length === 0) return "";
+
+  console.log(`[stats-context] Built context with ${sections.length} section(s), used ${requestsUsed} API requests`);
+
+  return [
+    "\n\n---",
+    "## VERIFIED STATISTICS (from api-football.com, 2024-25 season)",
+    "Use these verified numbers in your article. Cite them confidently — they are real.",
+    "Calculate per-90 metrics, percentages, and comparisons from this raw data.",
+    "Do NOT invent stats that aren't in this data. If a stat you want isn't here, use web search or omit it.",
+    "",
+    ...sections,
+    "---",
+  ].join("\n");
 }
 
 function slugify(text: string): string {
@@ -309,6 +466,9 @@ async function generateWithClaude(
     ? `\n\nDo NOT use these titles or closely related topics (already generated in the last 24 hours):\n${recentTitles.map((t) => `- ${t}`).join("\n")}\n`
     : "";
 
+  // Faz 4: Fetch verified stats from api-football to enrich content
+  const statsContext = await buildStatsContext(topic);
+
   const userMessage =
     `Topic: ${topic}. ` +
     (useWebSearch
@@ -319,10 +479,11 @@ async function generateWithClaude(
     `Write the content using block markup format as described in your instructions. ` +
     `Include @player: blocks for featured players, a > pull quote, and an @callout: with a verified insight. ` +
     `Use @vs: blocks for comparisons when relevant. Use @faq: for quick reference stats.` +
-    exclusionNote;
+    exclusionNote +
+    statsContext;
 
   console.log(
-    `[generate-content] Sonnet request — topic: "${topic}", category: ${targetCategory}, webSearch: ${useWebSearch}`,
+    `[generate-content] Sonnet request — topic: "${topic}", category: ${targetCategory}, webSearch: ${useWebSearch}, statsContext: ${statsContext ? `${statsContext.length} chars` : "none"}`,
   );
 
   const headers: Record<string, string> = {
