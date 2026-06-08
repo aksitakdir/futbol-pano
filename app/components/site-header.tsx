@@ -44,6 +44,7 @@ const NAV_ITEMS = [
   { href: "/radar", label: "RADAR", key: "radar" },
   { href: "/lists", label: "LISTS", key: "lists" },
   { href: "/arena", label: "ARENA", key: "arena" },
+  { href: "/tactics-lab", label: "TACTICS LAB", key: "tactics-lab" },
 ];
 
 export default function SiteHeader({ activeNav }: Props) {
