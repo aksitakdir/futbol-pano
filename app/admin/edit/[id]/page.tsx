@@ -30,11 +30,10 @@ function isContentEmpty(html: string): boolean {
 }
 
 const HERO_VARIANTS = [
-  { value: "player-cards", label: "🃏 Player Card", desc: "Radar/Lists" },
+  { value: "player-cards", label: "🃏 Player Card", desc: "All categories" },
   { value: "cover-image", label: "🖼 Cover Image", desc: "Full-width hero" },
   { value: "pitch-diagram", label: "⬡ Pitch Diagram", desc: "Tactics Lab" },
-  { value: "stat-focus", label: "📊 Stat Focus", desc: "Radar" },
-  { value: "text-only", label: "✍ Text Only", desc: "Minimal" },
+  { value: "text-only", label: "✍ Text Only", desc: "Typographic hero" },
 ];
 
 const ACCENT_COLORS = [

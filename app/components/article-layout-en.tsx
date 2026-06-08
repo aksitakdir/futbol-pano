@@ -15,6 +15,7 @@ import { normalizeYoutubeId } from "@/lib/youtube-id";
 import { tocFromSections, type SectionBlock } from "@/lib/section-blocks";
 import type { ContentCategory } from "@/lib/category-config";
 import ArticlePlayerEmbed from "./article-player-embed";
+import HeroPlayerCard from "./hero-player-card";
 
 type SidebarItem = { id: string; title: string; title_en?: string; slug: string; category: string; created_at: string; };
 export type YouTubeSearchItem = { title: string; thumbnail: string; videoId: string; channelTitle: string; };
@@ -128,6 +129,28 @@ export default function ArticleLayoutEn({
 }: Props) {
   // Backward compat: merge deprecated stat-focus → player-cards
   const heroVariant = heroVariantRaw === "stat-focus" ? "player-cards" : heroVariantRaw;
+
+  // Auto-resolve hero player card: if heroVariant is "player-cards" but no children passed,
+  // derive player name from props and render HeroPlayerCard automatically.
+  const heroPlayerName = (() => {
+    if (heroVariant !== "player-cards" || children) return null;
+    if (_playerName?.trim()) return _playerName.trim();
+    // Try first player from playersJson
+    if (playersJson) {
+      try {
+        const arr = JSON.parse(playersJson);
+        if (Array.isArray(arr) && arr.length > 0) {
+          const first = arr[0];
+          return typeof first === "string" ? first : first?.name;
+        }
+      } catch { /* ignore */ }
+    }
+    return null;
+  })();
+  const heroChildren = heroPlayerName
+    ? <HeroPlayerCard playerName={heroPlayerName} />
+    : children;
+
   const [similar, setSimilar] = useState<SidebarItem[]>([]);
   const [youtubeVideos1, setYoutubeVideos1] = useState<YouTubeSearchItem[] | null>(null);
   const [youtubeVideos2, setYoutubeVideos2] = useState<YouTubeSearchItem[] | null>(null);
@@ -327,7 +350,7 @@ export default function ArticleLayoutEn({
             </button>
           )}
 
-          {heroVariant === "radar-player-focus" && children ? (
+          {heroVariant === "radar-player-focus" && heroChildren ? (
             <div>
               <div style={{ display: "flex", alignItems: "center", gap: 12, flexWrap: "wrap", marginBottom: 28 }}>
                 <span className="chip solid" style={{ background: accent, borderColor: accent, color: "var(--ink-900)", fontSize: 10 }}>
@@ -417,8 +440,8 @@ export default function ArticleLayoutEn({
 
             {!useCoverHero ? (
             <div className="article-hero-right" style={{ display: "flex", justifyContent: "flex-end", alignItems: "flex-end" }}>
-              {heroVariant === "player-cards" && children ? (
-                <div style={{ width: "100%", maxWidth: 320 }}>{children}</div>
+              {heroVariant === "player-cards" && heroChildren ? (
+                <div style={{ width: "100%", maxWidth: 320 }}>{heroChildren}</div>
               ) : heroVariant === "cover-image" && coverImage ? (
                 <div style={{ width: "100%", maxWidth: 380, borderRadius: 4, overflow: "hidden", border: "1px solid var(--sg-border)" }}>
                   {/* eslint-disable-next-line @next/next/no-img-element */}

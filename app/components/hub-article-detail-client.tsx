@@ -22,6 +22,7 @@ type ContentRow = {
   youtube_query_1?: string;
   youtube_query_2?: string;
   news_query?: string;
+  player_name?: string;
   hero_variant?: string;
   accent?: string;
   sections_json?: SectionBlock[] | null;
@@ -98,6 +99,7 @@ export default function HubArticleDetailClient({
       newsQuery={article.news_query}
       youtubeQuery1={article.youtube_query_1}
       youtubeQuery2={article.youtube_query_2}
+      playerName={article.player_name}
       heroVariant={article.hero_variant ?? "text-only"}
       accentOverride={article.accent ?? CATEGORY_ACCENT[hubId] ?? "emerald"}
       sectionsJson={Array.isArray(article.sections_json) ? article.sections_json : null}

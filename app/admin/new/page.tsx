@@ -27,7 +27,7 @@ function isContentEmpty(html: string): boolean {
 const PLACEHOLDER_HTML = "<p></p>";
 
 const HERO_VARIANTS = [
-  { value: "player-cards", label: "🃏 Player Card", desc: "Radar/Lists" },
+  { value: "player-cards", label: "🃏 Player Card", desc: "All categories" },
   { value: "cover-image", label: "🖼 Cover Image", desc: "Full-width hero" },
   { value: "pitch-diagram", label: "⬡ Pitch Diagram", desc: "Tactics Lab" },
   { value: "text-only", label: "✍ Text Only", desc: "Typographic hero" },
