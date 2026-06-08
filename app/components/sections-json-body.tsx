@@ -102,15 +102,58 @@ export default function SectionsJsonBody({
           );
         }
         if (sec.type === "list") {
-          const Tag = sec.style === "ol" ? "ol" : "ul";
+          if (sec.style === "ol") {
+            return (
+              <ol key={i} style={{ margin: "20px 0", paddingLeft: 24, lineHeight: 1.7 }}>
+                {sec.items
+                  .filter((item) => item.trim())
+                  .map((item, j) => (
+                    <li key={j}>{item}</li>
+                  ))}
+              </ol>
+            );
+          }
+          // Styled unordered list with accent-colored bullets
           return (
-            <Tag key={i} style={{ margin: "20px 0", paddingLeft: 24, lineHeight: 1.7 }}>
+            <ul
+              key={i}
+              style={{
+                margin: "24px 0",
+                paddingLeft: 0,
+                listStyle: "none",
+                display: "flex",
+                flexDirection: "column",
+                gap: 10,
+              }}
+            >
               {sec.items
                 .filter((item) => item.trim())
                 .map((item, j) => (
-                  <li key={j}>{item}</li>
+                  <li
+                    key={j}
+                    style={{
+                      display: "flex",
+                      alignItems: "flex-start",
+                      gap: 12,
+                      lineHeight: 1.65,
+                    }}
+                  >
+                    <span
+                      style={{
+                        display: "inline-block",
+                        width: 7,
+                        height: 7,
+                        borderRadius: "50%",
+                        background: `var(--accent-${accent}, var(--sg-primary))`,
+                        marginTop: 8,
+                        flexShrink: 0,
+                        opacity: 0.85,
+                      }}
+                    />
+                    <span>{item}</span>
+                  </li>
                 ))}
-            </Tag>
+            </ul>
           );
         }
         if (sec.type === "vs") {
@@ -155,6 +198,145 @@ export default function SectionsJsonBody({
                 {col(sec.right, "var(--sg-secondary)")}
               </div>
             </div>
+          );
+        }
+        if (sec.type === "stat-highlight") {
+          return (
+            <div
+              key={i}
+              style={{
+                display: "flex",
+                gap: 16,
+                flexWrap: "wrap",
+                margin: "32px 0",
+                justifyContent: "center",
+              }}
+            >
+              {sec.stats.map((s, j) => (
+                <div
+                  key={j}
+                  style={{
+                    flex: "1 1 140px",
+                    maxWidth: 220,
+                    textAlign: "center",
+                    background: "var(--sg-surface)",
+                    border: "1px solid var(--sg-border)",
+                    borderRadius: 14,
+                    padding: "24px 18px",
+                    position: "relative",
+                    overflow: "hidden",
+                  }}
+                >
+                  {/* Accent glow at top */}
+                  <div
+                    style={{
+                      position: "absolute",
+                      top: 0,
+                      left: "20%",
+                      right: "20%",
+                      height: 3,
+                      borderRadius: "0 0 4px 4px",
+                      background: `var(--accent-${accent}, var(--sg-primary))`,
+                      opacity: 0.7,
+                    }}
+                  />
+                  <p
+                    style={{
+                      margin: 0,
+                      fontSize: 32,
+                      fontWeight: 900,
+                      lineHeight: 1.1,
+                      letterSpacing: "-0.02em",
+                      color: `var(--accent-${accent}, var(--sg-primary))`,
+                      fontFamily: "var(--font-headline)",
+                    }}
+                  >
+                    {s.value}
+                  </p>
+                  <p
+                    style={{
+                      margin: "8px 0 0",
+                      fontSize: 13,
+                      fontWeight: 700,
+                      textTransform: "uppercase",
+                      letterSpacing: "0.08em",
+                      color: "var(--sg-text-primary)",
+                    }}
+                  >
+                    {s.label}
+                  </p>
+                  {s.note ? (
+                    <p
+                      style={{
+                        margin: "6px 0 0",
+                        fontSize: 12,
+                        lineHeight: 1.5,
+                        color: "var(--sg-text-muted)",
+                      }}
+                    >
+                      {s.note}
+                    </p>
+                  ) : null}
+                </div>
+              ))}
+            </div>
+          );
+        }
+        if (sec.type === "divider") {
+          const dividerStyle = sec.style ?? "default";
+          if (dividerStyle === "dots") {
+            return (
+              <div
+                key={i}
+                style={{
+                  display: "flex",
+                  justifyContent: "center",
+                  gap: 8,
+                  margin: "36px 0",
+                }}
+              >
+                {[0, 1, 2].map((d) => (
+                  <div
+                    key={d}
+                    style={{
+                      width: 6,
+                      height: 6,
+                      borderRadius: "50%",
+                      background: `var(--accent-${accent}, var(--sg-text-muted))`,
+                      opacity: 0.5,
+                    }}
+                  />
+                ))}
+              </div>
+            );
+          }
+          if (dividerStyle === "gradient") {
+            return (
+              <div
+                key={i}
+                style={{
+                  margin: "36px auto",
+                  height: 2,
+                  maxWidth: 200,
+                  borderRadius: 2,
+                  background: `linear-gradient(90deg, transparent, var(--accent-${accent}, var(--sg-text-muted)), transparent)`,
+                  opacity: 0.4,
+                }}
+              />
+            );
+          }
+          // default divider
+          return (
+            <hr
+              key={i}
+              style={{
+                margin: "36px 0",
+                border: "none",
+                height: 1,
+                background: "var(--sg-border)",
+                opacity: 0.6,
+              }}
+            />
           );
         }
         if (sec.type === "faq") {

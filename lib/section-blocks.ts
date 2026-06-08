@@ -3,6 +3,8 @@
 export type VsSide = { title: string; items: string[] };
 export type FaqItem = { q: string; a: string };
 
+export type StatHighlightItem = { value: string; label: string; note?: string };
+
 export type SectionBlock =
   | { type: "intro"; html: string }
   | { type: "plain"; text: string }
@@ -15,7 +17,9 @@ export type SectionBlock =
   | { type: "image"; src: string; alt: string; caption?: string }
   | { type: "list"; style: "ul" | "ol"; items: string[] }
   | { type: "vs"; left: VsSide; right: VsSide }
-  | { type: "faq"; heading?: string; items: FaqItem[] };
+  | { type: "faq"; heading?: string; items: FaqItem[] }
+  | { type: "stat-highlight"; stats: StatHighlightItem[] }
+  | { type: "divider"; style?: "default" | "dots" | "gradient" };
 
 export type TocItem = { text: string; id: string };
 
@@ -65,6 +69,10 @@ export function hasBlockContent(blocks: SectionBlock[]): boolean {
     if (b.type === "faq") {
       return b.items.some((i) => i.q.trim().length > 0 && i.a.trim().length > 0);
     }
+    if (b.type === "stat-highlight") {
+      return b.stats.some((s) => s.value.trim().length > 0);
+    }
+    if (b.type === "divider") return true;
     return false;
   });
 }

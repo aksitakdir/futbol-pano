@@ -235,6 +235,34 @@ export function parseMarkupToBlocks(input: string): SectionBlock[] {
       continue;
     }
 
+    // Stat highlight: @stat: value | label | optional note (multiple lines grouped)
+    if (/^@stat:/i.test(line)) {
+      flushAll();
+      const stats: { value: string; label: string; note?: string }[] = [];
+      // First line
+      const firstParts = afterMarker(line, /^@stat:/i).split("|").map((s) => s.trim());
+      if (firstParts[0]) stats.push({ value: firstParts[0], label: firstParts[1] ?? "", note: firstParts[2] || undefined });
+      // Collect following stat lines (- prefixed or plain "value | label" lines)
+      const [body, next] = collectBody(i + 1);
+      for (const raw of body) {
+        const b = raw.replace(/^[-*]\s+/, "").trim();
+        const parts = b.split("|").map((s) => s.trim());
+        if (parts[0]) stats.push({ value: parts[0], label: parts[1] ?? "", note: parts[2] || undefined });
+      }
+      if (stats.length > 0) blocks.push({ type: "stat-highlight", stats });
+      i = next - 1;
+      continue;
+    }
+
+    // Divider: @divider or @divider: style
+    if (/^@divider/i.test(line)) {
+      flushAll();
+      const stylePart = afterMarker(line, /^@divider:?/i).toLowerCase().trim();
+      const style = (["dots", "gradient"].includes(stylePart) ? stylePart : "default") as "default" | "dots" | "gradient";
+      blocks.push({ type: "divider", style });
+      continue;
+    }
+
     // Player(s) — one block per comma-separated name
     if (/^@player:/i.test(line)) {
       flushAll();

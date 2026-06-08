@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import { useSearchParams } from "next/navigation";
 import { supabase } from "@/lib/supabase";
 import ArticleLayoutEn from "../../components/article-layout-en";
 import RadarPlayerFocusPanel from "../../components/radar-player-focus-panel";
@@ -60,6 +61,8 @@ function radarHeroVariant(hero_variant: string | undefined, hasPlayerCard: boole
 }
 
 export default function RadarDetailClient({ slug }: { slug: string }) {
+  const searchParams = useSearchParams();
+  const isPreview = searchParams.get("preview") === "1";
   const [article, setArticle] = useState<ContentRow | null>(null);
   const [playerCard, setPlayerCard] = useState<PlayerCardData | null>(null);
   const [loading, setLoading] = useState(true);
@@ -68,8 +71,9 @@ export default function RadarDetailClient({ slug }: { slug: string }) {
 
   useEffect(() => {
     if (!slug) return;
-    supabase.from("contents").select("*")
-      .eq("slug", slug).eq("status", "published").single()
+    let query = supabase.from("contents").select("*").eq("slug", slug);
+    if (!isPreview) query = query.eq("status", "published");
+    query.single()
       .then(async ({ data, error }) => {
         if (error || !data) { setNotFound(true); setLoading(false); return; }
         const row = data as ContentRow;

@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { createClient, type SupabaseClient } from "@supabase/supabase-js";
+import { parseMarkupToBlocks } from "@/lib/parse-blocks";
 
 type FcPlayerRow = {
   name: string;
@@ -94,54 +95,144 @@ const FALLBACK_TOPICS: Record<Category, string[]> = {
   ],
 };
 
-/** Tekil üretim isteğinde mod bağlamı (web araması yok) */
+/** Content mode hints — shape the editorial direction */
 const SINGLE_MODE_HINT: Record<string, string> = {
-  trend: "Content should be timely and trend-driven — write in the tone of what football fans are talking about today.",
-  general: "Aligned with the 2025-26 season agenda and current global football landscape.",
-  historical: "Evergreen, football-history focused; content that will not age.",
+  trend: "This is a trending topic — write with urgency and timeliness. What are fans debating right now? Take a position backed by data.",
+  general: "Aligned with the 2025-26 season landscape. Find the angle that surprises — the stat nobody noticed, the tactical tweak that changed everything.",
+  historical: "Evergreen, football-heritage focused. Connect past to present — how does this historical thread still pull on today's game?",
   chronological:
-    "Use a chronological structure: sections progress through the player's or club's career phases or eras (timeline feel).",
+    "Use a chronological arc: trace the evolution through phases or eras. Each phase should reveal something the reader didn't expect.",
 };
 
 function buildSystemPrompt(): string {
   const today = new Date().toISOString().split("T")[0];
-  return `You are a football content writer for Scout Gamer, a global English-first football analysis platform.
-Today's date: ${today}. Current football season: 2025-26.
+  return `You are the Lead Editor of Scout Gamer — a premium English-first football analysis platform known for deep tactical insight, verified statistics, and magazine-quality prose.
 
-Write short, compelling, SEO-optimised titles. Prefer common football search terms. Minimise obscure jargon.
-Write about global football. Do NOT force Turkey, Süper Lig, or Turkish club references unless the topic explicitly requires it.
-Do NOT include specific years or seasons in the title.
-Write content in HTML format. Use these tags:
-- <h2> for main section headings (2–4 per article)
-- <h3> for sub-headings
-- <p> for body paragraphs
-- <p class="lead"> for the opening intro paragraph (larger, prominent)
-- <blockquote> for a pull quote — a striking single sentence extracted from the article body (1 per article, placed after 2nd or 3rd section)
-- <div class="callout"><p>...</p></div> for a key insight or tactical note box (1 per article)
-- <strong> for inline emphasis
-- <mark> for highlighting a key number, name, or stat inline (use sparingly, 2–4 times)
-- <ul>, <li> for lists
-No markdown. Minimum 500 words. Make the content feel editorial and magazine-quality, not Wikipedia.
+Today: ${today}. Season: 2025-26. World Cup 2026 in USA/Canada/Mexico starts June 11, 2026.
 
-Respond with ONLY this JSON format, nothing else:
+## YOUR EDITORIAL IDENTITY
+
+You are a football connoisseur. You understand:
+- Tactical systems deeply: pressing triggers, defensive transitions, positional rotations
+- Player archetypes: the Regista, the Mezzala, the inverted full-back, the false 9
+- Historical context: how the modern game evolved, parallels between eras
+- The romance of football: the culture, the rivalries, the moments that define careers
+- Data literacy: xG, progressive carries, PPDA, defensive actions in final third
+
+You write with authority but never arrogance. You surprise the reader with insights they hadn't considered. You connect dots between past and present. You let verified numbers tell stories.
+
+## WRITING PRINCIPLES
+
+1. **Commentary over catalogue**: You are an analyst, not a stats bot. For every stat you cite, there MUST be 2-3 sentences of interpretation — what it means, why it matters, what the reader should take away. Never list stats without context.
+2. **Niche over obvious**: Don't write what everyone already knows. Find the angle nobody is talking about. The insight is more valuable than the number.
+3. **Show, don't list**: Instead of listing 5 qualities, paint a picture of how they manifest on the pitch. Describe the moment, the movement, the decision.
+4. **Narrative arc**: Every article should take the reader on a journey — setup, tension, resolution/insight. Think like a storyteller, not a reporter.
+5. **Cultural depth**: Reference footballing heritage when relevant — the Ajax school, Sacchi's revolution, La Masia's philosophy. Connect today's football to its roots.
+6. **Reader hook**: Every section must pull the reader into the next. End sections with a question, a contradiction, or a pivot that creates curiosity.
+7. **Global perspective**: Write about world football. Don't default to Premier League. Don't force Turkish football unless the topic demands it.
+8. **Stats serve stories**: Use 3-5 key statistics per article, not 15. Each stat should be a revelation, not decoration. Wrap stats in narrative: "That 94.2% pass completion rate doesn't just lead Europe — it redefines what we expect from a defensive midfielder in transition."
+9. **Voice and opinion**: Take positions. "This is the most underrated signing of the window" is more engaging than "This could be considered an important signing." Be confident in your analysis.
+10. **Sensory writing**: Describe how football *feels* — the weight of a cross, the geometry of a pressing trap, the moment a defender's hips commit. The reader should visualize the pitch.
+
+## IMPORTANT FORMATTING RULES
+
+- Do NOT include citation tags, source references, or any markup like <cite>, [citation], or similar. Write clean prose.
+- When web search provides data, absorb and rephrase it naturally — never copy-paste with attribution markup.
+- Stats should be woven into sentences, not displayed as raw data dumps.
+
+## OUTPUT FORMAT — BLOCK MARKUP
+
+Write content using this block markup syntax (NOT HTML, NOT Markdown):
+
+@lead: Opening paragraph — the hook. Vivid, compelling, sets the tone. This renders as a prominent lead paragraph on the site.
+
+# Section Heading (H2 — renders in table of contents)
+
+Regular paragraph text. Use **bold** for emphasis, *italic* for nuance. Use [link text](url) for references.
+
+## Sub-heading (H3)
+
+@player: Player Name
+
+> A striking pull quote — one memorable sentence that captures the essence of the article. Place after 2nd or 3rd section. One per article.
+
+@callout: A key tactical insight, a verified statistic, or a "did you know" that stops the reader. One per article.
+
+@section: Section With Built-in Body
+The section heading and its body text are together. Good for structured analysis segments.
+
+@vs: Left Title | Right Title
+- Stat or point A | Comparison stat A
+- Stat or point B | Comparison stat B
+
+@faq: Key Numbers / Quick Reference
+What is X's xG per 90? 0.82 — third highest in the league
+How many progressive carries? 4.7 per 90, up from 3.1 last season
+
+@stat: 94.2% | Pass Completion | Highest in Europe's top five leagues
+- 0.82 | xG per 90 | Up 34% from last season
+- 4.7 | Progressive Carries | Redefining the midfield role
+
+@divider
+@divider: dots
+@divider: gradient
+
+- Bullet point for lists (renders with accent-colored dots)
+- Another bullet point
+
+1. Numbered list item
+2. Another numbered item
+
+@video: youtube-url-or-id
+
+![Alt text](image-url)
+
+## BLOCK USAGE GUIDE
+
+Every article MUST include:
+- @lead: (exactly 1, at the start)
+- # headings (2-4 per article, these appear in the table of contents)
+- @player: for featured players (at least 1)
+- > pull quote (exactly 1, placed mid-article)
+- @callout: (exactly 1, for a key insight or stat)
+- Regular paragraphs between sections — ALWAYS follow a stat or data point with interpretive commentary
+
+Use when relevant:
+- @stat: for 2-4 key numbers displayed as prominent visual cards (great for player profiles and comparisons)
+- @divider: or @divider: dots / gradient — for visual breathing room between sections
+- @vs: for player/team/era comparisons with data
+- @faq: for quick reference stats or key questions answered
+- @section: for structured analysis segments
+- Lists (- or 1.) for rankings or key points
+
+## CONTENT REQUIREMENTS
+
+- Target 400-500 words of body text. Be concise and impactful — every sentence must earn its place. Cut filler, redundancy, and throat-clearing. A tight 450-word piece with sharp insight beats a bloated 800-word one.
+- 2-3 main sections maximum (not 5-6). Each section should make ONE clear point.
+- English only
+- No year/season in the title
+- SEO-friendly title (under 65 chars, uses common search terms)
+- Slug: URL-friendly, lowercase, hyphens, no special characters
+
+## JSON RESPONSE FORMAT
+
+Respond with ONLY this JSON, nothing else:
 {
-  "title": "short compelling English title (no year or season)",
+  "title": "compelling title (no year, under 65 chars)",
   "slug": "url-friendly-slug",
-  "category": "radar or tactics-lab or lists",
-  "content": "HTML content with lead, blockquote, callout, mark as described above. Minimum 500 words.",
+  "category": "radar | tactics-lab | lists",
+  "content": "Full article in block markup format as described above",
   "players": ["Player Name 1", "Player Name 2"],
-  "hero_variant": "one of: player-cards | cover-image | pitch-diagram | stat-focus | text-only",
-  "accent": "one of: emerald | cyan | sky | rose | amber | lime"
+  "hero_variant": "player-cards | cover-image | pitch-diagram | stat-focus | text-only",
+  "accent": "emerald | cyan | sky | rose | amber | lime"
 }
 
-Category guide — follow strictly:
-- radar: current player analysis, transfer news, weekly performance breakdown. "players": the 1 featured player's name. hero_variant: "player-cards" or "stat-focus".
-- tactics-lab: modern positional archetypes, tactical analysis, system breakdown. "players": example players referenced (max 3). hero_variant: "pitch-diagram".
-- lists: ranking and comparison lists. "players": ALL player names in the list (max 10). If category requested is "lists", JSON "category" field MUST be "lists". hero_variant: "player-cards".
+Category rules:
+- **radar**: Player deep-dives, form analysis, transfer context. "players": the 1-2 featured players. hero_variant: "player-cards" or "stat-focus".
+- **tactics-lab**: System breakdowns, tactical evolution, positional analysis. "players": example players (max 3). hero_variant: "pitch-diagram".
+- **lists**: Curated rankings with analysis per entry. "players": ALL ranked players (max 10). hero_variant: "player-cards".
 
-"players" field is REQUIRED in every response. Do not leave it empty.
-"hero_variant" is REQUIRED — pick the most fitting option for the content type.
-"accent" colour should match the mood: emerald=general, cyan=technical/tactical, sky=player analysis, rose=controversial, amber=historical, lime=breakout/underdog.`;
+Accent mood: emerald=evergreen, cyan=tactical/analytical, sky=player spotlight, rose=debate/controversy, amber=heritage/history, lime=breakout/underdog.`;
 }
 
 function slugify(text: string): string {
@@ -206,30 +297,32 @@ async function generateWithClaude(
   slug: string;
   category: string;
   content: string;
+  sectionsJson: import("@/lib/section-blocks").SectionBlock[];
   players?: string[];
   hero_variant?: string;
   accent?: string;
 }> {
   const apiKey = process.env.ANTHROPIC_API_KEY;
-  if (!apiKey) throw new Error("ANTHROPIC_API_KEY ortam değişkeni tanımlı değil");
+  if (!apiKey) throw new Error("ANTHROPIC_API_KEY not configured");
 
   const exclusionNote = recentTitles.length > 0
-    ? `\n\nBu başlıkları veya konuları KULLANMA (son 24 saatte zaten üretildi):\n${recentTitles.map((t) => `- ${t}`).join("\n")}\n`
+    ? `\n\nDo NOT use these titles or closely related topics (already generated in the last 24 hours):\n${recentTitles.map((t) => `- ${t}`).join("\n")}\n`
     : "";
 
   const userMessage =
-    `Konu: ${topic}. Güncel futbol dünyasından ele al. ` +
+    `Topic: ${topic}. ` +
     (useWebSearch
-      ? "Web araması yaparak güncel haber, istatistik ve gelişmeleri doğrula; içeriği buna dayandır. "
+      ? "Use web search to verify current stats, recent results, and breaking developments. Ground your analysis in verified data. "
       : "") +
-    `Eğer spesifik bir kulüp veya oyuncu trendi varsa onu merkeze al. ` +
-    `Kategori olarak "${targetCategory}" kullan. ` +
-    `Slug URL dostu olsun (Türkçe karakter yok, tire ile ayrılmış). ` +
-    `İçeriği SADECE HTML olarak yaz — <h2>, <h3>, <p>, <ul>, <li>, <strong> tagları kullan, kesinlikle markdown işareti kullanma.` +
+    `If there is a specific player or club trend, centre the article around it. ` +
+    `Category: "${targetCategory}". ` +
+    `Write the content using block markup format as described in your instructions. ` +
+    `Include @player: blocks for featured players, a > pull quote, and an @callout: with a verified insight. ` +
+    `Use @vs: blocks for comparisons when relevant. Use @faq: for quick reference stats.` +
     exclusionNote;
 
   console.log(
-    `[generate-content] Claude isteği — konu: "${topic}", hedef kategori: ${targetCategory}, webSearch: ${useWebSearch}`,
+    `[generate-content] Sonnet request — topic: "${topic}", category: ${targetCategory}, webSearch: ${useWebSearch}`,
   );
 
   const headers: Record<string, string> = {
@@ -242,7 +335,7 @@ async function generateWithClaude(
   }
 
   const body: Record<string, unknown> = {
-    model: "claude-haiku-4-5-20251001",
+    model: "claude-sonnet-4-20250514",
     max_tokens: 4096,
     system: buildSystemPrompt(),
     messages: [{ role: "user", content: userMessage }],
@@ -265,10 +358,10 @@ async function generateWithClaude(
         ? `${body.error.type ?? res.status}: ${body.error.message}`
         : errDetail;
     } catch { /* ignore */ }
-    console.error("[generate-content] Anthropic API hatası:", errDetail);
-    if (res.status === 429) throw new Error(`Hız sınırı (429): ${errDetail}`);
-    if (res.status === 401) throw new Error("API anahtarı geçersiz (401)");
-    throw new Error(`Anthropic API hatası: ${errDetail}`);
+    console.error("[generate-content] Anthropic API error:", errDetail);
+    if (res.status === 429) throw new Error(`Rate limited (429): ${errDetail}`);
+    if (res.status === 401) throw new Error("Invalid API key (401)");
+    throw new Error(`Anthropic API error: ${errDetail}`);
   }
 
   const data = await res.json() as {
@@ -277,7 +370,7 @@ async function generateWithClaude(
   };
 
   if (data.stop_reason === "max_tokens") {
-    console.warn("[generate-content] stop_reason=max_tokens, yanıt kesilmiş olabilir");
+    console.warn("[generate-content] stop_reason=max_tokens, response may be truncated");
   }
 
   const rawText = (data.content ?? [])
@@ -287,31 +380,36 @@ async function generateWithClaude(
     .trim();
 
   if (!rawText) {
-    console.error("[generate-content] Yanıtta metin bloğu yok:", JSON.stringify(data).slice(0, 300));
-    throw new Error("Model metin üretmedi (boş yanıt)");
+    console.error("[generate-content] No text block in response:", JSON.stringify(data).slice(0, 300));
+    throw new Error("Model produced no text (empty response)");
   }
 
-  console.log("[generate-content] Ham yanıt (ilk 300 karakter):", rawText.slice(0, 300));
+  console.log("[generate-content] Raw response (first 300 chars):", rawText.slice(0, 300));
 
   const jsonStr = cleanAndExtractJson(rawText);
   if (!jsonStr) {
-    console.error("[generate-content] JSON nesnesi bulunamadı, ham yanıt:", rawText.slice(0, 800));
-    throw new Error("Yanıtta geçerli JSON nesnesi bulunamadı");
+    console.error("[generate-content] No JSON object found, raw response:", rawText.slice(0, 800));
+    throw new Error("No valid JSON object found in response");
   }
 
   let parsed: { title?: string; slug?: string; category?: string; content?: string; players?: unknown; hero_variant?: string; accent?: string };
   try {
     parsed = JSON.parse(jsonStr);
   } catch (parseErr) {
-    console.error("[generate-content] JSON.parse hatası:", parseErr, "— girdi:", jsonStr.slice(0, 400));
-    throw new Error("Model çıktısı JSON olarak çözülemedi");
+    console.error("[generate-content] JSON.parse error:", parseErr, "— girdi:", jsonStr.slice(0, 400));
+    throw new Error("Model output could not be parsed as JSON");
   }
 
-  const content = typeof parsed.content === "string" ? parsed.content.trim() : "";
+  let content = typeof parsed.content === "string" ? parsed.content.trim() : "";
   if (!content) {
-    console.error("[generate-content] content alanı boş, parsed:", JSON.stringify(parsed).slice(0, 400));
-    throw new Error('"content" alanı boş');
+    console.error("[generate-content] content field empty, parsed:", JSON.stringify(parsed).slice(0, 400));
+    throw new Error('"content" field is empty');
   }
+
+  // Strip web-search citation artifacts: <cite index="...">text</cite> → text
+  content = content.replace(/<cite[^>]*>([\s\S]*?)<\/cite>/gi, "$1");
+  // Also strip orphaned <cite .../> self-closing tags
+  content = content.replace(/<cite[^>]*\/>/gi, "");
 
   const players: string[] = Array.isArray(parsed.players)
     ? (parsed.players as unknown[]).filter((p): p is string => typeof p === "string").slice(0, 10)
@@ -333,8 +431,11 @@ async function generateWithClaude(
   const validAccents = ["emerald", "cyan", "sky", "rose", "amber", "lime"];
   const accent = validAccents.includes(parsed.accent ?? "") ? parsed.accent : "emerald";
 
-  console.log(`[generate-content] Başarıyla üretildi — başlık: "${title}", kategori: ${category}, hero: ${hero_variant}`);
-  return { title, slug, category, content, players, hero_variant, accent };
+  // Parse block markup → SectionBlock[] for sections_json
+  const sectionsJson = parseMarkupToBlocks(content);
+
+  console.log(`[generate-content] Generated — title: "${title}", category: ${category}, hero: ${hero_variant}, blocks: ${sectionsJson.length}`);
+  return { title, slug, category, content, sectionsJson, players, hero_variant, accent };
 }
 
 function isValidSlug(s: string): boolean {
@@ -344,7 +445,7 @@ function isValidSlug(s: string): boolean {
 export async function POST(request: Request) {
   const apiKey = process.env.ANTHROPIC_API_KEY;
   if (!apiKey) {
-    return NextResponse.json({ error: "ANTHROPIC_API_KEY tanımlı değil" }, { status: 500 });
+    return NextResponse.json({ error: "ANTHROPIC_API_KEY not configured" }, { status: 500 });
   }
 
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
@@ -352,7 +453,7 @@ export async function POST(request: Request) {
   const supabaseKey =
     process.env.SUPABASE_SERVICE_ROLE_KEY ?? process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
   if (!supabaseUrl || !supabaseKey) {
-    return NextResponse.json({ error: "Supabase ortam değişkenleri eksik" }, { status: 500 });
+    return NextResponse.json({ error: "Supabase env vars missing" }, { status: 500 });
   }
 
   const supabase = createClient(supabaseUrl, supabaseKey);
@@ -385,7 +486,7 @@ export async function POST(request: Request) {
     return (recentRows ?? []).map((r) => r.title as string).filter(Boolean);
   }
 
-  // ——— 1) title varsa: bu başlıkla içerik (trend kullanılmaz) ———
+  // ——— 1) Explicit title → generate content for this exact title ———
   const bodyTitle = typeof parsedBody.title === "string" ? parsedBody.title.trim() : "";
   if (bodyTitle) {
     const recentTitles = await loadRecentTitles();
@@ -394,13 +495,13 @@ export async function POST(request: Request) {
     const modeHint = SINGLE_MODE_HINT[modeRaw] ?? "";
 
     let topic =
-      `Makale başlığı TAM olarak şu olmalı (JSON "title" alanında aynen bu metin): "${bodyTitle}". `;
-    if (kw) topic += `Ek anahtar kelime / bağlam: ${kw}. `;
+      `The article title MUST be exactly this (in the JSON "title" field): "${bodyTitle}". `;
+    if (kw) topic += `Additional keyword / context: ${kw}. `;
     if (modeHint) topic += `${modeHint} `;
-    topic += `Kategori "${targetCategory}" olmalı. İçerik bu başlığa ve kategoriye sadık kalsın.`;
+    topic += `Category must be "${targetCategory}". Stay faithful to this title and category.`;
 
     try {
-      let generated = await generateWithClaude(topic, targetCategory, recentTitles, useWebSearchForMode);
+      const generated = await generateWithClaude(topic, targetCategory, recentTitles, useWebSearchForMode);
 
       const finalTitle = bodyTitle;
       const finalCategory = targetCategory;
@@ -416,6 +517,7 @@ export async function POST(request: Request) {
         category: finalCategory,
         content: "",
         content_en: generated.content,
+        sections_json: generated.sectionsJson,
         status: "pending" as const,
         hero_variant: generated.hero_variant ?? "text-only",
         accent: generated.accent ?? "emerald",
@@ -482,16 +584,16 @@ export async function POST(request: Request) {
     }
   }
 
-  // ——— 2) keyword varsa: konu = keyword, trend yok; category parametresi ———
+  // ——— 2) Keyword → generate article centred on this topic ———
   const bodyKeyword = typeof parsedBody.keyword === "string" ? parsedBody.keyword.trim() : "";
   if (bodyKeyword) {
     const recentTitles = await loadRecentTitles();
     const targetCategory: Category = isValidCategory(parsedBody.category) ? parsedBody.category : nextCategory();
     const modeHint = SINGLE_MODE_HINT[modeRaw] ?? "";
 
-    let topic = `Ana konu / keyword: "${bodyKeyword}". Bu konuyu merkeze alarak tam bir makale yaz. `;
+    let topic = `Core topic / keyword: "${bodyKeyword}". Write a full article centred on this topic. `;
     if (modeHint) topic += `${modeHint} `;
-    topic += `Kategori "${targetCategory}" olmalı.`;
+    topic += `Category must be "${targetCategory}".`;
 
     try {
       const generated = await generateWithClaude(topic, targetCategory, recentTitles, useWebSearchForMode);
@@ -499,7 +601,7 @@ export async function POST(request: Request) {
       const finalCategory = targetCategory;
       const finalTitle =
         typeof generated.title === "string" && generated.title.trim() ? generated.title.trim() : bodyKeyword;
-      let finalSlug =
+      const finalSlug =
         typeof generated.slug === "string" && isValidSlug(generated.slug) ? generated.slug.trim() : slugify(finalTitle);
 
       const row = {
@@ -509,6 +611,7 @@ export async function POST(request: Request) {
         category: finalCategory,
         content: "",
         content_en: generated.content,
+        sections_json: generated.sectionsJson,
         status: "pending" as const,
         hero_variant: generated.hero_variant ?? "text-only",
         accent: generated.accent ?? "emerald",
@@ -592,9 +695,9 @@ export async function POST(request: Request) {
   // Filter out over-used trend topics (3+ times today)
   const availableTrends = trendTopics.filter((t) => trendUsageCount(t) < 3);
   console.log(
-    "[generate-content] Trendler — toplam:",
+    "[generate-content] Trends — total:",
     trendTopics.length,
-    "kullanılabilir:",
+    "available:",
     availableTrends.length,
   );
 
@@ -605,12 +708,12 @@ export async function POST(request: Request) {
     const trend = availableTrends[i];
     const topic = trend ?? FALLBACK_TOPICS[cat][i % FALLBACK_TOPICS[cat].length];
     if (!trend && trendTopics.length > 0) {
-      console.log(`[generate-content] Slot ${i}: trendler dolu/atlandı, fallback kullanılıyor: "${topic}"`);
+      console.log(`[generate-content] Slot ${i}: trends exhausted, using fallback: "${topic}"`);
     }
     pairs.push({ topic, category: cat });
   }
 
-  console.log("[generate-content] İşlenecek çiftler:", pairs.map((p) => `${p.category}::${p.topic}`));
+  console.log("[generate-content] Processing pairs:", pairs.map((p) => `${p.category}::${p.topic}`));
 
   const results: {
     topic: string;
@@ -622,14 +725,14 @@ export async function POST(request: Request) {
   }[] = [];
 
   for (const { topic, category } of pairs) {
-    let generated: { title: string; slug: string; category: string; content: string; players?: string[]; hero_variant?: string; accent?: string };
+    let generated: Awaited<ReturnType<typeof generateWithClaude>>;
 
     try {
       const batchWebSearch = category === "radar";
       generated = await generateWithClaude(topic, category, recentTitles, batchWebSearch);
     } catch (err) {
       const msg = err instanceof Error ? err.message : String(err);
-      console.error("[generate-content] Üretim hatası:", msg);
+      console.error("[generate-content] Generation error:", msg);
       results.push({ topic, category, status: "failed", error: msg });
       continue;
     }
@@ -641,6 +744,7 @@ export async function POST(request: Request) {
       category: generated.category,
       content: "",
       content_en: generated.content,
+      sections_json: generated.sectionsJson,
       status: "pending",
       hero_variant: generated.hero_variant ?? "text-only",
       accent: generated.accent ?? "emerald",
@@ -651,7 +755,7 @@ export async function POST(request: Request) {
     });
 
     if (dbError) {
-      console.error("[generate-content] Supabase insert hatası:", dbError.message, "— başlık:", generated.title);
+      console.error("[generate-content] Supabase insert error:", dbError.message, "— title:", generated.title);
       results.push({
         topic,
         category: generated.category,
@@ -661,7 +765,7 @@ export async function POST(request: Request) {
         slug: generated.slug,
       });
     } else {
-      console.log("[generate-content] Supabase'e kaydedildi:", generated.title, "→", generated.category);
+      console.log("[generate-content] Saved to Supabase:", generated.title, "→", generated.category);
       results.push({
         topic,
         category: generated.category,

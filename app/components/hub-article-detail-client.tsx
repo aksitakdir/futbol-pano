@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import { useSearchParams } from "next/navigation";
 import { supabase } from "@/lib/supabase";
 import ArticleLayoutEn from "./article-layout-en";
 import { CATEGORY_ACCENT } from "@/lib/category-config";
@@ -41,6 +42,8 @@ export default function HubArticleDetailClient({
   slug: string;
   hubId: string;
 }) {
+  const searchParams = useSearchParams();
+  const isPreview = searchParams.get("preview") === "1";
   const [article, setArticle] = useState<ContentRow | null>(null);
   const [loading, setLoading] = useState(true);
   const [notFound, setNotFound] = useState(false);
@@ -48,18 +51,15 @@ export default function HubArticleDetailClient({
 
   useEffect(() => {
     if (!slug) return;
-    supabase
-      .from("contents")
-      .select("*")
-      .eq("slug", slug)
-      .eq("status", "published")
-      .maybeSingle()
-      .then(({ data, error }) => {
-        if (error || !data) setNotFound(true);
-        else setArticle(data as ContentRow);
-        setLoading(false);
-      });
-  }, [slug]);
+    let query = supabase.from("contents").select("*").eq("slug", slug);
+    // preview=1 allows viewing pending articles from admin
+    if (!isPreview) query = query.eq("status", "published");
+    query.maybeSingle().then(({ data, error }) => {
+      if (error || !data) setNotFound(true);
+      else setArticle(data as ContentRow);
+      setLoading(false);
+    });
+  }, [slug, isPreview]);
 
   if (loading) {
     return (

@@ -32,6 +32,8 @@ const BLOCK_TYPES: { type: SectionBlock["type"]; label: string; icon: string; de
   { type: "player", label: "Player Card", icon: "🃏", desc: "Rich player profile panel with stats", color: "cyan" },
   { type: "vs", label: "Versus", icon: "⚔", desc: "Two-column comparison (A vs B)", color: "amber" },
   { type: "faq", label: "FAQ", icon: "❓", desc: "Q&A list with SEO rich-result schema", color: "violet" },
+  { type: "stat-highlight", label: "Stat Cards", icon: "📊", desc: "Prominent stat cards with big numbers", color: "cyan" },
+  { type: "divider", label: "Divider", icon: "—", desc: "Decorative section divider line", color: "slate" },
 ];
 
 const COLOR_MAP: Record<string, string> = {
@@ -45,6 +47,7 @@ const COLOR_MAP: Record<string, string> = {
   cyan: "border-cyan-500/30 bg-cyan-500/5 text-cyan-300",
   teal: "border-teal-500/30 bg-teal-500/5 text-teal-300",
   indigo: "border-indigo-500/30 bg-indigo-500/5 text-indigo-300",
+  slate: "border-slate-500/30 bg-slate-500/5 text-slate-300",
 };
 
 function blockMeta(type: SectionBlock["type"]) {
@@ -77,6 +80,10 @@ function defaultBlock(type: SectionBlock["type"]): SectionBlock {
       return { type, left: { title: "", items: [""] }, right: { title: "", items: [""] } };
     case "faq":
       return { type, heading: "", items: [{ q: "", a: "" }] };
+    case "stat-highlight":
+      return { type, stats: [{ value: "", label: "", note: "" }] };
+    case "divider":
+      return { type, style: "default" };
   }
 }
 
@@ -285,6 +292,33 @@ function BlockEditor({
           {block.type === "faq" && (
             <FaqBlockEditor block={block} onChange={(b) => onChange(b)} />
           )}
+
+          {block.type === "stat-highlight" && (
+            <StatHighlightEditor block={block} onChange={(b) => onChange(b)} />
+          )}
+
+          {block.type === "divider" && (
+            <div>
+              <label className="mb-1 block text-[10px] font-semibold text-slate-400 uppercase tracking-wider">Divider Style</label>
+              <div className="flex gap-2">
+                {(["default", "dots", "gradient"] as const).map((s) => (
+                  <button
+                    key={s}
+                    type="button"
+                    onClick={() => onChange({ ...block, style: s })}
+                    className={[
+                      "rounded-lg border px-3 py-1.5 text-[11px] font-semibold transition capitalize",
+                      block.style === s
+                        ? "border-slate-400/60 bg-slate-500/15 text-slate-200"
+                        : "border-slate-700/60 text-slate-500 hover:text-slate-300",
+                    ].join(" ")}
+                  >
+                    {s}
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
         </div>
       )}
     </div>
@@ -360,6 +394,77 @@ function VsBlockEditor({
     <div className="flex flex-col gap-3 sm:flex-row">
       {sideEditor("left", "Left side")}
       {sideEditor("right", "Right side")}
+    </div>
+  );
+}
+
+function StatHighlightEditor({
+  block,
+  onChange,
+}: {
+  block: Extract<SectionBlock, { type: "stat-highlight" }>;
+  onChange: (b: Extract<SectionBlock, { type: "stat-highlight" }>) => void;
+}) {
+  function updateStat(index: number, patch: Partial<{ value: string; label: string; note: string }>) {
+    const next = [...block.stats];
+    next[index] = { ...next[index], ...patch };
+    onChange({ ...block, stats: next });
+  }
+  function addStat() {
+    onChange({ ...block, stats: [...block.stats, { value: "", label: "" }] });
+  }
+  function removeStat(index: number) {
+    if (block.stats.length <= 1) return;
+    onChange({ ...block, stats: block.stats.filter((_, i) => i !== index) });
+  }
+
+  return (
+    <div className="space-y-3">
+      <label className="block text-[10px] font-semibold text-slate-400 uppercase tracking-wider">Stat Cards</label>
+      {block.stats.map((stat, i) => (
+        <div key={i} className="flex items-start gap-2 rounded-lg border border-cyan-700/30 bg-slate-900/40 p-3">
+          <div className="flex-1 space-y-2">
+            <div className="flex gap-2">
+              <input
+                type="text"
+                value={stat.value}
+                onChange={(e) => updateStat(i, { value: e.target.value })}
+                placeholder="94.2%"
+                className="w-24 rounded-lg border border-slate-700/80 bg-slate-800/70 px-3 py-1.5 text-center text-lg font-black text-cyan-200 placeholder-slate-600 outline-none focus:border-cyan-500/60"
+              />
+              <input
+                type="text"
+                value={stat.label}
+                onChange={(e) => updateStat(i, { label: e.target.value })}
+                placeholder="Pass Completion"
+                className="flex-1 rounded-lg border border-slate-700/80 bg-slate-800/70 px-3 py-1.5 text-sm text-slate-100 placeholder-slate-500 outline-none focus:border-cyan-500/60"
+              />
+            </div>
+            <input
+              type="text"
+              value={stat.note ?? ""}
+              onChange={(e) => updateStat(i, { note: e.target.value })}
+              placeholder="Context note (optional) — e.g. 'Highest in Europe'"
+              className="w-full rounded-lg border border-slate-700/80 bg-slate-800/70 px-3 py-1.5 text-xs text-slate-300 placeholder-slate-600 outline-none focus:border-cyan-500/60"
+            />
+          </div>
+          <button
+            type="button"
+            onClick={() => removeStat(i)}
+            disabled={block.stats.length <= 1}
+            className="mt-1.5 px-1 text-xs text-rose-500 transition hover:text-rose-300 disabled:opacity-20"
+          >
+            ✕
+          </button>
+        </div>
+      ))}
+      <button
+        type="button"
+        onClick={addStat}
+        className="text-[11px] font-semibold text-cyan-400 transition hover:text-cyan-200"
+      >
+        + Add stat card
+      </button>
     </div>
   );
 }

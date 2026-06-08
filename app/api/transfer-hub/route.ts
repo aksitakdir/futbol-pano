@@ -27,7 +27,7 @@ export async function GET(request: Request) {
   const lastSync = (syncMeta?.value as { at?: string } | null)?.at;
   const stale = !lastSync || Date.now() - new Date(lastSync).getTime() > CACHE_TTL_MS;
 
-  if ((forceSync || stale) && process.env.API_FOOTBALL_KEY) {
+  if ((forceSync || stale) && process.env.FOOTBALL_API_KEY) {
     await syncCompletedTransfersFromApi();
     await sb.from("site_settings").upsert(
       { key: "hub_transfers_sync_at", value: { at: new Date().toISOString() }, updated_at: new Date().toISOString() },

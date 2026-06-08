@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import { useSearchParams } from "next/navigation";
 import { supabase } from "@/lib/supabase";
 import ArticleLayoutEn from "../../components/article-layout-en";
 import type { SectionBlock } from "@/lib/section-blocks";
@@ -21,6 +22,8 @@ type ContentRow = {
 };
 
 export default function TaktikLabDetailClient({ slug }: { slug: string }) {
+  const searchParams = useSearchParams();
+  const isPreview = searchParams.get("preview") === "1";
   const [article, setArticle] = useState<ContentRow | null>(null);
   const [loading, setLoading] = useState(true);
   const [notFound, setNotFound] = useState(false);
@@ -28,7 +31,9 @@ export default function TaktikLabDetailClient({ slug }: { slug: string }) {
 
   useEffect(() => {
     if (!slug) return;
-    supabase.from("contents").select("*").eq("slug", slug).eq("status", "published").single()
+    let query = supabase.from("contents").select("*").eq("slug", slug);
+    if (!isPreview) query = query.eq("status", "published");
+    query.single()
       .then(({ data, error }) => {
         if (error || !data) {
           setNotFound(true);

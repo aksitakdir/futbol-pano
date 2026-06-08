@@ -7,6 +7,7 @@ import { supabase } from "@/lib/supabase";
 import { updateContentStatus, deleteContents } from "./actions";
 import AdminLayout from "../components/admin-layout";
 import { stripHtml } from "@/lib/utils";
+import { categoryArticlePath } from "@/lib/category-config";
 
 function contentPreviewSnippet(raw: string, maxLen = 180): string {
   const text = stripHtml(raw ?? "").replace(/\s+/g, " ").trim();
@@ -22,9 +23,32 @@ type ContentRow = {
   category: string;
   content: string;
   content_en?: string;
+  sections_json?: unknown[] | null;
   status: string;
   created_at: string;
 };
+
+/** Extract a preview snippet from sections_json blocks or fall back to content_en/content */
+function extractPreviewText(item: ContentRow, maxLen = 180): string {
+  // Try sections_json first — extract text from intro/plain/section blocks
+  if (Array.isArray(item.sections_json) && item.sections_json.length > 0) {
+    const texts: string[] = [];
+    for (const block of item.sections_json) {
+      if (typeof block !== "object" || block === null) continue;
+      const b = block as Record<string, unknown>;
+      if (b.type === "intro" && typeof b.html === "string") texts.push(stripHtml(b.html));
+      else if (b.type === "plain" && typeof b.text === "string") texts.push(stripHtml(b.text));
+      else if (b.type === "section" && typeof b.html === "string") texts.push(stripHtml(b.html));
+      if (texts.join(" ").length > maxLen) break;
+    }
+    const joined = texts.join(" ").replace(/\s+/g, " ").trim();
+    if (joined.length > 0) {
+      return joined.length > maxLen ? `${joined.slice(0, maxLen)}…` : joined;
+    }
+  }
+  // Fall back to content_en / content
+  return contentPreviewSnippet(item.content_en || item.content, maxLen);
+}
 
 type Tab = "all" | "pending" | "published" | "rejected";
 
@@ -688,7 +712,7 @@ function IceriklerPageInner() {
               const isActioning = actionLoading.has(item.id);
               const status = STATUS_CONFIG[item.status] ?? STATUS_CONFIG.pending;
               const catColor = CATEGORY_COLOR[item.category] ?? "bg-slate-500/15 text-slate-300 border-slate-500/40";
-              const preview = contentPreviewSnippet(item.content_en || item.content);
+              const preview = extractPreviewText(item);
 
               return (
                 <div key={item.id} className={["border-b border-slate-700/40 last:border-b-0 transition", isChecked ? "bg-emerald-500/[0.03]" : ""].join(" ")}>
@@ -735,6 +759,14 @@ function IceriklerPageInner() {
                         >
                           Edit
                         </Link>
+                        <a
+                          href={`${categoryArticlePath(item.category, item.slug)}?preview=1`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className={`${ACTION_BTN} border-sky-500/40 bg-sky-500/10 text-sky-300 hover:border-sky-500/60 hover:bg-sky-500/18`}
+                        >
+                          Preview
+                        </a>
                         {item.status === "pending" && (
                           <>
                             <button
@@ -852,7 +884,31 @@ function IceriklerPageInner() {
                       <p className="mb-2 text-[10px] font-semibold uppercase tracking-widest text-slate-500">Content preview</p>
                       <p className="mb-3 text-xs font-medium text-slate-200" title={item.title_en || item.title}>{item.title_en || item.title}</p>
                       <div className="max-h-[min(28rem,calc(100vh-16rem))] overflow-y-auto rounded-lg border border-slate-700/50 bg-slate-950/50 p-4 text-[13px] leading-relaxed text-slate-300">
-                        {(item.content_en || item.content) ? (
+                        {Array.isArray(item.sections_json) && item.sections_json.length > 0 ? (
+                          <div className="space-y-2">
+                            {(item.sections_json as Array<Record<string, unknown>>).map((block, bi) => {
+                              const t = String(block.type ?? "");
+                              const label = t.toUpperCase();
+                              let text = "";
+                              if (t === "intro" || t === "callout" || t === "section") text = stripHtml(String(block.html ?? ""));
+                              else if (t === "plain") text = stripHtml(String(block.text ?? ""));
+                              else if (t === "header") text = String(block.heading ?? "");
+                              else if (t === "pullquote") text = String(block.text ?? "");
+                              else if (t === "player") text = String(block.name ?? "");
+                              else if (t === "stat-highlight") text = (block.stats as Array<{value:string;label:string}>)?.map(s => `${s.value} ${s.label}`).join(" · ") ?? "";
+                              else if (t === "divider") text = "———";
+                              else if (t === "faq") text = `${(block.items as Array<{q:string}>)?.length ?? 0} questions`;
+                              else if (t === "vs") text = `${(block.left as {title:string})?.title ?? ""} vs ${(block.right as {title:string})?.title ?? ""}`;
+                              else if (t === "list") text = ((block.items as string[]) ?? []).slice(0, 3).join(" · ");
+                              return (
+                                <div key={bi} className="flex gap-2">
+                                  <span className="shrink-0 rounded bg-slate-800 px-1.5 py-0.5 text-[9px] font-bold text-slate-500">{label}</span>
+                                  <span className="truncate text-slate-400">{text || "—"}</span>
+                                </div>
+                              );
+                            })}
+                          </div>
+                        ) : (item.content_en || item.content) ? (
                           <div className="whitespace-pre-wrap break-words [word-break:break-word]">
                             {item.content_en || item.content}
                           </div>

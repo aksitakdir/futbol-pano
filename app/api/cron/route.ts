@@ -40,7 +40,7 @@ async function callClaude(apiKey: string, opts: CallClaudeOptions): Promise<stri
   }
 
   const body: Record<string, unknown> = {
-    model: "claude-haiku-4-5-20251001",
+    model: "claude-sonnet-4-20250514",
     max_tokens: maxTokens,
     system: opts.system,
     messages: [{ role: "user", content: opts.user }],

@@ -1,6 +1,5 @@
 import { createClient } from "@supabase/supabase-js";
 import { fetchFootballDataMatches } from "@/lib/football-data-matches";
-import { fetchApiFootballTransfers } from "@/lib/api-football-transfers";
 import { syncTransferWireCache } from "@/lib/transfer-wire-cache";
 import { TRANSFER_SCENARIOS } from "@/lib/transfer-scenarios";
 import { COMPLETED_TRANSFERS } from "@/lib/completed-transfers";
@@ -101,45 +100,13 @@ export async function seedCompletedTransfersIfEmpty(): Promise<number> {
   return rows.length;
 }
 
+/**
+ * Disabled: api-football transfer sync was never functional (env key mismatch)
+ * and free plan doesn't cover 2025+ seasons. Transfer Wire (RSS) handles
+ * transfer news. api-football budget reserved for content enrichment instead.
+ */
 export async function syncCompletedTransfersFromApi(): Promise<{ ok: boolean; upserted: number; error?: string }> {
-  const apiKey = process.env.API_FOOTBALL_KEY;
-  if (!apiKey) return { ok: false, upserted: 0, error: "API_FOOTBALL_KEY missing" };
-
-  const supabase = supabaseAdmin();
-  let parsed;
-  try {
-    parsed = await fetchApiFootballTransfers(apiKey);
-  } catch (e) {
-    return { ok: false, upserted: 0, error: (e as Error).message };
-  }
-
-  let upserted = 0;
-  for (const [i, t] of parsed.entries()) {
-    const row = {
-      player_name: t.playerName,
-      from_club: t.fromClub,
-      to_club: t.toClub,
-      fee_tr: t.feeTr,
-      fee_en: t.feeEn,
-      transfer_date: t.transferDate,
-      sort_order: 1000 - i,
-      source: "api",
-      external_id: t.externalId,
-      is_published: true,
-      updated_at: new Date().toISOString(),
-    };
-    const { data: existing } = await supabase
-      .from("hub_completed_transfers")
-      .select("id")
-      .eq("external_id", t.externalId)
-      .maybeSingle();
-    const { error } = existing
-      ? await supabase.from("hub_completed_transfers").update(row).eq("id", existing.id)
-      : await supabase.from("hub_completed_transfers").insert(row);
-    if (!error) upserted++;
-  }
-
-  return { ok: true, upserted };
+  return { ok: true, upserted: 0, error: "Transfer sync disabled — using Transfer Wire (RSS) instead" };
 }
 
 export async function syncAllHubData(): Promise<Record<string, unknown>> {
