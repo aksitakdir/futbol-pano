@@ -18,6 +18,16 @@ export default function SectionsJsonBody({
   locale = "en",
   addDropCap = (html) => html,
 }: Props) {
+  // Pre-compute section indices for numbered rendering (01, 02, 03)
+  const sectionIndices = new Map<number, number>();
+  let sectionCount = 0;
+  sections.forEach((sec, i) => {
+    if (sec.type === "section") {
+      sectionCount++;
+      sectionIndices.set(i, sectionCount);
+    }
+  });
+
   return (
     <>
       {sections.map((sec, i) => {
@@ -44,18 +54,75 @@ export default function SectionsJsonBody({
             </Tag>
           );
         }
+
+        /* ── Section block: numbered editorial sections (01, 02, 03) ── */
         if (sec.type === "section") {
           const id = headingToId(sec.heading);
+          const idx = sectionIndices.get(i) ?? 1;
+          const num = String(idx).padStart(2, "0");
           return (
-            <div key={i}>
-              {sec.heading ? <h2 id={id}>{sec.heading}</h2> : null}
-              <ArticleHtmlWithPlayerEmbeds html={sec.html} locale={locale} />
+            <div key={i} style={{ margin: "40px 0" }}>
+              {/* Amber top divider line */}
+              <div
+                style={{
+                  height: 1,
+                  background: "linear-gradient(90deg, var(--amber), var(--amber) 60%, transparent)",
+                  opacity: 0.35,
+                  marginBottom: 32,
+                }}
+              />
+              <div style={{ display: "flex", gap: 20, alignItems: "flex-start" }}>
+                {/* Coral number */}
+                <span
+                  style={{
+                    fontFamily: "var(--font-display)",
+                    fontSize: 36,
+                    fontWeight: 700,
+                    lineHeight: 1,
+                    color: "var(--rose)",
+                    letterSpacing: "-0.02em",
+                    flexShrink: 0,
+                    marginTop: 2,
+                  }}
+                >
+                  {num}
+                </span>
+                <div style={{ flex: 1, minWidth: 0 }}>
+                  {sec.heading ? (
+                    <h3
+                      id={id}
+                      style={{
+                        fontFamily: "var(--font-display)",
+                        fontSize: 22,
+                        fontWeight: 700,
+                        color: "var(--sg-text-primary)",
+                        margin: "0 0 12px",
+                        lineHeight: 1.2,
+                        letterSpacing: "-0.01em",
+                        border: "none",
+                        padding: 0,
+                      }}
+                    >
+                      {sec.heading}
+                    </h3>
+                  ) : null}
+                  {sec.html ? (
+                    <div style={{ color: "var(--sg-text-secondary)", lineHeight: 1.7, fontSize: 17 }}>
+                      <ArticleHtmlWithPlayerEmbeds html={sec.html} locale={locale} />
+                    </div>
+                  ) : null}
+                </div>
+              </div>
             </div>
           );
         }
+
+        /* ── Pullquote: centered cyan italic with amber dividers ── */
         if (sec.type === "pullquote") {
-          return <blockquote key={i}>{sec.text}</blockquote>;
+          return <blockquote key={i}>{"“"}{sec.text}{"”"}</blockquote>;
         }
+
+        /* ── Callout: coral-accent info box ── */
         if (sec.type === "callout") {
           return (
             <div key={i} className="callout">
@@ -63,6 +130,7 @@ export default function SectionsJsonBody({
             </div>
           );
         }
+
         if (sec.type === "youtube") {
           const videoId = normalizeYoutubeId(sec.url);
           if (!videoId) return null;
@@ -89,9 +157,11 @@ export default function SectionsJsonBody({
             </div>
           );
         }
+
         if (sec.type === "player") {
           return <ArticlePlayerEmbed key={i} playerName={sec.name} locale={locale} />;
         }
+
         if (sec.type === "image") {
           return (
             <figure key={i} className="article-image-block">
@@ -101,16 +171,37 @@ export default function SectionsJsonBody({
             </figure>
           );
         }
+
+        /* ── Lists ── */
         if (sec.type === "list") {
+          /* Ordered list: coral numbered items matching editorial style */
           if (sec.style === "ol") {
             return (
-              <ol key={i} style={{ margin: "20px 0", paddingLeft: 24, lineHeight: 1.7 }}>
+              <div key={i} style={{ margin: "24px 0", display: "flex", flexDirection: "column", gap: 14 }}>
                 {sec.items
                   .filter((item) => item.trim())
                   .map((item, j) => (
-                    <li key={j}>{item}</li>
+                    <div
+                      key={j}
+                      style={{ display: "flex", gap: 14, alignItems: "flex-start" }}
+                    >
+                      <span
+                        style={{
+                          fontFamily: "var(--font-display)",
+                          fontSize: 20,
+                          fontWeight: 700,
+                          color: "var(--rose)",
+                          lineHeight: 1.65,
+                          flexShrink: 0,
+                          minWidth: 28,
+                        }}
+                      >
+                        {String(j + 1).padStart(2, "0")}
+                      </span>
+                      <span style={{ lineHeight: 1.65, color: "var(--sg-text-secondary)" }}>{item}</span>
+                    </div>
                   ))}
-              </ol>
+              </div>
             );
           }
           // Styled unordered list with accent-colored bullets
@@ -144,7 +235,7 @@ export default function SectionsJsonBody({
                         width: 7,
                         height: 7,
                         borderRadius: "50%",
-                        background: `var(--accent-${accent}, var(--sg-primary))`,
+                        background: "var(--rose)",
                         marginTop: 8,
                         flexShrink: 0,
                         opacity: 0.85,
@@ -156,6 +247,8 @@ export default function SectionsJsonBody({
             </ul>
           );
         }
+
+        /* ── VS block: two-column comparison ── */
         if (sec.type === "vs") {
           const col = (side: typeof sec.left, accentColor: string) => (
             <div
@@ -163,125 +256,151 @@ export default function SectionsJsonBody({
                 flex: 1,
                 minWidth: 0,
                 background: "var(--sg-surface)",
-                border: "1px solid var(--sg-border)",
+                border: "1px solid color-mix(in oklch, var(--rose) 30%, transparent)",
                 borderTop: `3px solid ${accentColor}`,
                 borderRadius: 12,
-                padding: "20px 18px",
+                padding: "22px 20px",
               }}
             >
-              <p style={{ margin: "0 0 12px", fontWeight: 700, fontSize: 17, color: "var(--sg-text-primary)" }}>
+              <p style={{
+                margin: "0 0 14px",
+                fontWeight: 700,
+                fontSize: 18,
+                color: "var(--sg-text-primary)",
+                fontFamily: "var(--font-display)",
+              }}>
                 {side.title}
               </p>
-              <ul style={{ margin: 0, paddingLeft: 18, lineHeight: 1.7, color: "var(--sg-text-secondary)" }}>
+              <ul style={{ margin: 0, padding: 0, listStyle: "none", lineHeight: 1.7, color: "var(--sg-text-secondary)" }}>
                 {side.items.filter((it) => it.trim()).map((it, j) => (
-                  <li key={j}>{it}</li>
+                  <li key={j} style={{ display: "flex", alignItems: "flex-start", gap: 8, marginBottom: 6 }}>
+                    <span style={{
+                      width: 5, height: 5, borderRadius: "50%",
+                      background: accentColor, marginTop: 9, flexShrink: 0,
+                    }} />
+                    <span>{it}</span>
+                  </li>
                 ))}
               </ul>
             </div>
           );
           return (
-            <div key={i} style={{ margin: "28px 0" }}>
-              <div style={{ display: "flex", gap: 14, alignItems: "stretch", flexWrap: "wrap" }}>
-                {col(sec.left, "var(--sg-primary)")}
+            <div key={i} style={{ margin: "36px 0" }}>
+              <div style={{ display: "flex", gap: 16, alignItems: "stretch", flexWrap: "wrap" }}>
+                {col(sec.left, "var(--rose)")}
                 <div
                   style={{
                     display: "flex",
                     alignItems: "center",
                     fontWeight: 800,
-                    fontSize: 14,
-                    letterSpacing: "0.08em",
+                    fontSize: 13,
+                    letterSpacing: "0.12em",
                     color: "var(--sg-text-muted)",
+                    fontFamily: "var(--font-mono-stack)",
                   }}
                 >
                   VS
                 </div>
-                {col(sec.right, "var(--sg-secondary)")}
+                {col(sec.right, "var(--amber)")}
               </div>
             </div>
           );
         }
+
+        /* ── Stat highlight: coral bordered container with title + big numbers ── */
         if (sec.type === "stat-highlight") {
           return (
             <div
               key={i}
               style={{
-                display: "flex",
-                gap: 16,
-                flexWrap: "wrap",
-                margin: "32px 0",
-                justifyContent: "center",
+                margin: "36px 0",
+                border: "1px solid color-mix(in oklch, var(--rose) 50%, transparent)",
+                borderRadius: 14,
+                padding: "28px 32px",
+                background: "var(--sg-surface)",
               }}
             >
-              {sec.stats.map((s, j) => (
-                <div
-                  key={j}
+              {/* Title */}
+              {sec.title ? (
+                <p
                   style={{
-                    flex: "1 1 140px",
-                    maxWidth: 220,
-                    textAlign: "center",
-                    background: "var(--sg-surface)",
-                    border: "1px solid var(--sg-border)",
-                    borderRadius: 14,
-                    padding: "24px 18px",
-                    position: "relative",
-                    overflow: "hidden",
+                    margin: "0 0 20px",
+                    fontFamily: "var(--font-mono-stack)",
+                    fontSize: 12,
+                    fontWeight: 600,
+                    letterSpacing: "0.14em",
+                    textTransform: "uppercase",
+                    color: "var(--rose)",
                   }}
                 >
-                  {/* Accent glow at top */}
+                  {sec.title}
+                </p>
+              ) : null}
+              {/* Stats row */}
+              <div
+                style={{
+                  display: "flex",
+                  gap: 24,
+                  flexWrap: "wrap",
+                  justifyContent: sec.stats.length <= 3 ? "space-around" : "center",
+                }}
+              >
+                {sec.stats.map((s, j) => (
                   <div
+                    key={j}
                     style={{
-                      position: "absolute",
-                      top: 0,
-                      left: "20%",
-                      right: "20%",
-                      height: 3,
-                      borderRadius: "0 0 4px 4px",
-                      background: `var(--accent-${accent}, var(--sg-primary))`,
-                      opacity: 0.7,
-                    }}
-                  />
-                  <p
-                    style={{
-                      margin: 0,
-                      fontSize: 32,
-                      fontWeight: 900,
-                      lineHeight: 1.1,
-                      letterSpacing: "-0.02em",
-                      color: `var(--accent-${accent}, var(--sg-primary))`,
-                      fontFamily: "var(--font-headline)",
+                      flex: "1 1 120px",
+                      maxWidth: 240,
+                      textAlign: sec.stats.length <= 3 ? "left" : "center",
                     }}
                   >
-                    {s.value}
-                  </p>
-                  <p
-                    style={{
-                      margin: "8px 0 0",
-                      fontSize: 13,
-                      fontWeight: 700,
-                      textTransform: "uppercase",
-                      letterSpacing: "0.08em",
-                      color: "var(--sg-text-primary)",
-                    }}
-                  >
-                    {s.label}
-                  </p>
-                  {s.note ? (
                     <p
                       style={{
-                        margin: "6px 0 0",
-                        fontSize: 12,
-                        lineHeight: 1.5,
-                        color: "var(--sg-text-muted)",
+                        margin: 0,
+                        fontSize: "clamp(40px, 5vw, 60px)",
+                        fontWeight: 900,
+                        lineHeight: 1,
+                        letterSpacing: "-0.03em",
+                        color: "var(--sg-text-primary)",
+                        fontFamily: "var(--font-display)",
                       }}
                     >
-                      {s.note}
+                      {s.value}
                     </p>
-                  ) : null}
-                </div>
-              ))}
+                    <p
+                      style={{
+                        margin: "10px 0 0",
+                        fontSize: 11,
+                        fontWeight: 600,
+                        textTransform: "uppercase",
+                        letterSpacing: "0.1em",
+                        color: "var(--sg-text-muted)",
+                        fontFamily: "var(--font-mono-stack)",
+                      }}
+                    >
+                      {s.label}
+                    </p>
+                    {s.note ? (
+                      <p
+                        style={{
+                          margin: "6px 0 0",
+                          fontSize: 12,
+                          lineHeight: 1.5,
+                          color: "var(--sg-text-muted)",
+                          opacity: 0.7,
+                        }}
+                      >
+                        {s.note}
+                      </p>
+                    ) : null}
+                  </div>
+                ))}
+              </div>
             </div>
           );
         }
+
+        /* ── Divider: amber/gold gradient line ── */
         if (sec.type === "divider") {
           const dividerStyle = sec.style ?? "default";
           if (dividerStyle === "dots") {
@@ -291,8 +410,8 @@ export default function SectionsJsonBody({
                 style={{
                   display: "flex",
                   justifyContent: "center",
-                  gap: 8,
-                  margin: "36px 0",
+                  gap: 10,
+                  margin: "40px 0",
                 }}
               >
                 {[0, 1, 2].map((d) => (
@@ -302,8 +421,8 @@ export default function SectionsJsonBody({
                       width: 6,
                       height: 6,
                       borderRadius: "50%",
-                      background: `var(--accent-${accent}, var(--sg-text-muted))`,
-                      opacity: 0.5,
+                      background: "var(--amber)",
+                      opacity: 0.6,
                     }}
                   />
                 ))}
@@ -315,30 +434,29 @@ export default function SectionsJsonBody({
               <div
                 key={i}
                 style={{
-                  margin: "36px auto",
+                  margin: "40px 0",
                   height: 2,
-                  maxWidth: 200,
                   borderRadius: 2,
-                  background: `linear-gradient(90deg, transparent, var(--accent-${accent}, var(--sg-text-muted)), transparent)`,
-                  opacity: 0.4,
+                  background: "linear-gradient(90deg, transparent 2%, var(--amber) 20%, var(--amber) 80%, transparent 98%)",
+                  opacity: 0.6,
                 }}
               />
             );
           }
-          // default divider
+          // default divider — amber line
           return (
-            <hr
+            <div
               key={i}
               style={{
-                margin: "36px 0",
-                border: "none",
+                margin: "40px 0",
                 height: 1,
-                background: "var(--sg-border)",
-                opacity: 0.6,
+                background: "linear-gradient(90deg, var(--amber), var(--amber) 60%, transparent)",
+                opacity: 0.4,
               }}
             />
           );
         }
+
         if (sec.type === "faq") {
           const valid = sec.items.filter((it) => it.q.trim() && it.a.trim());
           if (valid.length === 0) return null;

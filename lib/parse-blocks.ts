@@ -235,13 +235,19 @@ export function parseMarkupToBlocks(input: string): SectionBlock[] {
       continue;
     }
 
-    // Stat highlight: @stat: value | label | optional note (multiple lines grouped)
+    // Stat highlight: @stat: Title (optional, no pipe) then lines of value | label | note
     if (/^@stat:/i.test(line)) {
       flushAll();
       const stats: { value: string; label: string; note?: string }[] = [];
-      // First line
-      const firstParts = afterMarker(line, /^@stat:/i).split("|").map((s) => s.trim());
-      if (firstParts[0]) stats.push({ value: firstParts[0], label: firstParts[1] ?? "", note: firstParts[2] || undefined });
+      let title: string | undefined;
+      // First line — if it contains "|" it's a stat, otherwise it's the title
+      const firstText = afterMarker(line, /^@stat:/i);
+      if (firstText.includes("|")) {
+        const parts = firstText.split("|").map((s) => s.trim());
+        if (parts[0]) stats.push({ value: parts[0], label: parts[1] ?? "", note: parts[2] || undefined });
+      } else if (firstText.trim()) {
+        title = firstText.trim();
+      }
       // Collect following stat lines (- prefixed or plain "value | label" lines)
       const [body, next] = collectBody(i + 1);
       for (const raw of body) {
@@ -249,7 +255,7 @@ export function parseMarkupToBlocks(input: string): SectionBlock[] {
         const parts = b.split("|").map((s) => s.trim());
         if (parts[0]) stats.push({ value: parts[0], label: parts[1] ?? "", note: parts[2] || undefined });
       }
-      if (stats.length > 0) blocks.push({ type: "stat-highlight", stats });
+      if (stats.length > 0) blocks.push({ type: "stat-highlight", title, stats });
       i = next - 1;
       continue;
     }

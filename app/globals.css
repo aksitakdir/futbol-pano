@@ -254,36 +254,44 @@ button { font-family: inherit; cursor: pointer; }
   font-size: 18px;
 }
 .article-v2 strong {
-  color: var(--sg-text-primary);
+  color: var(--rose);
   font-weight: 600;
 }
 .article-v2 em { color: var(--sg-text-secondary); }
 .article-v2 blockquote {
-  margin: 52px -8px;
-  padding: 36px 40px;
-  border-left: 4px solid var(--accent);
-  background: color-mix(in oklch, var(--accent) 6%, var(--sg-surface));
-  border-radius: 0 8px 8px 0;
+  margin: 52px 0;
+  padding: 40px 24px;
+  border: none;
+  background: transparent;
+  border-radius: 0;
   font-family: var(--font-display);
   font-style: italic;
-  font-size: clamp(20px, 2.4vw, 28px);
+  font-size: clamp(24px, 3vw, 36px);
   font-weight: 500;
-  line-height: 1.25;
+  line-height: 1.2;
   letter-spacing: -0.02em;
-  color: var(--sg-text-primary);
+  color: var(--cyan);
+  text-align: center;
   text-wrap: balance;
   position: relative;
 }
 .article-v2 blockquote::before {
-  content: '\201C';
-  position: absolute;
-  top: 12px;
-  left: 16px;
-  font-size: 60px;
-  line-height: 1;
-  color: var(--accent);
-  opacity: 0.4;
-  font-family: var(--font-display);
+  content: '';
+  display: block;
+  width: 100%;
+  height: 2px;
+  background: linear-gradient(90deg, transparent 5%, var(--amber) 25%, var(--amber) 75%, transparent 95%);
+  margin-bottom: 36px;
+  opacity: 0.8;
+}
+.article-v2 blockquote::after {
+  content: '';
+  display: block;
+  width: 100%;
+  height: 2px;
+  background: linear-gradient(90deg, transparent 5%, var(--amber) 25%, var(--amber) 75%, transparent 95%);
+  margin-top: 36px;
+  opacity: 0.8;
 }
 .article-v2 blockquote p { font-size: inherit; color: inherit; margin: 0; }
 
@@ -305,19 +313,19 @@ button { font-family: inherit; cursor: pointer; }
   border-radius: 3px;
 }
 
-/* Callout box */
+/* Callout box — coral-accent info box */
 .article-v2 .callout {
-  border: 1px solid color-mix(in oklch, var(--accent) 35%, transparent);
-  background: color-mix(in oklch, var(--accent) 6%, var(--sg-surface));
+  border: 1px solid color-mix(in oklch, var(--rose) 35%, transparent);
+  background: color-mix(in oklch, var(--rose) 5%, var(--sg-surface));
   border-radius: 10px;
-  padding: 20px 24px;
+  padding: 22px 26px;
   margin: 36px 0;
   font-size: 16px;
   line-height: 1.65;
 }
 .article-v2 .callout p { font-size: 16px; margin-bottom: 12px; }
 .article-v2 .callout p:last-child { margin-bottom: 0; }
-.article-v2 .callout strong { color: var(--accent); }
+.article-v2 .callout strong { color: var(--rose); }
 
 /* Key stat inline highlight */
 .article-v2 .stat-highlight {
@@ -327,14 +335,14 @@ button { font-family: inherit; cursor: pointer; }
   font-family: var(--font-mono-stack);
   font-size: 0.85em;
   font-weight: 700;
-  color: var(--accent);
-  background: color-mix(in oklch, var(--accent) 10%, transparent);
+  color: var(--rose);
+  background: color-mix(in oklch, var(--rose) 10%, transparent);
   padding: 2px 8px;
   border-radius: 4px;
   letter-spacing: 0.04em;
 }
 
-/* H2 — accent bar solunda */
+/* H2 — amber bar solunda */
 .article-v2 h2 {
   font-family: var(--font-display);
   font-size: clamp(28px, 3.2vw, 40px);
@@ -345,7 +353,7 @@ button { font-family: inherit; cursor: pointer; }
   line-height: 1.05;
   text-wrap: balance;
   padding-left: 16px;
-  border-left: 3px solid var(--accent);
+  border-left: 4px solid var(--amber);
 }
 
 .article-v2 ul, .article-v2 ol {
@@ -354,11 +362,13 @@ button { font-family: inherit; cursor: pointer; }
   color: var(--sg-text-secondary);
 }
 .article-v2 li { margin-bottom: 10px; line-height: 1.65; }
-.article-v2 a { color: var(--accent); text-decoration: underline; text-underline-offset: 3px; }
+.article-v2 a { color: var(--rose); text-decoration: underline; text-underline-offset: 3px; }
 .article-v2 hr {
   border: none;
-  border-top: 1px solid var(--sg-border);
+  height: 2px;
+  background: linear-gradient(90deg, transparent 2%, var(--amber) 20%, var(--amber) 80%, transparent 98%);
   margin: 48px 0;
+  opacity: 0.6;
 }
 .article-v2 table {
   width: 100%; border-collapse: collapse; margin-bottom: 24px; font-size: 14px;
@@ -372,7 +382,7 @@ button { font-family: inherit; cursor: pointer; }
 .article-v2 code {
   font-family: var(--font-mono); font-size: 13px;
   background: var(--sg-surface); padding: 2px 6px; border-radius: 3px;
-  color: var(--accent);
+  color: var(--rose);
 }
 .article-v2 img { max-width: 100%; height: auto; border-radius: 4px; margin: 24px 0; }
 

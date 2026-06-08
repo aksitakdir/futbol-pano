@@ -81,7 +81,7 @@ function defaultBlock(type: SectionBlock["type"]): SectionBlock {
     case "faq":
       return { type, heading: "", items: [{ q: "", a: "" }] };
     case "stat-highlight":
-      return { type, stats: [{ value: "", label: "", note: "" }] };
+      return { type, title: undefined, stats: [{ value: "", label: "", note: "" }] };
     case "divider":
       return { type, style: "default" };
   }
@@ -421,6 +421,13 @@ function StatHighlightEditor({
   return (
     <div className="space-y-3">
       <label className="block text-[10px] font-semibold text-slate-400 uppercase tracking-wider">Stat Cards</label>
+      <input
+        type="text"
+        value={block.title ?? ""}
+        onChange={(e) => onChange({ ...block, title: e.target.value || undefined })}
+        placeholder="Card group title (optional) — e.g. 'Physical Profile'"
+        className="w-full rounded-lg border border-slate-700/80 bg-slate-800/70 px-3 py-1.5 text-sm text-rose-300 placeholder-slate-500 outline-none focus:border-rose-500/60 font-mono uppercase tracking-wider"
+      />
       {block.stats.map((stat, i) => (
         <div key={i} className="flex items-start gap-2 rounded-lg border border-cyan-700/30 bg-slate-900/40 p-3">
           <div className="flex-1 space-y-2">

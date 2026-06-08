@@ -18,7 +18,7 @@ export type SectionBlock =
   | { type: "list"; style: "ul" | "ol"; items: string[] }
   | { type: "vs"; left: VsSide; right: VsSide }
   | { type: "faq"; heading?: string; items: FaqItem[] }
-  | { type: "stat-highlight"; stats: StatHighlightItem[] }
+  | { type: "stat-highlight"; title?: string; stats: StatHighlightItem[] }
   | { type: "divider"; style?: "default" | "dots" | "gradient" };
 
 export type TocItem = { text: string; id: string };
