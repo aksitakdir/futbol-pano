@@ -16,22 +16,58 @@ function statColor(val?: number) {
 }
 
 async function fetchPlayerStats(name: string): Promise<Partial<PlayerCardData> | null> {
+  const cols = "overall,pace,shooting,passing,dribbling,defending,physical,position,club,league,age,photo_url";
+
+  // Tier 1: fc_players — exact
   const { data: exact } = await supabase
     .from("fc_players")
-    .select("overall,pace,shooting,passing,dribbling,defending,physical,position,club,league,age,photo_url")
+    .select(cols)
     .ilike("name", name)
     .limit(1)
     .maybeSingle();
   if (exact?.overall) return exact;
+
+  // Tier 1b: fc_players — fuzzy
   const two = name.split(" ").slice(0, 2).join(" ");
   const { data: fuzzy } = await supabase
     .from("fc_players")
-    .select("overall,pace,shooting,passing,dribbling,defending,physical,position,club,league,age,photo_url")
+    .select(cols)
     .ilike("name", `%${two}%`)
     .order("overall", { ascending: false })
     .limit(1)
     .maybeSingle();
-  return fuzzy?.overall ? fuzzy : null;
+  if (fuzzy?.overall) return fuzzy;
+
+  // Tier 2: player_cache — exact
+  const cacheCols = "overall,pace,shooting,passing,dribbling,defending,physical,position,club,league,age";
+  const { data: cacheExact } = await supabase
+    .from("player_cache")
+    .select(cacheCols)
+    .ilike("name", name)
+    .limit(1)
+    .maybeSingle();
+  if (cacheExact?.overall) return cacheExact;
+
+  // Tier 2b: player_cache — fuzzy
+  const { data: cacheFuzzy } = await supabase
+    .from("player_cache")
+    .select(cacheCols)
+    .ilike("name", `%${two}%`)
+    .order("overall", { ascending: false })
+    .limit(1)
+    .maybeSingle();
+  if (cacheFuzzy?.overall) return cacheFuzzy;
+
+  // Tier 3: server-side resolve (BSD + API-Football) via API
+  try {
+    const res = await fetch(`/api/players/resolve?name=${encodeURIComponent(name)}`);
+    if (res.ok) {
+      const data = await res.json();
+      if (data?.overall) return data;
+    }
+  } catch { /* ignore */ }
+
+  return null;
 }
 
 export default function ArticlePlayerEmbed({
@@ -94,7 +130,7 @@ export default function ArticlePlayerEmbed({
     return (
       <div className="article-player-embed" style={{ clear: "both", padding: "32px 0" }} data-scout-embed={playerName.trim()}>
         <div style={{ padding: "16px 20px", borderRadius: 8, border: "1px dashed var(--sg-border)", background: "var(--sg-surface-low)", fontSize: 14, color: "var(--sg-text-muted)", textAlign: "center" }}>
-          Player not found in EA FC database: <strong style={{ color: "var(--sg-text-primary)" }}>{playerName.trim()}</strong>
+          Player not found: <strong style={{ color: "var(--sg-text-primary)" }}>{playerName.trim()}</strong>
         </div>
       </div>
     );
