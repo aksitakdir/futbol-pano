@@ -19,7 +19,14 @@ export default function HeroPlayerCard({ playerName }: { playerName: string }) {
 
     (async () => {
       // Client-side: checks fc_players + player_cache (tiers 1-2)
-      const result = await resolvePlayerClient(playerName.trim());
+      let result = await resolvePlayerClient(playerName.trim());
+      // If not in local tables, call server-side resolve (BSD + API-Football)
+      if (!result) {
+        try {
+          const res = await fetch(`/api/players/resolve?name=${encodeURIComponent(playerName.trim())}`);
+          if (res.ok) result = await res.json();
+        } catch { /* ignore */ }
+      }
       if (!cancelled && result) setCard(result);
     })();
 
