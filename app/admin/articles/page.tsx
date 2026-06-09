@@ -71,6 +71,8 @@ const CATEGORY_COLOR: Record<string, string> = {
   lists: "bg-sky-500/15 text-sky-300 border-sky-500/40",
   radar: "bg-emerald-500/15 text-emerald-300 border-emerald-500/40",
   "tactics-lab": "bg-violet-500/15 text-violet-300 border-violet-500/40",
+  "wc-2026": "bg-amber-500/15 text-amber-300 border-amber-500/40",
+  transfer: "bg-cyan-500/15 text-cyan-300 border-cyan-500/40",
 };
 
 const STATUS_CONFIG: Record<string, { label: string; cls: string }> = {
@@ -179,7 +181,7 @@ function IceriklerPageInner() {
   }
 
   async function generateFromSuggestion(s: TitleSuggestion) {
-    if (!["radar", "tactics-lab", "lists"].includes(s.category)) {
+    if (!["radar", "tactics-lab", "lists", "wc-2026", "transfer"].includes(s.category)) {
       setHubNoticeOk(false);
       setHubNotice("Invalid category — please re-suggest the title.");
       setTimeout(() => setHubNotice(""), 8000);
@@ -498,7 +500,7 @@ function IceriklerPageInner() {
                         {CATEGORY_LABEL[s.category] ?? s.category}
                       </span>
                       <span
-                        className={`inline-flex rounded-full border px-2 py-0.5 text-[10px] font-semibold ${SEO_VALUE_STYLE[s.seo_value] ?? SEO_VALUE_STYLE.Orta}`}
+                        className={`inline-flex rounded-full border px-2 py-0.5 text-[10px] font-semibold ${SEO_VALUE_STYLE[s.seo_value] ?? SEO_VALUE_STYLE.Medium}`}
                       >
                         SEO: {s.seo_value}
                       </span>

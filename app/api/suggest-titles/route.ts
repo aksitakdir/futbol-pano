@@ -4,23 +4,45 @@ export type SuggestTitleMode = "trend" | "general" | "historical" | "chronologic
 
 function buildSuggestSystem(): string {
   const today = new Date().toISOString().split("T")[0];
+
+  // World Cup 2026 awareness: June 11 – July 19, 2026
+  const now = new Date();
+  const wcStart = new Date("2026-06-11");
+  const wcEnd = new Date("2026-07-19");
+  const isWcPeriod = now >= new Date("2026-05-01") && now <= new Date("2026-08-01");
+  const wcPhase = now < wcStart
+    ? "The FIFA World Cup 2026 (USA/Mexico/Canada) kicks off on June 11, 2026 — just days away!"
+    : now <= wcEnd
+      ? "The FIFA World Cup 2026 is CURRENTLY UNDERWAY. Prioritize WC content heavily."
+      : "The FIFA World Cup 2026 just concluded. Post-tournament analysis is still highly relevant.";
+
   return `You are a football content editor for Scout Gamer, a global football analysis platform.
 Today's date: ${today}. Current football season: 2025-26.
-
+${isWcPeriod ? `\n⚽ ${wcPhase}\n` : ""}
 The user provides a keyword or topic; you suggest 8 article titles.
+
+CATEGORIES — use ALL of them strategically. Each title MUST have one:
+- "wc-2026" — World Cup 2026 content: group previews, match analysis, squad breakdowns, star players, tactical previews, tournament narratives. ${isWcPeriod ? "HIGH PRIORITY right now." : ""}
+- "transfer" — Transfer market: rumours, done deals, market analysis, club strategies, contract situations, free agents.
+- "radar" — Player spotlights: scouting reports, breakout stars, statistical deep-dives, career analysis, comparison pieces.
+- "tactics-lab" — Tactical analysis: formations, pressing systems, positional play, set pieces, coaching philosophies.
+- "lists" — Ranked lists, top-N compilations, best XI selections, award predictions, stat-based rankings.
+
+IMPORTANT distribution guidance:
+${isWcPeriod ? "- During World Cup period: at least 3-4 titles should be wc-2026. Mix in other categories for variety." : "- During transfer window: prioritize transfer category. During regular season: balance across all categories."}
+- Match the keyword intent to the most natural category. If the keyword mentions a specific match, team in World Cup context → wc-2026. Transfer rumours → transfer. A single player → radar. Formation/tactics → tactics-lab. Rankings → lists.
 
 Rules:
 - Titles must be in ENGLISH. Scout Gamer is an English-first global platform.
 - Titles must be decisive statements or strong claims — never vague or generic.
 - Do NOT include specific years or seasons in the title (e.g. avoid "2024", "2025-26").
 - Do NOT force Turkey, Süper Lig, or Turkish club references unless the keyword explicitly requires it.
-- Focus on global football: La Liga, Premier League, Bundesliga, Serie A, Champions League, etc.
-- Category must be exactly one of: "radar", "tactics-lab", "lists" (lowercase, hyphenated).
-- seo_value: "Yüksek", "Orta", or "Düşük" (assess based on search intent and topic popularity).
+- Focus on global football: La Liga, Premier League, Bundesliga, Serie A, Champions League, World Cup, etc.
+- seo_value: "High", "Medium", or "Low" (assess based on search volume, topic popularity, timeliness).
 - slug: URL-friendly, lowercase, no special characters, hyphen-separated (e.g. lamine-yamal-radar).
 
 Respond with ONLY a valid JSON array, no other text or markdown:
-[{"title":"...","category":"radar","seo_value":"Yüksek","slug":"..."}, ...]
+[{"title":"...","category":"wc-2026","seo_value":"High","slug":"..."}, ...]
 
 Return exactly 8 items.`;
 }
@@ -147,8 +169,8 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Geçersiz dizi" }, { status: 502 });
   }
 
-  const validCats = new Set(["radar", "tactics-lab", "lists"]);
-  const validSeo = new Set(["Yüksek", "Orta", "Düşük"]);
+  const validCats = new Set(["radar", "tactics-lab", "lists", "wc-2026", "transfer"]);
+  const validSeo = new Set(["High", "Medium", "Low", "Yüksek", "Orta", "Düşük"]);
 
   const normalized = items
     .slice(0, 8)
@@ -156,8 +178,12 @@ export async function POST(request: Request) {
       const title = typeof it.title === "string" ? it.title.trim() : "";
       let category = typeof it.category === "string" ? it.category.trim().toLowerCase() : "lists";
       if (!validCats.has(category)) category = "lists";
-      let seo = typeof it.seo_value === "string" ? it.seo_value.trim() : "Orta";
-      if (!validSeo.has(seo)) seo = "Orta";
+      let seo = typeof it.seo_value === "string" ? it.seo_value.trim() : "Medium";
+      // Normalize Turkish → English
+      if (seo === "Yüksek") seo = "High";
+      else if (seo === "Orta") seo = "Medium";
+      else if (seo === "Düşük") seo = "Low";
+      if (!["High", "Medium", "Low"].includes(seo)) seo = "Medium";
       let slug = typeof it.slug === "string" ? it.slug.trim().toLowerCase().replace(/[^a-z0-9-]/g, "-").replace(/-+/g, "-").replace(/^-|-$/g, "") : "";
       if (!slug && title) {
         slug = title
