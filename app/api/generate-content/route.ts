@@ -763,6 +763,14 @@ export async function POST(request: Request) {
         );
       }
 
+      // Pre-resolve featured player so HeroPlayerCard has instant data.
+      // Fire-and-forget — don't block the response.
+      if (generated.featured_player) {
+        import("@/lib/player-resolver").then(({ resolvePlayer }) => {
+          resolvePlayer(generated.featured_player!, true).catch(() => {});
+        }).catch(() => {});
+      }
+
       return NextResponse.json({
         generated: 1,
         total: 1,
