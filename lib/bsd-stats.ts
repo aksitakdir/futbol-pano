@@ -26,30 +26,43 @@ export type BsdPlayer = {
   id: number;
   name: string;
   short_name?: string;
-  position?: string;       // "GK", "CB", "CM", "ST", etc.
+  position?: string;           // "G", "D", "M", "F"
+  specific_position?: string;  // "GK", "CB", "RW", "ST", etc.
   nationality?: string;
   nationality_code?: string;
   date_of_birth?: string;
-  height?: number;
+  height_cm?: number;
   preferred_foot?: string;
-  market_value?: number;   // in euros
-  market_value_display?: string;
-  team?: { id: number; name: string; league?: { id: number; name: string } };
-  national_team?: { id: number; name: string };
+  market_value_eur?: number;
+  current_team_id?: number;
+  national_team_id?: number;
+  rating?: number;             // BSD overall rating
   contract_until?: string;
 };
 
-export type BsdCareerSeason = {
-  season: { id: number; name: string };
-  team: { id: number; name: string };
-  league: { id: number; name: string };
-  appearances?: number;
+/** Raw shape from BSD /players/{id}/career/ endpoint */
+type BsdCareerRawSeason = {
+  season_id: number;
+  league_id: number;
+  team_id: number;
+  matches?: number;
   minutes?: number;
   goals?: number;
   assists?: number;
-  yellow_cards?: number;
-  red_cards?: number;
-  rating?: number;         // avg match rating
+  avg_rating?: number;
+};
+
+/** Normalized career season (aligned for deriveRatings) */
+export type BsdCareerSeason = {
+  seasonId: number;
+  leagueId: number;
+  teamId: number;
+  appearances: number;
+  minutes: number;
+  goals: number;
+  assists: number;
+  rating: number | null;
+  // Match-level aggregates (filled from /stats/ when available)
   xg?: number;
   xa?: number;
   shots?: number;
@@ -102,6 +115,7 @@ export async function getBsdPlayer(id: number): Promise<BsdPlayer | null> {
 
 /**
  * Get player career stats (season-by-season totals).
+ * BSD returns: { player_id, seasons: [{ season_id, league_id, team_id, matches, minutes, goals, assists, avg_rating }] }
  * Cost: 1 request.
  */
 export async function getBsdCareer(id: number): Promise<BsdCareerSeason[]> {
@@ -109,7 +123,17 @@ export async function getBsdCareer(id: number): Promise<BsdCareerSeason[]> {
   const res = await fetch(url, { headers: bsdHeaders() });
   if (!res.ok) return [];
   const data = await res.json();
-  return (Array.isArray(data) ? data : data.results ?? []) as BsdCareerSeason[];
+  const rawSeasons: BsdCareerRawSeason[] = data.seasons ?? data.results ?? (Array.isArray(data) ? data : []);
+  return rawSeasons.map((s) => ({
+    seasonId: s.season_id,
+    leagueId: s.league_id,
+    teamId: s.team_id,
+    appearances: s.matches ?? 0,
+    minutes: s.minutes ?? 0,
+    goals: s.goals ?? 0,
+    assists: s.assists ?? 0,
+    rating: s.avg_rating ?? null,
+  }));
 }
 
 // ─── Derived ratings ─────────────────────────────────────────────
@@ -142,7 +166,7 @@ export function deriveRatings(
   const apps = season.appearances;
   const mins = season.minutes ?? apps * 70;
   const per90 = mins > 0 ? 90 / (mins / apps) : 1;
-  const pos = (player.position ?? "").toUpperCase();
+  const pos = (player.specific_position ?? player.position ?? "").toUpperCase();
 
   // ── Shooting (goals, shots accuracy, xG) ──
   const goalsPer90 = (season.goals ?? 0) / apps * per90;
@@ -297,8 +321,8 @@ export async function resolveBsdPlayer(
     const career = await getBsdCareer(player.id);
     // Most recent season with meaningful appearances
     const latest = career
-      .filter((s) => (s.appearances ?? 0) >= 3)
-      .sort((a, b) => (b.season?.id ?? 0) - (a.season?.id ?? 0))[0] ?? null;
+      .filter((s) => s.appearances >= 3)
+      .sort((a, b) => b.seasonId - a.seasonId)[0] ?? null;
 
     const ratings = deriveRatings(player, latest);
 
@@ -306,18 +330,18 @@ export async function resolveBsdPlayer(
       ? Math.floor((Date.now() - new Date(player.date_of_birth).getTime()) / (365.25 * 24 * 3600 * 1000))
       : 0;
 
-    const seasonName = latest?.season?.name ?? "2024-25";
+    const seasonName = latest ? `season-${latest.seasonId}` : "2024-25";
 
     return {
       name: player.name,
       short_name: player.short_name,
-      position: player.position ?? "",
-      club: player.team?.name ?? "",
-      league: player.team?.league?.name ?? latest?.league?.name ?? "",
+      position: player.specific_position ?? player.position ?? "",
+      club: "",  // BSD returns team ID, not name — enriched after cache
+      league: "",
       nationality: player.nationality ?? "",
       age,
-      market_value: player.market_value
-        ? `€${(player.market_value / 1_000_000).toFixed(0)}M`
+      market_value: player.market_value_eur
+        ? `€${(player.market_value_eur / 1_000_000).toFixed(0)}M`
         : undefined,
       source: "bsd",
       source_id: player.id,
@@ -328,13 +352,13 @@ export async function resolveBsdPlayer(
       dribbling: ratings.dribbling,
       defending: ratings.defending,
       physical: ratings.physical,
-      goals: latest?.goals,
-      assists: latest?.assists,
-      appearances: latest?.appearances,
-      minutes: latest?.minutes,
-      rating: latest?.rating,
-      xg: latest?.xg,
-      xa: latest?.xa,
+      goals: latest?.goals ?? undefined,
+      assists: latest?.assists ?? undefined,
+      appearances: latest?.appearances ?? undefined,
+      minutes: latest?.minutes ?? undefined,
+      rating: latest?.rating ?? undefined,
+      xg: latest?.xg ?? undefined,
+      xa: latest?.xa ?? undefined,
       season: seasonName,
     };
   } catch (err) {
