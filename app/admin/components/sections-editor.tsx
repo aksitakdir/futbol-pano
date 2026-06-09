@@ -2,15 +2,11 @@
 
 import React, { useState, useEffect, useRef } from "react";
 import { supabase } from "@/lib/supabase";
+import { searchPlayers, resolveAndSearch, type PlayerSearchResult } from "@/lib/player-search";
 import type { SectionBlock } from "@/lib/section-blocks";
 import { parseMarkupToBlocks } from "@/lib/parse-blocks";
 
-type FcPlayerResult = {
-  name: string;
-  overall: number;
-  position: string;
-  club: string;
-};
+type FcPlayerResult = PlayerSearchResult;
 
 export type { SectionBlock } from "@/lib/section-blocks";
 
@@ -564,13 +560,13 @@ function PlayerBlockSearch({ name, onChange }: { name: string; onChange: (name: 
     if (timeout.current) clearTimeout(timeout.current);
     timeout.current = setTimeout(async () => {
       setSearching(true);
-      const { data } = await supabase
-        .from("fc_players")
-        .select("name,overall,position,club")
-        .ilike("name", `%${query.trim()}%`)
-        .order("overall", { ascending: false })
-        .limit(8);
-      setResults((data as FcPlayerResult[]) ?? []);
+      let found = await searchPlayers(query, { select: "name,overall,position,club", limit: 8 });
+      // If no local results, try server-side BSD/API-Football resolve
+      if (found.length === 0 && query.trim().length >= 3) {
+        const resolved = await resolveAndSearch(query);
+        if (resolved) found = [resolved];
+      }
+      setResults(found as FcPlayerResult[]);
       setSearching(false);
     }, 300);
   }, [query, matched]);
@@ -590,7 +586,7 @@ function PlayerBlockSearch({ name, onChange }: { name: string; onChange: (name: 
           type="text"
           value={query}
           onChange={(e) => { setQuery(e.target.value); setMatched(null); onChange(e.target.value); }}
-          placeholder="Type to search EA FC 26 database..."
+          placeholder="Type to search players (EA FC + BSD)..."
           className="w-full rounded-lg border border-slate-700/80 bg-slate-800/70 px-3 py-2 text-sm text-slate-100 placeholder-slate-500 outline-none focus:border-cyan-500/60"
         />
         {searching && (

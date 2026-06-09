@@ -5,6 +5,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { supabase } from "@/lib/supabase";
+import { searchPlayers, resolveAndSearch } from "@/lib/player-search";
 import RichTextEditor from "@/app/components/rich-text-editor";
 import AdminLayout from "../components/admin-layout";
 import SectionsEditor, { type SectionBlock } from "../components/sections-editor";
@@ -122,10 +123,12 @@ function NewArticleForm() {
     if (searchTimeout.current) clearTimeout(searchTimeout.current);
     searchTimeout.current = setTimeout(async () => {
       setPlayerSearching(true);
-      const { data } = await supabase.from("fc_players")
-        .select("name,overall,position,club,league,nationality,age,pace,shooting,passing,dribbling,defending,physical")
-        .ilike("name", `%${playerSearch.trim()}%`).order("overall", { ascending: false }).limit(8);
-      setPlayerResults((data as FcPlayer[]) ?? []);
+      let found = await searchPlayers(playerSearch);
+      if (found.length === 0 && playerSearch.trim().length >= 3) {
+        const resolved = await resolveAndSearch(playerSearch);
+        if (resolved) found = [resolved];
+      }
+      setPlayerResults(found as FcPlayer[]);
       setPlayerSearching(false);
     }, 350);
   }, [playerSearch]);
@@ -135,10 +138,12 @@ function NewArticleForm() {
     if (playersListTimeout.current) clearTimeout(playersListTimeout.current);
     playersListTimeout.current = setTimeout(async () => {
       setPlayersListSearching(true);
-      const { data } = await supabase.from("fc_players")
-        .select("name,overall,position,club,pace,shooting,passing,dribbling,defending,physical,photo_url")
-        .ilike("name", `%${playersListSearch.trim()}%`).order("overall", { ascending: false }).limit(8);
-      setPlayersListResults((data as FcPlayer[]) ?? []);
+      let found = await searchPlayers(playersListSearch);
+      if (found.length === 0 && playersListSearch.trim().length >= 3) {
+        const resolved = await resolveAndSearch(playersListSearch);
+        if (resolved) found = [resolved];
+      }
+      setPlayersListResults(found as FcPlayer[]);
       setPlayersListSearching(false);
     }, 350);
   }, [playersListSearch]);
