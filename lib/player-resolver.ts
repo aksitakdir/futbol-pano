@@ -356,6 +356,17 @@ export async function resolvePlayer(
   const bsd = await fetchAndCacheFromBsd(trimmed);
   if (bsd) return bsd;
 
+  // Tier 3b: BSD with reversed name order (handles East Asian name formats:
+  // "Lee Jae-sung" → "Jae-sung Lee", "Son Heung-min" → "Heung-min Son")
+  const parts = trimmed.split(/\s+/);
+  if (parts.length >= 2) {
+    const reversed = [...parts.slice(1), parts[0]].join(" ");
+    if (reversed.toLowerCase() !== trimmed.toLowerCase()) {
+      const bsdReversed = await fetchAndCacheFromBsd(reversed);
+      if (bsdReversed) return bsdReversed;
+    }
+  }
+
   // Tier 4: API-Football (100/day free, 7500/day Pro)
   const apif = await fetchAndCacheFromApiFootball(trimmed);
   if (apif) return apif;
