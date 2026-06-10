@@ -693,6 +693,9 @@ export async function POST(request: Request) {
     slug?: string;
     keyword?: string;
     mode?: string;
+    brief?: string;
+    players?: string[];
+    seo_terms?: string[];
   };
 
   let parsedBody: PostBody = {};
@@ -722,8 +725,15 @@ export async function POST(request: Request) {
     const kw = typeof parsedBody.keyword === "string" ? parsedBody.keyword.trim() : "";
     const modeHint = SINGLE_MODE_HINT[modeRaw] ?? "";
 
+    const briefText = typeof parsedBody.brief === "string" ? parsedBody.brief.trim() : "";
+    const briefPlayers = Array.isArray(parsedBody.players) ? parsedBody.players.filter(Boolean) : [];
+    const briefSeoTerms = Array.isArray(parsedBody.seo_terms) ? parsedBody.seo_terms.filter(Boolean) : [];
+
     let topic =
       `The article title MUST be exactly this (in the JSON "title" field): "${bodyTitle}". `;
+    if (briefText) topic += `\n\nEDITORIAL BRIEF from the editor:\n"${briefText}"\nFollow this brief closely — it defines the editorial direction, angle, and scope. `;
+    if (briefPlayers.length > 0) topic += `\nFocus players: ${briefPlayers.join(", ")}. Feature these players prominently with @player: blocks. `;
+    if (briefSeoTerms.length > 0) topic += `\nSEO target terms: ${briefSeoTerms.join(", ")}. Naturally incorporate these terms in the content. `;
     if (kw) topic += `Additional keyword / context: ${kw}. `;
     if (modeHint) topic += `${modeHint} `;
     topic += `Category must be "${targetCategory}". Stay faithful to this title and category.`;

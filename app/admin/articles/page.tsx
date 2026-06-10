@@ -90,6 +90,27 @@ type TitleSuggestion = {
   slug: string;
 };
 
+type BriefCheckResult = {
+  brief: string;
+  players: Array<{
+    name: string;
+    found: boolean;
+    overall?: number;
+    position?: string;
+    club?: string;
+    age?: number;
+    stats?: Record<string, unknown>;
+  }>;
+  players_found: number;
+  players_missing: number;
+  stats_available: boolean;
+  suggested_title: string;
+  suggested_category: string;
+  key_angles: string[];
+  seo_terms: string[];
+  teams: string[];
+};
+
 type CcMode = "trend" | "general" | "historical" | "chronological";
 
 const CC_MODES: { key: CcMode; label: string }[] = [
@@ -134,6 +155,16 @@ function IceriklerPageInner() {
   const [contentGenerating, setContentGenerating] = useState(false);
   const [hubNotice, setHubNotice] = useState("");
   const [hubNoticeOk, setHubNoticeOk] = useState(true);
+
+  // Brief-powered content generation
+  const [briefText, setBriefText] = useState("");
+  const [briefCategory, setBriefCategory] = useState("");
+  const [briefPlayers, setBriefPlayers] = useState("");
+  const [briefChecking, setBriefChecking] = useState(false);
+  const [briefCheckResult, setBriefCheckResult] = useState<BriefCheckResult | null>(null);
+  const [briefGenerating, setBriefGenerating] = useState(false);
+  const [briefNotice, setBriefNotice] = useState("");
+  const [briefNoticeOk, setBriefNoticeOk] = useState(true);
 
   const [trendsOpen, setTrendsOpen] = useState(false);
   const [trendsLoading, setTrendsLoading] = useState(false);
@@ -229,6 +260,90 @@ function IceriklerPageInner() {
       return;
     }
     void generateFromSuggestion(suggestions[selectedSuggestIdx]);
+  }
+
+  async function handleBriefCheck() {
+    if (!briefText.trim()) {
+      setBriefNoticeOk(false);
+      setBriefNotice("Write a brief first.");
+      setTimeout(() => setBriefNotice(""), 5000);
+      return;
+    }
+    setBriefChecking(true);
+    setBriefCheckResult(null);
+    setBriefNotice("");
+    try {
+      const playerList = briefPlayers
+        .split(",")
+        .map((p) => p.trim())
+        .filter(Boolean);
+      const res = await fetch("/api/content-check", {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({
+          brief: briefText.trim(),
+          category: briefCategory || undefined,
+          players: playerList.length > 0 ? playerList : undefined,
+        }),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        setBriefNoticeOk(false);
+        setBriefNotice(data.error || "Check failed.");
+      } else {
+        setBriefCheckResult(data as BriefCheckResult);
+        if (!briefCategory && data.suggested_category) {
+          setBriefCategory(data.suggested_category);
+        }
+      }
+    } catch {
+      setBriefNoticeOk(false);
+      setBriefNotice("Network error.");
+    }
+    setBriefChecking(false);
+    setTimeout(() => setBriefNotice(""), 8000);
+  }
+
+  async function handleBriefGenerate() {
+    if (!briefCheckResult) return;
+    setBriefGenerating(true);
+    setContentGenerating(true);
+    setBriefNotice("");
+    try {
+      const cat = briefCategory || briefCheckResult.suggested_category || "radar";
+      const res = await fetch("/api/generate-content", {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({
+          title: briefCheckResult.suggested_title,
+          category: cat,
+          brief: briefText.trim(),
+          players: briefCheckResult.players.filter((p) => p.found).map((p) => p.name),
+          seo_terms: briefCheckResult.seo_terms,
+          mode: "general",
+        }),
+      });
+      const data = await res.json();
+      if (res.ok && data.generated > 0) {
+        setBriefNoticeOk(true);
+        setBriefNotice("Article created — switched to Pending tab.");
+        setTab("pending");
+        setBriefCheckResult(null);
+        setBriefText("");
+        setBriefPlayers("");
+        await fetchAll();
+      } else {
+        const err = data.results?.[0]?.error || data.error || "Unknown error";
+        setBriefNoticeOk(false);
+        setBriefNotice(`Error: ${err}`);
+      }
+    } catch {
+      setBriefNoticeOk(false);
+      setBriefNotice("Network error.");
+    }
+    setBriefGenerating(false);
+    setContentGenerating(false);
+    setTimeout(() => setBriefNotice(""), 12000);
   }
 
   async function handleFetchTrends(fresh = false) {
@@ -456,6 +571,142 @@ function IceriklerPageInner() {
               )}
             </button>
             {suggestError && <p className="mt-2 text-xs text-rose-400">{suggestError}</p>}
+          </div>
+
+          {/* Brief → Check → Generate */}
+          <div className="mb-6 rounded-xl border border-violet-500/30 bg-violet-500/5 p-4">
+            <h3 className="mb-3 text-xs font-bold uppercase tracking-wider text-violet-400/90">Brief → Generate</h3>
+            <textarea
+              value={briefText}
+              onChange={(e) => { setBriefText(e.target.value); setBriefCheckResult(null); }}
+              placeholder="Describe the content you want: angle, scope, key points... (e.g. 'South Korea vs Czechia group stage preview — focus on Son Heung-min and Lee Jae-sung, tactical matchup, what Korea needs to advance')"
+              disabled={contentGenerating}
+              rows={3}
+              className="mb-3 w-full resize-y rounded-lg border border-slate-700/80 bg-slate-900/80 px-3 py-2.5 text-sm text-slate-100 placeholder-slate-500 outline-none transition focus:border-violet-500/50 disabled:opacity-50"
+            />
+            <div className="mb-3 flex flex-col gap-2 sm:flex-row">
+              <input
+                type="text"
+                value={briefPlayers}
+                onChange={(e) => setBriefPlayers(e.target.value)}
+                placeholder="Focus players (comma-separated, optional)"
+                disabled={contentGenerating}
+                className="flex-1 rounded-lg border border-slate-700/80 bg-slate-900/80 px-3 py-2 text-sm text-slate-100 placeholder-slate-500 outline-none transition focus:border-violet-500/50 disabled:opacity-50"
+              />
+              <select
+                value={briefCategory}
+                onChange={(e) => setBriefCategory(e.target.value)}
+                disabled={contentGenerating}
+                className="rounded-lg border border-slate-700/80 bg-slate-900/80 px-3 py-2 text-sm text-slate-100 outline-none transition focus:border-violet-500/50 disabled:opacity-50"
+              >
+                <option value="">Auto-detect category</option>
+                <option value="wc-2026">WC 2026</option>
+                <option value="transfer">Transfers</option>
+                <option value="radar">Radar</option>
+                <option value="tactics-lab">Tactics Lab</option>
+                <option value="lists">Lists</option>
+              </select>
+            </div>
+            <div className="flex flex-wrap items-center gap-2">
+              <button
+                type="button"
+                disabled={contentGenerating || briefChecking || !briefText.trim()}
+                onClick={() => void handleBriefCheck()}
+                className="rounded-lg border border-violet-500/50 bg-violet-500/15 px-4 py-2 text-xs font-bold text-violet-200 transition hover:bg-violet-500/25 disabled:opacity-50"
+              >
+                {briefChecking ? (
+                  <span className="inline-flex items-center gap-2">
+                    <span className="h-3 w-3 animate-spin rounded-full border-2 border-violet-300 border-t-transparent" />
+                    Checking...
+                  </span>
+                ) : "Check Data"}
+              </button>
+              {briefCheckResult && (
+                <button
+                  type="button"
+                  disabled={contentGenerating || briefGenerating}
+                  onClick={() => void handleBriefGenerate()}
+                  className="rounded-lg bg-violet-600 px-4 py-2 text-xs font-bold text-white transition hover:bg-violet-500 disabled:opacity-50"
+                >
+                  {briefGenerating ? (
+                    <span className="inline-flex items-center gap-2">
+                      <span className="h-3 w-3 animate-spin rounded-full border-2 border-white border-t-transparent" />
+                      Generating...
+                    </span>
+                  ) : "Generate Article"}
+                </button>
+              )}
+            </div>
+            {briefNotice && (
+              <p className={`mt-2 text-xs ${briefNoticeOk ? "text-emerald-400" : "text-rose-400"}`}>{briefNotice}</p>
+            )}
+
+            {/* Check Result Preview */}
+            {briefCheckResult && (
+              <div className="mt-4 rounded-lg border border-slate-700/60 bg-slate-900/60 p-3">
+                <div className="mb-3 flex items-center gap-2">
+                  <span className={`inline-flex rounded-full border px-2 py-0.5 text-[10px] font-semibold ${CATEGORY_COLOR[briefCheckResult.suggested_category] ?? "bg-slate-500/15 text-slate-300 border-slate-500/40"}`}>
+                    {CATEGORY_LABEL[briefCheckResult.suggested_category] ?? briefCheckResult.suggested_category}
+                  </span>
+                  <span className="text-[10px] text-slate-500">
+                    {briefCheckResult.players_found} player{briefCheckResult.players_found !== 1 ? "s" : ""} found
+                    {briefCheckResult.players_missing > 0 && (
+                      <span className="text-amber-400"> · {briefCheckResult.players_missing} missing</span>
+                    )}
+                  </span>
+                </div>
+
+                {briefCheckResult.suggested_title && (
+                  <p className="mb-2 text-sm font-semibold text-slate-100">{briefCheckResult.suggested_title}</p>
+                )}
+
+                {briefCheckResult.players.length > 0 && (
+                  <div className="mb-2 flex flex-wrap gap-2">
+                    {briefCheckResult.players.map((p) => (
+                      <span
+                        key={p.name}
+                        className={`inline-flex items-center gap-1.5 rounded-lg border px-2 py-1 text-[11px] ${
+                          p.found
+                            ? "border-emerald-500/30 bg-emerald-500/10 text-emerald-200"
+                            : "border-rose-500/30 bg-rose-500/10 text-rose-300"
+                        }`}
+                      >
+                        {p.found && p.overall && (
+                          <span className="font-bold text-emerald-400">{p.overall}</span>
+                        )}
+                        {p.name}
+                        {p.found && p.position && (
+                          <span className="text-slate-500">{p.position}</span>
+                        )}
+                        {!p.found && <span className="text-rose-400">✗</span>}
+                      </span>
+                    ))}
+                  </div>
+                )}
+
+                {briefCheckResult.key_angles.length > 0 && (
+                  <div className="mb-2">
+                    <p className="mb-1 text-[10px] font-semibold uppercase tracking-wider text-slate-500">Angles</p>
+                    <div className="flex flex-wrap gap-1.5">
+                      {briefCheckResult.key_angles.map((a, i) => (
+                        <span key={i} className="rounded border border-slate-700/60 bg-slate-800/60 px-2 py-0.5 text-[11px] text-slate-300">{a}</span>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {briefCheckResult.seo_terms.length > 0 && (
+                  <div>
+                    <p className="mb-1 text-[10px] font-semibold uppercase tracking-wider text-slate-500">SEO Terms</p>
+                    <div className="flex flex-wrap gap-1.5">
+                      {briefCheckResult.seo_terms.map((t, i) => (
+                        <span key={i} className="rounded border border-sky-500/30 bg-sky-500/10 px-2 py-0.5 text-[11px] text-sky-300">{t}</span>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
           </div>
 
           {/* Önerilen başlıklar */}
