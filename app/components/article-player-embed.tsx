@@ -27,7 +27,7 @@ async function fetchPlayerStats(name: string): Promise<Partial<PlayerCardData> |
     .maybeSingle();
   if (exact?.overall) return exact;
 
-  // Tier 1b: fc_players — fuzzy
+  // Tier 1b: fc_players — fuzzy (first two words)
   const two = name.split(" ").slice(0, 2).join(" ");
   const { data: fuzzy } = await supabase
     .from("fc_players")
@@ -37,6 +37,22 @@ async function fetchPlayerStats(name: string): Promise<Partial<PlayerCardData> |
     .limit(1)
     .maybeSingle();
   if (fuzzy?.overall) return fuzzy;
+
+  // Tier 1c: fc_players — last name only (handles spelling variants like Ayyub→Ayyoub)
+  const parts = name.split(" ");
+  if (parts.length >= 2) {
+    const lastName = parts[parts.length - 1];
+    if (lastName.length >= 4) {
+      const { data: lastNameMatch } = await supabase
+        .from("fc_players")
+        .select(cols)
+        .ilike("name", `%${lastName}%`)
+        .order("overall", { ascending: false })
+        .limit(1)
+        .maybeSingle();
+      if (lastNameMatch?.overall) return lastNameMatch;
+    }
+  }
 
   // Tier 2: player_cache — exact
   const cacheCols = "overall,pace,shooting,passing,dribbling,defending,physical,position,club,league,age";

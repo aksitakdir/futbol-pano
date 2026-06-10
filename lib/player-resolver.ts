@@ -67,6 +67,28 @@ async function searchFcPlayers(name: string): Promise<PlayerCardData | null> {
     .maybeSingle();
 
   if (fuzzy?.overall) return fcToCard(fuzzy as FcPlayerRow);
+
+  // Fuzzy: last name only (handles "Ayyub Bouaddi" → matches "Ayyoub Bouaddi")
+  const parts = name.split(" ");
+  if (parts.length >= 2) {
+    const lastName = parts[parts.length - 1];
+    if (lastName.length >= 4) {
+      const { data: lastNameMatch } = await supabase
+        .from("fc_players")
+        .select("name,overall,pace,shooting,passing,dribbling,defending,physical,position,club,league,age,photo_url")
+        .ilike("name", `%${lastName}%`)
+        .order("overall", { ascending: false })
+        .limit(3);
+      if (lastNameMatch && lastNameMatch.length > 0) {
+        // Pick the one whose name is closest (shares the most characters with the query)
+        const best = lastNameMatch.find((r) =>
+          (r.name as string).toLowerCase().includes(lastName.toLowerCase()),
+        );
+        if (best?.overall) return fcToCard(best as FcPlayerRow);
+      }
+    }
+  }
+
   return null;
 }
 
@@ -113,6 +135,23 @@ async function searchPlayerCache(name: string): Promise<PlayerCardData | null> {
     .maybeSingle();
 
   if (fuzzy?.overall) return cacheToCard(fuzzy as CacheRow);
+
+  // Fuzzy: last name only
+  const parts = name.split(" ");
+  if (parts.length >= 2) {
+    const lastName = parts[parts.length - 1];
+    if (lastName.length >= 4) {
+      const { data: lastNameMatch } = await supabase
+        .from("player_cache")
+        .select("name,overall,pace,shooting,passing,dribbling,defending,physical,position,club,league,age")
+        .ilike("name", `%${lastName}%`)
+        .order("overall", { ascending: false })
+        .limit(1)
+        .maybeSingle();
+      if (lastNameMatch?.overall) return cacheToCard(lastNameMatch as CacheRow);
+    }
+  }
+
   return null;
 }
 
