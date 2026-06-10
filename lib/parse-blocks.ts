@@ -145,9 +145,16 @@ export function parseMarkupToBlocks(input: string): SectionBlock[] {
       const [body, next] = collectBody(i + 1);
       for (const raw of body) {
         const b = raw.replace(/^[-*]\s+/, "");
-        const [l, r] = b.split("|");
-        if ((l ?? "").trim()) left.items.push(l.trim());
-        if ((r ?? "").trim()) right.items.push(r.trim());
+        const pipeIdx = b.indexOf("|");
+        if (pipeIdx === -1) {
+          // No pipe — put the whole line on both sides
+          if (b.trim()) { left.items.push(b.trim()); right.items.push(b.trim()); }
+          continue;
+        }
+        const l = b.slice(0, pipeIdx).trim();
+        const r = b.slice(pipeIdx + 1).trim();
+        if (l) left.items.push(l);
+        if (r) right.items.push(r);
       }
       if (left.items.length === 0) left.items.push("");
       if (right.items.length === 0) right.items.push("");

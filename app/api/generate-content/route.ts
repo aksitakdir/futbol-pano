@@ -187,9 +187,11 @@ Regular paragraph text. Use **bold** for emphasis, *italic* for nuance. Use [lin
 @section: Section With Built-in Body
 The section heading and its body text are together. Good for structured analysis segments.
 
-@vs: Left Title | Right Title
-- Stat or point A | Comparison stat A
-- Stat or point B | Comparison stat B
+@vs: Player A Name | Player B Name
+- Goals: 12, Assists: 8 | Goals: 9, Assists: 14
+- Pass accuracy: 91.3% | Pass accuracy: 87.6%
+- xG per 90: 0.72 | xG per 90: 0.45
+IMPORTANT: each line MUST have BOTH sides of the pipe with complete "label: value" text. Never put just numbers on one side and just labels on the other.
 
 @faq: Key Numbers / Quick Reference
 What is X's xG per 90? 0.82 — third highest in the league
@@ -534,7 +536,7 @@ async function generateWithClaude(
     `Category: "${targetCategory}". ` +
     `Write the content using block markup format as described in your instructions. ` +
     `Include @player: blocks for featured players, a > pull quote, and an @callout: with a verified insight. ` +
-    `Use @vs: blocks for comparisons when relevant. Use @faq: for quick reference stats.` +
+    `Use @vs: blocks for comparisons when relevant — each body line MUST have "label: value | label: value" on BOTH sides of the pipe. Use @faq: for quick reference stats.` +
     exclusionNote +
     statsContext;
 
