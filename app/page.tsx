@@ -245,7 +245,7 @@ export default function HomePage() {
         : { pins: {} };
 
       let heroSettings = { ...DEFAULT_HERO_SLIDER };
-      let articleCount = 6;
+      let articleCount = 8;
       let customSlideData: CustomHeroSlide[] = [];
       let homepageCoverId: string | undefined = pinsJson.pins?.homepage;
       for (const row of settingsRes.data ?? []) {
