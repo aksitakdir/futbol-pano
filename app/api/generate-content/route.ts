@@ -192,10 +192,19 @@ Regular paragraph text. Use **bold** for emphasis, *italic* for nuance. Use [lin
 The section heading and its body text are together. Good for structured analysis segments.
 
 @vs: Player A Name | Player B Name
+Season 2025/26 Stats | Season 2025/26 Stats
 - Goals: 12, Assists: 8 | Goals: 9, Assists: 14
 - Pass accuracy: 91.3% | Pass accuracy: 87.6%
 - xG per 90: 0.72 | xG per 90: 0.45
-IMPORTANT: each line MUST have BOTH sides of the pipe with complete "label: value" text. Never put just numbers on one side and just labels on the other.
+VS BLOCK FORMAT (strictly follow this 3-part structure):
+Line 1 — "@vs: Left Name | Right Name" → becomes the prominent main header ("Left Name vs Right Name")
+Line 2 — "Left Subtitle | Right Subtitle" → column subtitles below the header (e.g. role, season, era)
+Lines 3+ — "- stat left | stat right" → comparison rows with bullets
+RULES:
+1. ALWAYS use PIPE (|) as separator on ALL lines — never the word "vs"
+2. Line 2 (subtitles) is NOT a bullet — it's a plain "text | text" line describing each column
+3. Each bullet line MUST have complete "label: value" text on BOTH sides of the pipe
+4. Never put just numbers on one side and just labels on the other
 
 @faq: Key Numbers / Quick Reference
 What is X's xG per 90? 0.82 — third highest in the league
@@ -540,7 +549,7 @@ async function generateWithClaude(
     `Category: "${targetCategory}". ` +
     `Write the content using block markup format as described in your instructions. ` +
     `Include @player: blocks for featured players, a > pull quote, and an @callout: with a verified insight. ` +
-    `Use @vs: blocks for comparisons when relevant — each body line MUST have "label: value | label: value" on BOTH sides of the pipe. Use @faq: for quick reference stats.` +
+    `Use @vs: blocks for comparisons when relevant — line 1 is "@vs: Name A | Name B", line 2 is "Subtitle A | Subtitle B" (no bullet), then "- stat left | stat right" rows. Use @faq: for quick reference stats.` +
     exclusionNote +
     statsContext;
 

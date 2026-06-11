@@ -135,19 +135,38 @@ export function parseMarkupToBlocks(input: string): SectionBlock[] {
       continue;
     }
 
-    // Versus: @vs: Left Title | Right Title, then body lines.
-    // Body lines "L | R" become paired bullet points (either side may be empty).
+    // Versus block — new format:
+    // @vs: Left Name | Right Name          ← main comparison header
+    // Left Subtitle | Right Subtitle       ← first body line = column subtitles
+    // - item left | item right             ← comparison rows
     if (/^@vs:/i.test(line)) {
       flushAll();
-      const titles = afterMarker(line, /^@vs:/i).split("|");
-      const left = { title: (titles[0] ?? "").trim(), items: [] as string[] };
-      const right = { title: (titles[1] ?? "").trim(), items: [] as string[] };
+      const rawHeader = afterMarker(line, /^@vs:/i);
+      // Split header on pipe; fall back to " vs " / " vs. "
+      const splitHeader = (s: string) =>
+        s.includes("|") ? s.split("|") : s.split(/\s+vs\.?\s+/i);
+      const names = splitHeader(rawHeader);
+      const leftName = (names[0] ?? "").trim();
+      const rightName = (names[1] ?? "").trim();
+
+      const left = { title: "", items: [] as string[] };
+      const right = { title: "", items: [] as string[] };
       const [body, next] = collectBody(i + 1);
-      for (const raw of body) {
+
+      for (let bi = 0; bi < body.length; bi++) {
+        const raw = body[bi];
+        const isBullet = /^[-*]\s+/.test(raw);
         const b = raw.replace(/^[-*]\s+/, "");
         const pipeIdx = b.indexOf("|");
+
+        // First non-bullet line with pipe = subtitles
+        if (bi === 0 && !isBullet && pipeIdx !== -1) {
+          left.title = b.slice(0, pipeIdx).trim();
+          right.title = b.slice(pipeIdx + 1).trim();
+          continue;
+        }
+
         if (pipeIdx === -1) {
-          // No pipe — put the whole line on both sides
           if (b.trim()) { left.items.push(b.trim()); right.items.push(b.trim()); }
           continue;
         }
@@ -158,7 +177,7 @@ export function parseMarkupToBlocks(input: string): SectionBlock[] {
       }
       if (left.items.length === 0) left.items.push("");
       if (right.items.length === 0) right.items.push("");
-      blocks.push({ type: "vs", left, right });
+      blocks.push({ type: "vs", leftName, rightName, left, right });
       i = next - 1;
       continue;
     }

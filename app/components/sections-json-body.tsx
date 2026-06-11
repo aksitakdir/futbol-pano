@@ -248,8 +248,9 @@ export default function SectionsJsonBody({
           );
         }
 
-        /* ── VS block: two-column comparison ── */
+        /* ── VS block: prominent header + two-column comparison ── */
         if (sec.type === "vs") {
+          const mainHeader = [sec.leftName, sec.rightName].filter(Boolean).join(" vs ");
           const col = (side: typeof sec.left, accentColor: string) => (
             <div
               style={{
@@ -257,20 +258,23 @@ export default function SectionsJsonBody({
                 minWidth: 0,
                 background: "var(--sg-surface)",
                 border: "1px solid color-mix(in oklch, var(--rose) 30%, transparent)",
-                borderTop: `3px solid ${accentColor}`,
-                borderRadius: 12,
+                borderRadius: "0 0 12px 12px",
                 padding: "22px 20px",
               }}
             >
-              <p style={{
-                margin: "0 0 14px",
-                fontWeight: 700,
-                fontSize: 18,
-                color: "var(--sg-text-primary)",
-                fontFamily: "var(--font-display)",
-              }}>
-                {side.title}
-              </p>
+              {side.title && (
+                <p style={{
+                  margin: "0 0 14px",
+                  fontWeight: 700,
+                  fontSize: 15,
+                  color: "var(--sg-text-secondary)",
+                  fontFamily: "var(--font-mono-stack)",
+                  letterSpacing: "0.04em",
+                  textTransform: "uppercase",
+                }}>
+                  {side.title}
+                </p>
+              )}
               <ul style={{ margin: 0, padding: 0, listStyle: "none", lineHeight: 1.7, color: "var(--sg-text-secondary)" }}>
                 {side.items.filter((it) => it.trim()).map((it, j) => (
                   <li key={j} style={{ display: "flex", alignItems: "flex-start", gap: 8, marginBottom: 6 }}>
@@ -286,21 +290,52 @@ export default function SectionsJsonBody({
           );
           return (
             <div key={i} style={{ margin: "36px 0" }}>
-              <div style={{ display: "flex", gap: 16, alignItems: "stretch", flexWrap: "wrap" }}>
-                {col(sec.left, "var(--rose)")}
-                <div
-                  style={{
-                    display: "flex",
-                    alignItems: "center",
+              {/* Main comparison header */}
+              {mainHeader && (
+                <div style={{
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  gap: 14,
+                  padding: "16px 24px",
+                  borderRadius: "12px 12px 0 0",
+                  background: "linear-gradient(135deg, color-mix(in oklch, var(--rose) 15%, var(--sg-surface)), color-mix(in oklch, var(--amber) 15%, var(--sg-surface)))",
+                  borderBottom: "1px solid var(--sg-border)",
+                }}>
+                  <span style={{
+                    fontFamily: "var(--font-display)",
                     fontWeight: 800,
-                    fontSize: 13,
-                    letterSpacing: "0.12em",
-                    color: "var(--sg-text-muted)",
+                    fontSize: "clamp(18px, 2.5vw, 26px)",
+                    color: "var(--sg-text-primary)",
+                    letterSpacing: "-0.02em",
+                  }}>
+                    {sec.leftName}
+                  </span>
+                  <span style={{
                     fontFamily: "var(--font-mono-stack)",
-                  }}
-                >
-                  VS
+                    fontWeight: 800,
+                    fontSize: 12,
+                    letterSpacing: "0.14em",
+                    color: "var(--sg-text-muted)",
+                    padding: "4px 10px",
+                    borderRadius: 6,
+                    background: "color-mix(in oklch, var(--sg-text-muted) 10%, transparent)",
+                  }}>
+                    VS
+                  </span>
+                  <span style={{
+                    fontFamily: "var(--font-display)",
+                    fontWeight: 800,
+                    fontSize: "clamp(18px, 2.5vw, 26px)",
+                    color: "var(--sg-text-primary)",
+                    letterSpacing: "-0.02em",
+                  }}>
+                    {sec.rightName}
+                  </span>
                 </div>
+              )}
+              <div style={{ display: "flex", gap: 0, alignItems: "stretch", flexWrap: "wrap" }}>
+                {col(sec.left, "var(--rose)")}
                 {col(sec.right, "var(--amber)")}
               </div>
             </div>

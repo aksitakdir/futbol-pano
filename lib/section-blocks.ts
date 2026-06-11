@@ -16,7 +16,7 @@ export type SectionBlock =
   | { type: "player"; name: string }
   | { type: "image"; src: string; alt: string; caption?: string }
   | { type: "list"; style: "ul" | "ol"; items: string[] }
-  | { type: "vs"; left: VsSide; right: VsSide }
+  | { type: "vs"; leftName: string; rightName: string; left: VsSide; right: VsSide }
   | { type: "faq"; heading?: string; items: FaqItem[] }
   | { type: "stat-highlight"; title?: string; stats: StatHighlightItem[] }
   | { type: "divider"; style?: "default" | "dots" | "gradient" };

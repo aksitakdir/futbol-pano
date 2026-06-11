@@ -73,7 +73,7 @@ function defaultBlock(type: SectionBlock["type"]): SectionBlock {
     case "list":
       return { type, style: "ul", items: [""] };
     case "vs":
-      return { type, left: { title: "", items: [""] }, right: { title: "", items: [""] } };
+      return { type, leftName: "", rightName: "", left: { title: "", items: [""] }, right: { title: "", items: [""] } };
     case "faq":
       return { type, heading: "", items: [{ q: "", a: "" }] };
     case "stat-highlight":
@@ -136,9 +136,9 @@ function BlockEditor({
               {block.items.length > 1 ? ` (+${block.items.length - 1} more)` : ""}
             </p>
           )}
-          {block.type === "vs" && (block.left.title || block.right.title) && (
+          {block.type === "vs" && (block.leftName || block.rightName) && (
             <p className="text-[11px] text-slate-400 truncate mt-0.5">
-              {block.left.title || "—"} <span className="text-slate-600">vs</span> {block.right.title || "—"}
+              {block.leftName || "—"} <span className="text-slate-600">vs</span> {block.rightName || "—"}
             </p>
           )}
           {block.type === "faq" && (
@@ -387,9 +387,28 @@ function VsBlockEditor({
   );
 
   return (
-    <div className="flex flex-col gap-3 sm:flex-row">
-      {sideEditor("left", "Left side")}
-      {sideEditor("right", "Right side")}
+    <div className="space-y-3">
+      <div className="flex gap-3 items-center">
+        <input
+          type="text"
+          value={block.leftName}
+          onChange={(e) => onChange({ ...block, leftName: e.target.value })}
+          placeholder="Left name (e.g. Messi)"
+          className="flex-1 rounded-lg border border-slate-700/80 bg-slate-800/70 px-3 py-2 text-sm text-slate-100 placeholder-slate-500 outline-none focus:border-amber-500/60"
+        />
+        <span className="text-[10px] font-bold text-slate-600 tracking-widest">VS</span>
+        <input
+          type="text"
+          value={block.rightName}
+          onChange={(e) => onChange({ ...block, rightName: e.target.value })}
+          placeholder="Right name (e.g. Ronaldo)"
+          className="flex-1 rounded-lg border border-slate-700/80 bg-slate-800/70 px-3 py-2 text-sm text-slate-100 placeholder-slate-500 outline-none focus:border-amber-500/60"
+        />
+      </div>
+      <div className="flex flex-col gap-3 sm:flex-row">
+        {sideEditor("left", "Left side")}
+        {sideEditor("right", "Right side")}
+      </div>
     </div>
   );
 }
