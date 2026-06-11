@@ -155,7 +155,7 @@ function CardInner({
   const initials = player.name.split(" ").map((w) => w[0]).slice(0, 2).join("").toUpperCase();
   const theme = cardTheme(player.name);
 
-  const bw = compact ? "min(260px, 100%)" : 260;
+  const bw = "100%";
   const rad = d(compact, 14);
 
   return (

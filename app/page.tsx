@@ -706,22 +706,32 @@ export default function HomePage() {
               const accentColor = CAT_COLOR[item.category] ?? "var(--accent)";
               const catLabel = CAT_LABEL[item.category] ?? item.category;
               const pills = editorPickHighlights.get(item.slug);
+              const coverImg = item.cover_image?.trim() || getCategoryImage(item.category, item.slug);
               return (
                 <Link key={`${item.id}-picks`} href={`${categoryPath(item.category)}/${item.slug}`}
-                  className="lift" style={{ background: "var(--sg-surface)", border: "1px solid var(--sg-border)", borderRadius: 16, padding: 28, display: "flex", flexDirection: "column", justifyContent: "space-between", minHeight: 240 }}>
-                  <div>
-                    <div className="mono" style={{ fontSize: 10, letterSpacing: "0.18em", color: accentColor, marginBottom: 14 }}>{catLabel}</div>
-                    <h3 className="display" style={{ fontSize: 20, fontWeight: 600, lineHeight: 1.15, letterSpacing: "-0.02em", margin: "0 0 12px", textWrap: "balance" }}>
-                      {item.title_en || item.title}
-                    </h3>
-                    {pills?.length ? (
-                      <div style={{ marginTop: 4 }}>
-                        <ContentHighlightPills tags={pills.slice(0, 4)} accent={accentColor} label="FROM CONTENT" />
-                      </div>
-                    ) : null}
-                  </div>
-                  <div className="mono" style={{ fontSize: 10, letterSpacing: "0.14em", color: "var(--ink-400)", marginTop: 16 }}>
-                    {new Date(item.created_at).toLocaleDateString("en-US", { day: "numeric", month: "short" })} · READ →
+                  className="lift" style={{ background: "var(--sg-surface)", border: "1px solid var(--sg-border)", borderRadius: 16, overflow: "hidden", display: "flex", flexDirection: "column", justifyContent: "space-between", minHeight: 240 }}>
+                  {coverImg && (
+                    <div style={{ position: "relative", height: 130, overflow: "hidden" }}>
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img src={coverImg} alt="" style={{ width: "100%", height: "100%", objectFit: "cover", filter: "brightness(0.65) saturate(0.85)" }} loading="lazy" />
+                      <div style={{ position: "absolute", inset: 0, background: "linear-gradient(to top, var(--sg-surface) 0%, transparent 60%)" }} />
+                    </div>
+                  )}
+                  <div style={{ padding: "16px 28px 28px", flex: 1, display: "flex", flexDirection: "column", justifyContent: "space-between" }}>
+                    <div>
+                      <div className="mono" style={{ fontSize: 10, letterSpacing: "0.18em", color: accentColor, marginBottom: 14 }}>{catLabel}</div>
+                      <h3 className="display" style={{ fontSize: 20, fontWeight: 600, lineHeight: 1.15, letterSpacing: "-0.02em", margin: "0 0 12px", textWrap: "balance" }}>
+                        {item.title_en || item.title}
+                      </h3>
+                      {pills?.length ? (
+                        <div style={{ marginTop: 4 }}>
+                          <ContentHighlightPills tags={pills.slice(0, 4)} accent={accentColor} label="FROM CONTENT" />
+                        </div>
+                      ) : null}
+                    </div>
+                    <div className="mono" style={{ fontSize: 10, letterSpacing: "0.14em", color: "var(--ink-400)", marginTop: 16 }}>
+                      {new Date(item.created_at).toLocaleDateString("en-US", { day: "numeric", month: "short" })} · READ →
+                    </div>
                   </div>
                 </Link>
               );
@@ -729,6 +739,9 @@ export default function HomePage() {
           </div>
         </section>
       )}
+
+      {/* ── All Articles grid ── */}
+      <HomeAllArticles />
 
       {/* ── Radar CTA Banner ── */}
       <section className="sg-editorial-shell" style={{ paddingBottom: 96 }}>
@@ -752,5 +765,67 @@ export default function HomePage() {
 
       <SiteFooter maxWidth="max-w-7xl" />
     </main>
+  );
+}
+
+function HomeAllArticles() {
+  const [articles, setArticles] = useState<SlideContent[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    supabase
+      .from("contents")
+      .select("id,title,title_en,slug,category,content,content_en,created_at,cover_image")
+      .eq("status", "published")
+      .order("created_at", { ascending: false })
+      .range(0, 11)
+      .then(({ data }) => {
+        setArticles((data ?? []) as SlideContent[]);
+        setLoading(false);
+      });
+  }, []);
+
+  if (loading || articles.length === 0) return null;
+
+  return (
+    <section className="sg-page-shell" style={{ paddingTop: 0, paddingBottom: 80 }}>
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", marginBottom: 32 }}>
+        <div>
+          <div className="eyebrow">BROWSE</div>
+          <h2 className="display" style={{ fontSize: 36, fontWeight: 700, letterSpacing: "-0.03em", margin: "6px 0 0" }}>All Articles</h2>
+        </div>
+        <Link href="/radar" className="mono u-link" style={{ fontSize: 12, letterSpacing: "0.14em", color: "var(--sg-text-muted)" }}>RADAR →</Link>
+      </div>
+      <div className="grid gap-4" style={{ gridTemplateColumns: "repeat(auto-fill, minmax(min(100%, 280px), 1fr))" }}>
+        {articles.map((item) => {
+          const accentColor = CAT_COLOR[item.category] ?? "var(--accent)";
+          const catLabel = CAT_LABEL[item.category] ?? item.category;
+          const coverImg = item.cover_image?.trim() || getCategoryImage(item.category, item.slug);
+          const title = item.title_en || item.title;
+          return (
+            <Link key={item.id} href={categoryArticlePath(item.category, item.slug)}
+              className="lift" style={{ background: "var(--sg-surface)", border: "1px solid var(--sg-border)", borderRadius: 8, overflow: "hidden", display: "flex", flexDirection: "column", textDecoration: "none" }}>
+              <div style={{ position: "relative", height: 150, overflow: "hidden" }}>
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src={coverImg} alt="" style={{ width: "100%", height: "100%", objectFit: "cover", filter: "brightness(0.65) saturate(0.85)" }} loading="lazy" />
+                <div style={{ position: "absolute", inset: 0, background: "linear-gradient(to top, var(--sg-surface) 0%, transparent 60%)" }} />
+              </div>
+              <div style={{ padding: "14px 20px 20px", flex: 1, display: "flex", flexDirection: "column" }}>
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 10 }}>
+                  <span className="mono" style={{ fontSize: 9, letterSpacing: "0.2em", color: accentColor }}>{catLabel}</span>
+                  <span className="mono" style={{ fontSize: 9, letterSpacing: "0.14em", color: "var(--sg-text-muted)" }}>
+                    {new Date(item.created_at).toLocaleDateString("en-US", { day: "numeric", month: "short" })}
+                  </span>
+                </div>
+                <h3 className="display" style={{ fontSize: 17, fontWeight: 600, lineHeight: 1.2, letterSpacing: "-0.02em", margin: 0, textWrap: "balance", color: "var(--sg-text-primary)", flex: 1 }}>
+                  {title}
+                </h3>
+                <span className="mono u-link" style={{ fontSize: 10, letterSpacing: "0.16em", color: accentColor, marginTop: 14 }}>READ →</span>
+              </div>
+            </Link>
+          );
+        })}
+      </div>
+    </section>
   );
 }

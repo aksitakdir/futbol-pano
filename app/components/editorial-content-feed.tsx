@@ -7,6 +7,7 @@ import { stripHtml, estimateReadMinutes } from "@/lib/utils";
 import { extractArticleHighlights, HIGHLIGHT_CARD_ACCENTS_CYCLE } from "@/lib/content-highlight-tags";
 import { categoryArticlePath, CAT_LABEL } from "@/lib/category-config";
 import { editorialBody, editorialTitle, type EditorialArticle } from "@/lib/editorial-article";
+import { getCategoryImage } from "@/lib/category-images";
 
 export type { EditorialArticle };
 
@@ -124,11 +125,20 @@ export default function EditorialContentFeed({
               const cardAccent = HIGHLIGHT_CARD_ACCENTS_CYCLE[idx % HIGHLIGHT_CARD_ACCENTS_CYCLE.length]!;
               const pills = highlightsBySlug.get(article.slug) ?? [];
               const label = CAT_LABEL[article.category] ?? article.category;
+              const coverImg = article.cover_image?.trim() || getCategoryImage(article.category, article.slug);
               return (
                 <Link key={article.id} href={getHref(article)} className="lift"
                   style={{ background: "var(--sg-surface)", border: "1px solid var(--sg-border)", borderRadius: 4, overflow: "hidden", display: "flex", flexDirection: "column", textDecoration: "none", minHeight: 220 }}>
-                  <div style={{ height: 2, background: cardAccent }} />
-                  <div style={{ padding: "20px 20px 24px", flex: 1, display: "flex", flexDirection: "column" }}>
+                  {coverImg ? (
+                    <div style={{ position: "relative", height: 140, overflow: "hidden" }}>
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img src={coverImg} alt="" style={{ width: "100%", height: "100%", objectFit: "cover", filter: "brightness(0.7) saturate(0.85)" }} loading="lazy" />
+                      <div style={{ position: "absolute", inset: 0, background: "linear-gradient(to top, var(--sg-surface) 0%, transparent 60%)" }} />
+                    </div>
+                  ) : (
+                    <div style={{ height: 2, background: cardAccent }} />
+                  )}
+                  <div style={{ padding: "16px 20px 24px", flex: 1, display: "flex", flexDirection: "column" }}>
                     <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 14 }}>
                       <span className="mono" style={{ fontSize: 9, letterSpacing: "0.2em", color: cardAccent }}>{label}</span>
                       <span className="mono" style={{ fontSize: 9, letterSpacing: "0.14em", color: "var(--sg-text-muted)" }}>
