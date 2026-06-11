@@ -106,7 +106,7 @@ export default function HubPillarPage({ hubId }: Props) {
         </div>
       ) : null}
 
-      {isWc ? <HubEditorialSection hubId={hubId} locale="en" accent={cfg.accent} /> : null}
+      <HubEditorialSection hubId={hubId} locale="en" accent={cfg.accent} />
 
       {isWc ? (
         <section style={{ borderTop: "1px solid var(--sg-border)", background: "var(--sg-surface-low)" }}>
