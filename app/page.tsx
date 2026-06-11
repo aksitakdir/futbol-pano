@@ -29,8 +29,6 @@ import {
   prioritizeHeroContent,
 } from "@/lib/cover-story";
 import { EDITORIAL_ARTICLE_SELECT } from "@/lib/cover-story-store";
-import { ContentHighlightPills } from "./components/content-highlight-pills";
-import { extractArticleHighlights } from "@/lib/content-highlight-tags";
 
 type SlideContent = {
   id: string;
@@ -233,20 +231,6 @@ export default function HomePage() {
   const [wcHubPreview, setWcHubPreview] = useState<{ title: string; title_en?: string; slug: string; category: string }[]>([]);
   const [transferHubPreview, setTransferHubPreview] = useState<{ title: string; title_en?: string; slug: string; category: string }[]>([]);
 
-  const gundemItems = useMemo(
-    () => (recentItems.length ? shuffleInPlace([...recentItems]).slice(0, 6) : []),
-    [recentItems],
-  );
-
-  const editorPickHighlights = useMemo(() => {
-    const m = new Map<string, string[]>();
-    for (const item of gundemItems) {
-      const body = item.content_en || item.content;
-      const ttl = item.title_en || item.title;
-      m.set(item.slug, extractArticleHighlights(body, { max: 4, seed: item.slug, titleHint: ttl }));
-    }
-    return m;
-  }, [gundemItems]);
 
   useEffect(() => {
     async function load() {
@@ -694,51 +678,7 @@ export default function HomePage() {
         )}
       </section>
 
-      {/* ── Editor's Picks ── */}
-      {gundemItems.length > 0 && (
-        <section className="sg-page-shell" style={{ paddingTop: 80, paddingBottom: 80 }}>
-          <div style={{ marginBottom: 32 }}>
-            <div className="eyebrow">EDITOR&apos;S PICK</div>
-            <h2 className="display" style={{ fontSize: 36, fontWeight: 700, letterSpacing: "-0.03em", margin: "6px 0 0" }}>Featured Articles</h2>
-          </div>
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            {gundemItems.map((item) => {
-              const accentColor = CAT_COLOR[item.category] ?? "var(--accent)";
-              const catLabel = CAT_LABEL[item.category] ?? item.category;
-              const pills = editorPickHighlights.get(item.slug);
-              const coverImg = item.cover_image?.trim() || getCategoryImage(item.category, item.slug);
-              return (
-                <Link key={`${item.id}-picks`} href={`${categoryPath(item.category)}/${item.slug}`}
-                  className="lift" style={{ background: "var(--sg-surface)", border: "1px solid var(--sg-border)", borderRadius: 16, overflow: "hidden", display: "flex", flexDirection: "column", justifyContent: "space-between", minHeight: 240 }}>
-                  {coverImg && (
-                    <div style={{ position: "relative", height: 130, overflow: "hidden" }}>
-                      {/* eslint-disable-next-line @next/next/no-img-element */}
-                      <img src={coverImg} alt="" style={{ width: "100%", height: "100%", objectFit: "cover", filter: "brightness(0.65) saturate(0.85)" }} loading="lazy" />
-                      <div style={{ position: "absolute", inset: 0, background: "linear-gradient(to top, var(--sg-surface) 0%, transparent 60%)" }} />
-                    </div>
-                  )}
-                  <div style={{ padding: "16px 28px 28px", flex: 1, display: "flex", flexDirection: "column", justifyContent: "space-between" }}>
-                    <div>
-                      <div className="mono" style={{ fontSize: 10, letterSpacing: "0.18em", color: accentColor, marginBottom: 14 }}>{catLabel}</div>
-                      <h3 className="display" style={{ fontSize: 20, fontWeight: 600, lineHeight: 1.15, letterSpacing: "-0.02em", margin: "0 0 12px", textWrap: "balance" }}>
-                        {item.title_en || item.title}
-                      </h3>
-                      {pills?.length ? (
-                        <div style={{ marginTop: 4 }}>
-                          <ContentHighlightPills tags={pills.slice(0, 4)} accent={accentColor} label="FROM CONTENT" />
-                        </div>
-                      ) : null}
-                    </div>
-                    <div className="mono" style={{ fontSize: 10, letterSpacing: "0.14em", color: "var(--ink-400)", marginTop: 16 }}>
-                      {new Date(item.created_at).toLocaleDateString("en-US", { day: "numeric", month: "short" })} · READ →
-                    </div>
-                  </div>
-                </Link>
-              );
-            })}
-          </div>
-        </section>
-      )}
+      {/* Editor's Picks removed — All Articles section below covers this */}
 
       {/* ── All Articles grid ── */}
       <HomeAllArticles />
