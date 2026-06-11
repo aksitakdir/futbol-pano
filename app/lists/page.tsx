@@ -8,11 +8,13 @@ import { ContentHighlightPills } from "../components/content-highlight-pills";
 import { supabase } from "@/lib/supabase";
 import { stripHtml, estimateReadMinutes } from "@/lib/utils";
 import { extractArticleHighlights, HIGHLIGHT_CARD_ACCENTS_CYCLE } from "@/lib/content-highlight-tags";
+import { getCategoryImage } from "@/lib/category-images";
 
 
 type Content = {
   id: string; title: string; title_en?: string; slug: string;
   content?: string; content_en?: string; created_at: string;
+  cover_image?: string | null;
 };
 
 const PAGE_SIZE = 9;
@@ -43,7 +45,7 @@ export default function ListelerPage() {
 
   useEffect(() => {
     supabase.from("contents")
-      .select("id,title,title_en,slug,content,content_en,created_at")
+      .select("id,title,title_en,slug,content,content_en,created_at,cover_image")
       .eq("status", "published").eq("category", "lists")
       .order("created_at", { ascending: false }).range(0, PAGE_SIZE - 1)
       .then(({ data }) => {
@@ -55,7 +57,7 @@ export default function ListelerPage() {
   async function handleLoadMore() {
     setLoadingMore(true);
     const { data } = await supabase.from("contents")
-      .select("id,title,title_en,slug,content,content_en,created_at")
+      .select("id,title,title_en,slug,content,content_en,created_at,cover_image")
       .eq("status", "published").eq("category", "lists")
       .order("created_at", { ascending: false })
       .range(dbLists.length, dbLists.length + PAGE_SIZE - 1);
@@ -143,24 +145,29 @@ export default function ListelerPage() {
             {recentDbLists.length > 0 ? (
               <>
                 <div className="eyebrow" style={{ color: "var(--emerald)", marginBottom: 20 }}>LATEST LISTS</div>
-                <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 16 }}>
+                <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(min(100%, 260px), 1fr))", gap: 16 }}>
                   {recentDbLists.map((item, idx) => {
                     const accent = HIGHLIGHT_CARD_ACCENTS_CYCLE[(idx + 1) % HIGHLIGHT_CARD_ACCENTS_CYCLE.length]!;
                     const pills = highlightsBySlug.get(item.slug) ?? [];
+                    const coverImg = item.cover_image?.trim() || getCategoryImage("lists", item.slug);
                     return (
                       <Link key={item.id} href={`/lists/${item.slug}`}
-                        className="lift" style={{ background: "var(--sg-surface)", border: "1px solid var(--sg-border)", borderRadius: 12, overflow: "hidden", cursor: "pointer", textDecoration: "none", display: "flex", flexDirection: "column", minHeight: 220 }}>
-                        <div style={{ height: 2, background: accent }} />
-                        <div style={{ padding: 28, flex: 1, display: "flex", flexDirection: "column" }}>
-                          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16 }}>
-                            <span className="mono" style={{ fontSize: 10, letterSpacing: "0.18em", color: accent }}>
+                        className="lift" style={{ background: "var(--sg-surface)", border: "1px solid var(--sg-border)", borderRadius: 12, overflow: "hidden", cursor: "pointer", textDecoration: "none", display: "flex", flexDirection: "column" }}>
+                        <div style={{ position: "relative", height: 140, overflow: "hidden" }}>
+                          {/* eslint-disable-next-line @next/next/no-img-element */}
+                          <img src={coverImg} alt="" style={{ width: "100%", height: "100%", objectFit: "cover", filter: "brightness(0.65) saturate(0.85)" }} loading="lazy" />
+                          <div style={{ position: "absolute", inset: 0, background: "linear-gradient(to top, var(--sg-surface) 0%, transparent 60%)" }} />
+                        </div>
+                        <div style={{ padding: "16px 20px 24px", flex: 1, display: "flex", flexDirection: "column" }}>
+                          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 14 }}>
+                            <span className="mono" style={{ fontSize: 9, letterSpacing: "0.2em", color: accent }}>
                               LIST{!item.title_en ? " · DRAFT" : ""}
                             </span>
-                            <span className="mono" style={{ fontSize: 10, letterSpacing: "0.14em", color: "var(--sg-text-muted)" }}>
+                            <span className="mono" style={{ fontSize: 9, letterSpacing: "0.14em", color: "var(--sg-text-muted)" }}>
                               {new Date(item.created_at).toLocaleDateString("en-US", { day: "numeric", month: "short" })}
                             </span>
                           </div>
-                          <h3 className="display" style={{ fontSize: 22, fontWeight: 600, lineHeight: 1.1, letterSpacing: "-0.02em", margin: 0, textWrap: "balance", color: "var(--sg-text-primary)", flex: 1 }}>
+                          <h3 className="display" style={{ fontSize: 18, fontWeight: 600, lineHeight: 1.2, letterSpacing: "-0.02em", margin: 0, textWrap: "balance", color: "var(--sg-text-primary)", flex: 1 }}>
                             {item.title_en || item.title}
                           </h3>
                           <div style={{ marginTop: "auto", paddingTop: 16, borderTop: "1px solid var(--sg-border)" }}>

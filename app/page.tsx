@@ -245,7 +245,7 @@ export default function HomePage() {
         : { pins: {} };
 
       let heroSettings = { ...DEFAULT_HERO_SLIDER };
-      let articleCount = 8;
+      let articleCount = 16;
       let customSlideData: CustomHeroSlide[] = [];
       let homepageCoverId: string | undefined = pinsJson.pins?.homepage;
       for (const row of settingsRes.data ?? []) {
@@ -281,7 +281,14 @@ export default function HomePage() {
       }
 
       filtered = prioritizeHeroContent(filtered, homepageCoverId);
-      setRecentItems(filtered.slice(0, articleCount));
+
+      const { data: allRecent } = await supabase
+        .from("contents")
+        .select("id,title,title_en,slug,category,content,content_en,created_at,cover_image")
+        .eq("status", "published")
+        .order("created_at", { ascending: false })
+        .limit(articleCount);
+      setRecentItems((allRecent ?? []) as SlideContent[]);
 
       const sliderCount = heroSettings.sliderCount ?? 5;
 

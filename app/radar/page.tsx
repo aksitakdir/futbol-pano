@@ -14,6 +14,7 @@ import {
   normalizeCoverStories,
   orderWithCoverPin,
 } from "@/lib/cover-story";
+import { getCategoryImage } from "@/lib/category-images";
 
 
 type Content = {
@@ -163,17 +164,22 @@ export default function RadarPage() {
             {rest.length > 0 && (
               <>
                 <div className="eyebrow" style={{ marginBottom: 16 }}>ALL ANALYSES</div>
-                <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 16, marginBottom: 48 }}>
+                <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(min(100%, 260px), 1fr))", gap: 16, marginBottom: 48 }}>
                   {rest.map((article, idx) => {
                     const body = article.content_en || article.content;
                     const readMins = estimateReadMinutes(body);
                     const accent = HIGHLIGHT_CARD_ACCENTS_CYCLE[idx % HIGHLIGHT_CARD_ACCENTS_CYCLE.length]!;
                     const pills = highlightsBySlug.get(article.slug) ?? [];
+                    const coverImg = article.cover_image?.trim() || getCategoryImage("radar", article.slug);
                     return (
                       <Link key={article.id} href={`/radar/${article.slug}`}
-                        className="lift" style={{ background: "var(--sg-surface)", border: "1px solid var(--sg-border)", borderRadius: 12, overflow: "hidden", display: "flex", flexDirection: "column", textDecoration: "none", minHeight: 220 }}>
-                        <div style={{ height: 2, background: accent }} />
-                        <div style={{ padding: "20px 20px 24px", flex: 1, display: "flex", flexDirection: "column" }}>
+                        className="lift" style={{ background: "var(--sg-surface)", border: "1px solid var(--sg-border)", borderRadius: 12, overflow: "hidden", display: "flex", flexDirection: "column", textDecoration: "none" }}>
+                        <div style={{ position: "relative", height: 140, overflow: "hidden" }}>
+                          {/* eslint-disable-next-line @next/next/no-img-element */}
+                          <img src={coverImg} alt="" style={{ width: "100%", height: "100%", objectFit: "cover", filter: "brightness(0.65) saturate(0.85)" }} loading="lazy" />
+                          <div style={{ position: "absolute", inset: 0, background: "linear-gradient(to top, var(--sg-surface) 0%, transparent 60%)" }} />
+                        </div>
+                        <div style={{ padding: "16px 20px 24px", flex: 1, display: "flex", flexDirection: "column" }}>
                           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 14 }}>
                             <span className="mono" style={{ fontSize: 9, letterSpacing: "0.2em", color: accent }}>RADAR</span>
                             <div className="mono" style={{ fontSize: 9, letterSpacing: "0.14em", color: "var(--sg-text-muted)", display: "flex", gap: 8, alignItems: "center" }}>
