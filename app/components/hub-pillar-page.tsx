@@ -11,6 +11,10 @@ import HubEditorialSection from "./hub/hub-editorial-section";
 import HubFeaturedArenaBanner from "./hub/hub-featured-arena-banner";
 import TransferWireFeed from "./hub/transfer-wire-feed";
 import { WC_2026_HERO_BG } from "@/lib/wc-2026-brand";
+import { supabase } from "@/lib/supabase";
+import { editorialTitle, editorialBody, type EditorialArticle } from "@/lib/editorial-article";
+import { categoryArticlePath } from "@/lib/category-config";
+import { stripHtml } from "@/lib/utils";
 
 const PAGE_CONFIG = {
   "wc-2026": {
@@ -54,12 +58,26 @@ type Props = {
 export default function HubPillarPage({ hubId }: Props) {
   const cfg = PAGE_CONFIG[hubId];
   const [copy, setCopy] = useState<PillarCopy>(cfg.defaults);
+  const [latestArticle, setLatestArticle] = useState<EditorialArticle | null>(null);
 
   useEffect(() => {
     fetch(`/api/hub-settings?hub=${hubId}&locale=en`)
       .then((r) => r.json())
       .then((d) => { if (d.copy) setCopy(d.copy); })
       .catch(() => {});
+  }, [hubId]);
+
+  useEffect(() => {
+    if (hubId !== "transfer") return;
+    supabase
+      .from("contents")
+      .select("id,title,title_en,slug,category,content,content_en,created_at,cover_image")
+      .eq("status", "published")
+      .eq("category", "transfer")
+      .order("created_at", { ascending: false })
+      .limit(1)
+      .maybeSingle()
+      .then(({ data }) => { if (data) setLatestArticle(data as EditorialArticle); });
   }, [hubId]);
 
   const hub = { ...cfg.defaults, ...copy };
@@ -70,35 +88,99 @@ export default function HubPillarPage({ hubId }: Props) {
       <SiteHeader activeNav={cfg.navKey} />
       <div style={{ paddingTop: "68px" }} />
 
-      <header
-        className={`hub-pillar-hero grain${isWc ? " hub-pillar-hero--wc" : " hub-pillar-hero--transfer"}`}
-        style={isWc ? { background: WC_2026_HERO_BG } : undefined}
-      >
-        <PageShell shellClass="sg-hero-text-block" className="sg-page-shell--hero" style={{ position: "relative" }}>
-          {isWc ? <span className="wc-hero-glow" aria-hidden /> : null}
-          <div className={`eyebrow ${isWc ? "wc-eyebrow" : "transfer-eyebrow"}`}>{hub.pillarEyebrow}</div>
-          <h1 className={`display hub-pillar-title${isWc ? " hub-pillar-title--wc" : " hub-pillar-title--transfer"}`}>
-            {hub.pillarTitle}
-          </h1>
-          <p className="hub-pillar-description">{hub.pillarDescription}</p>
-          <div className="hub-pillar-ctas flex flex-wrap items-center gap-x-6 gap-y-3">
-            {isWc ? (
+      {/* Transfer hero: latest article */}
+      {!isWc && latestArticle ? (() => {
+        const title = editorialTitle(latestArticle, "en");
+        const body = editorialBody(latestArticle, "en");
+        const excerpt = stripHtml(body).replace(/\s+/g, " ").trim().slice(0, 160) + "…";
+        const href = categoryArticlePath(latestArticle.category, latestArticle.slug);
+        const cover = latestArticle.cover_image?.trim();
+        return (
+          <header
+            className="hub-pillar-hero grain hub-pillar-hero--transfer"
+            style={{
+              position: "relative",
+              overflow: "hidden",
+              ...(cover ? { background: "var(--ink-900)" } : undefined),
+            }}
+          >
+            {cover && (
               <>
-                <Link href="/world-cup-2026/schedule" className="btn btn-solid" style={{ background: "var(--wc-gold)", borderColor: "var(--wc-gold)" }}>
-                  Match Schedule →
-                </Link>
-                <Link href={cfg.kadrolarPath} className="btn btn-solid" style={{ background: "var(--wc-magenta)", borderColor: "var(--wc-magenta)" }}>
-                  48 Team Squads →
-                </Link>
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src={cover}
+                  alt=""
+                  style={{
+                    position: "absolute",
+                    inset: 0,
+                    width: "100%",
+                    height: "100%",
+                    objectFit: "cover",
+                    opacity: 0.35,
+                    pointerEvents: "none",
+                  }}
+                />
+                <div
+                  style={{
+                    position: "absolute",
+                    inset: 0,
+                    background: "linear-gradient(to top, var(--ink-900) 0%, transparent 60%)",
+                    pointerEvents: "none",
+                  }}
+                />
               </>
-            ) : (
-              <Link href="#transfer-wire" className="btn btn-solid hub-pillar-cta">
-                Transfer Wire →
-              </Link>
             )}
-          </div>
-        </PageShell>
-      </header>
+            <PageShell shellClass="sg-hero-text-block" className="sg-page-shell--hero" style={{ position: "relative" }}>
+              <div className="eyebrow transfer-eyebrow">LATEST TRANSFER ARTICLE</div>
+              <h1 className="display hub-pillar-title hub-pillar-title--transfer" style={{ maxWidth: "18ch" }}>
+                {title}
+              </h1>
+              <p className="hub-pillar-description" style={{ maxWidth: "50ch" }}>{excerpt}</p>
+              <div className="hub-pillar-ctas flex flex-wrap items-center gap-x-6 gap-y-3">
+                <Link href={href} className="btn btn-solid hub-pillar-cta">
+                  Read Article →
+                </Link>
+                <Link href="#transfer-wire" className="btn btn-outline hub-pillar-cta" style={{ borderColor: "var(--sg-border)", color: "var(--sg-text-secondary)" }}>
+                  Transfer Wire →
+                </Link>
+              </div>
+            </PageShell>
+          </header>
+        );
+      })() : null}
+
+      {/* WC / fallback static hero */}
+      {(isWc || (!isWc && !latestArticle)) ? (
+        <header
+          className={`hub-pillar-hero grain${isWc ? " hub-pillar-hero--wc" : " hub-pillar-hero--transfer"}`}
+          style={isWc ? { background: WC_2026_HERO_BG } : undefined}
+        >
+          <PageShell shellClass="sg-hero-text-block" className="sg-page-shell--hero" style={{ position: "relative" }}>
+            {isWc ? <span className="wc-hero-glow" aria-hidden /> : null}
+            <div className={`eyebrow ${isWc ? "wc-eyebrow" : "transfer-eyebrow"}`}>{hub.pillarEyebrow}</div>
+            <h1 className={`display hub-pillar-title${isWc ? " hub-pillar-title--wc" : " hub-pillar-title--transfer"}`}>
+              {hub.pillarTitle}
+            </h1>
+            <p className="hub-pillar-description">{hub.pillarDescription}</p>
+            <div className="hub-pillar-ctas flex flex-wrap items-center gap-x-6 gap-y-3">
+              {isWc ? (
+                <>
+                  <Link href="/world-cup-2026/schedule" className="btn btn-solid" style={{ background: "var(--wc-gold)", borderColor: "var(--wc-gold)" }}>
+                    Match Schedule →
+                  </Link>
+                  <Link href={cfg.kadrolarPath} className="btn btn-solid" style={{ background: "var(--wc-magenta)", borderColor: "var(--wc-magenta)" }}>
+                    48 Team Squads →
+                  </Link>
+                </>
+              ) : (
+                <Link href="#transfer-wire" className="btn btn-solid hub-pillar-cta">
+                  Transfer Wire →
+                </Link>
+              )}
+            </div>
+          </PageShell>
+        </header>
+      ) : null}
 
       {!isWc ? (
         <div className="theme-transfer">
