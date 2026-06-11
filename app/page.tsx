@@ -734,7 +734,7 @@ function HomeAllArticles() {
           <div className="eyebrow">BROWSE</div>
           <h2 className="display" style={{ fontSize: 36, fontWeight: 700, letterSpacing: "-0.03em", margin: "6px 0 0" }}>All Articles</h2>
         </div>
-        <Link href="/radar" className="mono u-link" style={{ fontSize: 12, letterSpacing: "0.14em", color: "var(--sg-text-muted)" }}>RADAR →</Link>
+        <Link href="/articles" className="mono u-link" style={{ fontSize: 12, letterSpacing: "0.14em", color: "var(--sg-text-muted)" }}>SEE ALL →</Link>
       </div>
       <div className="grid gap-4" style={{ gridTemplateColumns: "repeat(auto-fill, minmax(min(100%, 280px), 1fr))" }}>
         {articles.map((item) => {

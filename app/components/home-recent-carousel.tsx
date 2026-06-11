@@ -50,7 +50,7 @@ export default function HomeRecentCarousel({ items }: { items: HomeRecentItem[];
         </div>
         <div style={{ display: "flex", gap: 16 }}>
           <Link href="/world-cup-2026" className="mono u-link" style={{ fontSize: 12, letterSpacing: "0.14em", color: "var(--sg-text-muted)" }}>WORLD CUP 2026 →</Link>
-          <Link href="/radar" className="mono u-link" style={{ fontSize: 12, letterSpacing: "0.14em", color: "var(--sg-text-muted)" }}>ALL ARTICLES →</Link>
+          <Link href="/articles" className="mono u-link" style={{ fontSize: 12, letterSpacing: "0.14em", color: "var(--sg-text-muted)" }}>ALL ARTICLES →</Link>
         </div>
       </div>
 
