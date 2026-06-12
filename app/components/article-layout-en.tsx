@@ -40,10 +40,6 @@ const CATEGORY_TAGS: Record<string, string[]> = {
   "tactics-lab": ["Tactical Analysis", "Position Archetype", "Modern Football"],
 };
 
-function readTime(text: string): number {
-  return Math.max(1, Math.ceil(text.trim().split(/\s+/).length / 200));
-}
-
 function categoryPath(category: string): string {
   if (category === "wc-2026") return "/world-cup-2026";
   if (category === "transfer") return "/transfers";
@@ -168,7 +164,6 @@ export default function ArticleLayoutEn({
 
   const formattedDate = new Date(date).toLocaleDateString("en-US", { day: "numeric", month: "long", year: "numeric" });
   const plainText = stripHtml(content);
-  const minutes = readTime(plainText);
 
   const { processedHtml, toc } = useMemo(() => {
     if (!contentLooksLikeHtml(content)) return { processedHtml: content, toc: [] };
@@ -383,11 +378,6 @@ export default function ArticleLayoutEn({
                 </div>
                 <div style={{ width: 1, height: 32, background: "var(--sg-border)" }} />
                 <div>
-                  <div className="mono" style={{ fontSize: 9, letterSpacing: "0.18em", color: "var(--sg-text-muted)" }}>TIME</div>
-                  <div className="mono" style={{ fontSize: 13, color: "var(--sg-text-primary)", marginTop: 2, letterSpacing: "0.04em" }}>{minutes} MIN READ</div>
-                </div>
-                <div style={{ width: 1, height: 32, background: "var(--sg-border)" }} />
-                <div>
                   <div className="mono" style={{ fontSize: 9, letterSpacing: "0.18em", color: "var(--sg-text-muted)" }}>EDITOR</div>
                   <div className="mono" style={{ fontSize: 13, color: "var(--sg-text-primary)", marginTop: 2, letterSpacing: "0.04em" }}>SCOUT GAMER</div>
                 </div>
@@ -427,11 +417,6 @@ export default function ArticleLayoutEn({
                 </div>
                 <div style={{ width: 1, height: 32, background: "var(--sg-border)" }} />
                 <div>
-                  <div className="mono" style={{ fontSize: 9, letterSpacing: "0.18em", color: "var(--sg-text-muted)" }}>TIME</div>
-                  <div className="mono" style={{ fontSize: 13, color: "var(--sg-text-primary)", marginTop: 2, letterSpacing: "0.04em" }}>{minutes} MIN READ</div>
-                </div>
-                <div style={{ width: 1, height: 32, background: "var(--sg-border)" }} />
-                <div>
                   <div className="mono" style={{ fontSize: 9, letterSpacing: "0.18em", color: "var(--sg-text-muted)" }}>EDITOR</div>
                   <div className="mono" style={{ fontSize: 13, color: "var(--sg-text-primary)", marginTop: 2, letterSpacing: "0.04em" }}>SCOUT GAMER</div>
                 </div>
@@ -441,7 +426,7 @@ export default function ArticleLayoutEn({
             {!useCoverHero ? (
             <div className="article-hero-right" style={{ display: "flex", justifyContent: "center", alignItems: "center" }}>
               {heroVariant === "player-cards" && heroChildren ? (
-                <div style={{ width: "clamp(180px, 70%, 280px)" }}>{heroChildren}</div>
+                <div style={{ width: "clamp(180px, 55%, 230px)" }}>{heroChildren}</div>
               ) : heroVariant === "cover-image" && coverImage ? (
                 <div style={{ width: "100%", maxWidth: 380, borderRadius: 4, overflow: "hidden", border: "1px solid var(--sg-border)" }}>
                   {/* eslint-disable-next-line @next/next/no-img-element */}

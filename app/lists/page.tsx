@@ -6,7 +6,7 @@ import SiteHeader from "../components/site-header";
 import SiteFooter from "../components/site-footer";
 import { ContentHighlightPills } from "../components/content-highlight-pills";
 import { supabase } from "@/lib/supabase";
-import { stripHtml, estimateReadMinutes } from "@/lib/utils";
+import { stripHtml } from "@/lib/utils";
 import { extractArticleHighlights, HIGHLIGHT_CARD_ACCENTS_CYCLE } from "@/lib/content-highlight-tags";
 import { getCategoryImage } from "@/lib/category-images";
 
@@ -70,7 +70,6 @@ export default function ListelerPage() {
   const recentDbLists = dbLists.slice(1);
   const featuredHighlights = featured ? highlightsBySlug.get(featured.slug) : undefined;
   const featuredTitle = featured ? featured.title_en || featured.title : "";
-  const featuredBodyForRead = featured ? featured.content_en || featured.content || "" : "";
 
   return (
     <main style={{ background: "var(--sg-bg)", color: "var(--sg-text-primary)", minHeight: "100vh" }}>
@@ -132,9 +131,8 @@ export default function ListelerPage() {
                   <ContentHighlightPills tags={featuredHighlights.slice(0, 4)} accent={LIST_COVER_ACCENT} label="HIGHLIGHTS" />
                 </div>
               ) : null}
-              <div style={{ marginTop: 24, display: "flex", gap: 12, alignItems: "center", flexWrap: "wrap" }}>
+              <div style={{ marginTop: 24 }}>
                 <span className="btn btn-solid" style={{ background: LIST_COVER_ACCENT, borderColor: LIST_COVER_ACCENT }}>READ →</span>
-                <span className="mono" style={{ fontSize: 10, letterSpacing: "0.16em", color: "var(--sg-text-muted)" }}>{estimateReadMinutes(featuredBodyForRead)} MIN</span>
               </div>
             </div>
           </Link>

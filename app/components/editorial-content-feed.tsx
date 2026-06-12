@@ -3,7 +3,7 @@
 import { useMemo } from "react";
 import Link from "next/link";
 import { ContentHighlightPills } from "./content-highlight-pills";
-import { stripHtml, estimateReadMinutes } from "@/lib/utils";
+import { stripHtml } from "@/lib/utils";
 import { extractArticleHighlights, HIGHLIGHT_CARD_ACCENTS_CYCLE } from "@/lib/content-highlight-tags";
 import { categoryArticlePath, CAT_LABEL } from "@/lib/category-config";
 import { editorialBody, editorialTitle, type EditorialArticle } from "@/lib/editorial-article";
@@ -107,9 +107,8 @@ export default function EditorialContentFeed({
               <ContentHighlightPills tags={featuredPills.slice(0, 4)} accent={accent} label={labels.highlights} />
             </div>
           ) : null}
-          <div style={{ marginTop: 24, display: "flex", gap: 12, alignItems: "center" }}>
+          <div style={{ marginTop: 24 }}>
             <span className="btn btn-solid">{labels.readCta}</span>
-            <span className="mono" style={{ fontSize: 10, letterSpacing: "0.16em", color: "var(--sg-text-muted)" }}>{estimateReadMinutes(featuredBody)} {labels.readMin}</span>
           </div>
         </div>
       </Link>
@@ -121,7 +120,6 @@ export default function EditorialContentFeed({
             {rest.map((article, idx) => {
               const body = editorialBody(article, "en");
               const title = editorialTitle(article, "en");
-              const readMins = estimateReadMinutes(body);
               const cardAccent = HIGHLIGHT_CARD_ACCENTS_CYCLE[idx % HIGHLIGHT_CARD_ACCENTS_CYCLE.length]!;
               const pills = highlightsBySlug.get(article.slug) ?? [];
               const label = CAT_LABEL[article.category] ?? article.category;
@@ -142,7 +140,7 @@ export default function EditorialContentFeed({
                     <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 14 }}>
                       <span className="mono" style={{ fontSize: 9, letterSpacing: "0.2em", color: cardAccent }}>{label}</span>
                       <span className="mono" style={{ fontSize: 9, letterSpacing: "0.14em", color: "var(--sg-text-muted)" }}>
-                        {new Date(article.created_at).toLocaleDateString("en-US", { day: "numeric", month: "short" })} · {readMins} {labels.readMin}
+                        {new Date(article.created_at).toLocaleDateString("en-US", { day: "numeric", month: "short" })}
                       </span>
                     </div>
                     <h2 className="display" style={{ fontSize: 18, fontWeight: 600, lineHeight: 1.2, letterSpacing: "-0.02em", margin: 0, textWrap: "balance", color: "var(--sg-text-primary)", flex: 1 }}>

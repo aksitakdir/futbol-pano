@@ -7,7 +7,7 @@ import SiteFooter from "../components/site-footer";
 import { supabase } from "@/lib/supabase";
 import { categoryArticlePath, CAT_LABEL } from "@/lib/category-config";
 import { getCategoryImage } from "@/lib/category-images";
-import { stripHtml, estimateReadMinutes } from "@/lib/utils";
+import { stripHtml } from "@/lib/utils";
 import { extractArticleHighlights, HIGHLIGHT_CARD_ACCENTS_CYCLE } from "@/lib/content-highlight-tags";
 import { ContentHighlightPills } from "../components/content-highlight-pills";
 
@@ -98,7 +98,6 @@ export default function ArticlesPage() {
               {articles.map((article, idx) => {
                 const body = article.content_en || article.content;
                 const title = article.title_en || article.title;
-                const readMins = estimateReadMinutes(body);
                 const accent = HIGHLIGHT_CARD_ACCENTS_CYCLE[idx % HIGHLIGHT_CARD_ACCENTS_CYCLE.length]!;
                 const pills = highlightsBySlug.get(article.slug) ?? [];
                 const label = CAT_LABEL[article.category] ?? article.category;
@@ -115,7 +114,7 @@ export default function ArticlesPage() {
                       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 10 }}>
                         <span className="mono" style={{ fontSize: 9, letterSpacing: "0.2em", color: accent }}>{label}</span>
                         <span className="mono" style={{ fontSize: 9, letterSpacing: "0.14em", color: "var(--sg-text-muted)" }}>
-                          {new Date(article.created_at).toLocaleDateString("en-US", { day: "numeric", month: "short" })} · {readMins} MIN
+                          {new Date(article.created_at).toLocaleDateString("en-US", { day: "numeric", month: "short" })}
                         </span>
                       </div>
                       <h2 className="display" style={{ fontSize: 17, fontWeight: 600, lineHeight: 1.2, letterSpacing: "-0.02em", margin: 0, textWrap: "balance", color: "var(--sg-text-primary)", flex: 1 }}>

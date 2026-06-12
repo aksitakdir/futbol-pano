@@ -7,7 +7,7 @@ import SiteFooter from "../components/site-footer";
 import PlayerCard, { type PlayerCardData } from "../components/player-card";
 import { ContentHighlightPills } from "../components/content-highlight-pills";
 import { supabase } from "@/lib/supabase";
-import { stripHtml, estimateReadMinutes } from "@/lib/utils";
+import { stripHtml } from "@/lib/utils";
 import { extractArticleHighlights, HIGHLIGHT_CARD_ACCENTS_CYCLE } from "@/lib/content-highlight-tags";
 import {
   COVER_STORY_SETTINGS_KEY,
@@ -143,9 +143,8 @@ export default function RadarPage() {
                         <ContentHighlightPills tags={featuredHighlights.slice(0, 4)} accent="var(--accent)" label="HIGHLIGHTS" />
                       </div>
                     ) : null}
-                    <div style={{ marginTop: 24, display: "flex", gap: 12, alignItems: "center" }}>
+                    <div style={{ marginTop: 24 }}>
                       <span className="btn btn-solid">READ THE STORY →</span>
-                      <span className="mono" style={{ fontSize: 10, letterSpacing: "0.16em", color: "var(--sg-text-muted)" }}>{estimateReadMinutes(featured.content_en || featured.content)} MIN</span>
                     </div>
                   </div>
                   {heroPlayers.length >= 2 && (
@@ -166,8 +165,6 @@ export default function RadarPage() {
                 <div className="eyebrow" style={{ marginBottom: 16 }}>ALL ANALYSES</div>
                 <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(min(100%, 260px), 1fr))", gap: 16, marginBottom: 48 }}>
                   {rest.map((article, idx) => {
-                    const body = article.content_en || article.content;
-                    const readMins = estimateReadMinutes(body);
                     const accent = HIGHLIGHT_CARD_ACCENTS_CYCLE[idx % HIGHLIGHT_CARD_ACCENTS_CYCLE.length]!;
                     const pills = highlightsBySlug.get(article.slug) ?? [];
                     const coverImg = article.cover_image?.trim() || getCategoryImage("radar", article.slug);
@@ -184,7 +181,7 @@ export default function RadarPage() {
                             <span className="mono" style={{ fontSize: 9, letterSpacing: "0.2em", color: accent }}>RADAR</span>
                             <div className="mono" style={{ fontSize: 9, letterSpacing: "0.14em", color: "var(--sg-text-muted)", display: "flex", gap: 8, alignItems: "center" }}>
                               {!article.title_en && <span style={{ color: "var(--amber)", fontSize: 8 }}>DRAFT</span>}
-                              <span>{new Date(article.created_at).toLocaleDateString("en-US", { day: "numeric", month: "short" })} · {readMins} MIN</span>
+                              <span>{new Date(article.created_at).toLocaleDateString("en-US", { day: "numeric", month: "short" })}</span>
                             </div>
                           </div>
                           <h2 className="display" style={{ fontSize: 18, fontWeight: 600, lineHeight: 1.2, letterSpacing: "-0.02em", margin: 0, textWrap: "balance", color: "var(--sg-text-primary)", flex: 1 }}>

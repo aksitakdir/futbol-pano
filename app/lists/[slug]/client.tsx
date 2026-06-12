@@ -47,7 +47,6 @@ function statColor(val?: number) {
 
 const STAT_LABELS = ["PAC", "SHO", "PAS", "DRI", "DEF", "PHY"] as const;
 const STAT_KEYS   = ["pace", "shooting", "passing", "dribbling", "defending", "physical"] as const;
-function readTime(t: string) { return Math.max(1, Math.ceil(t.trim().split(/\s+/).length / 200)); }
 
 function playerRowToCardData(p: PlayerWithStats): PlayerCardData {
   return {
@@ -162,7 +161,6 @@ function ListLayout({ row }: { row: ContentRow }) {
   const isHtml = contentLooksLikeHtml(displayContent);
   const structuredToc = sections?.length ? tocFromSections(sections) : [];
   const formattedDate = new Date(row.created_at).toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric" });
-  const minutes = readTime(stripHtml(displayContent));
 
   return (
     <main style={{ background: "var(--sg-bg)", color: "var(--sg-text-primary)", minHeight: "100vh" }}>
@@ -182,8 +180,6 @@ function ListLayout({ row }: { row: ContentRow }) {
           <h1 className="display grad-text" style={{ fontSize: "clamp(36px, 5vw, 72px)", fontWeight: 700, letterSpacing: "-0.04em", margin: 0, lineHeight: 0.92, textWrap: "balance", maxWidth: 800 }}>{displayTitle}</h1>
           <div style={{ display: "flex", gap: 20, marginTop: 32, alignItems: "center", paddingTop: 20, borderTop: "1px solid var(--sg-border)", maxWidth: 560 }}>
             <div><div className="mono" style={{ fontSize: 9, letterSpacing: "0.18em", color: "var(--sg-text-muted)" }}>PLAYERS</div><div className="mono" style={{ fontSize: 13, color: "var(--sg-text-primary)", marginTop: 2 }}>{players.length}</div></div>
-            <div style={{ width: 1, height: 28, background: "var(--sg-border)" }} />
-            <div><div className="mono" style={{ fontSize: 9, letterSpacing: "0.18em", color: "var(--sg-text-muted)" }}>READ TIME</div><div className="mono" style={{ fontSize: 13, color: "var(--sg-text-primary)", marginTop: 2 }}>{minutes} MIN</div></div>
             <div style={{ width: 1, height: 28, background: "var(--sg-border)" }} />
             <div><div className="mono" style={{ fontSize: 9, letterSpacing: "0.18em", color: "var(--sg-text-muted)" }}>EDITOR</div><div className="mono" style={{ fontSize: 13, color: "var(--sg-text-primary)", marginTop: 2 }}>SCOUT GAMER</div></div>
           </div>
