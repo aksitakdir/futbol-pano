@@ -26,7 +26,10 @@ const ibmPlexMono = IBM_Plex_Mono({
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://www.scoutgamer.com"),
-  alternates: { canonical: "./" },
+  alternates: {
+    canonical: "./",
+    types: { "application/rss+xml": "/feed" },
+  },
   title: {
     default: "Scout Gamer | Young Talent Scouting, Rising Footballers & Game Culture",
     template: "%s | Scout Gamer",

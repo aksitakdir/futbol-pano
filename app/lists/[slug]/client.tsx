@@ -15,6 +15,7 @@ import ArticleHtmlWithPlayerEmbeds from "../../components/article-html-with-play
 import SectionsJsonBody from "../../components/sections-json-body";
 import { tocFromSections, type SectionBlock } from "@/lib/section-blocks";
 import { redirectToCanonicalArticle } from "@/lib/article-route-guard";
+import { normalizeYoutubeId } from "@/lib/youtube-id";
 
 type ContentRow = {
   id: string; title: string; title_en?: string;
@@ -22,6 +23,7 @@ type ContentRow = {
   content: string; content_en?: string | null;
   created_at: string;
   youtube_id?: string; cover_image?: string;
+  youtube_query_1?: string; youtube_query_2?: string;
   player_name?: string; players_json?: string | null;
   hero_variant?: string; accent?: string;
   sections_json?: SectionBlock[] | null;
@@ -140,13 +142,37 @@ const ACCENT_CSS: Record<string, string> = {
   rose: "var(--rose)", amber: "var(--amber)", lime: "var(--lime)",
 };
 
+type YouTubeSearchItem = { videoId: string; title: string; thumbnail: string; channelTitle: string };
+
 function ListLayout({ row }: { row: ContentRow }) {
   const [similar, setSimilar] = useState<{ id: string; title: string; title_en?: string; slug: string; created_at: string }[]>([]);
+  const [youtubeVideos1, setYoutubeVideos1] = useState<YouTubeSearchItem[] | null>(null);
+  const [youtubeVideos2, setYoutubeVideos2] = useState<YouTubeSearchItem[] | null>(null);
 
   useEffect(() => {
     supabase.from("contents").select("id,title,title_en,slug,category,created_at").eq("status", "published").eq("category", "lists").neq("slug", row.slug).order("created_at", { ascending: false }).limit(4).then(({ data }) => { if (data) setSimilar(data); });
     fetch("/api/view", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ slug: row.slug }) }).catch(() => {});
   }, [row.slug]);
+
+  useEffect(() => {
+    const q = row.youtube_query_1?.trim();
+    if (!q) return;
+    fetch(`/api/youtube?query=${encodeURIComponent(q)}`)
+      .then(r => r.json())
+      .then(d => setYoutubeVideos1(Array.isArray(d) ? d : d.items ?? []))
+      .catch(() => setYoutubeVideos1([]));
+  }, [row.youtube_query_1]);
+
+  useEffect(() => {
+    const q = row.youtube_query_2?.trim();
+    if (!q) return;
+    fetch(`/api/youtube?query=${encodeURIComponent(q)}`)
+      .then(r => r.json())
+      .then(d => setYoutubeVideos2(Array.isArray(d) ? d : d.items ?? []))
+      .catch(() => setYoutubeVideos2([]));
+  }, [row.youtube_query_2]);
+
+  const youtubeEmbedId = useMemo(() => normalizeYoutubeId(row.youtube_id), [row.youtube_id]);
 
   const players = useMemo<PlayerJsonEntry[]>(() => {
     if (!row.players_json) return [];
@@ -156,6 +182,7 @@ function ListLayout({ row }: { row: ContentRow }) {
   const enriched = usePlayersWithStats(players);
   const accent = ACCENT_CSS[row.accent ?? ""] ?? "var(--emerald)";
   const displayTitle   = row.title_en   || row.title;
+  const coverImg = row.cover_image?.trim();
   const sections = Array.isArray(row.sections_json) ? row.sections_json : null;
   const displayContent = row.content_en?.trim() ? row.content_en : row.content;
   const isHtml = contentLooksLikeHtml(displayContent);
@@ -167,10 +194,18 @@ function ListLayout({ row }: { row: ContentRow }) {
       <SiteHeader activeNav="lists" />
       <div style={{ paddingTop: "68px" }} />
 
-      <header style={{ position: "relative", overflow: "hidden", background: "linear-gradient(180deg, oklch(0.13 0.018 240) 0%, oklch(0.10 0.012 250) 100%)", borderBottom: "1px solid var(--sg-border)" }}>
+      <header style={{ position: "relative", overflow: "hidden", background: coverImg ? "var(--ink-900)" : "linear-gradient(180deg, oklch(0.13 0.018 240) 0%, oklch(0.10 0.012 250) 100%)", borderBottom: "1px solid var(--sg-border)" }}>
+        {coverImg && (
+          <>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src={coverImg} alt="" style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover", filter: "brightness(0.32) saturate(0.85)" }} />
+            <div style={{ position: "absolute", inset: 0, background: "linear-gradient(to right, rgba(13,18,30,0.92) 0%, rgba(13,18,30,0.7) 55%, rgba(13,18,30,0.4) 100%)" }} />
+            <div style={{ position: "absolute", inset: 0, background: "linear-gradient(to top, rgba(13,18,30,0.85) 0%, transparent 50%)" }} />
+          </>
+        )}
         <div style={{ position: "absolute", top: 0, left: 0, right: 0, height: 3, background: accent }} />
-        <div style={{ position: "absolute", inset: 0, opacity: 0.04, pointerEvents: "none", backgroundImage: "repeating-linear-gradient(90deg, rgba(255,255,255,0.5) 0 1px, transparent 1px 22px)" }} />
-        <div style={{ position: "absolute", bottom: -200, left: -100, width: 500, height: 500, borderRadius: "50%", background: `radial-gradient(circle, ${accent} 0%, transparent 65%)`, opacity: 0.12, pointerEvents: "none" }} />
+        {!coverImg && <div style={{ position: "absolute", inset: 0, opacity: 0.04, pointerEvents: "none", backgroundImage: "repeating-linear-gradient(90deg, rgba(255,255,255,0.5) 0 1px, transparent 1px 22px)" }} />}
+        {!coverImg && <div style={{ position: "absolute", bottom: -200, left: -100, width: 500, height: 500, borderRadius: "50%", background: `radial-gradient(circle, ${accent} 0%, transparent 65%)`, opacity: 0.12, pointerEvents: "none" }} />}
         <div className="sg-editorial-shell" style={{ padding: "40px 0 60px", position: "relative" }}>
           <button onClick={() => window.history.back()} className="mono" style={{ background: "transparent", border: "none", color: "var(--sg-text-muted)", fontSize: 11, letterSpacing: "0.14em", padding: 0, marginBottom: 40, cursor: "pointer" }}>← Back to Lists</button>
           <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 24 }}>
@@ -185,6 +220,26 @@ function ListLayout({ row }: { row: ContentRow }) {
           </div>
         </div>
       </header>
+
+      {youtubeEmbedId && (
+        <section style={{ background: "var(--sg-bg)", borderBottom: "1px solid var(--sg-border)" }}>
+          <div style={{ maxWidth: 960, margin: "0 auto", padding: "28px 32px 40px" }}>
+            <div className="mono" style={{ fontSize: 10, letterSpacing: "0.18em", color: accent, marginBottom: 14 }}>
+              FEATURED VIDEO
+            </div>
+            <div style={{ position: "relative", width: "100%", aspectRatio: "16 / 9", borderRadius: 6, overflow: "hidden", border: "1px solid var(--sg-border)", background: "var(--sg-surface-low)" }}>
+              <iframe
+                src={`https://www.youtube-nocookie.com/embed/${youtubeEmbedId}`}
+                title={`${displayTitle} — YouTube`}
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                referrerPolicy="strict-origin-when-cross-origin"
+                allowFullScreen
+                style={{ position: "absolute", inset: 0, width: "100%", height: "100%", border: "none" }}
+              />
+            </div>
+          </div>
+        </section>
+      )}
 
       {structuredToc.length > 0 ? (
         <div style={{ background: "var(--sg-bg)", borderBottom: "1px solid var(--sg-border)" }}>
@@ -238,6 +293,57 @@ function ListLayout({ row }: { row: ContentRow }) {
               <NumberedPlayerEntry player={player} rank={i + 1} accent={accent} />
             </div>
           ))}
+
+          {row.youtube_query_1?.trim() && (
+            <div style={{ marginTop: 48, paddingTop: 48, borderTop: "1px solid var(--sg-border)" }}>
+              <div className="eyebrow" style={{ color: accent, marginBottom: 20 }}>
+                VIDEO · {row.youtube_query_1.trim().toUpperCase()}
+              </div>
+              {youtubeVideos1 === null ? (
+                <p className="mono" style={{ fontSize: 11, color: "var(--sg-text-muted)" }}>Loading…</p>
+              ) : youtubeVideos1.length === 0 ? null : (
+                <div className="yt-thumb-grid" style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 12 }}>
+                  {youtubeVideos1.map(v => (
+                    <a key={v.videoId} href={`https://www.youtube.com/watch?v=${v.videoId}`} target="_blank" rel="noopener noreferrer"
+                      className="lift" style={{ textDecoration: "none", background: "var(--sg-surface)", borderRadius: 4, overflow: "hidden" }}>
+                      <div style={{ aspectRatio: "16/9", overflow: "hidden" }}>
+                        <img src={v.thumbnail} alt="" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+                      </div>
+                      <div style={{ padding: "10px 12px" }}>
+                        <p style={{ fontSize: 12, fontWeight: 500, lineHeight: 1.3, color: "var(--sg-text-primary)", margin: 0,
+                          display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden" }}>
+                          {v.title}
+                        </p>
+                        <p style={{ fontSize: 10, color: "var(--sg-text-muted)", marginTop: 4 }}>{v.channelTitle}</p>
+                      </div>
+                    </a>
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
+
+          {row.youtube_query_2?.trim() && youtubeVideos2 && youtubeVideos2.length > 0 && (
+            <div style={{ marginTop: 40 }}>
+              <div className="eyebrow" style={{ color: accent, marginBottom: 20 }}>VIDEO · {row.youtube_query_2.trim().toUpperCase()}</div>
+              <div className="yt-thumb-grid" style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 12 }}>
+                {youtubeVideos2.map(v => (
+                  <a key={v.videoId} href={`https://www.youtube.com/watch?v=${v.videoId}`} target="_blank" rel="noopener noreferrer"
+                    className="lift" style={{ textDecoration: "none", background: "var(--sg-surface)", borderRadius: 4, overflow: "hidden" }}>
+                    <div style={{ aspectRatio: "16/9", overflow: "hidden" }}>
+                      <img src={v.thumbnail} alt="" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+                    </div>
+                    <div style={{ padding: "10px 12px" }}>
+                      <p style={{ fontSize: 12, fontWeight: 500, lineHeight: 1.3, color: "var(--sg-text-primary)", margin: 0,
+                        display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden" }}>
+                        {v.title}
+                      </p>
+                    </div>
+                  </a>
+                ))}
+              </div>
+            </div>
+          )}
         </div>
 
         <aside className="article-v2-sidebar" style={{ position: "sticky", top: 88 }}>
