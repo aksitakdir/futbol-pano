@@ -180,7 +180,7 @@ export default function ListelerPage() {
               </>
             ) : null}
             {hasMore && (
-              <div style={{ marginTop: recentDbLists.length > 0 ? 36 : 0, display: "flex", justifyContent: "center" }}>
+              <div style={{ marginTop: recentDbLists.length > 0 ? 36 : 0, marginBottom: 32, display: "flex", justifyContent: "center" }}>
                 <button type="button" onClick={handleLoadMore} disabled={loadingMore} className="btn" style={{ borderColor: "var(--emerald)", color: "var(--emerald)" }}>
                   {loadingMore ? "Loading..." : "LOAD MORE →"}
                 </button>

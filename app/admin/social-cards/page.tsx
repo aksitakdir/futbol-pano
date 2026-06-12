@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Image from "next/image";
 import AdminLayout from "../components/admin-layout";
 import { supabase } from "@/lib/supabase";
@@ -56,6 +56,7 @@ function buildCardUrl(format: string, title: string, category: string, cover: st
 export default function SocialCardsStudioPage() {
   const [selectedPreset, setSelectedPreset] = useState<Preset | null>(null);
   const [presetSearch, setPresetSearch] = useState("");
+  const [arenaPresets, setArenaPresets] = useState<Preset[]>([]);
   const [title, setTitle] = useState("");
   const [category, setCategory] = useState("wc-2026");
   const [coverImage, setCoverImage] = useState("");
@@ -72,6 +73,29 @@ export default function SocialCardsStudioPage() {
 
   const shareLink = publicUrl ? `https://scoutgamer.com${publicUrl}` : "";
 
+  useEffect(() => {
+    supabase
+      .from("arena_games")
+      .select("slug,title_en,title_tr")
+      .eq("status", "published")
+      .order("created_at", { ascending: false })
+      .then(({ data }) => {
+        const items = (data ?? []) as { slug: string; title_en: string | null; title_tr: string | null }[];
+        setArenaPresets(
+          items.map((g) => {
+            const title = g.title_en?.trim() || g.title_tr?.trim() || g.slug;
+            return {
+              label: `🎮 ${title}`,
+              title,
+              category: "arena",
+              publicUrl: `/arena/${g.slug}`,
+              slug: `arena-${g.slug}`,
+            };
+          }),
+        );
+      });
+  }, []);
+
   function selectPreset(p: Preset) {
     setSelectedPreset(p);
     setTitle(p.title);
@@ -81,9 +105,10 @@ export default function SocialCardsStudioPage() {
     // Keep existing cover image if already set
   }
 
+  const allPresets = [...arenaPresets, ...WC_PRESETS];
   const filteredPresets = presetSearch.trim()
-    ? WC_PRESETS.filter((p) => p.label.toLowerCase().includes(presetSearch.toLowerCase()))
-    : WC_PRESETS;
+    ? allPresets.filter((p) => p.label.toLowerCase().includes(presetSearch.toLowerCase()))
+    : allPresets;
 
   async function copy(text: string, key: string) {
     try {
@@ -212,6 +237,7 @@ export default function SocialCardsStudioPage() {
                   <option value="lists">Lists</option>
                   <option value="tactics-lab">Tactics Lab</option>
                   <option value="transfer">Transfers</option>
+                  <option value="arena">Arena</option>
                 </select>
               </div>
               <div>

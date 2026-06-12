@@ -30,6 +30,7 @@ const CATEGORY_LABEL: Record<string, string> = {
   lists: "SCOUT LIST",
   "tactics-lab": "TACTICS LAB",
   transfer: "TRANSFERS",
+  arena: "ARENA",
 };
 
 /** Cap very long titles so the card stays clean; ellipsize on a word boundary. */

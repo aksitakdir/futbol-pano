@@ -159,7 +159,7 @@ export default function EditorialContentFeed({
       ) : null}
 
       {hasMore && onLoadMore ? (
-        <div style={{ display: "flex", justifyContent: "center" }}>
+        <div style={{ display: "flex", justifyContent: "center", marginTop: 8, marginBottom: 64 }}>
           <button type="button" onClick={onLoadMore} disabled={loadingMore} className="btn">
             {loadingMore ? "Loading..." : "LOAD MORE →"}
           </button>

@@ -200,7 +200,7 @@ export default function RadarPage() {
             )}
 
             {hasMore && (
-              <div style={{ display: "flex", justifyContent: "center" }}>
+              <div style={{ display: "flex", justifyContent: "center", marginTop: 8, marginBottom: 32 }}>
                 <button type="button" onClick={handleLoadMore} disabled={loadingMore} className="btn">
                   {loadingMore ? "Loading..." : "LOAD MORE →"}
                 </button>
