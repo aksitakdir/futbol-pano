@@ -1,5 +1,6 @@
 import { createClient } from "@supabase/supabase-js";
 import { fetchFootballDataMatches } from "@/lib/football-data-matches";
+import { fetchApiFootballWcMatches } from "@/lib/api-football-wc";
 import { syncTransferWireCache } from "@/lib/transfer-wire-cache";
 import { TRANSFER_SCENARIOS } from "@/lib/transfer-scenarios";
 import { COMPLETED_TRANSFERS } from "@/lib/completed-transfers";
@@ -19,19 +20,35 @@ const WC_CACHE_KEY = "hub_wc_matches_cache";
 
 export async function syncWcMatchesCache(): Promise<{ ok: boolean; count: number; source: string; error?: string }> {
   const supabase = supabaseAdmin();
-  const apiKey = process.env.FOOTBALL_DATA_API_KEY;
+  const fdKey = process.env.FOOTBALL_DATA_API_KEY;
+  const afKey = process.env.FOOTBALL_API_KEY;
 
-  let matches: LiveScoreMatch[] = [];
+  let freshMatches: LiveScoreMatch[] = [];
   let source = "fallback";
 
-  if (apiKey) {
+  if (fdKey) {
     try {
-      matches = await fetchFootballDataMatches(apiKey);
+      freshMatches = await fetchFootballDataMatches(fdKey);
       source = "football-data.org";
     } catch (e) {
       return { ok: false, count: 0, source, error: (e as Error).message };
     }
+  } else if (afKey) {
+    try {
+      freshMatches = await fetchApiFootballWcMatches(afKey);
+      source = "api-football.com";
+    } catch (e) {
+      return { ok: false, count: 0, source: "api-football.com", error: (e as Error).message };
+    }
   }
+
+  // Merge: keep previously cached finished results that may have fallen
+  // outside the API's rolling date window (-3d to +21d).
+  const existing = await readWcMatchesCache();
+  const existingFinished = existing.matches.filter((m) => m.status === "ft");
+  const freshIds = new Set(freshMatches.map((m) => m.id));
+  const preserved = existingFinished.filter((m) => !freshIds.has(m.id));
+  const matches = [...freshMatches, ...preserved];
 
   await supabase.from("site_settings").upsert(
     {
@@ -52,7 +69,8 @@ export async function readWcMatchesCache(): Promise<{
 }> {
   const supabase = supabaseAdmin();
   const { data } = await supabase.from("site_settings").select("value").eq("key", WC_CACHE_KEY).maybeSingle();
-  const v = data?.value as { matches?: LiveScoreMatch[]; source?: string; updatedAt?: string } | null;
+  const raw = data?.value;
+  const v = (typeof raw === "string" ? JSON.parse(raw) : raw) as { matches?: LiveScoreMatch[]; source?: string; updatedAt?: string } | null;
   return {
     matches: v?.matches ?? [],
     source: v?.source ?? "cache",

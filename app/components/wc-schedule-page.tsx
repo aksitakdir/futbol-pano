@@ -118,26 +118,49 @@ function allTeamCodes(): { code: string; name: string }[] {
 
 type FaqItem = { q: string; a: string };
 
+type FinishedResult = {
+  homeCode: string;
+  awayCode: string;
+  homeScore: number;
+  awayScore: number;
+};
+
 export default function WcSchedulePage({ teamFilter, faqItems }: { teamFilter?: string; faqItems?: FaqItem[] }) {
   const [view, setView] = useState<ViewMode>("date");
   const [selectedTeam, setSelectedTeam] = useState<string>(teamFilter ?? "");
   const [mounted, setMounted] = useState(false);
   const [tzLabel, setTzLabel] = useState("ET — Eastern Time");
+  const [finishedResults, setFinishedResults] = useState<FinishedResult[]>([]);
 
   useEffect(() => {
     setMounted(true);
     setTzLabel(getTimezoneLabel());
+    fetch("/api/wc-results")
+      .then((r) => r.json())
+      .then((d) => setFinishedResults(d.results ?? []))
+      .catch(() => {});
   }, []);
 
   const teams = useMemo(allTeamCodes, []);
   const days = useMemo(daysUntilKickoff, []);
 
+  const schedule = useMemo(() => {
+    if (finishedResults.length === 0) return WC_SCHEDULE;
+    return WC_SCHEDULE.map((m) => {
+      const result = finishedResults.find(
+        (r) => r.homeCode === m.home && r.awayCode === m.away,
+      );
+      if (!result) return m;
+      return { ...m, status: "finished" as const, homeScore: result.homeScore, awayScore: result.awayScore };
+    });
+  }, [finishedResults]);
+
   const filtered = useMemo(() => {
-    if (!selectedTeam) return WC_SCHEDULE;
-    return WC_SCHEDULE.filter(
+    if (!selectedTeam) return schedule;
+    return schedule.filter(
       (m) => m.home === selectedTeam || m.away === selectedTeam,
     );
-  }, [selectedTeam]);
+  }, [selectedTeam, schedule]);
 
   const matchesByDate = useMemo(() => {
     const map = new Map<string, WcMatch[]>();
@@ -729,18 +752,46 @@ function MatchCard({ match, highlight, mounted }: { match: WcMatch; highlight?: 
             minWidth: 60,
           }}
         >
-          <div
-            className="mono"
-            style={{
-              fontSize: 15,
-              fontWeight: 700,
-              color: match.time ? "var(--sg-text-primary)" : "var(--sg-text-muted)",
-              letterSpacing: "0.04em",
-              lineHeight: 1,
-            }}
-          >
-            {localTime}
-          </div>
+          {match.status === "finished" && match.homeScore != null ? (
+            <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 2 }}>
+              <div
+                className="mono"
+                style={{
+                  fontSize: 18,
+                  fontWeight: 700,
+                  color: "var(--sg-text-primary)",
+                  letterSpacing: "0.06em",
+                  lineHeight: 1,
+                }}
+              >
+                {match.homeScore} — {match.awayScore}
+              </div>
+              <span
+                className="mono"
+                style={{
+                  fontSize: 9,
+                  fontWeight: 600,
+                  letterSpacing: "0.1em",
+                  color: "var(--wc-teal)",
+                }}
+              >
+                FT
+              </span>
+            </div>
+          ) : (
+            <div
+              className="mono"
+              style={{
+                fontSize: 15,
+                fontWeight: 700,
+                color: match.time ? "var(--sg-text-primary)" : "var(--sg-text-muted)",
+                letterSpacing: "0.04em",
+                lineHeight: 1,
+              }}
+            >
+              {localTime}
+            </div>
+          )}
         </div>
 
         <div style={{ flex: 1, display: "flex", alignItems: "center", gap: 8, justifyContent: "flex-end", minWidth: 0 }}>

@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { fetchFootballDataMatches, localizeMatchesForEn } from "@/lib/football-data-matches";
+import { localizeMatchesForEn } from "@/lib/football-data-matches";
 import { readWcMatchesCache, syncWcMatchesCache } from "@/lib/hub-sync";
 
 export type LiveScoreMatch = {
@@ -41,14 +41,14 @@ const FALLBACK_MATCHES: LiveScoreMatch[] = [
 
 const CACHE_TTL_MS = 5 * 60 * 1000;
 
-export async function GET(request: Request) {
-  const apiKey = process.env.FOOTBALL_DATA_API_KEY;
+export async function GET() {
+  const hasApiKey = !!(process.env.FOOTBALL_DATA_API_KEY || process.env.FOOTBALL_API_KEY);
 
   let cache = await readWcMatchesCache();
   const stale =
     !cache.updatedAt || Date.now() - new Date(cache.updatedAt).getTime() > CACHE_TTL_MS;
 
-  if (stale && apiKey) {
+  if (stale && hasApiKey) {
     const sync = await syncWcMatchesCache();
     if (sync.ok) cache = await readWcMatchesCache();
   }
@@ -56,15 +56,7 @@ export async function GET(request: Request) {
   let matches = cache.matches;
   let source = cache.source;
 
-  if (matches.length === 0 && apiKey) {
-    try {
-      matches = await fetchFootballDataMatches(apiKey);
-      source = "football-data.org";
-    } catch {
-      matches = FALLBACK_MATCHES;
-      source = "fallback";
-    }
-  } else if (matches.length === 0) {
+  if (matches.length === 0) {
     matches = FALLBACK_MATCHES;
     source = "fallback";
   }

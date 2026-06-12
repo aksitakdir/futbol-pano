@@ -18,6 +18,8 @@ export type WcMatch = {
   venue: string;
   city: string;
   status: WcMatchStatus;
+  homeScore?: number;
+  awayScore?: number;
 };
 
 export const WC_GROUPS: Record<WcGroupId, WcGroupTeam[]> = {

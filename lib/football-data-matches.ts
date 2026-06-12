@@ -75,7 +75,7 @@ export async function fetchFootballDataMatches(apiKey: string): Promise<LiveScor
   const from = new Date(now);
   from.setDate(from.getDate() - 3);
   const to = new Date(now);
-  to.setDate(to.getDate() + 21);
+  to.setDate(to.getDate() + 7);
 
   const url = `https://api.football-data.org/v4/matches?dateFrom=${formatDate(from)}&dateTo=${formatDate(to)}`;
   const res = await fetch(url, {
@@ -105,7 +105,7 @@ export async function fetchFootballDataMatches(apiKey: string): Promise<LiveScor
     return new Date(a.utcDate).getTime() - new Date(b.utcDate).getTime();
   });
 
-  return matches.slice(0, 24).map((m) => ({
+  return matches.map((m) => ({
     id: String(m.id),
     home: teamLabel(m.homeTeam),
     away: teamLabel(m.awayTeam),
