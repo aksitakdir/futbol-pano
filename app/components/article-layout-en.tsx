@@ -439,9 +439,9 @@ export default function ArticleLayoutEn({
             </div>
 
             {!useCoverHero ? (
-            <div className="article-hero-right" style={{ display: "flex", justifyContent: "flex-end", alignItems: "flex-end" }}>
+            <div className="article-hero-right" style={{ display: "flex", justifyContent: "center", alignItems: "center" }}>
               {heroVariant === "player-cards" && heroChildren ? (
-                <div style={{ width: "100%", maxWidth: 200 }}>{heroChildren}</div>
+                <div style={{ width: "clamp(180px, 70%, 280px)" }}>{heroChildren}</div>
               ) : heroVariant === "cover-image" && coverImage ? (
                 <div style={{ width: "100%", maxWidth: 380, borderRadius: 4, overflow: "hidden", border: "1px solid var(--sg-border)" }}>
                   {/* eslint-disable-next-line @next/next/no-img-element */}
