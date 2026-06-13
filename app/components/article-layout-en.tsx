@@ -148,6 +148,8 @@ export default function ArticleLayoutEn({
     : children;
 
   const [similar, setSimilar] = useState<SidebarItem[]>([]);
+  const [popular, setPopular] = useState<SidebarItem[]>([]);
+  const [arenaGame, setArenaGame] = useState<{ slug: string; title_en: string } | null>(null);
   const [youtubeVideos1, setYoutubeVideos1] = useState<YouTubeSearchItem[] | null>(null);
   const [youtubeVideos2, setYoutubeVideos2] = useState<YouTubeSearchItem[] | null>(null);
   const [newsItems, setNewsItems] = useState<NewsItem[] | null | "pending">(null);
@@ -216,6 +218,14 @@ export default function ArticleLayoutEn({
       .eq("status", "published").eq("category", category).neq("slug", slug)
       .order("created_at", { ascending: false }).limit(4)
       .then(({ data }) => { if (data) setSimilar(data); });
+
+    fetch("/api/popular").then((r) => r.json())
+      .then((d) => { if (d.articles) setPopular(d.articles.filter((a: SidebarItem) => a.slug !== slug).slice(0, 5)); })
+      .catch(() => {});
+
+    supabase.from("arena_games").select("slug,title_en")
+      .eq("status", "published").order("created_at", { ascending: false }).limit(1)
+      .then(({ data }) => { if (data?.[0]) setArenaGame(data[0]); });
   }, [category, slug]);
 
   useEffect(() => {
@@ -756,6 +766,63 @@ export default function ArticleLayoutEn({
                   <div className="display" style={{ fontSize: 16, fontWeight: 600, color: "var(--sg-text-primary)", lineHeight: 1.3,
                     display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden" }}>
                     {item.title_en || item.title}
+                  </div>
+                </Link>
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
+
+      {arenaGame && (
+        <section style={{ borderTop: "1px solid var(--sg-border)", background: "var(--sg-bg)" }}>
+          <div className="sg-site-container" style={{ padding: "40px 0 44px" }}>
+            <Link href={`/arena/${arenaGame.slug}`} className="lift" style={{
+              display: "flex", alignItems: "center", justifyContent: "space-between",
+              background: "linear-gradient(135deg, oklch(0.18 0.04 280) 0%, oklch(0.13 0.02 200) 100%)",
+              border: "1px solid var(--sg-border)", borderRadius: 10, padding: "24px 32px",
+              textDecoration: "none", gap: 16,
+            }}>
+              <div>
+                <div className="mono" style={{ fontSize: 10, letterSpacing: "0.2em", color: "var(--amber)", marginBottom: 8 }}>ARENA</div>
+                <div className="display" style={{ fontSize: 20, fontWeight: 700, color: "var(--sg-text-primary)", lineHeight: 1.2 }}>
+                  {arenaGame.title_en}
+                </div>
+                <div style={{ fontSize: 13, color: "var(--sg-text-secondary)", marginTop: 6 }}>
+                  Pick your winners in a bracket tournament — new matchups every time.
+                </div>
+              </div>
+              <span className="btn btn-solid" style={{ background: "var(--amber)", borderColor: "var(--amber)", color: "var(--ink-900)", flexShrink: 0 }}>
+                PLAY NOW →
+              </span>
+            </Link>
+          </div>
+        </section>
+      )}
+
+      {popular.length > 0 && (
+        <section style={{ borderTop: "1px solid var(--sg-border)", background: "var(--sg-surface-low, var(--sg-bg))" }}>
+          <div className="sg-site-container" style={{ padding: "48px 0 56px" }}>
+            <div className="mono" style={{ fontSize: 10, letterSpacing: "0.2em", color: "var(--amber)", marginBottom: 24 }}>MOST READ</div>
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(280px, 1fr))", gap: 12 }}>
+              {popular.map((item, i) => (
+                <Link key={item.id} href={`${categoryPath(item.category)}/${item.slug}`}
+                  className="lift" style={{
+                    display: "flex", alignItems: "center", gap: 16,
+                    background: "var(--sg-surface)", border: "1px solid var(--sg-border)",
+                    borderRadius: 6, padding: "16px 20px", textDecoration: "none",
+                  }}>
+                  <span className="display" style={{ fontSize: 28, fontWeight: 800, color: "var(--sg-text-muted)", opacity: 0.3, lineHeight: 1, flexShrink: 0, width: 32, textAlign: "center" }}>
+                    {i + 1}
+                  </span>
+                  <div style={{ minWidth: 0 }}>
+                    <div className="mono" style={{ fontSize: 9, letterSpacing: "0.15em", color: CAT_ACCENT[item.category] ?? "var(--accent)", marginBottom: 4 }}>
+                      {(CATEGORY_LABEL[item.category] ?? item.category).toUpperCase()}
+                    </div>
+                    <div className="display" style={{ fontSize: 14, fontWeight: 600, color: "var(--sg-text-primary)", lineHeight: 1.3,
+                      display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden" }}>
+                      {item.title_en || item.title}
+                    </div>
                   </div>
                 </Link>
               ))}
