@@ -138,6 +138,8 @@ export default function DuzenlePage() {
 
   const [loadingData, setLoadingData] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [enriching, setEnriching] = useState(false);
+  const [enrichResult, setEnrichResult] = useState<string | null>(null);
   const [error, setError] = useState("");
   const [coverStoryScopes, setCoverStoryScopes] = useState<CoverStoryScope[]>([]);
 
@@ -281,6 +283,32 @@ export default function DuzenlePage() {
     setStatPace(""); setStatShooting(""); setStatPassing("");
     setStatDribbling(""); setStatDefending(""); setStatPhysical("");
     setStatOverall("");
+  }
+
+  async function handleEnrich() {
+    setEnriching(true);
+    setEnrichResult(null);
+    setError("");
+    try {
+      const res = await fetch("/api/enrich-content", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id }),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        setError(data.error || "Enrich failed");
+        setEnriching(false);
+        return;
+      }
+      setContentEn(data.content);
+      setSectionsBlocks(data.sectionsJson);
+      setContentMode("blocks");
+      setEnrichResult(`Enriched to ${data.wordCount} words. Review and save when ready.`);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Enrich request failed");
+    }
+    setEnriching(false);
   }
 
   async function handleSave(publish = false) {
@@ -826,6 +854,7 @@ export default function DuzenlePage() {
           </div>
 
           {error && <p className="text-xs text-rose-400">{error}</p>}
+          {enrichResult && <p className="text-xs text-sky-400">{enrichResult}</p>}
 
           <div className="flex flex-wrap items-center gap-3">
             <button
@@ -839,6 +868,12 @@ export default function DuzenlePage() {
               className="rounded-lg border border-emerald-500/60 bg-emerald-500/15 px-6 py-2.5 text-sm font-semibold text-emerald-300 transition hover:bg-emerald-500/25 disabled:opacity-50"
             >
               {saving ? "Saving..." : "Save & Publish"}
+            </button>
+            <button
+              onClick={handleEnrich} disabled={enriching || saving}
+              className="rounded-lg border border-sky-500/60 bg-sky-500/15 px-6 py-2.5 text-sm font-semibold text-sky-300 transition hover:bg-sky-500/25 disabled:opacity-50"
+            >
+              {enriching ? "Enriching…" : "✨ Enrich with AI"}
             </button>
             <Link
               href={backHref}
