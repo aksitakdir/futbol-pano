@@ -7,6 +7,13 @@ export type YouTubeSearchItem = {
   channelTitle: string;
 };
 
+const ENTITIES: Record<string, string> = {
+  "&amp;": "&", "&lt;": "<", "&gt;": ">", "&quot;": '"', "&#39;": "'", "&#x27;": "'", "&apos;": "'",
+};
+function decodeHtmlEntities(s: string): string {
+  return s.replace(/&(?:#x?[0-9a-fA-F]+|[a-z]+);/gi, (m) => ENTITIES[m] ?? m);
+}
+
 export async function GET(request: NextRequest) {
   const query = request.nextUrl.searchParams.get("query");
   if (!query?.trim()) {
@@ -57,7 +64,7 @@ export async function GET(request: NextRequest) {
     if (!videoId || !item.snippet) continue;
     const thumb = item.snippet.thumbnails?.medium?.url ?? item.snippet.thumbnails?.high?.url ?? item.snippet.thumbnails?.default?.url ?? "";
     items.push({
-      title: item.snippet.title ?? "",
+      title: decodeHtmlEntities(item.snippet.title ?? ""),
       thumbnail: thumb,
       videoId,
       channelTitle: item.snippet.channelTitle ?? "",

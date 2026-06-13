@@ -1,7 +1,8 @@
 "use client";
 
-import { useEffect, useState, useMemo } from "react";
+import { Suspense, useEffect, useState, useMemo, useCallback } from "react";
 import Link from "next/link";
+import { useSearchParams } from "next/navigation";
 import SiteHeader from "../components/site-header";
 import SiteFooter from "../components/site-footer";
 import PlayerCard, { type PlayerCardData } from "../components/player-card";
@@ -31,6 +32,13 @@ function summaryBody(content: string, max = 180): string {
 }
 
 export default function RadarPage() {
+  return <Suspense><RadarPageInner /></Suspense>;
+}
+
+function RadarPageInner() {
+  const searchParams = useSearchParams();
+  const initialPage = Math.max(1, parseInt(searchParams.get("page") ?? "1", 10) || 1);
+  const [page, setPage] = useState(initialPage);
   const [articles, setArticles] = useState<Content[]>([]);
   const [loading, setLoading] = useState(true);
   const [loadingMore, setLoadingMore] = useState(false);
@@ -49,17 +57,18 @@ export default function RadarPage() {
 
   useEffect(() => {
     void (async () => {
+      const count = initialPage * PAGE_SIZE;
       const [{ data: pinRow }, listRes] = await Promise.all([
         supabase.from("site_settings").select("value").eq("key", COVER_STORY_SETTINGS_KEY).maybeSingle(),
         supabase.from("contents")
           .select("id,title,title_en,slug,content,content_en,created_at,cover_image")
           .eq("status", "published").eq("category", "radar")
-          .order("created_at", { ascending: false }).range(0, PAGE_SIZE - 1),
+          .order("created_at", { ascending: false }).range(0, count - 1),
       ]);
       const pinnedId = normalizeCoverStories(pinRow?.value).radar;
       const items = orderWithCoverPin((listRes.data ?? []) as Content[], pinnedId);
       setArticles(items);
-      setHasMore(items.length === PAGE_SIZE);
+      setHasMore(items.length === count);
       setLoading(false);
     })();
   }, []);
@@ -76,7 +85,7 @@ export default function RadarPage() {
       });
   }, []);
 
-  async function handleLoadMore() {
+  const handleLoadMore = useCallback(async () => {
     setLoadingMore(true);
     const { data } = await supabase.from("contents")
       .select("id,title,title_en,slug,content,content_en,created_at,cover_image")
@@ -85,8 +94,12 @@ export default function RadarPage() {
       .range(articles.length, articles.length + PAGE_SIZE - 1);
     const items = data ?? [];
     setArticles(prev => [...prev, ...items]);
-    setHasMore(items.length === PAGE_SIZE); setLoadingMore(false);
-  }
+    const nextPage = page + 1;
+    setPage(nextPage);
+    window.history.replaceState(null, "", nextPage > 1 ? `?page=${nextPage}` : window.location.pathname);
+    setHasMore(items.length === PAGE_SIZE);
+    setLoadingMore(false);
+  }, [articles.length, page]);
 
   const featured = articles[0];
   const rest = articles.slice(1);
@@ -201,9 +214,14 @@ export default function RadarPage() {
 
             {hasMore && (
               <div style={{ display: "flex", justifyContent: "center", marginTop: 8, marginBottom: 32 }}>
-                <button type="button" onClick={handleLoadMore} disabled={loadingMore} className="btn">
+                <a
+                  href={`?page=${page + 1}`}
+                  onClick={(e) => { e.preventDefault(); handleLoadMore(); }}
+                  className="btn"
+                  style={{ pointerEvents: loadingMore ? "none" : undefined, opacity: loadingMore ? 0.6 : undefined }}
+                >
                   {loadingMore ? "Loading..." : "LOAD MORE →"}
-                </button>
+                </a>
               </div>
             )}
           </>

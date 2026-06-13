@@ -1,7 +1,8 @@
 "use client";
 
-import { useEffect, useState, useMemo } from "react";
+import { Suspense, useEffect, useState, useMemo, useCallback } from "react";
 import Link from "next/link";
+import { useSearchParams } from "next/navigation";
 import SiteHeader from "../components/site-header";
 import SiteFooter from "../components/site-footer";
 import { supabase } from "@/lib/supabase";
@@ -26,6 +27,13 @@ type Article = {
 const PAGE_SIZE = 12;
 
 export default function ArticlesPage() {
+  return <Suspense><ArticlesPageInner /></Suspense>;
+}
+
+function ArticlesPageInner() {
+  const searchParams = useSearchParams();
+  const initialPage = Math.max(1, parseInt(searchParams.get("page") ?? "1", 10) || 1);
+  const [page, setPage] = useState(initialPage);
   const [articles, setArticles] = useState<Article[]>([]);
   const [loading, setLoading] = useState(true);
   const [loadingMore, setLoadingMore] = useState(false);
@@ -42,21 +50,22 @@ export default function ArticlesPage() {
   }, [articles]);
 
   useEffect(() => {
+    const count = initialPage * PAGE_SIZE;
     supabase
       .from("contents")
       .select("id,title,title_en,slug,category,content,content_en,created_at,cover_image")
       .eq("status", "published")
       .order("created_at", { ascending: false })
-      .range(0, PAGE_SIZE - 1)
+      .range(0, count - 1)
       .then(({ data }) => {
         const items = (data ?? []) as Article[];
         setArticles(items);
-        setHasMore(items.length === PAGE_SIZE);
+        setHasMore(items.length === count);
         setLoading(false);
       });
   }, []);
 
-  async function handleLoadMore() {
+  const handleLoadMore = useCallback(async () => {
     setLoadingMore(true);
     const { data } = await supabase
       .from("contents")
@@ -66,9 +75,12 @@ export default function ArticlesPage() {
       .range(articles.length, articles.length + PAGE_SIZE - 1);
     const items = (data ?? []) as Article[];
     setArticles((prev) => [...prev, ...items]);
+    const nextPage = page + 1;
+    setPage(nextPage);
+    window.history.replaceState(null, "", nextPage > 1 ? `?page=${nextPage}` : window.location.pathname);
     setHasMore(items.length === PAGE_SIZE);
     setLoadingMore(false);
-  }
+  }, [articles.length, page]);
 
   return (
     <main style={{ background: "var(--sg-bg)", color: "var(--sg-text-primary)", minHeight: "100vh" }}>
@@ -132,9 +144,14 @@ export default function ArticlesPage() {
 
             {hasMore && (
               <div style={{ display: "flex", justifyContent: "center", marginTop: 8, marginBottom: 32 }}>
-                <button type="button" onClick={handleLoadMore} disabled={loadingMore} className="btn">
+                <a
+                  href={`?page=${page + 1}`}
+                  onClick={(e) => { e.preventDefault(); handleLoadMore(); }}
+                  className="btn"
+                  style={{ pointerEvents: loadingMore ? "none" : undefined, opacity: loadingMore ? 0.6 : undefined }}
+                >
                   {loadingMore ? "Loading..." : "LOAD MORE →"}
-                </button>
+                </a>
               </div>
             )}
           </>
