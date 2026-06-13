@@ -3,6 +3,7 @@ import { notFound, redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase";
 import { articleMetadata } from "@/lib/article-metadata";
 import { categoryArticlePath } from "@/lib/category-config";
+import { articleJsonLd } from "@/lib/article-jsonld";
 import HubArticleDetailClient from "@/app/components/hub-article-detail-client";
 
 type Props = { params: Promise<{ slug: string }> };
@@ -40,5 +41,15 @@ export default async function TransferHubArticlePage({ params }: Props) {
     redirect(categoryArticlePath(data.category, data.slug));
   }
 
-  return <HubArticleDetailClient slug={slug} hubId="transfer" article={data} />;
+  const jsonLd = articleJsonLd(data, `/transfers/${slug}`);
+
+  return (
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
+      <HubArticleDetailClient slug={slug} hubId="transfer" article={data} />
+    </>
+  );
 }

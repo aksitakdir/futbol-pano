@@ -79,7 +79,7 @@ export default function RadarPage() {
   async function handleLoadMore() {
     setLoadingMore(true);
     const { data } = await supabase.from("contents")
-      .select("id,title,title_en,slug,content,content_en,created_at")
+      .select("id,title,title_en,slug,content,content_en,created_at,cover_image")
       .eq("status", "published").eq("category", "radar")
       .order("created_at", { ascending: false })
       .range(articles.length, articles.length + PAGE_SIZE - 1);

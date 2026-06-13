@@ -284,7 +284,7 @@ export default function ArticleLayoutEn({
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
               src={coverImage}
-              alt=""
+              alt={title}
               style={{
                 position: "absolute",
                 inset: 0,
@@ -598,7 +598,7 @@ export default function ArticleLayoutEn({
                     <a key={v.videoId} href={`https://www.youtube.com/watch?v=${v.videoId}`} target="_blank" rel="noopener noreferrer"
                       className="lift" style={{ textDecoration: "none", background: "var(--sg-surface)", borderRadius: 4, overflow: "hidden" }}>
                       <div style={{ aspectRatio: "16/9", overflow: "hidden" }}>
-                        <img src={v.thumbnail} alt="" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+                        <img src={v.thumbnail} alt={v.title} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
                       </div>
                       <div style={{ padding: "10px 12px" }}>
                         <p style={{ fontSize: 12, fontWeight: 500, lineHeight: 1.3, color: "var(--sg-text-primary)", margin: 0,
@@ -622,7 +622,7 @@ export default function ArticleLayoutEn({
                   <a key={v.videoId} href={`https://www.youtube.com/watch?v=${v.videoId}`} target="_blank" rel="noopener noreferrer"
                     className="lift" style={{ textDecoration: "none", background: "var(--sg-surface)", borderRadius: 4, overflow: "hidden" }}>
                     <div style={{ aspectRatio: "16/9", overflow: "hidden" }}>
-                      <img src={v.thumbnail} alt="" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+                      <img src={v.thumbnail} alt={v.title} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
                     </div>
                     <div style={{ padding: "10px 12px" }}>
                       <p style={{ fontSize: 12, fontWeight: 500, lineHeight: 1.3, color: "var(--sg-text-primary)", margin: 0,

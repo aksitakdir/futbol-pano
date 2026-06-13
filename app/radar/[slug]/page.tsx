@@ -3,6 +3,7 @@ import { notFound, redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase";
 import { articleMetadata } from "@/lib/article-metadata";
 import { categoryArticlePath } from "@/lib/category-config";
+import { articleJsonLd } from "@/lib/article-jsonld";
 import RadarDetailClient from "./client";
 import type { PlayerCardData } from "@/app/components/player-card";
 
@@ -73,11 +74,19 @@ export default async function RadarDetailPage({ params }: Props) {
     }
   }
 
+  const jsonLd = articleJsonLd(data, `/radar/${slug}`);
+
   return (
-    <RadarDetailClient
-      slug={slug}
-      article={data}
-      playerCard={playerCard}
-    />
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
+      <RadarDetailClient
+        slug={slug}
+        article={data}
+        playerCard={playerCard}
+      />
+    </>
   );
 }
