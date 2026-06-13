@@ -152,7 +152,6 @@ export default function RadarDetailClient({ slug }: { slug: string }) {
       {playerCard ? (
         <RadarPlayerFocusPanel
           player={playerCard}
-          locale="en"
           description={description || undefined}
           scoutQuote={scoutQuote}
         />

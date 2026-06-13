@@ -7,5 +7,5 @@ export const metadata = {
 };
 
 export default function Page() {
-  return <HubPillarPage hubId="transfer" locale="en" />;
+  return <HubPillarPage hubId="transfer" />;
 }

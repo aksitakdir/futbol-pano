@@ -42,9 +42,9 @@ export default function HubArenaStrip({ hubId, teamSlug }: Props) {
         <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
           {games.map((g) => {
             const accent = CARD_COLOR_MAP[g.card_color] ?? "var(--accent)";
-            const t = g.title_en || g.title_tr;
-            const teaser = g.hero_teaser_en || g.hero_teaser_tr;
-            const href = `${arenaPath(g.slug)}?lang=en`;
+            const t = g.title_en;
+            const teaser = g.hero_teaser_en;
+            const href = `${arenaPath(g.slug)}`;
             return (
               <Link key={g.id} href={href} className="lift hub-arena-card"
                 style={{ borderColor: `${accent}55`, ["--hub-arena-accent" as string]: accent }}>

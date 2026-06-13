@@ -63,7 +63,7 @@ function ChampionResultView({
   canonicalUrl: string;
   onPlay: () => void;
 }) {
-  const gameTitle = game.title_en || game.title_tr;
+  const gameTitle = game.title_en;
   const accentColor = CARD_COLOR_MAP[game.card_color as keyof typeof CARD_COLOR_MAP] ?? "#F59E0B";
   const [shared, setShared] = useState(false);
   const [leaderboard, setLeaderboard] = useState<LeaderboardEntry[]>([]);
@@ -288,8 +288,8 @@ const CARD_COLOR_MAP: Record<string, string> = {
 // ── Main client component ────────────────────────────────────────────────────
 
 export default function ArenaSlugClient({ game, canonicalUrl, initialChampion }: Props) {
-  const title = game.title_en || game.title_tr;
-  const description = game.description_en || game.description_tr;
+  const title = game.title_en;
+  const description = game.description_en;
   const router = useRouter();
 
   const [showResult, setShowResult] = useState(!!initialChampion);
@@ -385,7 +385,6 @@ export default function ArenaSlugClient({ game, canonicalUrl, initialChampion }:
                   participants={game.participants}
                   gameType={game.game_type}
                   title={title}
-                  lang="en"
                   canonicalUrl={canonicalUrl}
                   gameSlug={game.slug}
                 />

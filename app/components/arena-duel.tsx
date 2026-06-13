@@ -35,15 +35,9 @@ export type ArenaDuelProps = {
   participants: ParticipantData[];
   gameType: ArenaGameType;
   title: string;
-  lang?: "tr" | "en";
   canonicalUrl?: string;
   gameSlug?: string;
 };
-
-// ─── Constants ────────────────────────────────────────────────────────────────
-
-const MATCH_LABEL_TR = "Maç";
-const MATCH_LABEL_EN = "Match";
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
@@ -131,13 +125,9 @@ type PlayerCardProps = {
   isLoser: boolean;
   isSelected: boolean;
   disabled: boolean;
-  lang: "tr" | "en";
 };
 
-function PlayerCard({ participant, side, onSelect, isLoser, isSelected, disabled, lang }: PlayerCardProps) {
-  const isEn = lang === "en";
-  const btnLabel = isEn ? "CHOOSE" : "SEÇ";
-
+function PlayerCard({ participant, side, onSelect, isLoser, isSelected, disabled }: PlayerCardProps) {
   return (
     <motion.div
       key={`card-${participant.name}`}
@@ -234,7 +224,7 @@ function PlayerCard({ participant, side, onSelect, isLoser, isSelected, disabled
               padding: "clamp(8px, 1.5vw, 12px) 8px",
             }}
           >
-            {btnLabel}
+            CHOOSE
           </button>
         </div>
       </div>
@@ -244,17 +234,14 @@ function PlayerCard({ participant, side, onSelect, isLoser, isSelected, disabled
 
 // ─── Main Component ───────────────────────────────────────────────────────────
 
-export default function ArenaDuel({ participants, gameType, title, lang = "tr", canonicalUrl, gameSlug }: ArenaDuelProps) {
-  const isEn = lang === "en";
-  const matchLabel = isEn ? MATCH_LABEL_EN : MATCH_LABEL_TR;
-
+export default function ArenaDuel({ participants, gameType, title, canonicalUrl, gameSlug }: ArenaDuelProps) {
   const normalizedParticipants = useMemo(
     () => normalizeArenaParticipants(participants, gameType) as ParticipantData[],
     [participants, gameType],
   );
 
   const labelN = bracketLabelSize(gameType, normalizedParticipants.length);
-  const roundNames = useMemo(() => arenaRoundNamesForCount(labelN, lang), [labelN, lang]);
+  const roundNames = useMemo(() => arenaRoundNamesForCount(labelN), [labelN]);
 
   const effectiveBracketN = gameType === "fixed_8" ? 16 : normalizedParticipants.length;
   const totalMatchesAll = Math.max(1, effectiveBracketN - 1);
@@ -313,7 +300,7 @@ export default function ArenaDuel({ participants, gameType, title, lang = "tr", 
           // Champion!
           setChampion(newWinners[0]);
           setPhase("champion");
-          // Oyu kaydet ve leaderboard'u güncelle
+          // Record the vote and refresh the leaderboard
           if (gameSlug) {
             recordVoteAndGetLeaderboard(gameSlug, newWinners[0].name).then(setLeaderboard).catch(() => {});
           }
@@ -354,9 +341,7 @@ export default function ArenaDuel({ participants, gameType, title, lang = "tr", 
 
   const handleShare = useCallback(() => {
     if (!champion) return;
-    const shareTitle = isEn
-      ? `My champion in "${title}": ${champion.name}! Who's yours?`
-      : `"${title}" turnuvasında şampiyonum: ${champion.name}! Seninki kim?`;
+    const shareTitle = `My champion in "${title}": ${champion.name}! Who's yours?`;
     // Embed champion name in URL so the shared link shows a champion-specific OG image
     const base = canonicalUrl ?? "https://www.scoutgamer.com/arena";
     const shareUrl = `${base}?champion=${encodeURIComponent(champion.name)}`;
@@ -367,7 +352,7 @@ export default function ArenaDuel({ participants, gameType, title, lang = "tr", 
       const twitterUrl = `https://x.com/intent/tweet?text=${encodeURIComponent(shareTitle + "\n" + shareUrl)}`;
       window.open(twitterUrl, "_blank", "noopener,noreferrer");
     }
-  }, [champion, title, isEn, canonicalUrl]);
+  }, [champion, title, canonicalUrl]);
 
   // ── Champion Screen ──────────────────────────────────────────────────────────
   if (phase === "champion" && champion) {
@@ -411,7 +396,7 @@ export default function ArenaDuel({ participants, gameType, title, lang = "tr", 
             className="text-xs font-black uppercase tracking-[0.3em]"
             style={{ color: "var(--sg-amber)", fontFamily: "var(--font-headline)" }}
           >
-            {isEn ? "Champion" : "Şampiyon"}
+            Champion
           </motion.p>
 
           <motion.h2
@@ -464,7 +449,7 @@ export default function ArenaDuel({ participants, gameType, title, lang = "tr", 
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
                 <path d="M4 12v8a2 2 0 002 2h12a2 2 0 002-2v-8M16 6l-4-4-4 4M12 2v13" />
               </svg>
-              {isEn ? "Share" : "Paylaş"}
+              Share
             </button>
             <button
               type="button"
@@ -481,7 +466,7 @@ export default function ArenaDuel({ participants, gameType, title, lang = "tr", 
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
                 <path d="M3 12a9 9 0 109-9M3 3v6h6" />
               </svg>
-              {isEn ? "Play Again" : "Yeniden Oyna"}
+              Play Again
             </button>
           </motion.div>
 
@@ -497,7 +482,7 @@ export default function ArenaDuel({ participants, gameType, title, lang = "tr", 
                 className="mb-3 text-center text-xs font-black uppercase tracking-[0.2em]"
                 style={{ color: "var(--sg-text-muted)", fontFamily: "var(--font-headline)" }}
               >
-                {isEn ? "Community picks" : "Topluluk seçimleri"}
+                Community picks
               </p>
               <div className="flex flex-col gap-2">
                 {leaderboard.map((entry, i) => {
@@ -569,7 +554,7 @@ export default function ArenaDuel({ participants, gameType, title, lang = "tr", 
             className="text-xs font-black uppercase tracking-[0.3em]"
             style={{ color: "var(--sg-text-muted)", fontFamily: "var(--font-headline)" }}
           >
-            {isEn ? "Round Complete" : "Round Tamamlandı"}
+            Round Complete
           </p>
           <h2
             className="font-black leading-none tracking-tighter"
@@ -582,7 +567,7 @@ export default function ArenaDuel({ participants, gameType, title, lang = "tr", 
               backgroundClip: "text",
             }}
           >
-            {arenaNextRoundHeading(roundNames, roundIndex, lang)}
+            {arenaNextRoundHeading(roundNames, roundIndex)}
           </h2>
 
           <motion.div
@@ -624,7 +609,7 @@ export default function ArenaDuel({ participants, gameType, title, lang = "tr", 
               className="text-xs font-semibold"
               style={{ color: "var(--sg-text-muted)", fontFamily: "var(--font-headline)" }}
             >
-              {matchLabel} {matchIndex + 1}/{totalMatchesInRound}
+              Match {matchIndex + 1}/{totalMatchesInRound}
             </span>
           </div>
           <div
@@ -659,7 +644,6 @@ export default function ArenaDuel({ participants, gameType, title, lang = "tr", 
             isLoser={loserSide === "left"}
             isSelected={selectedSide === "left"}
             disabled={selectedSide !== null}
-            lang={lang}
           />
 
           {/* VS divider — always vertical */}
@@ -689,7 +673,6 @@ export default function ArenaDuel({ participants, gameType, title, lang = "tr", 
             isLoser={loserSide === "right"}
             isSelected={selectedSide === "right"}
             disabled={selectedSide !== null}
-            lang={lang}
           />
         </motion.div>
       </AnimatePresence>

@@ -32,8 +32,8 @@ export default function ArenaGameGrid({ games }: Props) {
         const accent = CARD_COLOR_MAP[g.card_color] ?? "var(--sg-primary)";
         const icon = ICONS[i % ICONS.length];
         const href = arenaPath(g.slug);
-        const cardTitle = g.title_en || g.title_tr;
-        const cardDesc = g.description_en || g.description_tr;
+        const cardTitle = g.title_en;
+        const cardDesc = g.description_en;
         const pills = extractArticleHighlights([cardTitle, cardDesc].filter(Boolean).join("\n\n"), {
           max: 4,
           seed: g.slug,

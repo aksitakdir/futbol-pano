@@ -88,10 +88,8 @@ async function fetchPlayerStats(name: string): Promise<Partial<PlayerCardData> |
 
 export default function ArticlePlayerEmbed({
   playerName,
-  locale = "en",
 }: {
   playerName: string;
-  locale?: "tr" | "en";
 }) {
   const [card, setCard] = useState<PlayerCardData | null>(null);
   const [loading, setLoading] = useState(true);
@@ -126,11 +124,8 @@ export default function ArticlePlayerEmbed({
     return () => { cancelled = true; };
   }, [playerName]);
 
-  const tmBase =
-    locale === "en"
-      ? "https://www.transfermarkt.com/schnellsuche/ergebnis/schnellsuche?query="
-      : "https://www.transfermarkt.com.tr/schnellsuche/ergebnis/schnellsuche?query=";
-  const gq = locale === "en" ? " footballer" : " futbolcu";
+  const tmBase = "https://www.transfermarkt.com/schnellsuche/ergebnis/schnellsuche?query=";
+  const gq = " footballer";
 
   if (loading) {
     return (

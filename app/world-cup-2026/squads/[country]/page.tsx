@@ -111,7 +111,7 @@ export default async function CountrySquadPage({ params }: Props) {
           dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }}
         />
       ))}
-      <HubSquadPage locale="en" countrySlug={country} />
+      <HubSquadPage countrySlug={country} />
     </>
   );
 }

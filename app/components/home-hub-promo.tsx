@@ -6,7 +6,6 @@ import { categoryArticlePath } from "@/lib/category-config";
 type HubArticlePreview = { title: string; slug: string; category: string; };
 
 type Props = {
-  locale?: string;
   wcArticles: HubArticlePreview[];
   transferArticles: HubArticlePreview[];
 };

@@ -21,7 +21,7 @@ const PAGE_CONFIG = {
     navKey: "wc-2026" as const,
     accent: "var(--wc-gold)",
     themeClass: "theme-wc-2026",
-    kadrolarPath: "/world-cup-2026/squads",
+    squadsPath: "/world-cup-2026/squads",
     defaults: {
       pillarEyebrow: "TOURNAMENT",
       pillarTitle: "World Cup 2026",
@@ -33,7 +33,7 @@ const PAGE_CONFIG = {
     navKey: "transfer" as const,
     accent: "var(--transfer-cyan)",
     themeClass: "theme-transfer",
-    kadrolarPath: "/transfers",
+    squadsPath: "/transfers",
     defaults: {
       pillarEyebrow: "TRANSFERS",
       pillarTitle: "Transfers",
@@ -52,7 +52,6 @@ type PillarCopy = {
 
 type Props = {
   hubId: "wc-2026" | "transfer";
-  locale?: string;
 };
 
 export default function HubPillarPage({ hubId }: Props) {
@@ -168,7 +167,7 @@ export default function HubPillarPage({ hubId }: Props) {
                   <Link href="/world-cup-2026/schedule" className="btn btn-solid" style={{ background: "var(--wc-gold)", borderColor: "var(--wc-gold)" }}>
                     Match Schedule →
                   </Link>
-                  <Link href={cfg.kadrolarPath} className="btn btn-solid" style={{ background: "var(--wc-magenta)", borderColor: "var(--wc-magenta)" }}>
+                  <Link href={cfg.squadsPath} className="btn btn-solid" style={{ background: "var(--wc-magenta)", borderColor: "var(--wc-magenta)" }}>
                     48 Team Squads →
                   </Link>
                 </>
@@ -188,7 +187,7 @@ export default function HubPillarPage({ hubId }: Props) {
         </div>
       ) : null}
 
-      <HubEditorialSection hubId={hubId} locale="en" accent={cfg.accent} />
+      <HubEditorialSection hubId={hubId} accent={cfg.accent} />
 
       {isWc ? (
         <section style={{ borderTop: "1px solid var(--sg-border)", background: "var(--sg-surface-low)" }}>
@@ -214,11 +213,11 @@ export default function HubPillarPage({ hubId }: Props) {
       {isWc ? (
         <PageShell as="section" className="sg-page-shell--section" style={{ paddingTop: 56, paddingBottom: 56 }}>
           <div className="eyebrow" style={{ marginBottom: 24 }}>48 TEAMS</div>
-          <WcTeamGrid locale="en" kadrolarBasePath={cfg.kadrolarPath} />
+          <WcTeamGrid squadsBasePath={cfg.squadsPath} />
         </PageShell>
       ) : null}
 
-      <HubArenaStrip hubId={hubId} locale="en" />
+      <HubArenaStrip hubId={hubId} />
 
       <div style={{ paddingBottom: 80 }} />
 

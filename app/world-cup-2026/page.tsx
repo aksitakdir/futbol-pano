@@ -21,5 +21,5 @@ export const metadata = {
 };
 
 export default function Page() {
-  return <HubPillarPage hubId="wc-2026" locale="en" />;
+  return <HubPillarPage hubId="wc-2026" />;
 }

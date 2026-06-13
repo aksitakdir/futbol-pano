@@ -38,13 +38,9 @@ function emptyParticipantRows(gameType: ArenaGameType): ParticipantRow[] {
 type FormState = {
   slug: string;
   status: ArenaGameStatus;
-  title_tr: string;
   title_en: string;
-  description_tr: string;
   description_en: string;
-  hero_title_tr: string;
   hero_title_en: string;
-  hero_teaser_tr: string;
   hero_teaser_en: string;
   card_color: ArenaCardColor;
   game_type: ArenaGameType;
@@ -56,13 +52,9 @@ type FormState = {
 const EMPTY_FORM: FormState = {
   slug: "",
   status: "draft",
-  title_tr: "",
   title_en: "",
-  description_tr: "",
   description_en: "",
-  hero_title_tr: "",
   hero_title_en: "",
-  hero_teaser_tr: "",
   hero_teaser_en: "",
   card_color: "primary",
   game_type: "random_16",
@@ -91,13 +83,9 @@ function gameToForm(g: ArenaGame): FormState {
   return {
     slug: g.slug,
     status: g.status,
-    title_tr: g.title_tr,
     title_en: g.title_en,
-    description_tr: g.description_tr,
     description_en: g.description_en,
-    hero_title_tr: g.hero_title_tr,
     hero_title_en: g.hero_title_en,
-    hero_teaser_tr: g.hero_teaser_tr,
     hero_teaser_en: g.hero_teaser_en,
     card_color: g.card_color,
     game_type: g.game_type,
@@ -190,7 +178,7 @@ export default function AdminArenaPage() {
 
   async function handleSave(e: React.FormEvent) {
     e.preventDefault();
-    if (!form.title_tr || !form.slug) {
+    if (!form.title_en || !form.slug) {
       showToast("Slug and title are required", false);
       return;
     }
@@ -199,13 +187,9 @@ export default function AdminArenaPage() {
     const payload = {
       slug: form.slug,
       status: form.status,
-      title_tr: form.title_tr,
       title_en: form.title_en,
-      description_tr: form.description_tr,
       description_en: form.description_en,
-      hero_title_tr: form.hero_title_tr,
       hero_title_en: form.hero_title_en,
-      hero_teaser_tr: form.hero_teaser_tr,
       hero_teaser_en: form.hero_teaser_en,
       card_color: form.card_color,
       game_type: form.game_type,
@@ -321,7 +305,7 @@ export default function AdminArenaPage() {
                 >
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2 flex-wrap">
-                      <span className="text-sm font-semibold text-slate-100 truncate">{g.title_en || g.title_tr}</span>
+                      <span className="text-sm font-semibold text-slate-100 truncate">{g.title_en}</span>
                       <span className="text-[10px] text-slate-500 font-mono">/{g.slug}</span>
                     </div>
                     <div className="mt-0.5 flex items-center gap-2 text-[11px] text-slate-500 flex-wrap">
@@ -405,11 +389,11 @@ export default function AdminArenaPage() {
                       placeholder="future-stars"
                       required
                     />
-                    {form.title_tr && !form.slug && (
+                    {form.title_en && !form.slug && (
                       <button
                         type="button"
                         className="mt-1 text-[10px] text-emerald-400 hover:underline"
-                        onClick={() => handleField("slug", toSlug(form.title_tr))}
+                        onClick={() => handleField("slug", toSlug(form.title_en))}
                       >
                         Auto-generate
                       </button>
@@ -428,67 +412,36 @@ export default function AdminArenaPage() {
                   </div>
                 </div>
 
-                {/* Titles */}
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <label className={labelCls}>Title (TR) *</label>
-                    <input
-                      className={inputCls}
-                      value={form.title_tr}
-                      onChange={(e) => {
-                        handleField("title_tr", e.target.value);
-                        if (!form.slug) handleField("slug", toSlug(e.target.value));
-                      }}
-                      placeholder="Future Stars"
-                      required
-                    />
-                  </div>
-                  <div>
-                    <label className={labelCls}>Title (EN)</label>
-                    <input
-                      className={inputCls}
-                      value={form.title_en}
-                      onChange={(e) => handleField("title_en", e.target.value)}
-                      placeholder="Future Stars"
-                    />
-                  </div>
+                {/* Title */}
+                <div>
+                  <label className={labelCls}>Title *</label>
+                  <input
+                    className={inputCls}
+                    value={form.title_en}
+                    onChange={(e) => {
+                      handleField("title_en", e.target.value);
+                      if (!form.slug) handleField("slug", toSlug(e.target.value));
+                    }}
+                    placeholder="Future Stars"
+                    required
+                  />
                 </div>
 
-                {/* Descriptions */}
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <label className={labelCls}>Description (TR)</label>
-                    <textarea
-                      className={inputCls}
-                      rows={2}
-                      value={form.description_tr}
-                      onChange={(e) => handleField("description_tr", e.target.value)}
-                    />
-                  </div>
-                  <div>
-                    <label className={labelCls}>Description (EN)</label>
-                    <textarea
-                      className={inputCls}
-                      rows={2}
-                      value={form.description_en}
-                      onChange={(e) => handleField("description_en", e.target.value)}
-                    />
-                  </div>
+                {/* Description */}
+                <div>
+                  <label className={labelCls}>Description</label>
+                  <textarea
+                    className={inputCls}
+                    rows={2}
+                    value={form.description_en}
+                    onChange={(e) => handleField("description_en", e.target.value)}
+                  />
                 </div>
 
-                {/* Hero titles */}
+                {/* Hero title + teaser */}
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <label className={labelCls}>Hero Title (TR)</label>
-                    <input
-                      className={inputCls}
-                      value={form.hero_title_tr}
-                      onChange={(e) => handleField("hero_title_tr", e.target.value)}
-                      placeholder="Future Stars Tournament"
-                    />
-                  </div>
-                  <div>
-                    <label className={labelCls}>Hero Title (EN)</label>
+                    <label className={labelCls}>Hero Title</label>
                     <input
                       className={inputCls}
                       value={form.hero_title_en}
@@ -496,21 +449,8 @@ export default function AdminArenaPage() {
                       placeholder="Future Stars Tournament"
                     />
                   </div>
-                </div>
-
-                {/* Hero teasers */}
-                <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <label className={labelCls}>Hero Teaser (TR)</label>
-                    <input
-                      className={inputCls}
-                      value={form.hero_teaser_tr}
-                      onChange={(e) => handleField("hero_teaser_tr", e.target.value)}
-                      placeholder="One champion. You decide."
-                    />
-                  </div>
-                  <div>
-                    <label className={labelCls}>Hero Teaser (EN)</label>
+                    <label className={labelCls}>Hero Teaser</label>
                     <input
                       className={inputCls}
                       value={form.hero_teaser_en}

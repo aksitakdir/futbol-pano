@@ -23,9 +23,9 @@ export default function HubFeaturedArenaBanner({ hubId }: Props) {
 
   const copy = { eyebrow: "ARENA", cta: "PLAY →", fallbackTitle: "Who Wins World Cup 2026?", fallbackTeaser: "48 nations — bracket your champion." };
   const title = game ? (game.hero_title_en || game.title_en) : copy.fallbackTitle;
-  const teaser = game ? (game.hero_teaser_en || game.hero_teaser_tr) : copy.fallbackTeaser;
+  const teaser = game ? game.hero_teaser_en : copy.fallbackTeaser;
   const accent = game ? CARD_COLOR_MAP[game.card_color] ?? "var(--wc-gold)" : "var(--wc-gold)";
-  const href = `${arenaPath(slug)}?lang=en`;
+  const href = `${arenaPath(slug)}`;
 
   return (
     <PageShell as="section" className="hub-featured-arena-wrap">

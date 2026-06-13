@@ -34,7 +34,7 @@ export default async function ArenaHomePage() {
   const supabase = createClient();
   const { data } = await supabase
     .from("arena_games")
-    .select("id,slug,status,title_tr,title_en,description_tr,description_en,card_color,game_type,participants,created_at")
+    .select("id,slug,status,title_en,description_en,card_color,game_type,participants,created_at")
     .eq("status", "published")
     .order("created_at", { ascending: true });
 
@@ -50,7 +50,7 @@ export default async function ArenaHomePage() {
     "itemListElement": games.map((g, i) => ({
       "@type": "ListItem",
       "position": i + 1,
-      "name": g.title_en || g.title_tr,
+      "name": g.title_en,
       "url": `https://www.scoutgamer.com/arena/${g.slug}`,
     })),
   };

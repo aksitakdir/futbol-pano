@@ -9,7 +9,6 @@ type FeedKind = "radar" | "lists";
 
 type Props = {
   hubId: "wc-2026" | "transfer";
-  locale?: string;
   feed: FeedKind;
 };
 
@@ -41,7 +40,7 @@ export default function HubFeedPage({ hubId, feed }: Props) {
         title={titles[feed]}
         description={titles.desc}
       />
-      <HubEditorialSection hubId={hubId} locale="en" accent={cfg.accent} category={feed === "radar" ? "radar" : "lists"} />
+      <HubEditorialSection hubId={hubId} accent={cfg.accent} category={feed === "radar" ? "radar" : "lists"} />
       <div style={{ paddingBottom: 80 }} />
       <SiteFooter maxWidth="max-w-7xl" />
     </main>

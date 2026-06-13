@@ -22,7 +22,7 @@ export default function SquadsIndexPage() {
         <p style={{ color: "var(--sg-text-secondary)", marginBottom: 40, maxWidth: 520 }}>
           Scout view by position — from goalkeepers to forwards.
         </p>
-        <WcTeamGrid locale="en" kadrolarBasePath="/world-cup-2026/squads" />
+        <WcTeamGrid squadsBasePath="/world-cup-2026/squads" />
       </PageShell>
       <SiteFooter maxWidth="max-w-7xl" />
     </main>

@@ -334,7 +334,7 @@ export default function AdminKadrolarPage() {
               >
                 <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 12 }}>
                   <h2 className="mono" style={{ fontSize: 11, letterSpacing: "0.14em", margin: 0 }}>
-                    {positionBucketLabel(bucket, "en").toUpperCase()}
+                    {positionBucketLabel(bucket).toUpperCase()}
                   </h2>
                   <button type="button" className="btn" style={{ padding: "4px 10px", fontSize: 11 }} onClick={() => addRow(bucket)}>
                     + Player

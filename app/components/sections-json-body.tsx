@@ -8,14 +8,12 @@ import { normalizeYoutubeId } from "@/lib/youtube-id";
 type Props = {
   sections: SectionBlock[];
   accent: string;
-  locale?: "en" | "tr";
   addDropCap?: (html: string, accent: string) => string;
 };
 
 export default function SectionsJsonBody({
   sections,
   accent,
-  locale = "en",
   addDropCap = (html) => html,
 }: Props) {
   // Pre-compute section indices for numbered rendering (01, 02, 03)
@@ -36,14 +34,13 @@ export default function SectionsJsonBody({
             <ArticleHtmlWithPlayerEmbeds
               key={i}
               html={addDropCap(sec.html, accent)}
-              locale={locale}
             />
           );
         }
         if (sec.type === "plain") {
           const html = plainTextToHtml(sec.text);
           if (!html) return null;
-          return <ArticleHtmlWithPlayerEmbeds key={i} html={html} locale={locale} />;
+          return <ArticleHtmlWithPlayerEmbeds key={i} html={html} />;
         }
         if (sec.type === "header") {
           const id = headingToId(sec.heading);
@@ -108,7 +105,7 @@ export default function SectionsJsonBody({
                   ) : null}
                   {sec.html ? (
                     <div style={{ color: "var(--sg-text-secondary)", lineHeight: 1.7, fontSize: 17 }}>
-                      <ArticleHtmlWithPlayerEmbeds html={sec.html} locale={locale} />
+                      <ArticleHtmlWithPlayerEmbeds html={sec.html} />
                     </div>
                   ) : null}
                 </div>
@@ -126,7 +123,7 @@ export default function SectionsJsonBody({
         if (sec.type === "callout") {
           return (
             <div key={i} className="callout">
-              <ArticleHtmlWithPlayerEmbeds html={sec.html} locale={locale} />
+              <ArticleHtmlWithPlayerEmbeds html={sec.html} />
             </div>
           );
         }
@@ -159,7 +156,7 @@ export default function SectionsJsonBody({
         }
 
         if (sec.type === "player") {
-          return <ArticlePlayerEmbed key={i} playerName={sec.name} locale={locale} />;
+          return <ArticlePlayerEmbed key={i} playerName={sec.name} />;
         }
 
         if (sec.type === "image") {

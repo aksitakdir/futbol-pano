@@ -7,8 +7,6 @@ import { arenaPath, CARD_COLOR_MAP, type ArenaGame } from "@/lib/arena-brackets"
 import { TRANSFER_TEAM_ARENA_SLUGS } from "@/lib/hub-arena-featured";
 import PageShell from "@/app/components/page-shell";
 
-type Props = { locale: "tr" | "en" };
-
 type Card = {
   teamSlug: string;
   title: string;
@@ -17,7 +15,7 @@ type Card = {
   accent: string;
 };
 
-export default function HubTransferTeamArenas({ locale }: Props) {
+export default function HubTransferTeamArenas() {
   const [cards, setCards] = useState<Card[]>([]);
 
   useEffect(() => {
@@ -33,47 +31,31 @@ export default function HubTransferTeamArenas({ locale }: Props) {
             games.find((g) => g.team_slug === t.teamSlug) ??
             games.find((g) => g.slug.includes(t.teamSlug.replace(/-/g, "")));
           const title = match
-            ? locale === "en"
-              ? match.hero_title_en || match.title_en
-              : match.hero_title_tr
-            : locale === "tr"
-              ? t.fallbackTitleTr
-              : t.fallbackTitleEn;
+            ? match.hero_title_en || match.title_en
+            : t.fallbackTitleEn;
           const teaser = match
-            ? locale === "en"
-              ? match.hero_teaser_en || match.hero_teaser_tr
-              : match.hero_teaser_tr
-            : locale === "tr"
-              ? "Arena'da aday seç, scout topluluğuyla paylaş."
-              : "Pick signings in Arena and share.";
+            ? match.hero_teaser_en
+            : "Pick signings in Arena and share.";
           const slug = match?.slug ?? `transfer-${t.teamSlug}`;
           const accent = match ? CARD_COLOR_MAP[match.card_color] ?? "var(--transfer-cyan)" : "var(--transfer-cyan)";
           return {
             teamSlug: t.teamSlug,
             title,
             teaser,
-            href: `${arenaPath(slug)}${locale === "en" ? "?lang=en" : ""}`,
+            href: arenaPath(slug),
             accent,
           };
         });
         setCards(built);
       });
-  }, [locale]);
+  }, []);
 
-  const copy =
-    locale === "tr"
-      ? {
-          eyebrow: "KULÜP ARENA",
-          title: "Kimi transfer etmeli?",
-          sub: "En popüler kulüpler için Arena oyunları — adayını seç.",
-          cta: "OYNA →",
-        }
-      : {
-          eyebrow: "CLUB ARENA",
-          title: "Who should they sign?",
-          sub: "Arena games for top clubs — pick your targets.",
-          cta: "PLAY →",
-        };
+  const copy = {
+    eyebrow: "CLUB ARENA",
+    title: "Who should they sign?",
+    sub: "Arena games for top clubs — pick your targets.",
+    cta: "PLAY →",
+  };
 
   return (
     <PageShell as="section" className="sg-page-shell--section hub-transfer-team-arenas">

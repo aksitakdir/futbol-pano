@@ -4,22 +4,13 @@ import type { PlayerCardData } from "./player-card";
 
 type StatKey = "pace" | "shooting" | "passing" | "dribbling" | "defending" | "physical";
 
-const ROWS_EN: { key: StatKey; short: string; full: string }[] = [
+const ROWS: { key: StatKey; short: string; full: string }[] = [
   { key: "pace", short: "PAC", full: "PACE" },
   { key: "shooting", short: "SHO", full: "SHOOT" },
   { key: "passing", short: "PAS", full: "PASS" },
   { key: "dribbling", short: "DRI", full: "DRIB" },
   { key: "defending", short: "DEF", full: "DEFEND" },
   { key: "physical", short: "PHY", full: "PHYSICAL" },
-];
-
-const ROWS_TR: { key: StatKey; short: string; full: string }[] = [
-  { key: "pace", short: "PAC", full: "HIZ" },
-  { key: "shooting", short: "SHO", full: "ŞUT" },
-  { key: "passing", short: "PAS", full: "PAS" },
-  { key: "dribbling", short: "DRI", full: "DRİB" },
-  { key: "defending", short: "DEF", full: "DEF" },
-  { key: "physical", short: "PHY", full: "FİZİK" },
 ];
 
 function valueColor(v: number): string {
@@ -37,11 +28,10 @@ function fillGradient(v: number): string {
 
 export type PlayerRatingBarsProps = {
   player: Pick<PlayerCardData, StatKey>;
-  locale?: "en" | "tr";
 };
 
-export default function PlayerRatingBars({ player, locale = "en" }: PlayerRatingBarsProps) {
-  const rows = locale === "tr" ? ROWS_TR : ROWS_EN;
+export default function PlayerRatingBars({ player }: PlayerRatingBarsProps) {
+  const rows = ROWS;
 
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>

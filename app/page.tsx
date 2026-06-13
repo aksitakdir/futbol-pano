@@ -294,7 +294,7 @@ export default function HomePage() {
 
       const arenaRes = await supabase
         .from("arena_games")
-        .select("id,slug,status,title_tr,title_en,description_tr,description_en,hero_title_tr,hero_title_en,hero_teaser_tr,hero_teaser_en,card_color,game_type,created_at")
+        .select("id,slug,status,title_en,description_en,hero_title_en,hero_teaser_en,card_color,game_type,created_at")
         .eq("status", "published");
       const arenaGames = (arenaRes.data ?? []) as ArenaGame[];
 
@@ -594,9 +594,9 @@ export default function HomePage() {
         </section>
       )}
 
-      {recentItems.length > 0 && <HomeRecentCarousel items={recentItems} locale="en" />}
+      {recentItems.length > 0 && <HomeRecentCarousel items={recentItems} />}
 
-      <HomeHubPromo locale="en" wcArticles={wcHubPreview} transferArticles={transferHubPreview} />
+      <HomeHubPromo wcArticles={wcHubPreview} transferArticles={transferHubPreview} />
 
       {/* ── WC 2026 Upcoming Matches ── */}
       <HomeWcMatches />
@@ -638,7 +638,7 @@ export default function HomePage() {
                 {featuredPlayer?.description && (
                   <p style={{ fontSize: 17, lineHeight: 1.6, color: "var(--sg-text-secondary)", maxWidth: 560, marginBottom: 28 }}>{featuredPlayer.description}</p>
                 )}
-                <PlayerRatingBars player={radarCard} locale="en" />
+                <PlayerRatingBars player={radarCard} />
                 <div style={{ marginTop: 28, paddingTop: 24, borderTop: "1px solid var(--sg-border)", display: "flex", flexWrap: "wrap", gap: 24, alignItems: "flex-end" }}>
                   <div>
                     <div className="eyebrow" style={{ marginBottom: 6 }}>OVERALL</div>

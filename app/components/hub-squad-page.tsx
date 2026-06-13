@@ -14,7 +14,6 @@ import { loadWcSquad, type WcSquadListPlayer } from "@/lib/wc-squad-loader";
 import { WC_2026_GRADIENT } from "@/lib/wc-2026-brand";
 
 type Props = {
-  locale?: string;
   countrySlug: string;
 };
 
@@ -100,12 +99,12 @@ export default function HubSquadPage({ countrySlug }: Props) {
             <span className="h-6 w-6 animate-spin rounded-full border-2" style={{ borderColor: teamPrimary, borderTopColor: "transparent" }} />
           </div>
         ) : (
-          <WcSquadDisplay players={players} teamPrimary={teamPrimary} locale="en" teamName={teamName} />
+          <WcSquadDisplay players={players} teamPrimary={teamPrimary} teamName={teamName} />
         )}
       </PageShell>
 
-      <HubEditorialSection hubId="wc-2026" locale="en" accent="var(--wc-gold)" />
-      <HubArenaStrip hubId="wc-2026" locale="en" />
+      <HubEditorialSection hubId="wc-2026" accent="var(--wc-gold)" />
+      <HubArenaStrip hubId="wc-2026" />
       <div style={{ paddingBottom: 80 }} />
       <SiteFooter maxWidth="max-w-7xl" />
     </main>

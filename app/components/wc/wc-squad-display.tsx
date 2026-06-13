@@ -8,7 +8,6 @@ import type { WcSquadListPlayer } from "@/lib/wc-squad-loader";
 
 type Props = {
   players: WcSquadListPlayer[];
-  locale: "tr" | "en";
   teamName: string;
   teamPrimary: string;
 };
@@ -18,7 +17,7 @@ function chipLabel(p: WcSquadListPlayer): string {
   return "—";
 }
 
-export default function WcSquadDisplay({ players, locale, teamPrimary }: Props) {
+export default function WcSquadDisplay({ players, teamPrimary }: Props) {
   const [expandedKey, setExpandedKey] = useState<string | null>(null);
 
   const grouped = useMemo(() => {
@@ -30,18 +29,11 @@ export default function WcSquadDisplay({ players, locale, teamPrimary }: Props) 
     return m;
   }, [players]);
 
-  const copy =
-    locale === "tr"
-      ? {
-          empty: "KADRO VERİSİ YAKINDA.",
-          noCard: "FC veritabanında kart yok — isim ve kulüp aşağıda.",
-          hasCard: "Scout kartı",
-        }
-      : {
-          empty: "SQUAD DATA COMING SOON.",
-          noCard: "No FC card — name and club below.",
-          hasCard: "Scout card",
-        };
+  const copy = {
+    empty: "SQUAD DATA COMING SOON.",
+    noCard: "No FC card — name and club below.",
+    hasCard: "Scout card",
+  };
 
   if (players.length === 0) {
     return (
@@ -62,7 +54,7 @@ export default function WcSquadDisplay({ players, locale, teamPrimary }: Props) 
           >
             <header className="wc-squad-section__head">
               <span className="wc-squad-section__bar" aria-hidden />
-              <h2 className="display wc-squad-section__title">{positionBucketLabel(bucket, locale)}</h2>
+              <h2 className="display wc-squad-section__title">{positionBucketLabel(bucket)}</h2>
               <span className="mono wc-squad-section__count">{list.length}</span>
             </header>
 
@@ -102,7 +94,7 @@ export default function WcSquadDisplay({ players, locale, teamPrimary }: Props) 
 
                         {canOpenCard ? (
                           <span className="wc-squad-player-card__action mono">
-                            {isOpen ? (locale === "tr" ? "Kapat" : "Close") : copy.hasCard}
+                            {isOpen ? "Close" : copy.hasCard}
                           </span>
                         ) : null}
                       </button>
@@ -116,11 +108,7 @@ export default function WcSquadDisplay({ players, locale, teamPrimary }: Props) 
                                 compact
                                 animated={false}
                                 showScoutNote={false}
-                                tmLink={
-                                  locale === "tr"
-                                    ? `https://www.transfermarkt.com.tr/schnellsuche/ergebnis/schnellsuche?query=${encodeURIComponent(player.name)}`
-                                    : `https://www.transfermarkt.com/schnellsuche/ergebnis/schnellsuche?query=${encodeURIComponent(player.name)}`
-                                }
+                                tmLink={`https://www.transfermarkt.com/schnellsuche/ergebnis/schnellsuche?query=${encodeURIComponent(player.name)}`}
                                 gLink={`https://www.google.com/search?q=${encodeURIComponent(player.name + " footballer")}`}
                               />
                             </div>

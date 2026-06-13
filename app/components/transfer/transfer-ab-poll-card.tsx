@@ -5,24 +5,20 @@ import type { TransferAbPoll } from "@/lib/transfer-polls";
 
 type Props = {
   poll: TransferAbPoll;
-  locale: "tr" | "en";
 };
 
 function localKey(pollId: string) {
   return `sg-transfer-poll-${pollId}`;
 }
 
-export default function TransferAbPollCard({ poll, locale }: Props) {
+export default function TransferAbPollCard({ poll }: Props) {
   const [votes, setVotes] = useState({ a: 50, b: 50 });
   const [picked, setPicked] = useState<"a" | "b" | null>(null);
   const [submitting, setSubmitting] = useState(false);
 
   const labelA = poll.labelA ?? poll.clubA;
   const labelB = poll.labelB ?? poll.clubB;
-  const question =
-    locale === "tr"
-      ? `${poll.playerName} hangi kulübe gider?`
-      : `Where will ${poll.playerName} go?`;
+  const question = `Where will ${poll.playerName} go?`;
 
   const loadVotes = useCallback(async () => {
     try {
@@ -85,7 +81,7 @@ export default function TransferAbPollCard({ poll, locale }: Props) {
   return (
     <article className="transfer-ab-card lift">
       <div className="transfer-ab-card__top">
-        <span className="eyebrow transfer-eyebrow">{locale === "tr" ? "GİDER Mİ?" : "DESTINATION?"}</span>
+        <span className="eyebrow transfer-eyebrow">DESTINATION?</span>
         <h3 className="display transfer-ab-card__player">{poll.playerName}</h3>
         <p className="transfer-ab-card__q">{question}</p>
       </div>

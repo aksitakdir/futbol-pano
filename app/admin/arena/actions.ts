@@ -8,13 +8,9 @@ type ParticipantDraft = { name: string; subtitle?: string; vs?: string };
 export type ArenaGamePayload = {
   slug: string;
   status: string;
-  title_tr: string;
   title_en: string;
-  description_tr: string;
   description_en: string;
-  hero_title_tr: string;
   hero_title_en: string;
-  hero_teaser_tr: string;
   hero_teaser_en: string;
   card_color: string;
   game_type: string;

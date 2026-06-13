@@ -281,11 +281,11 @@ function ListLayout({ row }: { row: ContentRow }) {
         <div className="article-page-main">
           {sections && sections.length > 0 ? (
             <div className="article-v2" style={{ fontSize: 18, lineHeight: 1.65, color: "var(--sg-text-secondary)", marginBottom: 56 }}>
-              <SectionsJsonBody sections={sections} accent={accent} locale="en" />
+              <SectionsJsonBody sections={sections} accent={accent} />
             </div>
           ) : displayContent && stripHtml(displayContent) ? (
             <div className="article-v2" style={{ fontSize: 18, lineHeight: 1.65, color: "var(--sg-text-secondary)", marginBottom: 56 }}>
-              {isHtml ? <ArticleHtmlWithPlayerEmbeds html={displayContent} locale="en" /> : <ReactMarkdown remarkPlugins={[remarkGfm]} rehypePlugins={[rehypeRaw]}>{displayContent}</ReactMarkdown>}
+              {isHtml ? <ArticleHtmlWithPlayerEmbeds html={displayContent} /> : <ReactMarkdown remarkPlugins={[remarkGfm]} rehypePlugins={[rehypeRaw]}>{displayContent}</ReactMarkdown>}
             </div>
           ) : null}
           {enriched.map((player, i) => (

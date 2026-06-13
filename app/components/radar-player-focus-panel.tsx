@@ -7,7 +7,6 @@ import { formatPlayerMetaLine } from "@/lib/player-meta-line";
 
 export type RadarPlayerFocusPanelProps = {
   player: PlayerCardData;
-  locale: "tr" | "en";
   description?: string | null;
   scoutQuote?: string | null;
   goals?: string | null;
@@ -16,30 +15,23 @@ export type RadarPlayerFocusPanelProps = {
 
 export default function RadarPlayerFocusPanel({
   player,
-  locale,
   description,
   scoutQuote,
   goals,
   assists,
 }: RadarPlayerFocusPanelProps) {
-  const tm =
-    locale === "tr"
-      ? `https://www.transfermarkt.com.tr/schnellsuche/ergebnis/schnellsuche?query=${encodeURIComponent(player.name)}`
-      : `https://www.transfermarkt.com/schnellsuche/ergebnis/schnellsuche?query=${encodeURIComponent(player.name)}`;
-  const gSearch =
-    locale === "tr"
-      ? `https://www.google.com/search?q=${encodeURIComponent(`${player.name} futbolcu`)}`
-      : `https://www.google.com/search?q=${encodeURIComponent(player.name + " footballer")}`;
+  const tm = `https://www.transfermarkt.com/schnellsuche/ergebnis/schnellsuche?query=${encodeURIComponent(player.name)}`;
+  const gSearch = `https://www.google.com/search?q=${encodeURIComponent(player.name + " footballer")}`;
 
   const labels = {
-    focus: locale === "tr" ? "ODAK OYUNCUSU" : "FOCUS PLAYER",
-    scout: locale === "tr" ? "SCOUT NOTU" : "SCOUT NOTE",
-    overall: locale === "tr" ? "GENEL (OVR)" : "OVERALL",
-    goals: locale === "tr" ? "GOL" : "GOALS",
-    assists: locale === "tr" ? "ASİST" : "ASSISTS",
+    focus: "FOCUS PLAYER",
+    scout: "SCOUT NOTE",
+    overall: "OVERALL",
+    goals: "GOALS",
+    assists: "ASSISTS",
   };
 
-  const metaLine = formatPlayerMetaLine(player, locale);
+  const metaLine = formatPlayerMetaLine(player);
   const showGoalsRow = (goals != null && goals !== "") || (assists != null && assists !== "");
 
   return (
@@ -81,7 +73,7 @@ export default function RadarPlayerFocusPanel({
             {description}
           </p>
         ) : null}
-        <PlayerRatingBars player={player} locale={locale} />
+        <PlayerRatingBars player={player} />
         <div
           style={{
             marginTop: 28,

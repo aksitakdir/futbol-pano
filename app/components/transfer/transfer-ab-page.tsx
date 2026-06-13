@@ -33,13 +33,13 @@ export default function TransferAbPage(_props: Props) {
       <PageShell as="section" className="sg-page-shell--section transfer-ab-shell">
         <div className="transfer-ab-list">
           {TRANSFER_AB_POLLS.map((poll) => (
-            <TransferAbPollCard key={poll.id} poll={poll} locale="en" />
+            <TransferAbPollCard key={poll.id} poll={poll} />
           ))}
         </div>
       </PageShell>
 
-      <HubEditorialSection hubId="transfer" locale="en" accent="var(--transfer-cyan)" compact />
-      <HubArenaStrip hubId="transfer" locale="en" />
+      <HubEditorialSection hubId="transfer" accent="var(--transfer-cyan)" compact />
+      <HubArenaStrip hubId="transfer" />
       <SiteFooter maxWidth="max-w-7xl" />
     </main>
   );

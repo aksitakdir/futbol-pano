@@ -19,13 +19,9 @@ export type ArenaGame = {
   id: string;
   slug: string;
   status: ArenaGameStatus;
-  title_tr: string;
   title_en: string;
-  description_tr: string;
   description_en: string;
-  hero_title_tr: string;
   hero_title_en: string;
-  hero_teaser_tr: string;
   hero_teaser_en: string;
   card_color: ArenaCardColor;
   participants: ArenaParticipant[];
@@ -89,45 +85,30 @@ export function bracketLabelSize(gameType: ArenaGameType, normalizedRandomCount:
 
 // ─── Round labels ─────────────────────────────────────────────────────────────
 
-export function arenaRoundNames(bracketSize: 16 | 32 | 64, lang: "tr" | "en"): string[] {
-  const TR: Record<16 | 32 | 64, string[]> = {
-    64: ["Son 64", "Son 32", "Son 16", "Çeyrek Final", "Yarı Final", "Final"],
-    32: ["Son 32", "Son 16", "Çeyrek Final", "Yarı Final", "Final"],
-    16: ["Son 16", "Çeyrek Final", "Yarı Final", "Final"],
-  };
-  const EN: Record<16 | 32 | 64, string[]> = {
+export function arenaRoundNames(bracketSize: 16 | 32 | 64): string[] {
+  const NAMES: Record<16 | 32 | 64, string[]> = {
     64: ["Round of 64", "Round of 32", "Round of 16", "Quarter-Final", "Semi-Final", "Final"],
     32: ["Round of 32", "Round of 16", "Quarter-Final", "Semi-Final", "Final"],
     16: ["Round of 16", "Quarter-Final", "Semi-Final", "Final"],
   };
-  return lang === "en" ? EN[bracketSize] : TR[bracketSize];
+  return NAMES[bracketSize];
 }
 
-export function arenaNextRoundHeading(roundNames: string[], roundIndex: number, lang: "tr" | "en"): string {
+export function arenaNextRoundHeading(roundNames: string[], roundIndex: number): string {
   const next = roundNames[roundIndex + 1];
   if (!next) return "";
-  return lang === "en" ? `${next} begins!` : `${next} başlıyor!`;
+  return `${next} begins!`;
 }
 
 /** Round labels for a given participant count (power of 2; 4–128). */
-export function arenaRoundNamesForCount(n: number, lang: "tr" | "en"): string[] {
-  if (n >= 128) {
-    const r64 = arenaRoundNames(64, lang);
-    const prefix = lang === "en" ? "Round of 128" : "Son 128";
-    return [prefix, ...r64];
-  }
-  if (n >= 64) return arenaRoundNames(64, lang);
-  if (n >= 32) return arenaRoundNames(32, lang);
-  if (n >= 16) return arenaRoundNames(16, lang);
-  if (n >= 8) {
-    return lang === "en"
-      ? ["Quarter-Final", "Semi-Final", "Final"]
-      : ["Çeyrek Final", "Yarı Final", "Final"];
-  }
-  if (n >= 4) {
-    return lang === "en" ? ["Semi-Final", "Final"] : ["Yarı Final", "Final"];
-  }
-  return lang === "en" ? ["Final"] : ["Final"];
+export function arenaRoundNamesForCount(n: number): string[] {
+  if (n >= 128) return ["Round of 128", ...arenaRoundNames(64)];
+  if (n >= 64) return arenaRoundNames(64);
+  if (n >= 32) return arenaRoundNames(32);
+  if (n >= 16) return arenaRoundNames(16);
+  if (n >= 8) return ["Quarter-Final", "Semi-Final", "Final"];
+  if (n >= 4) return ["Semi-Final", "Final"];
+  return ["Final"];
 }
 
 export type ArenaParticipantInput = {

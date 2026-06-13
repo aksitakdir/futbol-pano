@@ -36,15 +36,15 @@ export async function generateMetadata({
   searchParams,
 }: {
   params: Promise<{ slug: string }>;
-  searchParams: Promise<{ lang?: string; champion?: string }>;
+  searchParams: Promise<{ champion?: string }>;
 }): Promise<Metadata> {
   const { slug } = await params;
   const { champion: championParam } = await searchParams;
   const game = await fetchGame(slug);
   if (!game) return { title: "Arena | Scout Gamer" };
 
-  const gameTitle = game.title_en || game.title_tr;
-  const gameDesc  = game.description_en || game.description_tr;
+  const gameTitle = game.title_en;
+  const gameDesc  = game.description_en;
   const canonical = `${BASE}/arena/${slug}`;
 
   // ── Champion result share: special metadata ──────────────────────────────
@@ -56,7 +56,6 @@ export async function generateMetadata({
     ogImg.searchParams.set("t", gameTitle);
     ogImg.searchParams.set("c", game.card_color);
     ogImg.searchParams.set("champion", champion);
-    ogImg.searchParams.set("lang", "en");
     const ogImgUrl = ogImg.toString();
 
     return {
@@ -130,8 +129,8 @@ export default async function ArenaBracketPage({
   const jsonLd = {
     "@context": "https://schema.org",
     "@type": "Game",
-    "name": game.title_en || game.title_tr,
-    "description": game.description_en || game.description_tr,
+    "name": game.title_en,
+    "description": game.description_en,
     "url": `${BASE}/arena/${slug}`,
     "inLanguage": "en",
     "publisher": { "@type": "Organization", "name": "Scout Gamer", "url": BASE },

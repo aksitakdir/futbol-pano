@@ -76,14 +76,14 @@ export default function SocialCardsStudioPage() {
   useEffect(() => {
     supabase
       .from("arena_games")
-      .select("slug,title_en,title_tr")
+      .select("slug,title_en")
       .eq("status", "published")
       .order("created_at", { ascending: false })
       .then(({ data }) => {
-        const items = (data ?? []) as { slug: string; title_en: string | null; title_tr: string | null }[];
+        const items = (data ?? []) as { slug: string; title_en: string | null }[];
         setArenaPresets(
           items.map((g) => {
-            const title = g.title_en?.trim() || g.title_tr?.trim() || g.slug;
+            const title = g.title_en?.trim() || g.slug;
             return {
               label: `🎮 ${title}`,
               title,

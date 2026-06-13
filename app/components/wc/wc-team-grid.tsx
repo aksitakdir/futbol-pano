@@ -11,8 +11,7 @@ import {
 import WcTeamFlag from "./wc-team-flag";
 
 type Props = {
-  locale: "tr" | "en";
-  kadrolarBasePath: string;
+  squadsBasePath: string;
 };
 
 const ALL_CONF: WcConfederation[] = ["UEFA", "CONMEBOL", "CONCACAF", "CAF", "AFC", "OFC"];
@@ -26,28 +25,17 @@ const CONF_DOT: Record<WcConfederation, string> = {
   OFC: "var(--lime)",
 };
 
-export default function WcTeamGrid({ locale, kadrolarBasePath }: Props) {
+export default function WcTeamGrid({ squadsBasePath }: Props) {
   const [filter, setFilter] = useState<WcConfederation | "ALL">("ALL");
 
-  const letterGroups = useMemo(
-    () => wcTeamsByLetter(locale, filter),
-    [locale, filter],
-  );
+  const letterGroups = useMemo(() => wcTeamsByLetter(filter), [filter]);
 
-  const copy =
-    locale === "tr"
-      ? {
-          title: "KATILAN 48 TAKIM",
-          sub: `${WC_2026_TEAM_COUNT} finalist — A’dan Z’ye, bayrağa tıkla, kadroyu gör`,
-          all: "TÜMÜ",
-          squad: "Kadro",
-        }
-      : {
-          title: "48 FINALISTS",
-          sub: `${WC_2026_TEAM_COUNT} nations — A–Z with flags, tap for squad`,
-          all: "ALL",
-          squad: "Squad",
-        };
+  const copy = {
+    title: "48 FINALISTS",
+    sub: `${WC_2026_TEAM_COUNT} nations — A–Z with flags, tap for squad`,
+    all: "ALL",
+    squad: "Squad",
+  };
 
   return (
     <div className="wc-hub-block">
@@ -55,7 +43,7 @@ export default function WcTeamGrid({ locale, kadrolarBasePath }: Props) {
         <div className="eyebrow wc-eyebrow">{copy.title}</div>
         <p className="wc-hub-block__sub">{copy.sub}</p>
 
-        <nav className="wc-conf-nav" aria-label={locale === "tr" ? "Kıta filtresi" : "Confederation filter"}>
+        <nav className="wc-conf-nav" aria-label="Confederation filter">
           <div className="wc-conf-nav__track">
             <button
               type="button"
@@ -72,7 +60,7 @@ export default function WcTeamGrid({ locale, kadrolarBasePath }: Props) {
                 onClick={() => setFilter(c)}
               >
                 <span className="wc-conf-nav__dot" style={{ background: CONF_DOT[c] }} aria-hidden />
-                {wcConfederationLabel(c, locale)}
+                {wcConfederationLabel(c)}
               </button>
             ))}
           </div>
@@ -92,7 +80,7 @@ export default function WcTeamGrid({ locale, kadrolarBasePath }: Props) {
               {teams.map((t) => (
                 <li key={t.slug} className="wc-team-card-list__item">
                   <Link
-                    href={`${kadrolarBasePath}/${t.slug}`}
+                    href={`${squadsBasePath}/${t.slug}`}
                     className="wc-team-card lift"
                     style={
                       {
@@ -113,7 +101,7 @@ export default function WcTeamGrid({ locale, kadrolarBasePath }: Props) {
                           ·
                         </span>
                         <span className="wc-team-card__conf" style={{ color: CONF_DOT[t.conf] }}>
-                          {wcConfederationLabel(t.conf, locale)}
+                          {wcConfederationLabel(t.conf)}
                         </span>
                       </span>
                     </span>

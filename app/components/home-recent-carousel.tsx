@@ -40,7 +40,7 @@ const CAT_COLOR: Record<string, string> = {
 
 const PER_PAGE = 8;
 
-export default function HomeRecentCarousel({ items }: { items: HomeRecentItem[]; locale?: string }) {
+export default function HomeRecentCarousel({ items }: { items: HomeRecentItem[] }) {
   const totalPages = Math.ceil(items.length / PER_PAGE);
   const [page, setPage] = useState(0);
   const [direction, setDirection] = useState(0);

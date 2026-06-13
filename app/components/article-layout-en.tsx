@@ -561,11 +561,10 @@ export default function ArticleLayoutEn({
               <SectionsJsonBody
                 sections={sectionsJson}
                 accent={accent}
-                locale="en"
                 addDropCap={addDropCap}
               />
             ) : contentLooksLikeHtml(content) ? (
-              <ArticleHtmlWithPlayerEmbeds html={processedHtml} locale="en" />
+              <ArticleHtmlWithPlayerEmbeds html={processedHtml} />
             ) : (
               <ReactMarkdown remarkPlugins={[remarkGfm]} rehypePlugins={[rehypeRaw]}>
                 {content}
@@ -580,7 +579,7 @@ export default function ArticleLayoutEn({
               </div>
               <div style={{ display: "flex", flexDirection: "column", gap: 24 }}>
                 {parsedPlayers.map((name) => (
-                  <ArticlePlayerEmbed key={name} playerName={name} locale="en" />
+                  <ArticlePlayerEmbed key={name} playerName={name} />
                 ))}
               </div>
             </div>

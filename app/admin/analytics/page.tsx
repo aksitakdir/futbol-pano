@@ -23,7 +23,6 @@ type ArenaGame = {
   id: string;
   slug: string;
   title_en: string;
-  title_tr: string;
   created_at: string;
 };
 
@@ -66,7 +65,7 @@ export default function AnalyticsPage() {
           .limit(50),
         supabase
           .from("arena_games")
-          .select("id,slug,title_en,title_tr,created_at")
+          .select("id,slug,title_en,created_at")
           .order("created_at", { ascending: false })
           .limit(20),
         supabase.from("arena_votes").select("game_slug"),
@@ -265,7 +264,7 @@ export default function AnalyticsPage() {
                       <span className="w-5 text-center font-mono text-xs text-slate-500">{i + 1}</span>
                       <div className="min-w-0 flex-1">
                         <p className="truncate text-sm font-semibold text-slate-100">
-                          {g.title_en || g.title_tr || g.slug}
+                          {g.title_en || g.slug}
                         </p>
                         <p className="text-[11px] text-slate-500">{new Date(g.created_at).toLocaleDateString("en-US")}</p>
                       </div>
