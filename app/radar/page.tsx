@@ -132,49 +132,43 @@ function RadarPageInner() {
         ) : (
           <>
             {featured && (
-              <Link href={`/radar/${featured.slug}`} className="lift" style={{ display: "block", position: "relative", overflow: "hidden", background: "linear-gradient(135deg, oklch(0.16 0.02 150) 0%, oklch(0.12 0.012 220) 70%)", border: "1px solid var(--sg-border)", borderRadius: 16, marginBottom: 48, minHeight: 340, textDecoration: "none" }}>
-                <div style={{ position: "absolute", top: 0, left: 0, right: 0, height: 3, background: "var(--accent)" }} />
-                <div style={{ position: "absolute", bottom: -180, left: -100, width: 480, height: 480, borderRadius: "50%", background: "radial-gradient(circle, var(--accent) 0%, transparent 65%)", opacity: 0.15, pointerEvents: "none" }} />
-                <div style={{ position: "absolute", inset: 0, opacity: 0.04, pointerEvents: "none", backgroundImage: "repeating-linear-gradient(90deg, rgba(255,255,255,0.5) 0 1px, transparent 1px 22px)" }} />
-                <div style={{ position: "relative", display: "grid", gridTemplateColumns: "1.6fr 1fr", gap: 48, padding: "48px 48px", alignItems: "center" }}>
-                  <div>
-                    <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 20 }}>
-                      <span className="chip solid" style={{ background: "var(--accent)", borderColor: "var(--accent)", color: "var(--ink-900)", fontSize: 10 }}>COVER STORY</span>
-                      <span className="mono" style={{ fontSize: 10, letterSpacing: "0.18em", color: "var(--sg-text-muted)" }}>
-                        RADAR · {new Date(featured.created_at).toLocaleDateString("en-US", { day: "numeric", month: "short", year: "numeric" })}
-                      </span>
-                      {!featured.title_en && <span className="mono" style={{ fontSize: 9, letterSpacing: "0.1em", color: "var(--amber)" }}>DRAFT</span>}
-                    </div>
-                    <h2 className="display" style={{ fontSize: "clamp(32px, 4.4vw, 56px)", fontWeight: 700, letterSpacing: "-0.04em", margin: 0, lineHeight: 0.95, textWrap: "balance", color: "var(--sg-text-primary)" }}>
-                      <span className="grad-text">{featured.title_en || featured.title}</span>
-                    </h2>
-                    <p style={{ fontSize: 16, color: "var(--sg-text-secondary)", lineHeight: 1.55, marginTop: 20, maxWidth: 540 }}>
-                      {summaryBody(featured.content_en || featured.content, 180)}
-                    </p>
-                    {featuredHighlights?.length ? (
-                      <div style={{ marginTop: 18 }}>
-                        <ContentHighlightPills tags={featuredHighlights.slice(0, 4)} accent="var(--accent)" label="HIGHLIGHTS" />
-                      </div>
-                    ) : null}
-                    <div style={{ marginTop: 24 }}>
-                      <span className="btn btn-solid">READ THE STORY →</span>
-                    </div>
+              <Link href={`/radar/${featured.slug}`} className="lift" style={{ display: "block", position: "relative", overflow: "hidden", background: featured.cover_image?.trim() ? "var(--ink-900)" : "linear-gradient(135deg, oklch(0.16 0.02 150) 0%, oklch(0.12 0.012 220) 70%)", border: "1px solid var(--sg-border)", borderRadius: 16, marginBottom: 48, minHeight: 340, textDecoration: "none" }}>
+                {featured.cover_image?.trim() ? (
+                  <>
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img src={featured.cover_image} alt="" style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover", filter: "brightness(0.38) saturate(0.9)" }} />
+                    <div style={{ position: "absolute", inset: 0, background: "linear-gradient(to right, rgba(13,18,30,0.94) 0%, rgba(13,18,30,0.72) 55%, rgba(13,18,30,0.45) 100%)" }} />
+                    <div style={{ position: "absolute", inset: 0, background: "linear-gradient(to top, rgba(13,18,30,0.85) 0%, transparent 50%)" }} />
+                  </>
+                ) : (
+                  <>
+                    <div style={{ position: "absolute", bottom: -180, left: -100, width: 480, height: 480, borderRadius: "50%", background: "radial-gradient(circle, var(--accent) 0%, transparent 65%)", opacity: 0.15, pointerEvents: "none" }} />
+                    <div style={{ position: "absolute", inset: 0, opacity: 0.04, pointerEvents: "none", backgroundImage: "repeating-linear-gradient(90deg, rgba(255,255,255,0.5) 0 1px, transparent 1px 22px)" }} />
+                  </>
+                )}
+                <div style={{ position: "absolute", top: 0, left: 0, right: 0, height: 3, background: "var(--accent)", zIndex: 1 }} />
+                <div style={{ position: "relative", zIndex: 2, padding: "48px 48px", maxWidth: 760 }}>
+                  <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 20 }}>
+                    <span className="chip solid" style={{ background: "var(--accent)", borderColor: "var(--accent)", color: "var(--ink-900)", fontSize: 10 }}>COVER STORY</span>
+                    <span className="mono" style={{ fontSize: 10, letterSpacing: "0.18em", color: "var(--sg-text-muted)" }}>
+                      RADAR · {new Date(featured.created_at).toLocaleDateString("en-US", { day: "numeric", month: "short", year: "numeric" })}
+                    </span>
+                    {!featured.title_en && <span className="mono" style={{ fontSize: 9, letterSpacing: "0.1em", color: "var(--amber)" }}>DRAFT</span>}
                   </div>
-                  {featured.cover_image?.trim() ? (
-                    <div style={{ position: "relative", borderRadius: 12, overflow: "hidden", aspectRatio: "4/3" }}>
-                      {/* eslint-disable-next-line @next/next/no-img-element */}
-                      <img src={featured.cover_image} alt={featured.title_en || featured.title} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
-                      <div style={{ position: "absolute", inset: 0, background: "linear-gradient(to right, var(--sg-bg) 0%, transparent 40%)" }} />
-                    </div>
-                  ) : heroPlayers.length >= 2 ? (
-                    <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: 10, justifyItems: "center" }}>
-                      {heroPlayers.slice(0, 4).map((p, i) => (
-                        <div key={i} style={{ transform: `translateY(${i % 2 === 0 ? -8 : 8}px)`, boxShadow: "0 16px 32px rgba(0,0,0,0.35)" }}>
-                          <PlayerCard player={p as PlayerCardData} compact animated={false} showScoutNote={false} />
-                        </div>
-                      ))}
+                  <h2 className="display" style={{ fontSize: "clamp(32px, 4.4vw, 56px)", fontWeight: 700, letterSpacing: "-0.04em", margin: 0, lineHeight: 0.95, textWrap: "balance", color: "var(--sg-text-primary)" }}>
+                    <span className="grad-text">{featured.title_en || featured.title}</span>
+                  </h2>
+                  <p style={{ fontSize: 16, color: "var(--sg-text-secondary)", lineHeight: 1.55, marginTop: 20, maxWidth: 540 }}>
+                    {summaryBody(featured.content_en || featured.content, 180)}
+                  </p>
+                  {featuredHighlights?.length ? (
+                    <div style={{ marginTop: 18 }}>
+                      <ContentHighlightPills tags={featuredHighlights.slice(0, 4)} accent="var(--accent)" label="HIGHLIGHTS" />
                     </div>
                   ) : null}
+                  <div style={{ marginTop: 24 }}>
+                    <span className="btn btn-solid">READ THE STORY →</span>
+                  </div>
                 </div>
               </Link>
             )}

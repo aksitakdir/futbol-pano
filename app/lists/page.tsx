@@ -118,8 +118,9 @@ function ListelerPageInner() {
             {featured.cover_image?.trim() ? (
               <>
                 {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src={featured.cover_image} alt="" style={{ position: "absolute", right: 0, top: 0, width: "50%", height: "100%", objectFit: "cover", opacity: 0.5 }} />
-                <div style={{ position: "absolute", right: 0, top: 0, width: "50%", height: "100%", background: "linear-gradient(to right, oklch(0.17 0.04 155) 0%, transparent 60%)" }} />
+                <img src={featured.cover_image} alt="" style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover", filter: "brightness(0.38) saturate(0.9)" }} />
+                <div style={{ position: "absolute", inset: 0, background: "linear-gradient(to right, rgba(13,18,30,0.94) 0%, rgba(13,18,30,0.72) 55%, rgba(13,18,30,0.45) 100%)" }} />
+                <div style={{ position: "absolute", inset: 0, background: "linear-gradient(to top, rgba(13,18,30,0.85) 0%, transparent 50%)" }} />
               </>
             ) : (
               <>

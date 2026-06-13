@@ -78,23 +78,27 @@ export default function TaktikLabPage() {
             <div style={{ position: "absolute", top: -160, right: -120, width: 480, height: 480, borderRadius: "50%", background: "radial-gradient(circle, var(--sky) 0%, transparent 65%)", opacity: 0.15, pointerEvents: "none" }} />
             <div style={{ position: "absolute", inset: 0, opacity: 0.04, pointerEvents: "none", backgroundImage: "repeating-linear-gradient(-45deg, rgba(255,255,255,0.5) 0 1px, transparent 1px 22px)" }} />
             {featured.cover_image?.trim() ? (
-              <div style={{ position: "absolute", right: 0, top: 0, height: "100%", width: "42%", overflow: "hidden" }}>
+              <>
                 {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src={featured.cover_image} alt={featured.title_en || featured.title} style={{ width: "100%", height: "100%", objectFit: "cover", opacity: 0.6 }} />
-                <div style={{ position: "absolute", inset: 0, background: "linear-gradient(to right, oklch(0.18 0.02 20) 0%, transparent 60%)" }} />
-              </div>
+                <img src={featured.cover_image} alt="" style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover", filter: "brightness(0.38) saturate(0.9)" }} />
+                <div style={{ position: "absolute", inset: 0, background: "linear-gradient(to right, rgba(13,18,30,0.94) 0%, rgba(13,18,30,0.72) 55%, rgba(13,18,30,0.45) 100%)" }} />
+                <div style={{ position: "absolute", inset: 0, background: "linear-gradient(to top, rgba(13,18,30,0.85) 0%, transparent 50%)" }} />
+              </>
             ) : (
-              <svg viewBox="0 0 200 120" preserveAspectRatio="none" style={{ position: "absolute", right: 0, top: 0, height: "100%", width: "42%", opacity: 0.32, pointerEvents: "none" }}>
-                <rect x="0" y="0" width="200" height="120" fill="none" stroke="rgba(255,255,255,0.15)" strokeWidth="0.5" />
-                <line x1="100" y1="0" x2="100" y2="120" stroke="rgba(255,255,255,0.1)" strokeWidth="0.5" />
-                <circle cx="100" cy="60" r="14" fill="none" stroke="rgba(255,255,255,0.1)" strokeWidth="0.5" />
-                <path d="M 30 90 Q 80 60 110 50" fill="none" stroke="var(--sky)" strokeWidth="1.2" strokeDasharray="3 2" />
-                <path d="M 30 30 Q 80 60 110 70" fill="none" stroke="var(--sky)" strokeWidth="1.2" strokeDasharray="3 2" />
-                <circle cx="30" cy="90" r="2.5" fill="var(--sky)" />
-                <circle cx="30" cy="30" r="2.5" fill="var(--sky)" />
-                <polygon points="110,50 106,46 106,54" fill="var(--sky)" />
-                <polygon points="110,70 106,66 106,74" fill="var(--sky)" />
-              </svg>
+              <>
+                <div style={{ position: "absolute", top: -160, right: -120, width: 480, height: 480, borderRadius: "50%", background: "radial-gradient(circle, var(--sky) 0%, transparent 65%)", opacity: 0.15, pointerEvents: "none" }} />
+                <svg viewBox="0 0 200 120" preserveAspectRatio="none" style={{ position: "absolute", right: 0, top: 0, height: "100%", width: "42%", opacity: 0.32, pointerEvents: "none" }}>
+                  <rect x="0" y="0" width="200" height="120" fill="none" stroke="rgba(255,255,255,0.15)" strokeWidth="0.5" />
+                  <line x1="100" y1="0" x2="100" y2="120" stroke="rgba(255,255,255,0.1)" strokeWidth="0.5" />
+                  <circle cx="100" cy="60" r="14" fill="none" stroke="rgba(255,255,255,0.1)" strokeWidth="0.5" />
+                  <path d="M 30 90 Q 80 60 110 50" fill="none" stroke="var(--sky)" strokeWidth="1.2" strokeDasharray="3 2" />
+                  <path d="M 30 30 Q 80 60 110 70" fill="none" stroke="var(--sky)" strokeWidth="1.2" strokeDasharray="3 2" />
+                  <circle cx="30" cy="90" r="2.5" fill="var(--sky)" />
+                  <circle cx="30" cy="30" r="2.5" fill="var(--sky)" />
+                  <polygon points="110,50 106,46 106,54" fill="var(--sky)" />
+                  <polygon points="110,70 106,66 106,74" fill="var(--sky)" />
+                </svg>
+              </>
             )}
             <div style={{ position: "relative", padding: "48px", maxWidth: 760 }}>
               <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 24 }}>
