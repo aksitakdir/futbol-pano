@@ -115,19 +115,29 @@ function ListelerPageInner() {
         {!loading && featured ? (
           <Link href={`/lists/${featured.slug}`} className="lift" style={{ display: "block", position: "relative", overflow: "hidden", background: "linear-gradient(135deg, oklch(0.17 0.04 155) 0%, oklch(0.12 0.018 200) 72%)", border: "1px solid var(--sg-border)", borderRadius: 16, marginBottom: recentDbLists.length > 0 ? 48 : hasMore ? 36 : 48, minHeight: 320, textDecoration: "none" }}>
             <div style={{ position: "absolute", top: 0, left: 0, right: 0, height: 3, background: LIST_COVER_ACCENT }} />
-            <div style={{ position: "absolute", bottom: -160, right: -100, width: 440, height: 440, borderRadius: "50%", background: "radial-gradient(circle, var(--emerald) 0%, transparent 65%)", opacity: 0.14, pointerEvents: "none" }} />
-            <svg viewBox="0 0 140 120" preserveAspectRatio="xMidYMid slice" style={{ position: "absolute", right: 0, top: 0, height: "100%", width: "44%", opacity: 0.28, pointerEvents: "none" }}>
-              <rect x="24" y="18" width="96" height="10" rx="2" fill="rgba(255,255,255,0.12)" />
-              <rect x="24" y="38" width="72" height="8" rx="2" fill="rgba(255,255,255,0.08)" />
-              <rect x="24" y="54" width="84" height="8" rx="2" fill="rgba(255,255,255,0.08)" />
-              <rect x="24" y="70" width="60" height="8" rx="2" fill="rgba(255,255,255,0.08)" />
-              <circle cx="34" cy="92" r="10" fill="none" stroke="var(--emerald)" strokeWidth="1.2" opacity="0.9" />
-              <text x="34" y="96" textAnchor="middle" fill="var(--emerald)" fontSize="11" fontWeight="700" opacity="0.95">1</text>
-              <circle cx="70" cy="88" r="9" fill="none" stroke="var(--emerald)" strokeWidth="1" opacity="0.65" />
-              <text x="70" y="91" textAnchor="middle" fill="var(--emerald)" fontSize="9" fontWeight="600" opacity="0.75">2</text>
-              <circle cx="102" cy="94" r="8" fill="none" stroke="var(--emerald)" strokeWidth="0.9" opacity="0.5" />
-              <text x="102" y="97" textAnchor="middle" fill="var(--emerald)" fontSize="8" fontWeight="600" opacity="0.6">3</text>
-            </svg>
+            {featured.cover_image?.trim() ? (
+              <>
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src={featured.cover_image} alt="" style={{ position: "absolute", right: 0, top: 0, width: "50%", height: "100%", objectFit: "cover", opacity: 0.5 }} />
+                <div style={{ position: "absolute", right: 0, top: 0, width: "50%", height: "100%", background: "linear-gradient(to right, oklch(0.17 0.04 155) 0%, transparent 60%)" }} />
+              </>
+            ) : (
+              <>
+                <div style={{ position: "absolute", bottom: -160, right: -100, width: 440, height: 440, borderRadius: "50%", background: "radial-gradient(circle, var(--emerald) 0%, transparent 65%)", opacity: 0.14, pointerEvents: "none" }} />
+                <svg viewBox="0 0 140 120" preserveAspectRatio="xMidYMid slice" style={{ position: "absolute", right: 0, top: 0, height: "100%", width: "44%", opacity: 0.28, pointerEvents: "none" }}>
+                  <rect x="24" y="18" width="96" height="10" rx="2" fill="rgba(255,255,255,0.12)" />
+                  <rect x="24" y="38" width="72" height="8" rx="2" fill="rgba(255,255,255,0.08)" />
+                  <rect x="24" y="54" width="84" height="8" rx="2" fill="rgba(255,255,255,0.08)" />
+                  <rect x="24" y="70" width="60" height="8" rx="2" fill="rgba(255,255,255,0.08)" />
+                  <circle cx="34" cy="92" r="10" fill="none" stroke="var(--emerald)" strokeWidth="1.2" opacity="0.9" />
+                  <text x="34" y="96" textAnchor="middle" fill="var(--emerald)" fontSize="11" fontWeight="700" opacity="0.95">1</text>
+                  <circle cx="70" cy="88" r="9" fill="none" stroke="var(--emerald)" strokeWidth="1" opacity="0.65" />
+                  <text x="70" y="91" textAnchor="middle" fill="var(--emerald)" fontSize="9" fontWeight="600" opacity="0.75">2</text>
+                  <circle cx="102" cy="94" r="8" fill="none" stroke="var(--emerald)" strokeWidth="0.9" opacity="0.5" />
+                  <text x="102" y="97" textAnchor="middle" fill="var(--emerald)" fontSize="8" fontWeight="600" opacity="0.6">3</text>
+                </svg>
+              </>
+            )}
             <div style={{ position: "relative", padding: "48px", maxWidth: 760 }}>
               <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 24 }}>
                 <span className="chip solid" style={{ background: LIST_COVER_ACCENT, borderColor: LIST_COVER_ACCENT, color: "var(--ink-900)", fontSize: 10 }}>COVER LIST</span>

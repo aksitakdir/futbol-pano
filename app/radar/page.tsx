@@ -160,7 +160,13 @@ function RadarPageInner() {
                       <span className="btn btn-solid">READ THE STORY →</span>
                     </div>
                   </div>
-                  {heroPlayers.length >= 2 && (
+                  {featured.cover_image?.trim() ? (
+                    <div style={{ position: "relative", borderRadius: 12, overflow: "hidden", aspectRatio: "4/3" }}>
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img src={featured.cover_image} alt={featured.title_en || featured.title} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+                      <div style={{ position: "absolute", inset: 0, background: "linear-gradient(to right, var(--sg-bg) 0%, transparent 40%)" }} />
+                    </div>
+                  ) : heroPlayers.length >= 2 ? (
                     <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: 10, justifyItems: "center" }}>
                       {heroPlayers.slice(0, 4).map((p, i) => (
                         <div key={i} style={{ transform: `translateY(${i % 2 === 0 ? -8 : 8}px)`, boxShadow: "0 16px 32px rgba(0,0,0,0.35)" }}>
@@ -168,7 +174,7 @@ function RadarPageInner() {
                         </div>
                       ))}
                     </div>
-                  )}
+                  ) : null}
                 </div>
               </Link>
             )}
