@@ -44,7 +44,6 @@ export default async function RadarDetailPage({ params }: Props) {
     .from("contents")
     .select("*")
     .eq("slug", slug)
-    .eq("status", "published")
     .maybeSingle();
 
   if (error || !data) notFound();

@@ -19,7 +19,6 @@ export async function articleMetadata(
       .from("contents")
       .select("title,title_en,content,content_en,cover_image,created_at")
       .eq("slug", slug)
-      .eq("status", "published")
       .maybeSingle();
 
     if (!data) return { title: "Not Found" };
