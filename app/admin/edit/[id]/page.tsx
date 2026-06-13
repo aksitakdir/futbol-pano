@@ -569,6 +569,26 @@ export default function DuzenlePage() {
                       }}
                     />
                   </label>
+                  <button
+                    type="button"
+                    onClick={async () => {
+                      try {
+                        const res = await fetch("/api/auto-cover", {
+                          method: "POST",
+                          headers: { "Content-Type": "application/json" },
+                          body: JSON.stringify({ id }),
+                        });
+                        const data = await res.json();
+                        if (data.image) {
+                          setCoverImage(data.image);
+                          setHeroVariant("cover-image");
+                        }
+                      } catch { /* ignore */ }
+                    }}
+                    className="rounded-lg border border-sky-500/40 bg-sky-500/10 px-3 py-2 text-xs font-semibold text-sky-300 transition hover:bg-sky-500/20"
+                  >
+                    🎯 Suggest Cover
+                  </button>
                   {coverImage && (
                     <Image src={coverImage} alt="" width={64} height={40} unoptimized className="h-10 w-16 rounded object-cover border border-slate-700/60" />
                   )}
