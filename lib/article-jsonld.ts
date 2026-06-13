@@ -1,5 +1,21 @@
 const BASE = "https://www.scoutgamer.com";
 
+const CATEGORY_LABEL: Record<string, string> = {
+  lists: "Lists",
+  radar: "Radar",
+  "tactics-lab": "Tactics Lab",
+  "wc-2026": "World Cup 2026",
+  transfer: "Transfers",
+};
+
+const CATEGORY_PATH: Record<string, string> = {
+  lists: "/lists",
+  radar: "/radar",
+  "tactics-lab": "/tactics-lab",
+  "wc-2026": "/world-cup-2026",
+  transfer: "/transfers",
+};
+
 function plainText(html: string): string {
   return html
     .replace(/<[^>]+>/g, " ")
@@ -22,9 +38,11 @@ export function articleJsonLd(article: {
   const body = article.content_en || article.content;
   const description = plainText(body).slice(0, 200);
   const image = article.cover_image || `${BASE}/og-image.png`;
+  const category = article.category ?? "";
+  const catLabel = CATEGORY_LABEL[category] ?? category;
+  const catPath = CATEGORY_PATH[category] ?? "/";
 
-  return {
-    "@context": "https://schema.org",
+  const articleSchema = {
     "@type": "Article",
     "headline": title,
     "description": description,
@@ -40,5 +58,19 @@ export function articleJsonLd(article: {
       "logo": { "@type": "ImageObject", "url": `${BASE}/icon.png` },
     },
     "mainEntityOfPage": { "@type": "WebPage", "@id": `${BASE}${urlPath}` },
+  };
+
+  const breadcrumbSchema = {
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      { "@type": "ListItem", "position": 1, "name": "Home", "item": BASE },
+      { "@type": "ListItem", "position": 2, "name": catLabel, "item": `${BASE}${catPath}` },
+      { "@type": "ListItem", "position": 3, "name": title },
+    ],
+  };
+
+  return {
+    "@context": "https://schema.org",
+    "@graph": [articleSchema, breadcrumbSchema],
   };
 }

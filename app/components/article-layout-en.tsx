@@ -321,29 +321,13 @@ export default function ArticleLayoutEn({
         ) : null}
 
         <div className="sg-site-container" style={{ paddingTop: 40, paddingBottom: 72, position: "relative", zIndex: 2 }}>
-          {hubId ? (
-            <Link
-              href={backHref}
-              className="mono"
-              style={{
-                display: "inline-block",
-                fontSize: 11,
-                letterSpacing: "0.14em",
-                color: "var(--sg-text-muted)",
-                marginBottom: 48,
-                textDecoration: "none",
-              }}
-            >
-              ← {backLabel}
-            </Link>
-          ) : (
-            <button onClick={() => window.history.back()} className="mono" style={{
-              background: "transparent", border: "none", color: "var(--sg-text-muted)",
-              fontSize: 11, letterSpacing: "0.14em", padding: 0, marginBottom: 48, cursor: "pointer",
-            }}>
-              ← {backLabel}
-            </button>
-          )}
+          <nav aria-label="Breadcrumb" className="mono" style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 10, letterSpacing: "0.12em", marginBottom: 48, flexWrap: "wrap" }}>
+            <Link href="/" style={{ color: "var(--sg-text-muted)", textDecoration: "none" }}>HOME</Link>
+            <span style={{ color: "var(--sg-text-muted)", opacity: 0.5 }}>/</span>
+            <Link href={backHref} style={{ color: accent, textDecoration: "none" }}>{catLabel.toUpperCase()}</Link>
+            <span style={{ color: "var(--sg-text-muted)", opacity: 0.5 }}>/</span>
+            <span style={{ color: "var(--sg-text-muted)", maxWidth: 280, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{title.length > 40 ? `${title.slice(0, 40)}…` : title}</span>
+          </nav>
 
           {heroVariant === "radar-player-focus" && heroChildren ? (
             <div>
@@ -751,6 +735,34 @@ export default function ArticleLayoutEn({
           </div>
         </aside>
       </div>
+
+      {similar.length > 0 && (
+        <section style={{ borderTop: "1px solid var(--sg-border)", background: "var(--sg-surface-low, var(--sg-bg))" }}>
+          <div className="sg-site-container" style={{ padding: "48px 0 56px" }}>
+            <div className="mono" style={{ fontSize: 10, letterSpacing: "0.2em", color: accent, marginBottom: 24 }}>CONTINUE READING</div>
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(280px, 1fr))", gap: 16 }}>
+              {similar.slice(0, 3).map(item => (
+                <Link key={item.id} href={`${categoryPath(item.category)}/${item.slug}`}
+                  className="lift" style={{
+                    background: "var(--sg-surface)", border: "1px solid var(--sg-border)",
+                    borderRadius: 6, padding: 20, textDecoration: "none", display: "block",
+                  }}>
+                  <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 12 }}>
+                    <span className="chip" style={{ fontSize: 9, borderColor: accent, color: accent }}>{(CATEGORY_LABEL[item.category] ?? item.category).toUpperCase()}</span>
+                    <span className="mono" style={{ fontSize: 9, color: "var(--sg-text-muted)", letterSpacing: "0.1em" }}>
+                      {new Date(item.created_at).toLocaleDateString("en-US", { day: "numeric", month: "short", year: "numeric" })}
+                    </span>
+                  </div>
+                  <div className="display" style={{ fontSize: 16, fontWeight: 600, color: "var(--sg-text-primary)", lineHeight: 1.3,
+                    display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden" }}>
+                    {item.title_en || item.title}
+                  </div>
+                </Link>
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
 
       <SiteFooter maxWidth="max-w-7xl" />
     </main>

@@ -205,7 +205,13 @@ function ListLayout({ row }: { row: ContentRow }) {
         {!coverImg && <div style={{ position: "absolute", inset: 0, opacity: 0.04, pointerEvents: "none", backgroundImage: "repeating-linear-gradient(90deg, rgba(255,255,255,0.5) 0 1px, transparent 1px 22px)" }} />}
         {!coverImg && <div style={{ position: "absolute", bottom: -200, left: -100, width: 500, height: 500, borderRadius: "50%", background: `radial-gradient(circle, ${accent} 0%, transparent 65%)`, opacity: 0.12, pointerEvents: "none" }} />}
         <div className="sg-editorial-shell" style={{ padding: "40px 0 60px", position: "relative" }}>
-          <button onClick={() => window.history.back()} className="mono" style={{ background: "transparent", border: "none", color: "var(--sg-text-muted)", fontSize: 11, letterSpacing: "0.14em", padding: 0, marginBottom: 40, cursor: "pointer" }}>← Back to Lists</button>
+          <nav aria-label="Breadcrumb" className="mono" style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 10, letterSpacing: "0.12em", marginBottom: 40, flexWrap: "wrap" }}>
+            <Link href="/" style={{ color: "var(--sg-text-muted)", textDecoration: "none" }}>HOME</Link>
+            <span style={{ color: "var(--sg-text-muted)", opacity: 0.5 }}>/</span>
+            <Link href="/lists" style={{ color: accent, textDecoration: "none" }}>LISTS</Link>
+            <span style={{ color: "var(--sg-text-muted)", opacity: 0.5 }}>/</span>
+            <span style={{ color: "var(--sg-text-muted)", maxWidth: 280, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{displayTitle.length > 40 ? `${displayTitle.slice(0, 40)}…` : displayTitle}</span>
+          </nav>
           <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 24 }}>
             <span className="chip solid" style={{ background: accent, borderColor: accent, color: "var(--ink-900)", fontSize: 10 }}>LIST</span>
             <span className="mono" style={{ fontSize: 10, letterSpacing: "0.18em", color: "var(--sg-text-muted)" }}>{formattedDate}</span>
