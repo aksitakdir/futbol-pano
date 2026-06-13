@@ -2,7 +2,6 @@
 
 import React, { useEffect, useState, useMemo } from "react";
 import Link from "next/link";
-import { useSearchParams } from "next/navigation";
 import { supabase } from "@/lib/supabase";
 import SiteHeader from "../../components/site-header";
 import SiteFooter from "../../components/site-footer";
@@ -14,7 +13,6 @@ import PlayerCard, { type PlayerCardData } from "../../components/player-card";
 import ArticleHtmlWithPlayerEmbeds from "../../components/article-html-with-player-embeds";
 import SectionsJsonBody from "../../components/sections-json-body";
 import { tocFromSections, type SectionBlock } from "@/lib/section-blocks";
-import { redirectToCanonicalArticle } from "@/lib/article-route-guard";
 import { normalizeYoutubeId } from "@/lib/youtube-id";
 
 type ContentRow = {
@@ -198,7 +196,7 @@ function ListLayout({ row }: { row: ContentRow }) {
         {coverImg && (
           <>
             {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src={coverImg} alt="" style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover", filter: "brightness(0.32) saturate(0.85)" }} />
+            <img src={coverImg} alt={displayTitle} style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover", filter: "brightness(0.32) saturate(0.85)" }} />
             <div style={{ position: "absolute", inset: 0, background: "linear-gradient(to right, rgba(13,18,30,0.92) 0%, rgba(13,18,30,0.7) 55%, rgba(13,18,30,0.4) 100%)" }} />
             <div style={{ position: "absolute", inset: 0, background: "linear-gradient(to top, rgba(13,18,30,0.85) 0%, transparent 50%)" }} />
           </>
@@ -307,7 +305,7 @@ function ListLayout({ row }: { row: ContentRow }) {
                     <a key={v.videoId} href={`https://www.youtube.com/watch?v=${v.videoId}`} target="_blank" rel="noopener noreferrer"
                       className="lift" style={{ textDecoration: "none", background: "var(--sg-surface)", borderRadius: 4, overflow: "hidden" }}>
                       <div style={{ aspectRatio: "16/9", overflow: "hidden" }}>
-                        <img src={v.thumbnail} alt="" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+                        <img src={v.thumbnail} alt={v.title} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
                       </div>
                       <div style={{ padding: "10px 12px" }}>
                         <p style={{ fontSize: 12, fontWeight: 500, lineHeight: 1.3, color: "var(--sg-text-primary)", margin: 0,
@@ -331,7 +329,7 @@ function ListLayout({ row }: { row: ContentRow }) {
                   <a key={v.videoId} href={`https://www.youtube.com/watch?v=${v.videoId}`} target="_blank" rel="noopener noreferrer"
                     className="lift" style={{ textDecoration: "none", background: "var(--sg-surface)", borderRadius: 4, overflow: "hidden" }}>
                     <div style={{ aspectRatio: "16/9", overflow: "hidden" }}>
-                      <img src={v.thumbnail} alt="" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+                      <img src={v.thumbnail} alt={v.title} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
                     </div>
                     <div style={{ padding: "10px 12px" }}>
                       <p style={{ fontSize: 12, fontWeight: 500, lineHeight: 1.3, color: "var(--sg-text-primary)", margin: 0,
@@ -378,48 +376,11 @@ function ListLayout({ row }: { row: ContentRow }) {
   );
 }
 
-export default function ListelerDetailClient({ slug }: { slug: string }) {
-  const searchParams = useSearchParams();
-  const isPreview = searchParams.get("preview") === "1";
-  const [article, setArticle] = useState<ContentRow | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [notFound, setNotFound] = useState(false);
-  const [redirecting, setRedirecting] = useState(false);
+type Props = {
+  slug: string;
+  article: ContentRow;
+};
 
-  useEffect(() => {
-    if (!slug) return;
-    let query = supabase.from("contents").select("*").eq("slug", slug);
-    if (!isPreview) query = query.eq("status", "published");
-    query.single()
-      .then(({ data, error }) => {
-        if (error || !data) {
-          setNotFound(true);
-          setLoading(false);
-          return;
-        }
-        const row = data as ContentRow;
-        if (redirectToCanonicalArticle(row.category, row.slug, "lists")) {
-          setRedirecting(true);
-          setLoading(false);
-          return;
-        }
-        setArticle(row);
-        setLoading(false);
-      });
-  }, [slug]);
-
-  if (loading || redirecting) return (
-    <main className="flex min-h-screen items-center justify-center" style={{ background: "var(--sg-bg)" }}>
-      <span className="h-5 w-5 animate-spin rounded-full border-2" style={{ borderColor: "var(--emerald)", borderTopColor: "transparent" }} />
-    </main>
-  );
-
-  if (notFound || !article) return (
-    <main className="flex min-h-screen flex-col items-center justify-center" style={{ background: "var(--sg-bg)", color: "var(--sg-text-primary)" }}>
-      <h1 className="mb-2 text-2xl font-bold">404</h1>
-      <Link href="/lists" className="text-sm" style={{ color: "var(--emerald)" }}>← Back to Lists</Link>
-    </main>
-  );
-
+export default function ListDetailClient({ article }: Props) {
   return <ListLayout row={article} />;
 }

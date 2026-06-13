@@ -12,7 +12,6 @@ function plainText(html: string): string {
 export async function articleMetadata(
   slug: string,
   urlPath: string,
-  lang: "tr" | "en" = "tr",
 ): Promise<Metadata> {
   try {
     const supabase = createClient();
@@ -23,10 +22,10 @@ export async function articleMetadata(
       .eq("status", "published")
       .maybeSingle();
 
-    if (!data) return { title: lang === "en" ? "Not Found" : "Bulunamadı" };
+    if (!data) return { title: "Not Found" };
 
-    const title = lang === "en" ? (data.title_en || data.title) : data.title;
-    const raw = lang === "en" ? (data.content_en || data.content) : data.content;
+    const title = data.title_en || data.title;
+    const raw = data.content_en || data.content;
     const description = plainText(raw).slice(0, 160);
     const url = `https://www.scoutgamer.com${urlPath}`;
     const ogImage = data.cover_image || "https://www.scoutgamer.com/og-image.png";
@@ -41,7 +40,7 @@ export async function articleMetadata(
         description,
         url,
         siteName: "Scout Gamer",
-        locale: lang === "en" ? "en_US" : "tr_TR",
+        locale: "en_US",
         images: [{ url: ogImage, alt: title }],
         publishedTime: data.created_at,
       },

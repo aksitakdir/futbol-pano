@@ -1,12 +1,7 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import Link from "next/link";
-import { useSearchParams } from "next/navigation";
-import { supabase } from "@/lib/supabase";
 import ArticleLayoutEn from "../../components/article-layout-en";
 import type { SectionBlock } from "@/lib/section-blocks";
-import { redirectToCanonicalArticle } from "@/lib/article-route-guard";
 
 type ContentRow = {
   id: string; title: string; title_en?: string;
@@ -21,49 +16,12 @@ type ContentRow = {
   hub_tags?: string[] | null;
 };
 
-export default function TaktikLabDetailClient({ slug }: { slug: string }) {
-  const searchParams = useSearchParams();
-  const isPreview = searchParams.get("preview") === "1";
-  const [article, setArticle] = useState<ContentRow | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [notFound, setNotFound] = useState(false);
-  const [redirecting, setRedirecting] = useState(false);
+type Props = {
+  slug: string;
+  article: ContentRow;
+};
 
-  useEffect(() => {
-    if (!slug) return;
-    let query = supabase.from("contents").select("*").eq("slug", slug);
-    if (!isPreview) query = query.eq("status", "published");
-    query.single()
-      .then(({ data, error }) => {
-        if (error || !data) {
-          setNotFound(true);
-          setLoading(false);
-          return;
-        }
-        const row = data as ContentRow;
-        if (redirectToCanonicalArticle(row.category, row.slug, "tactics-lab")) {
-          setRedirecting(true);
-          setLoading(false);
-          return;
-        }
-        setArticle(row);
-        setLoading(false);
-      });
-  }, [slug]);
-
-  if (loading || redirecting) return (
-    <main className="flex min-h-screen items-center justify-center" style={{ background: "var(--sg-bg)" }}>
-      <span className="h-5 w-5 animate-spin rounded-full border-2" style={{ borderColor: "var(--cyan)", borderTopColor: "transparent" }} />
-    </main>
-  );
-
-  if (notFound || !article) return (
-    <main className="flex min-h-screen flex-col items-center justify-center" style={{ background: "var(--sg-bg)", color: "var(--sg-text-primary)" }}>
-      <h1 className="mb-2 text-2xl font-bold">404</h1>
-      <Link href="/tactics-lab" style={{ color: "var(--cyan)", fontSize: 13 }}>← Back to Tactics Lab</Link>
-    </main>
-  );
-
+export default function TaktikLabDetailClient({ article }: Props) {
   const hasEnglish = !!(article.title_en && article.content_en);
 
   return (

@@ -1,9 +1,5 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import Link from "next/link";
-import { useSearchParams } from "next/navigation";
-import { supabase } from "@/lib/supabase";
 import ArticleLayoutEn from "./article-layout-en";
 import { CATEGORY_ACCENT } from "@/lib/category-config";
 import type { SectionBlock } from "@/lib/section-blocks";
@@ -39,48 +35,13 @@ const BACK_CONFIG: Record<string, { path: string; title: string; navKey: NavKey 
 export default function HubArticleDetailClient({
   slug,
   hubId,
+  article,
 }: {
   slug: string;
   hubId: string;
+  article: ContentRow;
 }) {
-  const searchParams = useSearchParams();
-  const isPreview = searchParams.get("preview") === "1";
-  const [article, setArticle] = useState<ContentRow | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [notFound, setNotFound] = useState(false);
   const config = BACK_CONFIG[hubId] ?? { path: "/", title: "Home", navKey: "radar" as NavKey };
-
-  useEffect(() => {
-    if (!slug) return;
-    let query = supabase.from("contents").select("*").eq("slug", slug);
-    // preview=1 allows viewing pending articles from admin
-    if (!isPreview) query = query.eq("status", "published");
-    query.maybeSingle().then(({ data, error }) => {
-      if (error || !data) setNotFound(true);
-      else setArticle(data as ContentRow);
-      setLoading(false);
-    });
-  }, [slug, isPreview]);
-
-  if (loading) {
-    return (
-      <main className="flex min-h-screen items-center justify-center" style={{ background: "var(--sg-bg)" }}>
-        <span className="h-5 w-5 animate-spin rounded-full border-2" style={{ borderColor: "var(--sg-primary)", borderTopColor: "transparent" }} />
-      </main>
-    );
-  }
-
-  if (notFound || !article) {
-    return (
-      <main className="flex min-h-screen flex-col items-center justify-center" style={{ background: "var(--sg-bg)", color: "var(--sg-text-primary)" }}>
-        <h1 className="mb-2 text-2xl font-bold">404</h1>
-        <Link href={config.path} style={{ color: "var(--sg-primary)", fontSize: 13 }}>
-          ← Back to {config.title}
-        </Link>
-      </main>
-    );
-  }
-
   const title = article.title_en || article.title;
 
   return (
