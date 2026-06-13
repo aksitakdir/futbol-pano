@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { readWcMatchesCache } from "@/lib/hub-sync";
+import { readWcMatchesCache, syncWcMatchesCache } from "@/lib/hub-sync";
 
 export type WcFinishedResult = {
   homeCode: string;
@@ -8,8 +8,18 @@ export type WcFinishedResult = {
   awayScore: number;
 };
 
+const CACHE_TTL_MS = 5 * 60 * 1000;
+
 export async function GET() {
-  const cache = await readWcMatchesCache();
+  const hasApiKey = !!(process.env.FOOTBALL_DATA_API_KEY || process.env.FOOTBALL_API_KEY);
+  let cache = await readWcMatchesCache();
+  const stale =
+    !cache.updatedAt || Date.now() - new Date(cache.updatedAt).getTime() > CACHE_TTL_MS;
+
+  if (stale && hasApiKey) {
+    const sync = await syncWcMatchesCache();
+    if (sync.ok) cache = await readWcMatchesCache();
+  }
 
   const finished: WcFinishedResult[] = cache.matches
     .filter((m) => m.status === "ft")
