@@ -1,7 +1,9 @@
 "use server";
 
+import { revalidatePath } from "next/cache";
 import { supabaseAdmin } from "@/lib/supabase-admin";
 import { isAdminRequest } from "@/lib/admin-auth";
+import { categoryArticlePath } from "@/lib/category-config";
 
 type CreateResult = { ok: boolean; id?: string; error?: string };
 type UpdateResult = { ok: boolean; error?: string };
@@ -35,5 +37,15 @@ export async function updateContent(
     .from("contents")
     .update(payload)
     .eq("id", id);
-  return error ? { ok: false, error: error.message } : { ok: true };
+  if (error) return { ok: false, error: error.message };
+
+  const slug = typeof payload.slug === "string" ? payload.slug : undefined;
+  const category = typeof payload.category === "string" ? payload.category : undefined;
+  if (slug && category) {
+    const articlePath = categoryArticlePath(category, slug);
+    revalidatePath(articlePath);
+    revalidatePath("/");
+  }
+
+  return { ok: true };
 }
