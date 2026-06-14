@@ -100,6 +100,17 @@ function Logo({ scale = 1 }: { scale?: number }) {
   );
 }
 
+async function loadFont(): Promise<ArrayBuffer> {
+  const res = await fetch("https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@700&display=swap");
+  const css = await res.text();
+  const match = css.match(/src:\s*url\(([^)]+)\)/);
+  if (match?.[1]) {
+    const fontRes = await fetch(match[1]);
+    return fontRes.arrayBuffer();
+  }
+  return new ArrayBuffer(0);
+}
+
 export async function GET(req: Request) {
   const url = new URL(req.url);
   const cover = url.searchParams.get("cover") ?? "";
@@ -112,15 +123,22 @@ export async function GET(req: Request) {
   const isStory = format === "story";
   const isSquare = format === "square";
 
-  // Tune sizing per format
-  // Instagram grid crops square (1:1) to ~4:5 thumbnail → ~10% cut top & bottom
-  // Safe zone: keep content within top 12%–88% vertically
   const pad = isStory ? 64 : isSquare ? 56 : 48;
   const topPad = isSquare ? 56 : pad - 8;
   const bottomPad = isStory ? 340 : isSquare ? 80 : pad;
   const titleSize = isStory ? 60 : isSquare ? 56 : 46;
   const maxTitleChars = isStory ? 90 : isSquare ? 80 : 95;
   const title = fitTitle(rawTitle, maxTitleChars);
+
+  let fonts: { name: string; data: ArrayBuffer; weight: 700; style: "normal" }[] = [];
+  try {
+    const fontData = await loadFont();
+    if (fontData.byteLength > 0) {
+      fonts = [{ name: "Space Grotesk", data: fontData, weight: 700 as const, style: "normal" as const }];
+    }
+  } catch { /* fallback to sans-serif */ }
+
+  const fontFamily = fonts.length > 0 ? "'Space Grotesk', sans-serif" : "sans-serif";
 
   return new ImageResponse(
     (
@@ -188,10 +206,11 @@ export async function GET(req: Request) {
           <span
             style={{
               fontSize: titleSize,
-              fontWeight: 900,
+              fontWeight: 700,
+              fontFamily,
               color: "#ffffff",
-              letterSpacing: "-0.03em",
-              lineHeight: 1.06,
+              letterSpacing: "-0.035em",
+              lineHeight: 1.05,
               textShadow: "0 2px 24px rgba(0,0,0,0.7), 0 1px 0 rgba(0,0,0,0.5)",
             }}
           >
@@ -203,6 +222,6 @@ export async function GET(req: Request) {
         </div>
       </div>
     ),
-    { width: w, height: h },
+    { width: w, height: h, fonts: fonts.length > 0 ? fonts : undefined },
   );
 }
