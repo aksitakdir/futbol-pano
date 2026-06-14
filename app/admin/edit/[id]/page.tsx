@@ -293,7 +293,7 @@ export default function DuzenlePage() {
       const res = await fetch("/api/enrich-content", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ id }),
+        body: JSON.stringify({ id, save: true, publish: true }),
       });
       const data = await res.json();
       if (!res.ok) {
@@ -304,7 +304,7 @@ export default function DuzenlePage() {
       setContentEn(data.content);
       setSectionsBlocks(data.sectionsJson);
       setContentMode("blocks");
-      setEnrichResult(`Enriched to ${data.wordCount} words. Review and save when ready.`);
+      setEnrichResult(`Enriched to ${data.wordCount} words — saved & published.`);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Enrich request failed");
     }

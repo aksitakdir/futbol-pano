@@ -114,33 +114,87 @@ export async function POST(request: Request) {
 
   const supabase = createClient(supabaseUrl, supabaseKey);
 
-  let body: { id?: string } = {};
+  let body: { id?: string; slug?: string; save?: boolean; publish?: boolean; bulk?: boolean } = {};
   try {
-    body = (await request.json()) as { id?: string };
+    body = (await request.json()) as typeof body;
   } catch {
     return NextResponse.json({ error: "Invalid JSON body" }, { status: 400 });
   }
 
-  const articleId = body.id;
-  if (!articleId) {
-    return NextResponse.json({ error: "Article ID is required" }, { status: 400 });
+  const autoSave = body.save ?? false;
+  const autoPublish = body.publish ?? false;
+
+  // ── Bulk mode: enrich multiple short articles ──
+  if (body.bulk) {
+    const { data: allArticles } = await supabase
+      .from("contents")
+      .select("id,title,title_en,slug,content,content_en,sections_json,category,status")
+      .eq("category", "tactics-lab")
+      .eq("status", "published");
+
+    const short = (allArticles ?? []).filter((a) => {
+      const text = a.content_en || a.content || "";
+      return text.length > 0 && text.length < 3000;
+    });
+
+    const results: Array<{ slug: string; status: string; wordCount?: number; error?: string }> = [];
+
+    for (const art of short) {
+      try {
+        const enrichRes = await enrichArticle(art, apiKey, supabase, true, true);
+        results.push({ slug: art.slug, status: "success", wordCount: enrichRes.wordCount });
+      } catch (err) {
+        results.push({ slug: art.slug, status: "failed", error: err instanceof Error ? err.message : String(err) });
+      }
+    }
+
+    return NextResponse.json({ total: short.length, results });
   }
 
-  const { data: article, error: fetchError } = await supabase
+  // ── Single article mode ──
+  const articleId = body.id;
+  const articleSlug = body.slug;
+  if (!articleId && !articleSlug) {
+    return NextResponse.json({ error: "Article ID or slug is required" }, { status: 400 });
+  }
+
+  // Look up by ID or slug
+  const query = supabase
     .from("contents")
-    .select("id,title,title_en,slug,content,content_en,sections_json,category")
-    .eq("id", articleId)
-    .single();
+    .select("id,title,title_en,slug,content,content_en,sections_json,category");
+  if (articleId) query.eq("id", articleId);
+  else query.eq("slug", articleSlug!);
+
+  const { data: article, error: fetchError } = await query.single();
 
   if (fetchError || !article) {
     return NextResponse.json({ error: "Article not found" }, { status: 404 });
   }
 
+  try {
+    const result = await enrichArticle(article, apiKey, supabase, autoSave, autoPublish);
+    return NextResponse.json(result);
+  } catch (err) {
+    return NextResponse.json(
+      { error: err instanceof Error ? err.message : String(err) },
+      { status: 500 },
+    );
+  }
+}
+
+/* eslint-disable @typescript-eslint/no-explicit-any */
+async function enrichArticle(
+  article: any,
+  apiKey: string,
+  supabase: any,
+  save: boolean,
+  publish: boolean,
+): Promise<{ content: string; sectionsJson: unknown[]; wordCount: number; title: string; saved: boolean; published: boolean }> {
   const existingContent = article.content_en || article.content || "";
   const title = article.title_en || article.title || "";
 
   if (!existingContent.trim()) {
-    return NextResponse.json({ error: "Article has no content to enrich" }, { status: 400 });
+    throw new Error("Article has no content to enrich");
   }
 
   const userMessage =
@@ -173,7 +227,7 @@ export async function POST(request: Request) {
       const errBody = (await res.json()) as { error?: { message?: string } };
       if (errBody.error?.message) errDetail = errBody.error.message;
     } catch { /* ignore */ }
-    return NextResponse.json({ error: `Anthropic API error: ${errDetail}` }, { status: 500 });
+    throw new Error(`Anthropic API error: ${errDetail}`);
   }
 
   const data = (await res.json()) as {
@@ -186,26 +240,20 @@ export async function POST(request: Request) {
     .join("")
     .trim();
 
-  if (!rawText) {
-    return NextResponse.json({ error: "Model produced no text" }, { status: 500 });
-  }
+  if (!rawText) throw new Error("Model produced no text");
 
   const jsonStr = cleanAndExtractJson(rawText);
-  if (!jsonStr) {
-    return NextResponse.json({ error: "No valid JSON in response" }, { status: 500 });
-  }
+  if (!jsonStr) throw new Error("No valid JSON in response");
 
   let parsed: { content?: string };
   try {
     parsed = JSON.parse(jsonStr);
   } catch {
-    return NextResponse.json({ error: "Could not parse model JSON" }, { status: 500 });
+    throw new Error("Could not parse model JSON");
   }
 
   let content = typeof parsed.content === "string" ? parsed.content.trim() : "";
-  if (!content) {
-    return NextResponse.json({ error: "Enriched content is empty" }, { status: 500 });
-  }
+  if (!content) throw new Error("Enriched content is empty");
 
   content = content.replace(/<cite[^>]*>([\s\S]*?)<\/cite>/gi, "$1");
   content = content.replace(/<cite[^>]*\/>/gi, "");
@@ -213,10 +261,26 @@ export async function POST(request: Request) {
   const sectionsJson = parseMarkupToBlocks(content);
   const wordCount = content.split(/\s+/).length;
 
-  return NextResponse.json({
-    content,
-    sectionsJson,
-    wordCount,
-    title,
-  });
+  let saved = false;
+  let published = false;
+
+  if (save) {
+    const updateData: Record<string, unknown> = {
+      content_en: content,
+      sections_json: sectionsJson,
+    };
+    if (publish) {
+      updateData.status = "published";
+      published = true;
+    }
+    const { error: updateErr } = await supabase
+      .from("contents")
+      .update(updateData)
+      .eq("id", article.id);
+    if (updateErr) throw new Error(`DB save failed: ${updateErr.message}`);
+    saved = true;
+    console.log(`[enrich] Saved "${title}" — ${wordCount} words, published: ${published}`);
+  }
+
+  return { content, sectionsJson, wordCount, title, saved, published };
 }
