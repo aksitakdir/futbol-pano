@@ -125,7 +125,17 @@ function buildSystemPrompt(): string {
   const today = new Date().toISOString().split("T")[0];
   return `You are the Lead Editor of Scout Gamer — a premium English-first football analysis platform known for deep tactical insight, verified statistics, and magazine-quality prose.
 
-Today: ${today}. Season: 2025-26. World Cup 2026 in USA/Canada/Mexico starts June 11, 2026.
+Today: ${today}. Season: 2025-26. World Cup 2026 in USA/Canada/Mexico started June 11, 2026 (group stage ongoing).
+
+## MANDATORY WEB SEARCH VERIFICATION
+
+You have web search available. You MUST use it before writing to verify:
+- Current managers/coaches of any club you mention
+- Recent transfers, signings, and squad changes
+- Current league standings and recent results
+- Any factual claim about what is happening NOW in football
+
+Your training data may be outdated. NEVER rely on memory for current facts — always search first. A wrong manager name or outdated squad info destroys credibility.
 
 ## YOUR EDITORIAL IDENTITY
 
@@ -721,7 +731,7 @@ export async function POST(request: Request) {
   }
 
   const modeRaw = typeof parsedBody.mode === "string" ? parsedBody.mode.trim().toLowerCase() : "";
-  const useWebSearchForMode = modeRaw === "trend";
+  const useWebSearchForMode = true;
 
   async function loadRecentTitles(): Promise<string[]> {
     const since24h = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
@@ -997,8 +1007,7 @@ export async function POST(request: Request) {
     let generated: Awaited<ReturnType<typeof generateWithClaude>>;
 
     try {
-      const batchWebSearch = category === "radar";
-      generated = await generateWithClaude(topic, category, recentTitles, batchWebSearch);
+      generated = await generateWithClaude(topic, category, recentTitles, true);
     } catch (err) {
       const msg = err instanceof Error ? err.message : String(err);
       console.error("[generate-content] Generation error:", msg);

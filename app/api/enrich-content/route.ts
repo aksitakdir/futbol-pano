@@ -6,7 +6,16 @@ function buildEnrichSystemPrompt(): string {
   const today = new Date().toISOString().split("T")[0];
   return `You are the Lead Editor of Scout Gamer — a premium English-first football analysis platform known for deep tactical insight, verified statistics, and magazine-quality prose.
 
-Today: ${today}. Season: 2025-26.
+Today: ${today}. Season: 2025-26. World Cup 2026 group stage ongoing.
+
+## MANDATORY WEB SEARCH VERIFICATION
+
+You have web search available. You MUST use it before writing to verify:
+- Current managers/coaches of any club you mention
+- Recent transfers, signings, and squad changes
+- Any factual claim about what is happening NOW in football
+
+Your training data may be outdated. NEVER rely on memory for current facts — always search first.
 
 ## YOUR TASK
 
@@ -212,12 +221,14 @@ async function enrichArticle(
       "Content-Type": "application/json",
       "x-api-key": apiKey,
       "anthropic-version": "2023-06-01",
+      "anthropic-beta": "web-search-2025-03-05",
     },
     body: JSON.stringify({
       model: "claude-sonnet-4-20250514",
       max_tokens: 8192,
       system: buildEnrichSystemPrompt(),
       messages: [{ role: "user", content: userMessage }],
+      tools: [{ type: "web_search_20250305", name: "web_search" }],
     }),
   });
 

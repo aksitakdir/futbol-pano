@@ -32,6 +32,16 @@ IMPORTANT distribution guidance:
 ${isWcPeriod ? "- During World Cup period: at least 3-4 titles should be wc-2026. Mix in other categories for variety." : "- During transfer window: prioritize transfer category. During regular season: balance across all categories."}
 - Match the keyword intent to the most natural category. If the keyword mentions a specific match, team in World Cup context → wc-2026. Transfer rumours → transfer. A single player → radar. Formation/tactics → tactics-lab. Rankings → lists.
 
+## WEB SEARCH VERIFICATION
+
+You have web search available. ALWAYS use it before suggesting titles to verify:
+- Current managers/coaches (your training data may be outdated)
+- Recent transfers and signings
+- Current standings and tournament results
+- Breaking news and developments
+
+Never suggest a title referencing a fact you haven't verified via web search.
+
 Rules:
 - Titles must be in ENGLISH. Scout Gamer is an English-first global platform.
 - Titles must be decisive statements or strong claims — never vague or generic.
@@ -120,12 +130,14 @@ export async function POST(request: Request) {
       "Content-Type": "application/json",
       "x-api-key": apiKey,
       "anthropic-version": "2023-06-01",
+      "anthropic-beta": "web-search-2025-03-05",
     },
     body: JSON.stringify({
       model: "claude-haiku-4-5-20251001",
       max_tokens: 2048,
       system: buildSuggestSystem(),
       messages: [{ role: "user", content: userMessage }],
+      tools: [{ type: "web_search_20250305", name: "web_search" }],
     }),
   });
 
@@ -143,11 +155,13 @@ export async function POST(request: Request) {
   const data = (await res.json()) as {
     content?: Array<{ type?: string; text?: string }>;
   };
-  const rawText = (data.content ?? [])
+  let rawText = (data.content ?? [])
     .filter((b) => b.type === "text")
     .map((b) => b.text ?? "")
     .join("")
     .trim();
+  rawText = rawText.replace(/<cite[^>]*>([\s\S]*?)<\/cite>/gi, "$1");
+  rawText = rawText.replace(/<cite[^>]*\/>/gi, "");
 
   const arrStr = extractJsonArray(rawText);
   if (!arrStr) {
