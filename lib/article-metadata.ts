@@ -4,6 +4,7 @@ import { createClient } from "./supabase";
 function plainText(html: string): string {
   return html
     .replace(/<[^>]+>/g, " ")
+    .replace(/^@\w+:\s*/gm, "")
     .replace(/[#*_\n]/g, " ")
     .replace(/\s+/g, " ")
     .trim();
