@@ -116,7 +116,9 @@ async function updateFeaturedPlayerPool(
 
   const rawText = await callClaude(apiKey, {
     system:
-      "You are a football scouting expert. Verify current data via web search. Your response must be only a valid JSON array. " +
+      "You are a football scouting expert. You MUST use web search to verify ALL player data — names, clubs, stats, ages. " +
+      "Your training data is OUTDATED. NEVER rely on memory for any fact. Always search first. " +
+      "If you cannot verify a stat via web search, omit it or use 0. Your response must be only a valid JSON array. " +
       "All text must be in English. position field must use: Midfielder, Forward, Centre-Back, Left-Back, Right-Back, Winger, Attacking Midfielder.",
     user: userPrompt,
     maxTokens: 3200,
@@ -207,7 +209,9 @@ async function updateFormPlayers(
 
   const rawText = await callClaude(apiKey, {
     system:
-      "You are a football analytics expert. Verify current form data via web search. Your response must be only a valid JSON array. " +
+      "You are a football analytics expert. You MUST use web search to verify ALL player data — names, clubs, stats, ages, goals. " +
+      "Your training data is OUTDATED. NEVER rely on memory for any fact. Always search first. " +
+      "If you cannot verify a stat via web search, use 0. Your response must be only a valid JSON array. " +
       "All text must be in English. Use English position labels: Forward, Midfielder, Winger, Defender, Goalkeeper, Attacking Midfielder, Defensive Midfielder.",
     user: formPlayersUserPrompt,
     maxTokens: 2800,

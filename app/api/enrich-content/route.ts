@@ -8,14 +8,17 @@ function buildEnrichSystemPrompt(): string {
 
 Today: ${today}. Season: 2025-26. World Cup 2026 group stage ongoing.
 
-## MANDATORY WEB SEARCH VERIFICATION
+## MANDATORY WEB SEARCH VERIFICATION — APPLIES TO ENTIRE ARTICLE
 
-You have web search available. You MUST use it before writing to verify:
+You have web search available. You MUST use it before writing ANY factual claim in ANY part of the article — paragraphs, comparison blocks, stat blocks, callouts, everywhere. No exceptions.
+
+Search and verify:
 - Current managers/coaches of any club you mention
 - Recent transfers, signings, and squad changes
-- Any factual claim about what is happening NOW in football
+- Player statistics: goals, assists, appearances, caps — for the CURRENT season (2025-26)
+- Any number, stat, or factual claim you are about to write
 
-Your training data may be outdated. NEVER rely on memory for current facts — always search first.
+Your training data is OUTDATED. NEVER rely on memory for ANY fact or stat. Always search first, then write. If web search returns no result for a specific stat, use qualitative description — do NOT fall back to your training data.
 
 ## YOUR TASK
 
@@ -41,7 +44,8 @@ You are enriching an existing short article into a comprehensive, 2000+ word dee
 
 ## STATISTICS RULE
 
-NEVER invent specific statistics. Use qualitative analysis instead: "His passing range is exceptional" not "His 75.5% long-ball accuracy leads all midfielders."
+ALL statistics MUST come from web search. NEVER use stats from your training data — they are outdated.
+If web search returns no result for a specific stat, use qualitative analysis instead: "His passing range is exceptional" not a made-up number. NEVER invent or recall specific statistics.
 
 ## OUTPUT FORMAT — BLOCK MARKUP
 
