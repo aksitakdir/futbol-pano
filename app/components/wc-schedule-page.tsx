@@ -932,13 +932,13 @@ function GroupCard({ groupId, matches, highlight, mounted }: { groupId: WcGroupI
                 style={{
                   fontSize: 10,
                   fontWeight: 600,
-                  color: "var(--wc-teal)",
+                  color: m.status === "finished" ? "var(--wc-teal)" : "var(--wc-teal)",
                   width: 42,
                   flexShrink: 0,
                   textAlign: "center",
                 }}
               >
-                {localTime}
+                {m.status === "finished" ? "FT" : localTime}
               </span>
               <TeamFlag code={m.home} size={16} />
               <span
@@ -953,7 +953,13 @@ function GroupCard({ groupId, matches, highlight, mounted }: { groupId: WcGroupI
               >
                 {getTeamName(m.home)}
               </span>
-              <span className="mono" style={{ fontSize: 10, color: "var(--sg-text-muted)", padding: "0 4px" }}>v</span>
+              {m.status === "finished" && m.homeScore != null ? (
+                <span className="mono" style={{ fontSize: 11, fontWeight: 700, color: "var(--sg-text-primary)", padding: "0 4px", letterSpacing: "0.04em" }}>
+                  {m.homeScore} – {m.awayScore}
+                </span>
+              ) : (
+                <span className="mono" style={{ fontSize: 10, color: "var(--sg-text-muted)", padding: "0 4px" }}>v</span>
+              )}
               <span
                 style={{
                   flex: 1,
