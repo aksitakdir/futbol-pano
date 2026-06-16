@@ -781,7 +781,7 @@ function IceriklerPageInner() {
             </p>
             <button
               type="button"
-              disabled={contentGenerating || suggestLoading}
+              disabled={contentGenerating || suggestLoading || selectedSuggestIdx === null}
               onClick={() => handleProduceSelected()}
               className="rounded-lg border border-violet-500/40 bg-violet-500/15 px-4 py-2 text-xs font-bold text-violet-200 transition hover:bg-violet-500/25 disabled:opacity-50"
             >
