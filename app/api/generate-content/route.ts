@@ -581,7 +581,7 @@ async function generateWithClaude(
 
   const body: Record<string, unknown> = {
     model: "claude-sonnet-4-6",
-    max_tokens: 4096,
+    max_tokens: 16000,
     system: buildSystemPrompt(),
     messages: [{ role: "user", content: userMessage }],
   };
