@@ -2,6 +2,8 @@ import { NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
 import { parseMarkupToBlocks } from "@/lib/parse-blocks";
 
+export const maxDuration = 60;
+
 function buildEnrichSystemPrompt(): string {
   const today = new Date().toISOString().split("T")[0];
   return `You are the Lead Editor of Scout Gamer — a premium English-first football analysis platform known for deep tactical insight, verified statistics, and magazine-quality prose.

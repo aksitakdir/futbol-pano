@@ -1,5 +1,7 @@
 import { NextResponse } from "next/server";
 
+export const maxDuration = 60;
+
 export type SuggestTitleMode = "trend" | "general" | "historical" | "chronological";
 
 function buildSuggestSystem(): string {
