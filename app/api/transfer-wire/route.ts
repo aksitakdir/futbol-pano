@@ -8,7 +8,7 @@ import {
 export const dynamic = "force-dynamic";
 
 const CDN_CACHE =
-  "public, s-maxage=3600, stale-while-revalidate=86400, max-age=300";
+  "public, s-maxage=300, stale-while-revalidate=300, max-age=60";
 
 function wireJson(
   body: Record<string, unknown>,

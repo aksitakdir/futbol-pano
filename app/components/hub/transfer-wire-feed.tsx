@@ -470,7 +470,7 @@ export default function TransferWireFeed({ initialLimit = 40 }: Props) {
                                 whiteSpace: "nowrap",
                               }}
                             >
-                              {h.timeLabel}
+                              {h.publishedAt ? relativeTimeLabel(h.publishedAt) : h.timeLabel}
                             </span>
                             <span className="mono" style={{ fontSize: 12, color: "var(--transfer-cyan)", opacity: 0.8 }} aria-hidden>
                               ↗
