@@ -513,6 +513,8 @@ function cleanAndExtractJson(raw: string): string | null {
   let text = raw
     .replace(/```json\n?/g, "")
     .replace(/```\n?/g, "")
+    .replace(/<cite[^>]*>([\s\S]*?)<\/cite>/gi, "$1")
+    .replace(/<cite[^>]*\/>/gi, "")
     .trim();
 
   const jsonStart = text.indexOf("{");
