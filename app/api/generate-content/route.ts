@@ -1,9 +1,9 @@
 import { NextResponse } from "next/server";
 import { createClient, type SupabaseClient } from "@supabase/supabase-js";
-
-export const maxDuration = 60;
 import { parseMarkupToBlocks } from "@/lib/parse-blocks";
 import { getPlayerContext, getTeamContext, TEAM_IDS, LEAGUE_IDS } from "@/lib/api-football-stats";
+
+export const maxDuration = 60;
 
 type FcPlayerRow = {
   name: string;
