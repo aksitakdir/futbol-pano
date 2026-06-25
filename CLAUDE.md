@@ -4,9 +4,11 @@ Guidance for Claude Code when working in this repository.
 
 ## Project
 
-**futbol-pano** (a.k.a. ScoutGamer) — a Turkish/English football content site: editorial
-articles, player lists, transfers, a World Cup 2026 hub, tournament/arena brackets, and
-tactics content, plus an admin CMS with AI-assisted content generation.
+**futbol-pano** (a.k.a. Scout Gamer, scoutgamer.com) — an English-only football content
+site for a global audience, with no geographic or league bias. Core focus: young-talent
+scouting, rising footballers, and game culture. Content includes editorial articles, player
+scouting lists, transfer analysis, a World Cup 2026 hub, tournament/arena brackets, and
+tactical deep-dives, plus an admin CMS with AI-assisted content generation.
 
 ## Stack
 
@@ -53,10 +55,11 @@ Data/maintenance scripts live in `scripts/` (mostly `.mjs`, run with `node`); SQ
 - Keep new business logic in `lib/`; pages/components stay thin.
 - Supabase access: import `supabase` (or `createClient()`) from `lib/supabase.ts`. This is
   the anon client and is subject to RLS; there is no service-role/admin client.
-- The codebase was migrated from Turkish to English for DB values, code, and public pages
-  (see recent commits). Prefer **English** for new identifiers, slugs, and stored values.
-  Some UI copy and older scripts/`.env` comments are still Turkish — follow the surrounding
-  file.
+- The site is **English-only**. All public content, UI copy, DB values, identifiers, slugs,
+  and stored values must be in English — no exceptions. The `title` and `title_en` columns
+  in `contents` are kept in sync (both English).
+- Content is **league/geography-neutral**: no league, country, or region is prioritized.
+  The site serves a global audience and must not skew toward any specific football market.
 
 ## Auth (admin)
 
