@@ -36,11 +36,11 @@ schema, same rendering — zero spend.
    and is exactly the failure the user is trying to eliminate. If a search returns nothing for
    a specific number, write qualitatively ("an elite creative outlet") instead of inventing a stat.
 
-3. **Write the article in block markup** (syntax below), following the editorial voice and
-   the structure patterns below. Typical length: 900–1500 words. Include a `@lead:`, a
-   distinctive `@section:` for each major beat, at least one `@player:`, one `>` pull quote,
-   and one `@callout:`. Use `@vs:`, `@stat:`, `@faq:` where they genuinely add value — every
-   number in them must come from your web search.
+3. **Design the block structure for THIS article, then write it.** Do not reach for a fixed
+   template. Before writing, decide which blocks the content actually needs (see the
+   adaptive framework below), then write it in block markup following the editorial voice.
+   Typical length: 900–1500 words. The only near-constant is a `@lead:` opener — everything
+   else is chosen to fit the piece. Every number in any block must come from your web search.
 
 4. **Preview with a dry run** before publishing:
    ```bash
@@ -93,38 +93,73 @@ Only `title`, `category`, and `markup` are required. `slug` is derived from the 
 `radar`, `tactics-lab`, and `lists` render from `sections_json` (the block editor). `transfer`
 and `wc-2026` also store the markup and appear in their hubs via `hub_tags`.
 
-## Structure patterns — this is what makes Scout Gamer look distinctive
+## Adaptive composition — choose blocks to fit the content, never a template
 
-Scout Gamer's visual identity comes from **colored, numbered section headers and player
-cards**, not flat text. Use them deliberately:
+The block editor is a **toolbox of 14 components**. A great Scout Gamer article uses the few
+that genuinely serve its subject and skips the rest. The goal is the opposite of a template:
+**no two articles should share the same skeleton.** A tactical breakdown should not look like a
+player profile, which should not look like a transfer verdict. Force nothing — not player
+cards, not VS blocks, not stat cards. Reach for a block only when the content calls for it.
 
-- **`@section:` is the hero header**, not `#`. It renders as a numbered editorial block
-  (01, 02, 03…) with an amber divider line, a large coral section number, and a bold display
-  heading. This is the eye-catching, branded treatment. Use `@section:` for every major beat
-  of the article. Reserve plain `#` headers for a single thematic turn (e.g. a closing thesis)
-  so it reads as a different kind of beat — never as the default.
+Three rules govern every composition:
 
-- **Player-led pieces — one card per player, every time.** If an article profiles or
-  highlights multiple players (a "best young talents" piece, a shortlist, a comparison), give
-  **every** highlighted player their own `@section:` header **and** their own `@player:` card,
-  followed by the analysis. Never highlight five players but only card two — each subject gets
-  the full treatment:
+1. **Fit over habit.** Ask "what does this specific story need to be understood and to look
+   alive?" Pick those blocks. If a piece has no genuine head-to-head, do not add a VS block to
+   fill space. If it names one player, do not card five.
+2. **Vary the rhythm.** Alternate prose with branded blocks so the page never runs as a grey
+   wall of paragraphs — but vary *which* blocks and *in what order* between articles. Rotate
+   your openers, your dividers, your section treatment. Repetition across articles is the enemy.
+3. **Show the toolbox.** Across a body of work, use the full range — images, lists, FAQs, stat
+   cards, quotes, callouts, players, comparisons. An article that only ever uses `@section:` +
+   `@player:` is as monotonous as one that only uses plain text.
 
-  ```
-  @section: Gilberto Mora — the 17-year-old rewriting the record books
-  One framing sentence as the section's body line.
+### The 14 blocks — what each is for, and when to reach for it
 
-  @player: Gilberto Mora
+| Block | Markup | Use it when… | Don't use it when… |
+|-------|--------|--------------|--------------------|
+| **Lead** | `@lead:` | The opening hook of almost every article. | — (near-universal opener) |
+| **Section** | `@section:` + body | A major beat needs a bold, **numbered (01, 02…) coral header** — the branded look. The workhorse structural header. | You want a quiet sub-heading; use `#` instead. |
+| **Header** | `#` / `##` | A plain H2/H3 turn (a thesis, a single pivot) that should read differently from the numbered sections. | It's a main beat — use `@section:` for the branded treatment. |
+| **Plain** | paragraph text | Analysis and narrative. The connective tissue. | — |
+| **Pull quote** | `>` | One memorable line deserves to ring out (cyan italic, centered). One per article, max. | You have a stat or insight — that's a callout/stat, not a quote. |
+| **Callout** | `@callout:` | A single key tactical insight or "did you know" to stop the reader (coral box). | Every paragraph — it loses impact if repeated. |
+| **Player card** | `@player:` | The piece genuinely profiles/features a player; give a card to each one actually highlighted (FIFA-style auto stats). | The player is only mentioned in passing, or the article isn't about people (a tactic, a trend). |
+| **VS** | `@vs:` | There is a real head-to-head: two players, two systems, two managers, two eras. | There's no genuine comparison — don't invent one. |
+| **Stat cards** | `@stat:` | 2–4 numbers deserve to land big (profiles, transfer fees, records). Every value web-searched. | You have no verified numbers, or only one. |
+| **List** | `- ` (bullet) / `1. ` (numbered) | Ranked entries (numbered = coral), or a clean set of points/principles (bullets). Core to **lists** pieces. | A flowing argument — write prose, not bullets. |
+| **FAQ** | `@faq:` | Quick-reference facts that also earn SEO rich-results (deal details, key numbers, eligibility). | There are no natural questions to answer. |
+| **Image** | `![alt](url)` | You have a *reliable* image URL that adds real value. | You'd be hotlinking a fragile/unknown URL — instead leave a note recommending the editor upload one. |
+| **YouTube** | `@video:` | A specific clip materially adds to the piece. (The hero `youtube_query_*` fields already auto-populate a video strip, so inline video is optional.) | Just to decorate. |
+| **Divider** | `@divider:` `dots` / `gradient` | A clean visual break before a closing turn. Vary the style between articles. | Between every block — it's punctuation, not filler. |
 
-  Two or three paragraphs of analysis, every stat web-searched.
-  ```
+Inline, inside `@lead:` / `@callout:` / `@section:` bodies and plain paragraphs, you have
+`**bold**`, `*italic*`, and `[text](url)`.
 
-  Repeat that trio (`@section:` → `@player:` → analysis) for each player. The numbered headers
-  then read as a clean 01…0N sequence of subjects, each anchored by its card.
+### Block palettes by article type (starting points, not straitjackets)
 
-- Break up long stretches with `@callout:`, a `>` pull quote, a `@vs:` comparison, a `@stat:`
-  card group, and a closing `@divider: gradient`. A strong piece alternates prose with these
-  branded blocks rather than running paragraph after paragraph.
+Treat these as the natural toolkit for each archetype — then adapt to the actual story.
+
+- **Single player profile / scouting report (radar):** `@lead:` → one `@player:` card for the
+  subject → `@section:` beats (style, weaknesses, ceiling) → one `@stat:` group for their key
+  numbers → maybe a `>` quote. A `@vs:` only if you're genuinely measuring them against a peer.
+- **Multi-player shortlist / "best young talents" (lists, radar, wc-2026):** the player-led
+  pattern — for **each** highlighted player a `@section:` header + their `@player:` card +
+  analysis. Optionally a `@stat:` summary and one `@vs:` between the two headline names.
+- **Tactical analysis (tactics-lab):** `@lead:` → `@section:` beats for each tactical idea →
+  a `@callout:` for the central insight → a `-` bullet list of principles or triggers → often
+  **zero player cards** (or just one). Pair with hero `pitch-diagram`.
+- **Transfer analysis (transfer):** `@lead:` → a `@callout:` verdict → `@stat:` for fee/age/
+  numbers → maybe one `@player:` for the subject and a `@vs:` against who they replace → a
+  `@faq:` for the deal specifics.
+- **World Cup match/preview (wc-2026):** `@vs:` for the two sides → `@stat:` for form/numbers →
+  1–2 `@player:` cards for the men who decide it (not forced) → `@faq:` for quick facts.
+- **Ranked list (lists):** a numbered `1.` list for the ranking spine, or the player-led
+  `@section:` + `@player:` pattern if each entry deserves depth → a `@stat:` highlight.
+
+When the article *is* a multi-player piece, the player-led pattern still holds: **give every
+player you highlight their own `@section:` header and their own `@player:` card** — never card
+some and skip others. That rule is about fairness within player-led pieces, not a mandate to
+make every article player-led.
 
 ## Editorial voice
 
@@ -184,12 +219,16 @@ Winger | Forward                  then bullet rows "- left stat | right stat"
 @faq: Quick Reference          → Q/A rows, "Question? Answer" or "Question | Answer"
 How old is he? Just 18.
 
-@video: <youtube url or id>    → embedded video
-![alt text](image-url)         → image
-- bullet list item             → ul (consecutive = one list)
-1. numbered item               → ol
-@divider  /  @divider: dots  /  @divider: gradient
+@video: <youtube url or id>    → embedded video (optional; hero strip auto-fills from youtube_query_*)
+![alt text](image-url)         → image (only with a reliable URL; alt text is required)
+- bullet list item             → ul, accent-dot bullets (consecutive lines = one list)
+1. numbered item               → ol, coral numbered (great for ranked "lists" pieces)
+@divider  /  @divider: dots  /  @divider: gradient   → vary the style between articles
 ```
+
+Note: inline images need a real, reliable URL. If you don't have one, omit the image and tell
+the user in your report to upload one in admin (the editor has an Upload button). The cover
+image is handled separately by the hero, not by an `![...]` block.
 
 ### VS-block rules (strict)
 1. Always use a pipe `|` as the separator on every line — never the word "vs".
