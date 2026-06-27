@@ -23,8 +23,16 @@
  *     "youtube_query_1": "optional",
  *     "youtube_query_2": "optional",
  *     "news_query": "optional",
- *     "status": "pending|published (default pending)"
+ *     "status": "pending|published (default pending)",
+ *     "confirmed_deal": {                  // optional — files a Confirmed Deals row
+ *       "player_name": "...", "from_club": "...", "to_club": "...",
+ *       "fee": "£40m | Free | Loan | Undisclosed", "transfer_date": "YYYY-MM-DD",
+ *       "is_published": true
+ *     }
  *   }
+ *
+ * A brief may carry an article, a confirmed_deal, or both. A deal-only brief
+ * (no markup) just files the Confirmed Deals row.
  *
  * The markup parser below is a faithful mirror of lib/parse-blocks.ts. Keep the
  * two in sync if the block syntax ever changes.
@@ -289,6 +297,47 @@ const CATEGORIES = ["radar", "tactics-lab", "lists", "wc-2026", "transfer"];
 const VALID_ACCENTS = ["emerald", "cyan", "sky", "rose", "amber", "lime"];
 const VALID_HERO = ["player-cards", "cover-image", "pitch-diagram", "text-only"];
 
+/**
+ * Validate + normalize an optional confirmed-deal object into a
+ * hub_completed_transfers row. Returns null if absent; exits on bad input.
+ * The site is English-only, so the legacy fee_tr column mirrors fee_en.
+ */
+function validateDeal(raw) {
+  if (!raw || typeof raw !== "object") return null;
+  const playerName = (raw.player_name ?? "").trim();
+  const fromClub = (raw.from_club ?? "").trim();
+  const toClub = (raw.to_club ?? "").trim();
+  const fee = (raw.fee ?? raw.fee_en ?? "").trim();
+  const date = (raw.transfer_date ?? "").trim();
+
+  const missing = [];
+  if (!playerName) missing.push("player_name");
+  if (!fromClub) missing.push("from_club");
+  if (!toClub) missing.push("to_club");
+  if (!date) missing.push("transfer_date");
+  if (missing.length) {
+    console.error(`confirmed_deal missing required field(s): ${missing.join(", ")}`);
+    process.exit(1);
+  }
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(date)) {
+    console.error(`confirmed_deal.transfer_date must be YYYY-MM-DD (got "${date}")`);
+    process.exit(1);
+  }
+
+  return {
+    player_name: playerName,
+    from_club: fromClub,
+    to_club: toClub,
+    fee_en: fee,
+    fee_tr: fee, // legacy column kept in sync (English-only site)
+    transfer_date: date,
+    sort_order: Number.isFinite(raw.sort_order) ? raw.sort_order : 0,
+    is_published: raw.is_published === false ? false : true,
+    source: "manual", // not "seed" — the public strip filters seed rows out
+    updated_at: new Date().toISOString(),
+  };
+}
+
 // ---- main ---------------------------------------------------------------
 async function main() {
   const inputPath = process.argv[2];
@@ -308,18 +357,27 @@ async function main() {
   const title = (brief.title ?? "").trim();
   const category = (brief.category ?? "").trim();
   const markup = (brief.markup ?? "").trim();
+  const deal = validateDeal(brief.confirmed_deal);
+  const hasArticle = Boolean(markup);
 
-  if (!title) { console.error("`title` is required"); process.exit(1); }
-  if (!CATEGORIES.includes(category)) {
-    console.error(`\`category\` must be one of: ${CATEGORIES.join(", ")}`);
+  // A brief must produce at least one of: an article, or a confirmed deal.
+  if (!hasArticle && !deal) {
+    console.error("Brief must include `markup` (an article) and/or `confirmed_deal`.");
     process.exit(1);
   }
-  if (!markup) { console.error("`markup` is required"); process.exit(1); }
 
-  const sectionsJson = parseMarkupToBlocks(markup);
-  if (sectionsJson.length === 0) {
-    console.error("Parsed markup produced 0 blocks — check the markup syntax.");
-    process.exit(1);
+  let sectionsJson = [];
+  if (hasArticle) {
+    if (!title) { console.error("`title` is required for an article"); process.exit(1); }
+    if (!CATEGORIES.includes(category)) {
+      console.error(`\`category\` must be one of: ${CATEGORIES.join(", ")}`);
+      process.exit(1);
+    }
+    sectionsJson = parseMarkupToBlocks(markup);
+    if (sectionsJson.length === 0) {
+      console.error("Parsed markup produced 0 blocks — check the markup syntax.");
+      process.exit(1);
+    }
   }
 
   // --dry: parse + validate only, never touch the DB
@@ -327,13 +385,40 @@ async function main() {
     console.log(JSON.stringify({
       ok: true,
       dryRun: true,
-      title,
-      category,
-      blocks: sectionsJson.length,
-      blockTypes: sectionsJson.map((b) => b.type),
-      sections_json: sectionsJson,
+      article: hasArticle ? {
+        title, category,
+        blocks: sectionsJson.length,
+        blockTypes: sectionsJson.map((b) => b.type),
+        sections_json: sectionsJson,
+      } : null,
+      confirmed_deal: deal ?? null,
     }, null, 2));
     return;
+  }
+
+  const out = {};
+
+  // ---- confirmed deal (hub_completed_transfers) ----
+  if (deal) {
+    const { data, error } = await supabase
+      .from("hub_completed_transfers")
+      .insert(deal)
+      .select("id, player_name")
+      .single();
+    if (error) {
+      console.error("Confirmed-deal insert failed:", error.message);
+      process.exit(1);
+    }
+    out.confirmed_deal = {
+      id: data.id,
+      player: data.player_name,
+      published: deal.is_published,
+      shows_in: "/transfers (Confirmed Deals strip)",
+    };
+    if (!hasArticle) {
+      console.log(JSON.stringify({ ok: true, ...out }, null, 2));
+      return;
+    }
   }
 
   const slug = (brief.slug && brief.slug.trim()) ? brief.slug.trim() : slugify(title);
@@ -384,6 +469,7 @@ async function main() {
       ok: true, updated: true, id: data.id, slug: data.slug,
       category, status, blocks: sectionsJson.length,
       admin_edit: `/admin/edit/${data.id}`,
+      ...out,
     }, null, 2));
     return;
   }
@@ -403,6 +489,7 @@ async function main() {
     status,
     blocks: sectionsJson.length,
     admin_edit: `/admin/edit/${data.id}`,
+    ...out,
   }, null, 2));
 }
 

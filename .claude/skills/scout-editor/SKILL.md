@@ -58,7 +58,9 @@ schema, same rendering — zero spend.
    pass `"status": "published"` if the user explicitly asks to publish immediately.
 
 6. **Report** the admin edit link (`/admin/edit/<id>`) so the user can review, add a cover
-   image / YouTube videos, and publish.
+   image / YouTube videos, and publish. If a `confirmed_deal` was filed, note that it's live in
+   the Confirmed Deals strip on `/transfers` (it publishes immediately unless `is_published:
+   false`).
 
 ## Brief JSON shape
 
@@ -73,10 +75,22 @@ schema, same rendering — zero spend.
   "news_query": "optional search string for the article's news strip",
   "youtube_query_1": "optional",
   "youtube_query_2": "optional",
-  "status": "pending"
+  "status": "pending",
+  "confirmed_deal": {
+    "player_name": "...",
+    "from_club": "...",
+    "to_club": "...",
+    "fee": "£40m (or 'Free' / 'Loan' / 'Undisclosed')",
+    "transfer_date": "2026-07-15",
+    "is_published": true
+  }
 }
 ```
-Only `title`, `category`, and `markup` are required. `slug` is derived from the title.
+For an article, `title`, `category`, and `markup` are required (`slug` is derived from the
+title). `confirmed_deal` is optional and independent: include it to also register a row in the
+**Confirmed Deals** strip on `/transfers`. A brief may carry an article, a `confirmed_deal`, or
+both. A deal-only brief (no `markup`) just files the deal — useful for quickly logging a done
+transfer without a full write-up.
 
 ## Categories
 
@@ -92,6 +106,34 @@ Only `title`, `category`, and `markup` are required. `slug` is derived from the 
 
 `radar`, `tactics-lab`, and `lists` render from `sections_json` (the block editor). `transfer`
 and `wc-2026` also store the markup and appear in their hubs via `hub_tags`.
+
+## Transfer content playbook
+
+Transfer content is a strategic priority — once the World Cup ends, the transfer window
+becomes the site's highest-SEO subject. Treat it as a content lane to develop deliberately,
+not a single article type. The `/transfers` hub already has three layers: the auto **Transfer
+Wire** (RSS headlines), **Scout Analysis** (our `transfer`-category articles), and the
+**Confirmed Deals** strip (`hub_completed_transfers`). This skill feeds the latter two.
+
+Angles that earn search traffic and suit our voice (vary across these — don't write the same
+shape twice):
+
+- **Done-deal analysis.** A completed transfer: what it means tactically, why now, who wins.
+  Pair the article (`category: "transfer"`) with a `confirmed_deal` so the deal also lands in
+  the Confirmed Deals strip in one shot.
+- **Rumour deep-dive / "will they go".** Assess a live rumour: fit, fee realism, likelihood.
+  A `@callout:` verdict + a `@vs:` against the player they'd replace works well.
+- **Club window verdict.** Grade a club's window — `@stat:` for spend/ins/outs, a `-` list of
+  signings, a `@callout:` verdict.
+- **Market trend pieces.** "Why every elite club suddenly wants left-footed centre-backs" —
+  a trend with examples, light on player cards, heavy on argument.
+- **Replacement / shortlist.** "Five realistic replacements for X" — the player-led pattern
+  (`@section:` + `@player:` per candidate).
+
+Always web-search the current state of a deal before writing — fees, clubs, and whether it's
+actually done change by the hour. For the `confirmed_deal`, only file deals that are genuinely
+confirmed (here-we-go / official), and set `fee` to a clean English string (`£40m`, `Free`,
+`Loan`, `Undisclosed`). Rumours belong in an article's prose, not the Confirmed Deals strip.
 
 ## Adaptive composition — choose blocks to fit the content, never a template
 
