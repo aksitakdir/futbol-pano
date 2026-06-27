@@ -36,10 +36,11 @@ schema, same rendering — zero spend.
    and is exactly the failure the user is trying to eliminate. If a search returns nothing for
    a specific number, write qualitatively ("an elite creative outlet") instead of inventing a stat.
 
-3. **Write the article in block markup** (syntax below), following the editorial voice.
-   Typical length: 900–1500 words. Include a `@lead:`, 3–5 `#` sections, at least one
-   `@player:`, one `>` pull quote, and one `@callout:`. Use `@vs:`, `@stat:`, `@faq:` where
-   they genuinely add value — every number in them must come from your web search.
+3. **Write the article in block markup** (syntax below), following the editorial voice and
+   the structure patterns below. Typical length: 900–1500 words. Include a `@lead:`, a
+   distinctive `@section:` for each major beat, at least one `@player:`, one `>` pull quote,
+   and one `@callout:`. Use `@vs:`, `@stat:`, `@faq:` where they genuinely add value — every
+   number in them must come from your web search.
 
 4. **Preview with a dry run** before publishing:
    ```bash
@@ -92,6 +93,39 @@ Only `title`, `category`, and `markup` are required. `slug` is derived from the 
 `radar`, `tactics-lab`, and `lists` render from `sections_json` (the block editor). `transfer`
 and `wc-2026` also store the markup and appear in their hubs via `hub_tags`.
 
+## Structure patterns — this is what makes Scout Gamer look distinctive
+
+Scout Gamer's visual identity comes from **colored, numbered section headers and player
+cards**, not flat text. Use them deliberately:
+
+- **`@section:` is the hero header**, not `#`. It renders as a numbered editorial block
+  (01, 02, 03…) with an amber divider line, a large coral section number, and a bold display
+  heading. This is the eye-catching, branded treatment. Use `@section:` for every major beat
+  of the article. Reserve plain `#` headers for a single thematic turn (e.g. a closing thesis)
+  so it reads as a different kind of beat — never as the default.
+
+- **Player-led pieces — one card per player, every time.** If an article profiles or
+  highlights multiple players (a "best young talents" piece, a shortlist, a comparison), give
+  **every** highlighted player their own `@section:` header **and** their own `@player:` card,
+  followed by the analysis. Never highlight five players but only card two — each subject gets
+  the full treatment:
+
+  ```
+  @section: Gilberto Mora — the 17-year-old rewriting the record books
+  One framing sentence as the section's body line.
+
+  @player: Gilberto Mora
+
+  Two or three paragraphs of analysis, every stat web-searched.
+  ```
+
+  Repeat that trio (`@section:` → `@player:` → analysis) for each player. The numbered headers
+  then read as a clean 01…0N sequence of subjects, each anchored by its card.
+
+- Break up long stretches with `@callout:`, a `>` pull quote, a `@vs:` comparison, a `@stat:`
+  card group, and a closing `@divider: gradient`. A strong piece alternates prose with these
+  branded blocks rather than running paragraph after paragraph.
+
 ## Editorial voice
 
 You are a football connoisseur who writes with authority but never arrogance. You understand
@@ -123,19 +157,20 @@ plain/lead/callout/section bodies.
 ```
 @lead: Opening hook paragraph. Vivid, compelling. Renders as the lead. (multi-line until blank)
 
-# Section Heading              → H2, appears in table of contents
-## Sub-heading                 → H3
+# Section Heading              → plain H2 — use sparingly, only for a thematic turn
+## Sub-heading                 → plain H3
+
+@section: Heading              → THE distinctive header: numbered (01, 02…), amber line,
+One framing sentence of body.     coral number, bold display heading. Use for every major beat.
 
 Regular paragraph text. Consecutive lines = one paragraph.
 
 @player: Player Name           → player card (comma-separate for several: @player: A, B)
+                                  Give every highlighted player their own card.
 
 > One memorable pull quote.    → place after the 2nd/3rd section, one per article
 
 @callout: A key insight or "did you know" that stops the reader. One per article.
-
-@section: Heading With Body
-Body text on the next lines, until a blank line.
 
 @vs: Left Name | Right Name    → comparison; line 2 = "Left subtitle | Right subtitle"
 Winger | Forward                  then bullet rows "- left stat | right stat"

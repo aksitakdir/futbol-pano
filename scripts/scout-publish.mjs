@@ -365,6 +365,29 @@ async function main() {
     hub_tags,
   };
 
+  // --update <id>: overwrite an existing article instead of inserting a new one
+  const updateFlag = process.argv.indexOf("--update");
+  const updateId = updateFlag !== -1 ? process.argv[updateFlag + 1] : null;
+
+  if (updateId) {
+    const { data, error } = await supabase
+      .from("contents")
+      .update(row)
+      .eq("id", updateId)
+      .select("id, slug")
+      .single();
+    if (error) {
+      console.error("DB update failed:", error.message);
+      process.exit(1);
+    }
+    console.log(JSON.stringify({
+      ok: true, updated: true, id: data.id, slug: data.slug,
+      category, status, blocks: sectionsJson.length,
+      admin_edit: `/admin/edit/${data.id}`,
+    }, null, 2));
+    return;
+  }
+
   const { data, error } = await supabase.from("contents").insert(row).select("id, slug").single();
 
   if (error) {
