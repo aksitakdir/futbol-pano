@@ -5,7 +5,7 @@
 // ─── Supabase types ───────────────────────────────────────────────────────────
 
 export type ArenaGameStatus = "published" | "draft";
-export type ArenaGameType = "random_4" | "random_8" | "random_16" | "random_32" | "random_64" | "random_128" | "fixed_8";
+export type ArenaGameType = "random_4" | "random_8" | "random_16" | "random_32" | "random_64" | "random_128" | "fixed_8" | "fixed_32";
 export type ArenaCardColor = "primary" | "secondary" | "tertiary" | "amber" | "rose";
 
 export type ArenaParticipant = {
@@ -66,6 +66,7 @@ export function bracketParticipantCount(gameType: ArenaGameType): number {
     case "fixed_8":
     case "random_8":
       return 8;
+    case "fixed_32":
     case "random_32":
       return 32;
     case "random_64":

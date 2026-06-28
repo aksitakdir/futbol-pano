@@ -57,6 +57,18 @@ function buildInitialMatches(participants: ParticipantData[], gameType: ArenaGam
       right: { name: p.vs ?? "TBD", subtitle: undefined },
     }));
   }
+  // fixed_32: real, pre-set matchups — pair participants in order, no shuffle,
+  // so round 1 is the exact bracket as supplied (e.g. the World Cup Round of 32).
+  if (gameType === "fixed_32") {
+    const fixed: Match[] = [];
+    for (let i = 0; i < participants.length - 1; i += 2) {
+      fixed.push({
+        left: { name: participants[i].name, subtitle: participants[i].subtitle, photo_url: participants[i].photo_url },
+        right: { name: participants[i + 1].name, subtitle: participants[i + 1].subtitle, photo_url: participants[i + 1].photo_url },
+      });
+    }
+    return fixed;
+  }
   const shuffled = shuffle(participants);
   const matches: Match[] = [];
   for (let i = 0; i < shuffled.length - 1; i += 2) {
