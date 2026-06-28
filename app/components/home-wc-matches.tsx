@@ -21,37 +21,72 @@ function dayLabel(date: string): string {
   return d.toLocaleDateString("en-US", { month: "short", day: "numeric" });
 }
 
-function TeamSide({ code, align }: { code: string; align: "left" | "right" }) {
+function TeamSide({
+  code,
+  label,
+  align,
+}: {
+  code: string;
+  label?: string;
+  align: "left" | "right";
+}) {
+  const rowStyle = {
+    display: "flex",
+    alignItems: "center",
+    gap: 8,
+    flexDirection: align === "right" ? ("row-reverse" as const) : ("row" as const),
+    flex: 1,
+    minWidth: 0,
+    textDecoration: "none",
+    color: "inherit",
+  };
+  const nameStyle = {
+    fontFamily: "var(--font-headline)",
+    fontWeight: 700,
+    fontSize: 14,
+    letterSpacing: "-0.01em",
+    whiteSpace: "nowrap" as const,
+    overflow: "hidden",
+    textOverflow: "ellipsis",
+  };
+
+  // Knockout fixtures before the bracket is set: no team yet, show the
+  // qualifier label ("2nd Group A", "3rd Place") with a neutral placeholder.
+  if (!code) {
+    return (
+      <div style={rowStyle}>
+        <span
+          aria-hidden
+          className="wc-team-flag wc-team-flag--sm"
+          style={{
+            width: 40,
+            height: 28,
+            display: "inline-flex",
+            alignItems: "center",
+            justifyContent: "center",
+            background: "var(--sg-surface-low)",
+            border: "1px solid var(--sg-border)",
+            borderRadius: 4,
+            fontSize: 12,
+            color: "var(--sg-text-muted)",
+            flexShrink: 0,
+          }}
+        >
+          ?
+        </span>
+        <span style={{ ...nameStyle, color: "var(--sg-text-muted)", fontWeight: 600 }}>
+          {label || "TBD"}
+        </span>
+      </div>
+    );
+  }
+
   const name = getTeamName(code);
   const slug = teamCodeToSlug(code);
   return (
-    <Link
-      href={`${SCHEDULE_PATH}/${slug}`}
-      style={{
-        display: "flex",
-        alignItems: "center",
-        gap: 8,
-        flexDirection: align === "right" ? "row-reverse" : "row",
-        flex: 1,
-        minWidth: 0,
-        textDecoration: "none",
-        color: "inherit",
-      }}
-    >
+    <Link href={`${SCHEDULE_PATH}/${slug}`} style={rowStyle}>
       <WcTeamFlag slug={slug} name={name} size="sm" />
-      <span
-        style={{
-          fontFamily: "var(--font-headline)",
-          fontWeight: 700,
-          fontSize: 14,
-          letterSpacing: "-0.01em",
-          whiteSpace: "nowrap",
-          overflow: "hidden",
-          textOverflow: "ellipsis",
-        }}
-      >
-        {name}
-      </span>
+      <span style={nameStyle}>{name}</span>
     </Link>
   );
 }
@@ -81,9 +116,9 @@ function MatchCard({ match, showDay = true }: { match: WcMatch; showDay?: boolea
         ) : null}
       </div>
       <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-        <TeamSide code={match.home} align="left" />
+        <TeamSide code={match.home} label={match.homeLabel} align="left" />
         <span className="mono" style={{ fontSize: 11, color: "var(--sg-text-muted)", flexShrink: 0 }}>VS</span>
-        <TeamSide code={match.away} align="right" />
+        <TeamSide code={match.away} label={match.awayLabel} align="right" />
       </div>
       <div className="mono" style={{ fontSize: 10, letterSpacing: "0.06em", color: "var(--sg-text-muted)", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
         {match.venue} · {match.city}

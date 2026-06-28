@@ -241,7 +241,7 @@ export default function TransferWireFeed({ initialLimit = 40 }: Props) {
     Promise.all([
       supabase
         .from("contents")
-        .select("id,title,title_en,slug,category,content,content_en,created_at")
+        .select("id,title,title_en,slug,category,content,content_en,cover_image,created_at")
         .eq("status", "published")
         .contains("hub_tags", ["transfer"])
         .order("created_at", { ascending: false })

@@ -940,7 +940,7 @@ function GroupCard({ groupId, matches, highlight, mounted }: { groupId: WcGroupI
               >
                 {m.status === "finished" ? "FT" : localTime}
               </span>
-              <TeamFlag code={m.home} size={16} />
+              {m.home && <TeamFlag code={m.home} size={16} />}
               <span
                 style={{
                   flex: 1,
@@ -951,7 +951,7 @@ function GroupCard({ groupId, matches, highlight, mounted }: { groupId: WcGroupI
                   whiteSpace: "nowrap",
                 }}
               >
-                {getTeamName(m.home)}
+                {m.home ? getTeamName(m.home) : (m.homeLabel ?? "TBD")}
               </span>
               {m.status === "finished" && m.homeScore != null ? (
                 <span className="mono" style={{ fontSize: 11, fontWeight: 700, color: "var(--sg-text-primary)", padding: "0 4px", letterSpacing: "0.04em" }}>
@@ -971,9 +971,9 @@ function GroupCard({ groupId, matches, highlight, mounted }: { groupId: WcGroupI
                   whiteSpace: "nowrap",
                 }}
               >
-                {getTeamName(m.away)}
+                {m.away ? getTeamName(m.away) : (m.awayLabel ?? "TBD")}
               </span>
-              <TeamFlag code={m.away} size={16} />
+              {m.away && <TeamFlag code={m.away} size={16} />}
             </div>
           );
         })}
