@@ -23,6 +23,7 @@ const SOURCE_COLORS: Record<string, string> = {
   espn: "#d00",
   guardian: "#052962",
   google: "#22d3ee",
+  scoutgamer: "#34d399",
   other: "#94a3b8",
 };
 
@@ -53,6 +54,7 @@ type SortMode = "newest" | "oldest";
 
 const SOURCE_TABS: { id: SourceFilter; label: string; short: string }[] = [
   { id: "all", label: "All sources", short: "All" },
+  { id: "scoutgamer", label: WIRE_SOURCE_LABELS.scoutgamer, short: "Scout Gamer" },
   { id: "bbc", label: WIRE_SOURCE_LABELS.bbc, short: "BBC" },
   { id: "sky", label: WIRE_SOURCE_LABELS.sky, short: "Sky" },
   { id: "guardian", label: WIRE_SOURCE_LABELS.guardian, short: "Guardian" },
@@ -90,6 +92,86 @@ async function fetchMinimalNewsFallback(): Promise<TransferWireHeadline[]> {
   }
 }
 
+/** One headline row — handles both external RSS links and internal Scout Gamer articles. */
+function WireRow({
+  h,
+  isLast,
+  featured = false,
+  onSourceClick,
+}: {
+  h: TransferWireHeadline;
+  isLast: boolean;
+  featured?: boolean;
+  onSourceClick: (src: WireSource) => void;
+}) {
+  const accent = SOURCE_COLORS[h.source] ?? SOURCE_COLORS.other;
+  const internal = h.link.startsWith("/");
+  return (
+    <li style={{ borderBottom: isLast ? "none" : "1px solid var(--sg-border)" }}>
+      <a
+        href={h.link}
+        {...(internal ? {} : { target: "_blank", rel: "noopener noreferrer" })}
+        className="lift"
+        style={{
+          display: "grid",
+          gridTemplateColumns: "auto 1fr auto auto",
+          gap: "12px 16px",
+          alignItems: "center",
+          padding: "18px 20px",
+          textDecoration: "none",
+          color: "inherit",
+          transition: "background 0.15s",
+          background: featured ? `${accent}0d` : "transparent",
+        }}
+        onMouseEnter={(e) => {
+          e.currentTarget.style.background = featured ? `${accent}1a` : "var(--sg-surface-low)";
+        }}
+        onMouseLeave={(e) => {
+          e.currentTarget.style.background = featured ? `${accent}0d` : "transparent";
+        }}
+      >
+        <button
+          type="button"
+          className="mono"
+          onClick={(e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            const src = h.source as WireSource;
+            if (src in WIRE_SOURCE_LABELS) onSourceClick(src);
+          }}
+          title={`Filter by ${h.sourceLabel}`}
+          style={{
+            fontSize: 9,
+            fontWeight: 700,
+            letterSpacing: "0.1em",
+            color: accent,
+            padding: "5px 10px",
+            borderRadius: 999,
+            border: `1px solid ${accent}55`,
+            background: `${accent}18`,
+            whiteSpace: "nowrap",
+            cursor: "pointer",
+          }}
+        >
+          {h.sourceLabel}
+        </button>
+        <span className="display" style={{ fontSize: 15, fontWeight: 500, lineHeight: 1.35, margin: 0 }}>
+          {h.title}
+        </span>
+        <span
+          className="mono"
+          style={{ fontSize: 10, letterSpacing: "0.08em", color: "var(--sg-text-muted)", whiteSpace: "nowrap" }}
+        >
+          {h.publishedAt ? relativeTimeLabel(h.publishedAt) : h.timeLabel}
+        </span>
+        <span className="mono" style={{ fontSize: 12, color: accent, opacity: 0.8 }} aria-hidden>
+          {internal ? "→" : "↗"}
+        </span>
+      </a>
+    </li>
+  );
+}
+
 type Props = { initialLimit?: number };
 
 export default function TransferWireFeed({ initialLimit = 40 }: Props) {
@@ -101,6 +183,7 @@ export default function TransferWireFeed({ initialLimit = 40 }: Props) {
   const [sortMode, setSortMode] = useState<SortMode>("newest");
   const [wireRefreshing, setWireRefreshing] = useState(false);
   const [articles, setArticles] = useState<EditorialArticle[]>([]);
+  const [scoutWire, setScoutWire] = useState<TransferWireHeadline[]>([]);
   const [deals, setDeals] = useState<HubCompletedTransfer[]>([]);
 
   async function loadWire(reloadCache = false) {
@@ -143,12 +226,13 @@ export default function TransferWireFeed({ initialLimit = 40 }: Props) {
   }, [headlines, sourceFilter, sortMode]);
 
   const sourceCounts = useMemo(() => {
-    const c: Record<string, number> = { all: headlines.length };
+    const c: Record<string, number> = { all: headlines.length + scoutWire.length };
     for (const h of headlines) {
       c[h.source] = (c[h.source] ?? 0) + 1;
     }
+    c.scoutgamer = scoutWire.length;
     return c;
-  }, [headlines]);
+  }, [headlines, scoutWire]);
 
   const visible = filtered.slice(0, showCount);
   const timeGroups = useMemo(() => groupHeadlinesByTime(visible), [visible]);
@@ -171,13 +255,41 @@ export default function TransferWireFeed({ initialLimit = 40 }: Props) {
         .order("transfer_date", { ascending: false })
         .limit(12),
     ]).then(([artRes, dealsRes]) => {
-      if (!artRes.error && artRes.data) setArticles(artRes.data as EditorialArticle[]);
+      if (!artRes.error && artRes.data) {
+        setArticles(artRes.data as EditorialArticle[]);
+        // Surface our own published transfer articles inside the Live Wire,
+        // pinned above the RSS headlines, linking internally to the article.
+        const rows = artRes.data as Array<{
+          id: number | string; title: string; title_en?: string;
+          slug: string; created_at: string;
+        }>;
+        setScoutWire(
+          rows.map((r) => {
+            const publishedAt = r.created_at ?? "";
+            return {
+              id: `sg-${r.id}`,
+              title: r.title_en || r.title,
+              link: `/transfers/${r.slug}`,
+              source: "scoutgamer",
+              sourceLabel: WIRE_SOURCE_LABELS.scoutgamer,
+              publishedAt,
+              timeLabel: publishedAt ? relativeTimeLabel(publishedAt) : "new",
+            };
+          }),
+        );
+      }
       if (!dealsRes.error && dealsRes.data) {
         const rows = (dealsRes.data as HubCompletedTransferRow[]).map(rowToCompleted);
         setDeals(rows.filter((d) => isRecentDeal(d.date)));
       }
     });
   }, []);
+
+  // Our articles to pin at the top of the wire (only when relevant to the filter)
+  const pinnedScout = useMemo(
+    () => (sourceFilter === "all" || sourceFilter === "scoutgamer" ? scoutWire : []),
+    [scoutWire, sourceFilter],
+  );
 
   return (
     <PageShell
@@ -216,9 +328,9 @@ export default function TransferWireFeed({ initialLimit = 40 }: Props) {
             </h2>
             {!wireLoading && headlines.length > 0 ? (
               <p className="mono" style={{ fontSize: 10, letterSpacing: "0.1em", color: "var(--sg-text-muted)", marginTop: 8 }}>
-                {filtered.length} headlines
+                {filtered.length + pinnedScout.length} headlines
                 {sourceFilter !== "all" ? ` · ${WIRE_SOURCE_LABELS[sourceFilter]}` : ""}
-                {visible.length < filtered.length ? ` · showing ${visible.length}` : ""}
+                {visible.length < filtered.length ? ` · showing ${visible.length + pinnedScout.length}` : ""}
               </p>
             ) : null}
           </div>
@@ -349,7 +461,7 @@ export default function TransferWireFeed({ initialLimit = 40 }: Props) {
               <span className="h-4 w-4 animate-spin rounded-full border-2" style={{ borderColor: "var(--transfer-cyan)", borderTopColor: "transparent" }} />
               <span className="mono" style={{ fontSize: 11, letterSpacing: "0.12em" }}>LOADING…</span>
             </div>
-          ) : visible.length === 0 ? (
+          ) : visible.length === 0 && pinnedScout.length === 0 ? (
             <div style={{ padding: 40, textAlign: "center" }}>
               <p className="mono" style={{ fontSize: 12, color: "var(--sg-text-muted)", margin: "0 0 16px" }}>
                 {headlines.length === 0
@@ -375,6 +487,39 @@ export default function TransferWireFeed({ initialLimit = 40 }: Props) {
             </div>
           ) : (
             <ul style={{ listStyle: "none", margin: 0, padding: 0 }}>
+              {pinnedScout.length > 0 ? (
+                <li style={{ listStyle: "none" }}>
+                  <div
+                    className="mono"
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      gap: 12,
+                      padding: "16px 20px 10px",
+                      fontSize: 10,
+                      letterSpacing: "0.14em",
+                      color: SOURCE_COLORS.scoutgamer,
+                      background: "var(--sg-surface-low)",
+                      borderBottom: "1px solid var(--sg-border)",
+                    }}
+                  >
+                    <span style={{ width: 7, height: 7, borderRadius: "50%", background: SOURCE_COLORS.scoutgamer, flexShrink: 0 }} />
+                    SCOUT GAMER · OUR ANALYSIS
+                    <span style={{ flex: 1, height: 1, background: "var(--sg-border)", opacity: 0.6 }} />
+                  </div>
+                  <ul style={{ listStyle: "none", margin: 0, padding: 0 }}>
+                    {pinnedScout.map((h, i) => (
+                      <WireRow
+                        key={h.id}
+                        h={h}
+                        featured
+                        isLast={i === pinnedScout.length - 1 && (sourceFilter === "scoutgamer" || timeGroups.length === 0)}
+                        onSourceClick={(src) => { setSourceFilter(src); setShowCount(initialLimit); }}
+                      />
+                    ))}
+                  </ul>
+                </li>
+              ) : null}
               {timeGroups.map((group, gi) => (
                 <li key={group.bucket} style={{ listStyle: "none" }}>
                   <div
@@ -396,89 +541,14 @@ export default function TransferWireFeed({ initialLimit = 40 }: Props) {
                     <span style={{ flex: 1, height: 1, background: "var(--sg-border)", opacity: 0.6 }} />
                   </div>
                   <ul style={{ listStyle: "none", margin: 0, padding: 0 }}>
-                    {group.items.map((h, i) => {
-                      const accent = SOURCE_COLORS[h.source] ?? SOURCE_COLORS.other;
-                      const isLastInGroup = i === group.items.length - 1;
-                      const isLastGroup = gi === timeGroups.length - 1;
-                      return (
-                        <li
-                          key={h.id}
-                          style={{
-                            borderBottom:
-                              isLastInGroup && isLastGroup ? "none" : "1px solid var(--sg-border)",
-                          }}
-                        >
-                          <a
-                            href={h.link}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="lift"
-                            style={{
-                              display: "grid",
-                              gridTemplateColumns: "auto 1fr auto auto",
-                              gap: "12px 16px",
-                              alignItems: "center",
-                              padding: "18px 20px",
-                              textDecoration: "none",
-                              color: "inherit",
-                              transition: "background 0.15s",
-                            }}
-                            onMouseEnter={(e) => {
-                              e.currentTarget.style.background = "var(--sg-surface-low)";
-                            }}
-                            onMouseLeave={(e) => {
-                              e.currentTarget.style.background = "transparent";
-                            }}
-                          >
-                            <button
-                              type="button"
-                              className="mono"
-                              onClick={(e) => {
-                                e.preventDefault();
-                                e.stopPropagation();
-                                const src = h.source as WireSource;
-                                if (src in WIRE_SOURCE_LABELS) {
-                                  setSourceFilter(src);
-                                  setShowCount(initialLimit);
-                                }
-                              }}
-                              title={`Filter by ${h.sourceLabel}`}
-                              style={{
-                                fontSize: 9,
-                                fontWeight: 700,
-                                letterSpacing: "0.1em",
-                                color: accent,
-                                padding: "5px 10px",
-                                borderRadius: 999,
-                                border: `1px solid ${accent}55`,
-                                background: `${accent}18`,
-                                whiteSpace: "nowrap",
-                                cursor: "pointer",
-                              }}
-                            >
-                              {h.sourceLabel}
-                            </button>
-                            <span className="display" style={{ fontSize: 15, fontWeight: 500, lineHeight: 1.35, margin: 0 }}>
-                              {h.title}
-                            </span>
-                            <span
-                              className="mono"
-                              style={{
-                                fontSize: 10,
-                                letterSpacing: "0.08em",
-                                color: "var(--sg-text-muted)",
-                                whiteSpace: "nowrap",
-                              }}
-                            >
-                              {h.publishedAt ? relativeTimeLabel(h.publishedAt) : h.timeLabel}
-                            </span>
-                            <span className="mono" style={{ fontSize: 12, color: "var(--transfer-cyan)", opacity: 0.8 }} aria-hidden>
-                              ↗
-                            </span>
-                          </a>
-                        </li>
-                      );
-                    })}
+                    {group.items.map((h, i) => (
+                      <WireRow
+                        key={h.id}
+                        h={h}
+                        isLast={i === group.items.length - 1 && gi === timeGroups.length - 1}
+                        onSourceClick={(src) => { setSourceFilter(src); setShowCount(initialLimit); }}
+                      />
+                    ))}
                   </ul>
                 </li>
               ))}

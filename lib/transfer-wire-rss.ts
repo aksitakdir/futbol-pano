@@ -1,6 +1,6 @@
 /** Multi-source transfer rumor RSS — Google News, BBC, Sky, Guardian */
 
-export type WireSource = "google" | "bbc" | "sky" | "espn" | "guardian" | "other";
+export type WireSource = "google" | "bbc" | "sky" | "espn" | "guardian" | "scoutgamer" | "other";
 
 /** Max headlines stored in cache (free RSS — no API cost) */
 export const TRANSFER_WIRE_MAX_ITEMS = 80;
@@ -11,6 +11,7 @@ export const WIRE_SOURCE_LABELS: Record<WireSource, string> = {
   sky: "Sky Sports",
   espn: "ESPN",
   guardian: "The Guardian",
+  scoutgamer: "Scout Gamer",
   other: "News",
 };
 
