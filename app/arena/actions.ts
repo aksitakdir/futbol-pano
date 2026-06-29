@@ -7,7 +7,7 @@ export type LeaderboardEntry = {
   vote_count: number;
 };
 
-/** Oyu kaydet, ardından güncel leaderboard'u döndür */
+/** Record the vote, then return the updated leaderboard */
 export async function recordVoteAndGetLeaderboard(
   gameSlug: string,
   championName: string,
@@ -24,7 +24,7 @@ export async function recordVoteAndGetLeaderboard(
   return (data ?? []) as LeaderboardEntry[];
 }
 
-/** Sadece leaderboard oku (paylaşım sonuç ekranı için) */
+/** Read the leaderboard only (for the shared results screen) */
 export async function getLeaderboard(
   gameSlug: string,
   limit = 5,

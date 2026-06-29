@@ -43,7 +43,7 @@ Rules:
 - Titles must be in ENGLISH. Scout Gamer is an English-first global platform.
 - Titles must be decisive statements or strong claims — never vague or generic.
 - Do NOT include specific years or seasons in the title (e.g. avoid "2024", "2025-26").
-- Do NOT force Turkey, Süper Lig, or Turkish club references unless the keyword explicitly requires it.
+- Do NOT force any single country, league, or club unless the keyword explicitly requires it.
 - Focus on global football: La Liga, Premier League, Bundesliga, Serie A, Champions League, World Cup, etc.
 - seo_value: "High", "Medium", or "Low" (assess based on search volume, topic popularity, timeliness).
 - slug: URL-friendly, lowercase, no special characters, hyphen-separated (e.g. lamine-yamal-radar).

@@ -177,7 +177,7 @@ export function IconSoccerBall({ className = "" }: { className?: string }) {
   );
 }
 
-/** Kupa + paylaş — ana sayfa vb. */
+/** Trophy + share — homepage etc. */
 export function IconGamepad({ className = "" }: { className?: string }) {
   return (
     <svg

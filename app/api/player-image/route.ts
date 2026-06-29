@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 
-/** Varsayılan: next.config.ts remotePatterns ile aynı kaynak */
+/** Default: same sources as next.config.ts remotePatterns */
 const DEFAULT_ALLOWED_HOSTS = ["cdn.sofifa.net"];
 
 function allowedHosts(): string[] {

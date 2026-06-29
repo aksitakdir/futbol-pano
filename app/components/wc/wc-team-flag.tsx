@@ -13,7 +13,7 @@ const SIZES = {
   lg: { w: 72, h: 40, src: 320 as const },
 };
 
-/** Ülke bayrağı — sabit 3:2 kutu (İsviçre kare bayrak dahil, object-fit: cover) */
+/** Country flag — fixed 3:2 box (Switzerland square flag included, object-fit: cover) */
 export default function WcTeamFlag({ slug, name, size = "md", className = "" }: Props) {
   const dim = SIZES[size];
   const src = wcTeamFlagUrl(slug, dim.src);

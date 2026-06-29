@@ -8,7 +8,7 @@ export type CompletedTransfer = {
   date: string;
 };
 
-/** Gerçekleşen transferler — editoryal liste (admin/cron ile güncellenebilir) */
+/** Completed transfers — editorial list (updatable via admin/cron) */
 export const COMPLETED_TRANSFERS: CompletedTransfer[] = [
   {
     id: "1",

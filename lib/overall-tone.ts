@@ -1,4 +1,4 @@
-/** OVR → renk skalası (liste butonları, kadro chip) */
+/** OVR color scale (list buttons, squad chip) */
 export type OverallTone = "elite" | "high" | "mid" | "low" | "unknown";
 
 export function overallTone(ovr: number | null | undefined): OverallTone {

@@ -10,7 +10,7 @@ export default function SmoothScrollProvider({
 }) {
   useEffect(() => {
     const lenis = new Lenis({
-      duration: 1.2,        // Scroll süresi — 1.2s premium his için ideal
+      duration: 1.2,        // Scroll duration — 1.2s for a premium feel
       easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)), // Expo easing
       smoothWheel: true,    // Mouse wheel smooth
       touchMultiplier: 1.5, // Mobil dokunma hassasiyeti

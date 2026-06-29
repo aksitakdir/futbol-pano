@@ -22,7 +22,7 @@ export type PlayerCardData = {
 
 type PlayerCardProps = {
   player: PlayerCardData;
-  /** Küçük grid için — layout hep dikey ve aynı oran */
+  /** For the small grid — layout is always vertical, same ratio */
   compact?: boolean;
   showScoutNote?: boolean;
   tmLink?: string;
@@ -107,7 +107,7 @@ const STATS = [
   { key: "physical",  label: "PHY" },
 ] as const;
 
-/** Orijinal tasarıma göre baş harf alanı ~%20 büyütme (108→130, 198→238 taban px) */
+/** Initials area ~20% larger than the original design (108->130, 198->238 base px) */
 const INITIAL_ZONE_HEIGHT_BASE = 238;
 const INITIAL_FONT_BASE = 130;
 
@@ -254,7 +254,7 @@ function CardInner({
         </div>
       </div>
 
-      {/* Merkez — büyük yarı saydam baş harfler (silüet yerine) */}
+      {/* Center — large semi-transparent initials (instead of a silhouette) */}
       <div
         style={{
           position: "relative",

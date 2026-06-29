@@ -1,6 +1,6 @@
 import { redirect } from "next/navigation";
 
-/** Eski /turnuva adresi — kalıcı yönlendirme */
+/** Legacy /turnuva path — permanent redirect */
 export default function TurnuvaLegacyRedirect() {
   redirect("/arena");
 }

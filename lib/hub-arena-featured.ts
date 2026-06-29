@@ -1,6 +1,6 @@
 export const WC_2026_ARENA_SLUG = "dk-2026-sampiyonu";
 
-/** Popüler kulüpler — team_slug ile arena_games eşleşir (admin'de oluşturun) */
+/** Popular clubs — matched to arena_games via team_slug (create in admin) */
 export const TRANSFER_TEAM_ARENA_SLUGS: {
   teamSlug: string;
   nameEn: string;

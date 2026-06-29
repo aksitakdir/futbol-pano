@@ -1,6 +1,6 @@
 /**
- * İçerik gövdesine gömülü EA FC oyuncu kartları için ayırıcı.
- * Editörde kullanım: <!-- scout-player:Oyuncu Tam Adı -->
+ * Splitter for EA FC player cards embedded in the content body.
+ * Editor usage: <!-- scout-player:Player Full Name -->
  */
 
 export type PlayerEmbedSegment =

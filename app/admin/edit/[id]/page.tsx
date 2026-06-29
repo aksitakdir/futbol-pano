@@ -610,7 +610,7 @@ export default function DuzenlePage() {
               <input
                 type="text" value={youtubeQuery1}
                 onChange={(e) => setYoutubeQuery1(e.target.value)}
-                placeholder="e.g: Arda Güler highlights 2025"
+                placeholder="e.g: Lamine Yamal highlights 2025"
                 className="w-full rounded-lg border border-slate-700/80 bg-slate-900/70 px-4 py-2.5 text-sm text-slate-100 placeholder-slate-500 outline-none transition focus:border-emerald-500/60 focus:ring-1 focus:ring-emerald-500/40"
               />
             </div>
@@ -631,7 +631,7 @@ export default function DuzenlePage() {
             <input
               type="text" value={newsQuery}
               onChange={(e) => setNewsQuery(e.target.value)}
-              placeholder="e.g: Arda Güler"
+              placeholder="e.g: Lamine Yamal"
               className="w-full rounded-lg border border-slate-700/80 bg-slate-900/70 px-4 py-2.5 text-sm text-slate-100 placeholder-slate-500 outline-none transition focus:border-emerald-500/60 focus:ring-1 focus:ring-emerald-500/40"
             />
           </div>

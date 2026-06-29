@@ -17,7 +17,7 @@ export default function AppleIcon() {
           position: "relative",
         }}
       >
-        {/* Köşe aksanları */}
+        {/* Corner accents */}
         <div style={{ position: "absolute", top: 12, left: 12, width: 36, height: 4, background: "#46f1c5" }} />
         <div style={{ position: "absolute", top: 12, left: 12, width: 4, height: 36, background: "#46f1c5" }} />
         <div style={{ position: "absolute", bottom: 12, right: 12, width: 36, height: 4, background: "#5b8dee" }} />

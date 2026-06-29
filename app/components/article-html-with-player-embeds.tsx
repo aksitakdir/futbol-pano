@@ -9,7 +9,7 @@ type Props = {
 };
 
 /**
- * processedHtml veya ham HTML içinde <!-- scout-player:İsim --> gömülü kartları ayırıp render eder.
+ * Splits and renders cards embedded as <!-- scout-player:Name --> within processedHtml or raw HTML.
  */
 export default function ArticleHtmlWithPlayerEmbeds({ html }: Props) {
   if (!htmlContainsPlayerEmbed(html)) {

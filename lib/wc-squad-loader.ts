@@ -14,7 +14,7 @@ export type WcSquadListPlayer = {
   /** Liste chip rengi — FC veya admin override */
   overall: number | null;
   hasFcCard: boolean;
-  /** Kart paneli için; sayfa yükünde tek batch ile doldurulur, DOM'a sadece açılınca yazılır */
+  /** For the card panel; filled in one batch on page load, written to the DOM only when opened */
   fcCard?: PlayerCardData;
 };
 
@@ -133,7 +133,7 @@ async function resolveBasePlayers(teamSlug: string): Promise<BasePlayer[]> {
   }));
 }
 
-/** Tek batch FC sorgusu — N+1 yok; kartlar varsayılan olarak render edilmez */
+/** Single-batch FC query — no N+1; cards are not rendered by default */
 export async function loadWcSquad(teamSlug: string): Promise<WcSquadListPlayer[]> {
   const team = getWcTeam(teamSlug);
   if (!team) return [];

@@ -121,19 +121,16 @@ const CC_MODES: { key: CcMode; label: string }[] = [
 ];
 
 const SEO_VALUE_STYLE: Record<string, string> = {
-  Yüksek: "bg-emerald-500/20 text-emerald-200 border-emerald-500/40",
   High: "bg-emerald-500/20 text-emerald-200 border-emerald-500/40",
-  Orta: "bg-amber-500/20 text-amber-200 border-amber-500/40",
   Medium: "bg-amber-500/20 text-amber-200 border-amber-500/40",
-  Düşük: "bg-slate-500/20 text-slate-300 border-slate-500/40",
   Low: "bg-slate-500/20 text-slate-300 border-slate-500/40",
 };
 
-/** İşlem butonları — kategori/durum rozetleri ile uyumlu pill stil */
+/** Action buttons — pill style matching the category/status badges */
 const ACTION_BTN =
   "inline-flex h-7 shrink-0 items-center justify-center rounded-full border px-2.5 text-[10px] font-semibold tracking-wide transition disabled:pointer-events-none disabled:opacity-45";
 
-function IceriklerPageInner() {
+function ArticlesPageInner() {
   // Reactive to ?category= changes (query-only nav doesn't change pathname).
   const searchParams = useSearchParams();
   const categoryFilter = searchParams.get("category");
@@ -465,7 +462,7 @@ function IceriklerPageInner() {
   return (
     <AdminLayout>
       <div className="mx-auto max-w-6xl">
-        {/* Sticky üst araç çubuğu — kaydırırken daima erişilebilir */}
+        {/* Sticky top toolbar — always reachable while scrolling */}
         <div className="sticky top-0 z-30 -mx-1 mb-4 rounded-xl border border-slate-700/60 bg-slate-950/90 px-3 py-3 shadow-[0_8px_30px_rgba(0,0,0,0.35)] backdrop-blur-md sm:-mx-0 sm:px-4">
           <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
           <div>
@@ -511,7 +508,7 @@ function IceriklerPageInner() {
           </div>
         </div>
 
-        {/* İçerik Kontrol Merkezi */}
+        {/* Content Control Center */}
         <div className="mb-6 rounded-xl border border-slate-700/70 bg-slate-900/40 p-4 sm:p-6">
           <div className="mb-4 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
             <div>
@@ -526,7 +523,7 @@ function IceriklerPageInner() {
             )}
           </div>
 
-          {/* Başlık Keşfet */}
+          {/* Title Discovery */}
           <div className="mb-6 rounded-xl border border-slate-700/60 bg-slate-900/40 p-4">
             <h3 className="mb-3 text-xs font-bold uppercase tracking-wider text-emerald-400/90">Title Discovery</h3>
             <input
@@ -709,7 +706,7 @@ function IceriklerPageInner() {
             )}
           </div>
 
-          {/* Önerilen başlıklar */}
+          {/* Suggested titles */}
           {suggestions.length > 0 && (
             <div className="mb-6">
               <p className="mb-2 text-[10px] font-semibold uppercase tracking-widest text-slate-500">Suggested titles</p>
@@ -773,7 +770,7 @@ function IceriklerPageInner() {
             </div>
           )}
 
-          {/* İçerik Üret */}
+          {/* Generate Content */}
           <div className="rounded-xl border border-slate-700/60 bg-slate-900/40 p-4">
             <h3 className="mb-2 text-xs font-bold uppercase tracking-wider text-violet-400/90">Generate Content</h3>
             <p className="mb-3 text-[11px] text-slate-500">
@@ -881,7 +878,7 @@ function IceriklerPageInner() {
           </div>
         )}
 
-        {/* Tabs — Analytics ile alt çizgili sekme stili */}
+        {/* Tabs — underlined tab style matching Analytics */}
         <div className="mb-5 flex flex-wrap gap-1 border-b border-slate-700/60">
           {TABS.map((t) => (
             <button
@@ -938,8 +935,8 @@ function IceriklerPageInner() {
           </div>
         ) : (
           <div className="overflow-x-auto rounded-xl border border-slate-700/60">
-            {/* Desktop: sabit genişlikli işlem sütunu + min-w-0 ile başlık kırılır */}
-            {/* Table header — liste kayarken sütun başlıkları görünür kalsın */}
+            {/* Desktop: fixed-width action column + min-w-0 lets the title wrap */}
+            {/* Table header — column headers stay visible while the list scrolls */}
             <div className="grid min-w-[56rem] grid-cols-[40px_minmax(0,1fr)_100px_100px_92px_200px] items-center gap-2 border-b border-slate-700/40 bg-slate-900/40 px-4 py-3 text-[10px] font-semibold uppercase tracking-[0.18em] text-slate-500 max-lg:hidden">
               <div className="flex items-center justify-center">
                 <input type="checkbox" checked={allChecked} onChange={toggleSelectAll} className="h-3.5 w-3.5 cursor-pointer rounded border-slate-600 bg-slate-900 accent-emerald-500" />
@@ -1180,10 +1177,10 @@ function IceriklerPageInner() {
   );
 }
 
-export default function IceriklerPage() {
+export default function ArticlesPage() {
   return (
     <Suspense fallback={null}>
-      <IceriklerPageInner />
+      <ArticlesPageInner />
     </Suspense>
   );
 }

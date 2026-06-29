@@ -83,7 +83,7 @@ export default function AnalyticsPage() {
   const pending = contents.filter((c) => c.status === "pending");
   const totalViews = contents.reduce((sum, c) => sum + (c.view_count ?? 0), 0);
   const generatedLast7d = useMemo(() => {
-    // eslint-disable-next-line react-hooks/purity -- “son 7 gün” için duvar saati anlık kullanılır (istemci admin)
+    // eslint-disable-next-line react-hooks/purity -- wall-clock now is used for the last-7-days window (client-side admin)
     const cutoff = Date.now() - 7 * 24 * 60 * 60 * 1000;
     return contents.filter((c) => new Date(c.created_at).getTime() >= cutoff).length;
   }, [contents]);

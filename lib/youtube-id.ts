@@ -1,9 +1,9 @@
-/** Güvenli iframe için izin verilen YouTube video kimliği formatı */
+/** Allowed YouTube video ID format for a safe iframe */
 const VALID_ID = /^[a-zA-Z0-9_-]{6,64}$/;
 
 /**
- * Panelden gelen ham metinden YouTube video ID çıkarır.
- * Tam URL, kısa youtu.be, embed/shorts veya düz ID kabul eder.
+ * Extracts a YouTube video ID from raw admin-panel text.
+ * Accepts a full URL, short youtu.be, embed/shorts, or a plain ID.
  */
 export function normalizeYoutubeId(raw?: string | null): string | null {
   const s = raw?.trim();

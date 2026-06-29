@@ -105,8 +105,8 @@ async function updateFeaturedPlayerPool(
 
   const userPrompt =
     "Search the web for under-23 players in the 2025-26 season who have not yet fully entered the radar of top European clubs " +
-    "but are standing out with their performances. Search across the Turkish Süper Lig, Portugal, Netherlands, Belgium, Scotland, " +
-    "Brazil Série A, Argentina Primera, Colombia, Mexico, and Japan leagues. Provide current and accurate information.\n\n" +
+    "but are standing out with their performances. Search across leagues worldwide — Portugal, Netherlands, Belgium, Scotland, " +
+    "Brazil Serie A, Argentina Primera, Colombia, Mexico, Japan and others — with no bias toward any single country. Provide current and accurate information.\n\n" +
     "ALL text must be in English. Write description and why_watch in English. " +
     "position must be one of: Midfielder, Forward, Centre-Back, Left-Back, Right-Back, Winger, Attacking Midfielder.\n\n" +
     "Select EXACTLY 5 DIFFERENT players. Your response must be ONLY a JSON array; no other text, markdown, or code blocks. " +

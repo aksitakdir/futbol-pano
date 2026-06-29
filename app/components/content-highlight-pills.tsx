@@ -2,7 +2,7 @@
 
 import { formatHighlightPillText } from "@/lib/highlight-pill-text";
 
-/** İçerik kartları — outline pill + accent (liste / radar / taktik / arena) */
+/** Content cards — outline pill + accent (lists / radar / tactics / arena) */
 export function ContentHighlightPills({
   tags,
   accent,
