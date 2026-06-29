@@ -1,5 +1,19 @@
 import type { NextConfig } from "next";
 
+/** Legacy Turkish country slugs (still in Google's index) → English squad slugs */
+const TR_SQUAD_SLUGS: Record<string, string> = {
+  "guney-afrika": "south-africa", almanya: "germany", "yeni-zelanda": "new-zealand",
+  misir: "egypt", "kosta-rika": "costa-rica", brezilya: "brazil", portekiz: "portugal",
+  ispanya: "spain", fransa: "france", ingiltere: "england", hollanda: "netherlands",
+  belcika: "belgium", arjantin: "argentina", kanada: "canada", cezayir: "algeria",
+  meksika: "mexico", avustralya: "australia", avusturya: "austria", isvicre: "switzerland",
+  "suudi-arabistan": "saudi-arabia", norvec: "norway", ozbekistan: "uzbekistan",
+  hirvatistan: "croatia", "guney-kore": "south-korea", tunus: "tunisia", japonya: "japan",
+  polonya: "poland", abd: "usa", urdun: "jordan", katar: "qatar", kolombiya: "colombia",
+  danimarka: "denmark", fas: "morocco", ukrayna: "ukraine", kamerun: "cameroon",
+  jamaika: "jamaica", gana: "ghana", ekvador: "ecuador",
+};
+
 const nextConfig: NextConfig = {
   images: {
     remotePatterns: [
@@ -66,6 +80,15 @@ const nextConfig: NextConfig = {
       { source: "/listeler", destination: "/lists", permanent: true },
       { source: "/taktik-lab/:path*", destination: "/tactics-lab/:path*", permanent: true },
       { source: "/taktik-lab", destination: "/tactics-lab", permanent: true },
+      // Renamed arena games (Turkish → English slugs)
+      { source: "/arena/gelecek-yildizlar", destination: "/arena/future-stars", permanent: true },
+      { source: "/arena/teknik-direktor", destination: "/arena/manager-arena", permanent: true },
+      // Legacy Turkish country slugs under the English squads path → English
+      ...Object.entries(TR_SQUAD_SLUGS).map(([tr, en]) => ({
+        source: `/world-cup-2026/squads/${tr}`,
+        destination: `/world-cup-2026/squads/${en}`,
+        permanent: true as const,
+      })),
     ];
   },
 };

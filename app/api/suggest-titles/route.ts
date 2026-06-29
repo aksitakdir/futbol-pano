@@ -90,7 +90,7 @@ function extractJsonArray(raw: string): string | null {
 export async function POST(request: Request) {
   const apiKey = process.env.ANTHROPIC_API_KEY;
   if (!apiKey) {
-    return NextResponse.json({ error: "ANTHROPIC_API_KEY tanımlı değil" }, { status: 500 });
+    return NextResponse.json({ error: "ANTHROPIC_API_KEY is not configured" }, { status: 500 });
   }
 
   let keyword = "";
@@ -103,11 +103,11 @@ export async function POST(request: Request) {
       mode = m;
     }
   } catch {
-    return NextResponse.json({ error: "Geçersiz istek gövdesi" }, { status: 400 });
+    return NextResponse.json({ error: "Invalid request body" }, { status: 400 });
   }
 
   if (!keyword) {
-    return NextResponse.json({ error: "keyword gerekli" }, { status: 400 });
+    return NextResponse.json({ error: "keyword is required" }, { status: 400 });
   }
 
   const origin = new URL(request.url).origin;
@@ -163,7 +163,7 @@ export async function POST(request: Request) {
   const arrStr = extractJsonArray(rawText);
   if (!arrStr) {
     return NextResponse.json(
-      { error: "Model yanıtında JSON dizi bulunamadı", raw: rawText.slice(0, 500) },
+      { error: "No JSON array found in model response", raw: rawText.slice(0, 500) },
       { status: 502 },
     );
   }
@@ -173,15 +173,15 @@ export async function POST(request: Request) {
   try {
     items = JSON.parse(arrStr) as Item[];
   } catch {
-    return NextResponse.json({ error: "JSON çözülemedi" }, { status: 502 });
+    return NextResponse.json({ error: "Could not parse JSON" }, { status: 502 });
   }
 
   if (!Array.isArray(items) || items.length === 0) {
-    return NextResponse.json({ error: "Geçersiz dizi" }, { status: 502 });
+    return NextResponse.json({ error: "Invalid array" }, { status: 502 });
   }
 
   const validCats = new Set(["radar", "tactics-lab", "lists", "wc-2026", "transfer"]);
-  const validSeo = new Set(["High", "Medium", "Low", "Yüksek", "Orta", "Düşük"]);
+  const validSeo = new Set(["High", "Medium", "Low"]);
 
   const normalized = items
     .slice(0, 8)
@@ -190,11 +190,7 @@ export async function POST(request: Request) {
       let category = typeof it.category === "string" ? it.category.trim().toLowerCase() : "lists";
       if (!validCats.has(category)) category = "lists";
       let seo = typeof it.seo_value === "string" ? it.seo_value.trim() : "Medium";
-      // Normalize Turkish → English
-      if (seo === "Yüksek") seo = "High";
-      else if (seo === "Orta") seo = "Medium";
-      else if (seo === "Düşük") seo = "Low";
-      if (!["High", "Medium", "Low"].includes(seo)) seo = "Medium";
+      if (!validSeo.has(seo)) seo = "Medium";
       let slug = typeof it.slug === "string" ? it.slug.trim().toLowerCase().replace(/[^a-z0-9-]/g, "-").replace(/-+/g, "-").replace(/^-|-$/g, "") : "";
       if (!slug && title) {
         slug = title
@@ -214,7 +210,7 @@ export async function POST(request: Request) {
     .filter((it) => it.title.length > 0);
 
   if (normalized.length === 0) {
-    return NextResponse.json({ error: "Geçerli başlık üretilemedi" }, { status: 502 });
+    return NextResponse.json({ error: "Could not generate a valid title" }, { status: 502 });
   }
 
   return NextResponse.json({ suggestions: normalized });

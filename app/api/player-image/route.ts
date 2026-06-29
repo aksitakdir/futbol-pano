@@ -30,16 +30,16 @@ export async function GET(request: NextRequest) {
     try {
       target = new URL(decodeURIComponent(param));
     } catch {
-      return NextResponse.json({ error: "geçersiz url" }, { status: 400 });
+      return NextResponse.json({ error: "invalid url" }, { status: 400 });
     }
   }
 
   if (target.protocol !== "http:" && target.protocol !== "https:") {
-    return NextResponse.json({ error: "yalnızca http(s) desteklenir" }, { status: 400 });
+    return NextResponse.json({ error: "only http(s) is supported" }, { status: 400 });
   }
 
   if (!isHostAllowed(target.hostname)) {
-    return NextResponse.json({ error: "izin verilmeyen host" }, { status: 403 });
+    return NextResponse.json({ error: "host not allowed" }, { status: 403 });
   }
 
   const upstream = await fetch(target.href, {
@@ -59,7 +59,7 @@ export async function GET(request: NextRequest) {
 
   const contentType = upstream.headers.get("content-type") ?? "";
   if (!contentType.startsWith("image/")) {
-    return NextResponse.json({ error: "yanıt görsel değil" }, { status: 400 });
+    return NextResponse.json({ error: "response is not an image" }, { status: 400 });
   }
 
   const body = await upstream.arrayBuffer();

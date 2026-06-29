@@ -1,63 +1,46 @@
 import { stripHtml } from "@/lib/utils";
 
-/** Kart pill uzunluk / kelime üst sınırları */
+/** Card pill length / word-count caps */
 const MAX_TAG_CHARS = 30;
 const MAX_WORDS = 3;
 
-/** Liste / makale gövdelerinden kart pill’leri için kısa etiketler çıkarır */
+/** Stopwords — single-word pills that carry no meaning on their own */
 const STOP = new Set([
   "the", "and", "for", "with", "from", "this", "that", "have", "has", "was", "were",
-  "bir", "bu", "şu", "ve", "ile", "için", "olan", "üzerinde", "gibi", "çok", "daha",
   "also", "into", "their", "they", "them", "will", "each", "both", "than", "when",
-  "olarak", "yani", "özellikle", "spesifik", "genel",
+  "what", "which", "while", "about", "after", "before", "over", "under", "such",
 ]);
 
-/** Tek başına anlamsız / bileşik ismin yarısı olarak sık görülen parçalar */
+/** Half of a compound name / meaningless alone (e.g. "league" in "Premier League") */
 const FRAGMENT_ONLY = new Set([
-  "ligi", "lig", "ligde", "ligden", "ligine", "ligini", "liginde", "liginden",
-  "ligler", "liglerde", "liglerden",
   "league", "leagues",
-  "la", "de", "del",
+  "la", "de", "del", "el",
 ]);
 
-/** Anlatım köprüsü — pill olarak anlamsız */
+/** Discourse bridges — meaningless as a pill */
 const BAD_PHRASES = new Set([
-  "daha spesifik olarak",
-  "spesifik olarak",
-  "genel olarak",
-  "bir diğer",
-  "bir başka",
-  "daha doğrusu",
-  "bu bağlamda",
-  "bu anlamda",
-  "aynı şekilde",
-  "bunun yanında",
-  "özetle",
+  "more specifically",
+  "specifically",
+  "in general",
+  "another",
+  "in other words",
+  "that said",
+  "in this context",
+  "in this sense",
+  "similarly",
+  "in addition",
+  "in summary",
 ]);
 
-/** İyelik + tek sıfat/renk kalıntısı (örn. topun kırmızı) */
-const TR_POSS_END = /(ın|in|un|ün|nın|nin|nun|nün)$/iu;
-const FRAGILE_TAIL_WORD = new Set([
-  "kırmızı", "beyaz", "siyah", "mavi", "yeşil", "turuncu", "mor", "pembe", "gri",
-  "kahverengi", "sarı", "lacivert",
-  "büyük", "küçük", "uzun", "kısa", "yeni", "eski", "iyi", "kötü", "hızlı", "yavaş",
-  "yüksek", "düşük", "ön", "arka",
-]);
-
-/** İki ayrı pill olarak göründüğünde birleştir (kalın metin vb. bölünmüş düzeltmesi) */
+/** Merge when two halves of a compound show up as separate pills (bold-split fix) */
 const COMPOUND_MERGE: { left: string; right: string; merged: string }[] = [
-  { left: "şampiyonlar", right: "ligi", merged: "Şampiyonlar Ligi" },
+  { left: "champions", right: "league", merged: "Champions League" },
   { left: "premier", right: "league", merged: "Premier League" },
   { left: "europa", right: "league", merged: "Europa League" },
+  { left: "nations", right: "league", merged: "Nations League" },
   { left: "la", right: "liga", merged: "La Liga" },
   { left: "serie", right: "a", merged: "Serie A" },
 ];
-
-const TR_FRAGMENT_TAIL =
-  /(ların|lerin|ları|leri|nın|nin|nun|nün|ın|in|un|ün)$/iu;
-/** Fiilimsi / göreli cümlecik kalıntıları — uzun tanımlayıcı öbekleri ele */
-const TR_VERBISH =
-  /\b(okuyan|eden|olan|yapan|geçen|bilen|meyen|meli|malı|mış|miş|muş|müş|almak|vermek)\b/iu;
 
 function mulberry32(seed: number) {
   let state = seed;
@@ -98,30 +81,13 @@ function normalizeLabel(t: string): string {
 }
 
 function isBadDiscourse(lower: string): boolean {
-  if (BAD_PHRASES.has(lower)) return true;
-  if (/^daha\s+\S+\s+olarak$/u.test(lower)) return true;
-  return false;
-}
-
-function isGenitiveFragment(words: string[]): boolean {
-  if (words.length !== 2) return false;
-  const [a, b] = words;
-  const aTrim = a.trim();
-  const blo = b.toLowerCase();
-  if (!TR_POSS_END.test(aTrim)) return false;
-  if (!/[ğüşıöçİı]/iu.test(aTrim) && !/[ğüşıöçİı]/iu.test(b)) return false;
-  return FRAGILE_TAIL_WORD.has(blo);
+  return BAD_PHRASES.has(lower);
 }
 
 function isLowQualityPhrase(s: string): boolean {
   const words = s.split(/\s+/).filter(Boolean);
   if (words.length > MAX_WORDS) return true;
-  const lower = s.toLowerCase().trim();
-  if (isBadDiscourse(lower)) return true;
-  if (isGenitiveFragment(words)) return true;
-  const last = words[words.length - 1] ?? "";
-  if (words.length >= 3 && TR_FRAGMENT_TAIL.test(last)) return true;
-  if (words.length >= 3 && TR_VERBISH.test(s)) return true;
+  if (isBadDiscourse(s.toLowerCase().trim())) return true;
   return false;
 }
 
@@ -153,7 +119,7 @@ function mergeCompoundTags(tags: string[]): string[] {
 
 function isUsableTag(t: string): boolean {
   const s = t.trim();
-  /** Serie **A** gibi tek harf lig katları birleştirmeden önce havuzda kalabilsin */
+  /** Keep single-letter league tiers like Serie **A** before they are merged */
   const okShort = s.length === 1 && /^[A-Z]$/i.test(s);
   if ((!okShort && s.length < 2) || s.length > MAX_TAG_CHARS) return false;
   if (/^[\d\s.%\-–—:]+$/.test(s)) return false;
@@ -180,21 +146,21 @@ function shuffleDeterministic<T>(arr: T[], seedStr: string): T[] {
 }
 
 export type ExtractHighlightOptions = {
-  /** Seçilecek maksimum pill sayısı (öneri: 3–4) */
+  /** Max pills to pick (suggested: 3–4) */
   max?: number;
-  /** Aynı içerik için kararlı “rastgele” sıra */
+  /** Stable "random" order for the same content */
   seed?: string;
 };
 
 /**
- * HTML veya düz metinden oyuncu/kavram adayı öbekleri toplar:
- * - **markdown kalın**
- * - &lt;strong&gt;, &lt;b&gt;, &lt;mark&gt;
- * - Kısa &lt;h2&gt;/&lt;h3&gt; başlıkları
- * - Tek satırlık &lt;li&gt; parçaları (ilk cümle / virgül öncesi)
+ * Collects candidate player/concept phrases from HTML or plain text:
+ * - **markdown bold**
+ * - <strong>, <b>, <mark>
+ * - Short <h2>/<h3> headings
+ * - Single-line <li> fragments (first clause / before a comma)
  */
 export function extractHighlightTags(raw: string | undefined | null, opts: ExtractHighlightOptions = {}): string[] {
-  /** Kartta gösterilen üst sınır ayrı; burada daha geniş havuz için yüksek max geçilebilir */
+  /** Card cap is separate; a higher max can be passed here for a wider pool */
   const max = Math.min(opts.max ?? 4, 32);
   const seed = opts.seed ?? "";
   const s = raw ?? "";
@@ -242,9 +208,9 @@ export function extractHighlightTags(raw: string | undefined | null, opts: Extra
 
 function tokensFromTitleHint(title: string, seen: Set<string>, maxAdd: number): string[] {
   const cleaned = cleanSnippet(title);
-  /** Başlığı kelime kelime bölme — "Şampiyonlar Ligi" gibi bileşikleri koru */
+  /** Split the title on separators — keep compounds like "Champions League" intact */
   const parts = cleaned
-    .split(/\s*[·|:\u2013\u2014,/]+\s*/u)
+    .split(/\s*[·|:–—,/]+\s*/u)
     .map((p) => p.trim())
     .filter(Boolean);
   const chunks = parts.length ? parts : [cleaned];
@@ -274,12 +240,12 @@ function tokensFromTitleHint(title: string, seen: Set<string>, maxAdd: number): 
 }
 
 export type ArticleHighlightOptions = ExtractHighlightOptions & {
-  /** İçerikten yeterli pill çıkmazsa başlıktan kelime öbekleri dener */
+  /** If the body yields too few pills, derive phrases from the title */
   titleHint?: string;
 };
 
 /**
- * Kart pill’leri: yapılandırılmış vurgular + düz metinde virgül/·/— bölmeleri + isteğe bağlı başlık ipucu.
+ * Card pills: structured highlights + plain-text comma/·/— splits + optional title hint.
  */
 export function extractArticleHighlights(raw: string | undefined | null, opts: ArticleHighlightOptions = {}): string[] {
   const max = Math.min(opts.max ?? 4, 4);
@@ -299,7 +265,7 @@ export function extractArticleHighlights(raw: string | undefined | null, opts: A
   }
 
   const plain = stripHtml(raw ?? "").replace(/\s+/g, " ").trim();
-  /** Yapılandırılmış aday azsa düz metin virgül bölmelerini kullan */
+  /** If few structured candidates, fall back to plain-text comma splits */
   if (plain && out.length < max && structuredRaw.length < 2) {
     const chunks = plain.split(/\s*[,;]\s*|\s*·\s+|\s+—\s+|\s+–\s+/);
     const normalized = mergeCompoundTags(chunks.map((c) => normalizeLabel(c)).filter(Boolean));
@@ -334,7 +300,7 @@ export function extractArticleHighlights(raw: string | undefined | null, opts: A
   return shuffleDeterministic(finalOut, `${seed}-pick`).slice(0, max);
 }
 
-/** Kart grid accent döngüsü — listeler, radar, taktik lab, vb. */
+/** Card-grid accent cycle — lists, radar, tactics lab, etc. */
 export const HIGHLIGHT_CARD_ACCENTS_CYCLE = [
   "var(--accent-2)",
   "var(--sky)",
@@ -344,5 +310,5 @@ export const HIGHLIGHT_CARD_ACCENTS_CYCLE = [
   "var(--cyan)",
 ] as const;
 
-/** @deprecated — HIGHLIGHT_CARD_ACCENTS_CYCLE kullanın */
+/** @deprecated — use HIGHLIGHT_CARD_ACCENTS_CYCLE */
 export const TACTICS_CARD_ACCENTS = HIGHLIGHT_CARD_ACCENTS_CYCLE;

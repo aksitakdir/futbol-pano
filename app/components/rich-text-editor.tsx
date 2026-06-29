@@ -33,9 +33,9 @@ function Toolbar({ editor, htmlMode, onToggle }: { editor: Editor | null; htmlMo
       const { data: urlData } = supabase.storage.from("content-images").getPublicUrl(data.path);
       editor.chain().focus().insertContent({ type: "image", attrs: { src: urlData.publicUrl } }).run();
     } catch (err) {
-      console.error("Görsel yükleme hatası:", err);
+      console.error("Image upload failed:", err);
     }
-    // Input'u sıfırla — aynı dosyayı tekrar seçebilmek için
+    // Reset the input so the same file can be selected again
     if (fileInputRef.current) fileInputRef.current.value = "";
   }
 
@@ -44,49 +44,49 @@ function Toolbar({ editor, htmlMode, onToggle }: { editor: Editor | null; htmlMo
   return (
     <div className="flex flex-wrap items-center gap-0.5 rounded-t-xl border border-b-0 border-slate-700/80 bg-slate-900/90 p-1.5">
       <button type="button" onClick={() => editor.chain().focus().toggleBold().run()}
-        className={editor.isActive("bold") ? TB_ACTIVE : TB} title="Kalın">
+        className={editor.isActive("bold") ? TB_ACTIVE : TB} title="Bold">
         <span className="text-sm font-bold">B</span>
       </button>
       <button type="button" onClick={() => editor.chain().focus().toggleItalic().run()}
-        className={editor.isActive("italic") ? TB_ACTIVE : TB} title="İtalik">
+        className={editor.isActive("italic") ? TB_ACTIVE : TB} title="Italic">
         <span className="text-sm italic">I</span>
       </button>
       <span className="mx-0.5 h-4 w-px bg-slate-600" />
       <button type="button" onClick={() => editor.chain().focus().toggleHeading({ level: 2 }).run()}
-        className={editor.isActive("heading", { level: 2 }) ? TB_ACTIVE : TB} title="Başlık 2">H2</button>
+        className={editor.isActive("heading", { level: 2 }) ? TB_ACTIVE : TB} title="Heading 2">H2</button>
       <button type="button" onClick={() => editor.chain().focus().toggleHeading({ level: 3 }).run()}
-        className={editor.isActive("heading", { level: 3 }) ? TB_ACTIVE : TB} title="Başlık 3">H3</button>
+        className={editor.isActive("heading", { level: 3 }) ? TB_ACTIVE : TB} title="Heading 3">H3</button>
       <span className="mx-0.5 h-4 w-px bg-slate-600" />
       <button type="button" onClick={() => editor.chain().focus().toggleBulletList().run()}
-        className={editor.isActive("bulletList") ? TB_ACTIVE : TB} title="Madde listesi">
+        className={editor.isActive("bulletList") ? TB_ACTIVE : TB} title="Bullet list">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
       </button>
       <button type="button" onClick={() => editor.chain().focus().toggleOrderedList().run()}
-        className={editor.isActive("orderedList") ? TB_ACTIVE : TB} title="Numaralı liste">
+        className={editor.isActive("orderedList") ? TB_ACTIVE : TB} title="Numbered list">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="10" y1="6" x2="21" y2="6"/><line x1="10" y1="12" x2="21" y2="12"/><line x1="10" y1="18" x2="21" y2="18"/><path d="M4 6h1v4M4 10h2M6 18H4c0-1 2-2 2-3s-1-1.5-2-1"/></svg>
       </button>
       <button type="button" onClick={setLink}
-        className={editor.isActive("link") ? TB_ACTIVE : TB} title="Link ekle">
+        className={editor.isActive("link") ? TB_ACTIVE : TB} title="Add link">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
       </button>
       <button type="button" onClick={() => editor.chain().focus().toggleBlockquote().run()}
-        className={editor.isActive("blockquote") ? TB_ACTIVE : TB} title="Alıntı">
+        className={editor.isActive("blockquote") ? TB_ACTIVE : TB} title="Quote">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M6 17h3l2-4V7H5v6h3zm8 0h3l2-4V7h-6v6h3z"/></svg>
       </button>
       <span className="mx-0.5 h-4 w-px bg-slate-600" />
-      {/* Görsel yükleme butonu */}
-      <label className={`${TB} cursor-pointer`} title="Görsel ekle">
+      {/* Image upload button */}
+      <label className={`${TB} cursor-pointer`} title="Add image">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
           <rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/>
           <polyline points="21 15 16 10 5 21"/>
         </svg>
         <input ref={fileInputRef} type="file" accept="image/*" className="hidden" onChange={handleImageUpload} />
       </label>
-      {/* URL ile görsel ekleme */}
-      <button type="button" title="URL ile görsel ekle"
+      {/* Add image by URL */}
+      <button type="button" title="Add image by URL"
         className={TB}
         onClick={() => {
-          const url = window.prompt("Görsel URL:");
+          const url = window.prompt("Image URL:");
           if (url) editor.chain().focus().insertContent({ type: "image", attrs: { src: url } }).run();
         }}>
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -94,10 +94,10 @@ function Toolbar({ editor, htmlMode, onToggle }: { editor: Editor | null; htmlMo
         </svg>
       </button>
       {/* YouTube embed */}
-      <button type="button" title="YouTube video ekle"
+      <button type="button" title="Add YouTube video"
         className={TB}
         onClick={() => {
-          const url = window.prompt("YouTube video URL'si (örn: https://youtu.be/xxxx):");
+          const url = window.prompt("YouTube video URL (e.g. https://youtu.be/xxxx):");
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
           if (url) (editor!.chain().focus() as any).setYoutubeVideo({ src: url, width: 640, height: 360 }).run();
         }}>
@@ -108,7 +108,7 @@ function Toolbar({ editor, htmlMode, onToggle }: { editor: Editor | null; htmlMo
       <span className="mx-0.5 h-4 w-px bg-slate-600" />
       <button type="button" onClick={onToggle}
         className={htmlMode ? TB_ACTIVE : TB}
-        title="HTML kaynak modu">
+        title="HTML source mode">
         <span className="text-xs font-mono font-bold">&lt;/&gt;</span>
       </button>
     </div>
@@ -121,7 +121,7 @@ type Props = {
   placeholder?: string;
 };
 
-export default function RichTextEditor({ value, onChange, placeholder = "İçerik yazın..." }: Props) {
+export default function RichTextEditor({ value, onChange, placeholder = "Write content..." }: Props) {
   const [htmlMode, setHtmlMode] = useState(false);
   const [rawHtml, setRawHtml] = useState(value || "");
   const editorRef = useRef<Editor | null>(null);
@@ -207,7 +207,7 @@ export default function RichTextEditor({ value, onChange, placeholder = "İçeri
             onChange?.(e.target.value);
           }}
           className="min-h-[280px] w-full rounded-b-xl border border-slate-700/80 bg-slate-900/70 px-4 py-3 font-mono text-xs leading-relaxed text-emerald-300 outline-none focus:border-emerald-500/40 resize-y"
-          placeholder="HTML kodunu buraya yapıştır..."
+          placeholder="Paste HTML code here..."
           spellCheck={false}
         />
       ) : (

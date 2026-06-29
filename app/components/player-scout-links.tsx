@@ -1,14 +1,14 @@
 "use client";
 
-/** Transfermarkt + Google arama; ~12px, muted, hover'da parlar */
+/** Transfermarkt + Google search; ~12px, muted, glows on hover */
 export function PlayerScoutLinks({ playerName }: { playerName: string }) {
   const n = playerName?.trim();
   if (!n) return null;
   const tmUrl =
-    "https://www.transfermarkt.com.tr/schnellsuche/ergebnis/schnellsuche?query=" +
+    "https://www.transfermarkt.com/schnellsuche/ergebnis/schnellsuche?query=" +
     encodeURIComponent(n);
   const googleUrl =
-    "https://www.google.com/search?q=" + encodeURIComponent(`${n} futbolcu`);
+    "https://www.google.com/search?q=" + encodeURIComponent(`${n} footballer`);
 
   const base =
     "inline-flex h-3 shrink-0 items-center justify-center rounded border border-slate-700/70 " +
@@ -19,13 +19,13 @@ export function PlayerScoutLinks({ playerName }: { playerName: string }) {
     <span
       className="inline-flex items-center gap-1"
       role="group"
-      aria-label="Oyuncuyu web'de ara"
+      aria-label="Search this player on the web"
     >
       <a
         href={tmUrl}
         target="_blank"
         rel="noopener noreferrer"
-        title="Transfermarkt'ta ara"
+        title="Search on Transfermarkt"
         className={`${base} min-w-[22px] px-0.5 text-[7px] tracking-tight`}
       >
         TM
@@ -34,7 +34,7 @@ export function PlayerScoutLinks({ playerName }: { playerName: string }) {
         href={googleUrl}
         target="_blank"
         rel="noopener noreferrer"
-        title="Google'da ara"
+        title="Search on Google"
         className={`${base} w-3 text-[9px]`}
       >
         G
