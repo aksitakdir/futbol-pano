@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 /**
  * Adds (or refreshes) a custom hero slide that features the World Cup 2026
- * knockout bracket on the homepage manşet. Idempotent: replaces any prior slide
+ * knockout bracket on the homepage hero. Idempotent: replaces any prior slide
  * with the same href. Preserves existing custom slides.
  */
 import { createClient } from "@supabase/supabase-js";
