@@ -135,6 +135,48 @@ actually done change by the hour. For the `confirmed_deal`, only file deals that
 confirmed (here-we-go / official), and set `fee` to a clean English string (`£40m`, `Free`,
 `Loan`, `Undisclosed`). Rumours belong in an article's prose, not the Confirmed Deals strip.
 
+## Evergreen scouting core (the primary content engine)
+
+The site's proven, evergreen search demand is **young-talent scouting by country, league, and
+position** — this is the editorial core and the main SEO engine. It does not expire the way
+World Cup content does. Build it as a topic cluster:
+
+- **Country lists:** "[Country]'s Best Young Footballers / Wonderkids" (Argentina, Brazil,
+  Germany, England, France, Spain, Netherlands, Portugal…).
+- **League lists:** "Best Young Players in the [League]" (Premier League, Bundesliga, La Liga,
+  Serie A, Ligue 1, Eredivisie, Liga MX…).
+- **Position lists:** "Best Young Centre-Backs / Strikers / Midfielders in World Football."
+- **Theme:** "The Next [Legend]", hidden gems under the radar.
+
+These are `lists` or `radar` category. **Internal-link every one** to a pillar hub and to
+sibling lists — this is how topical authority and ranking compound. Each entry is a real
+scouting mini-report (current club, minutes, output this season, tactical role, ceiling), not a
+thin line. Avoid making everything World-Cup-framed; frame for the evergreen query (e.g.
+"Argentina's best young midfielders", not "Argentina's WC midfielders").
+
+## Gaming lens mode (the differentiator)
+
+Scout Gamer's unique angle is **Football × Game Culture** — bridging EA Sports FC (FC 26) and
+Football Manager with real scouting. Use it as a *lens on the evergreen core*, not a separate
+track, so a piece captures both the proven young-talent demand and the gaming search market.
+
+When a brief is a gaming-lens piece:
+- **Pull FC ratings from the `fc_players` table** for the players involved (query it yourself:
+  `select name, overall, position, club, pace, shooting, passing, dribbling, defending, physical
+  from fc_players where name ilike '%<name>%'`). 16K+ players are already loaded.
+- **Web-search the real, current stats** as always, then **bridge the two**: where the game
+  rating and reality diverge is the story.
+  - Real → Game: "EA FC 26 rates him 75, but his real numbers say elite — the card is wrong."
+  - Game → Real: "The FC 26 meta wonderkid who's even better in real life."
+- **Verdict framing:** Underrated / Fair / Overrated. A `@vs:` block (real stats | game rating)
+  or a `@stat:` group works well until a dedicated rating-check block exists.
+- **Speak the culture naturally:** meta, OP, hidden gem, nerf/buff, wonderkid, high-potential —
+  but stay analytical, never gimmicky. Every number (real or in-game) must be sourced.
+
+Example angles: "EA FC 26 vs Reality — Rating Argentina's Wonderkids", "The Best Young CBs in
+FC 26 Who Are Even Better in Real Life", "Football Manager's Most-Signed Wonderkid: Is the Hype
+Real?". Keep these to roughly 1 in 5 pieces — a distinct flavour, not the whole menu.
+
 ## Adaptive composition — choose blocks to fit the content, never a template
 
 The block editor is a **toolbox of 14 components**. A great Scout Gamer article uses the few
