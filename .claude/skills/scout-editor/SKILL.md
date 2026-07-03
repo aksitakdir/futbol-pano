@@ -268,6 +268,13 @@ Principles:
 - **No citation markup.** Absorb search results and rephrase naturally. Never output `<cite>`,
   `[1]`, or source tags — write clean prose.
 
+## Capitalization
+
+Use **Title Case** for both the article title AND every in-content heading (`@section:` and
+`#`/`##`). Capitalize the first and last word and all major words; keep minor words lowercase
+(a, an, the, and, but, or, for, nor, of, on, in, to, from, by, as, at, vs) unless they're first
+or last. Example: `@section: The Teenager Real Madrid Couldn't Wait For` — not sentence case.
+
 ## Block markup reference
 
 A blank line separates blocks. Inline `**bold**`, `*italic*`, `[text](url)` work inside
