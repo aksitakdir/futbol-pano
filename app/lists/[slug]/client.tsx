@@ -216,9 +216,9 @@ function ListLayout({ row }: { row: ContentRow }) {
             <span className="chip solid" style={{ background: accent, borderColor: accent, color: "var(--ink-900)", fontSize: 10 }}>LIST</span>
             <span className="mono" style={{ fontSize: 10, letterSpacing: "0.18em", color: "var(--sg-text-muted)" }}>{formattedDate}</span>
           </div>
-          <h1 className="display grad-text" style={{ fontSize: "clamp(36px, 5vw, 72px)", fontWeight: 700, letterSpacing: "-0.04em", margin: 0, lineHeight: 0.92, textWrap: "balance", maxWidth: 800 }}>{displayTitle}</h1>
+          <h1 className="display grad-text" style={{ fontSize: "clamp(36px, 5vw, 72px)", fontWeight: 700, letterSpacing: "-0.04em", margin: 0, lineHeight: 0.92, paddingBottom: "0.14em", textWrap: "balance", maxWidth: 800 }}>{displayTitle}</h1>
           <div style={{ display: "flex", gap: 20, marginTop: 32, alignItems: "center", paddingTop: 20, borderTop: "1px solid var(--sg-border)", maxWidth: 560 }}>
-            <div><div className="mono" style={{ fontSize: 9, letterSpacing: "0.18em", color: "var(--sg-text-muted)" }}>PLAYERS</div><div className="mono" style={{ fontSize: 13, color: "var(--sg-text-primary)", marginTop: 2 }}>{players.length}</div></div>
+            <div><div className="mono" style={{ fontSize: 9, letterSpacing: "0.18em", color: "var(--sg-text-muted)" }}>PUBLISHED</div><div className="mono" style={{ fontSize: 13, color: "var(--sg-text-primary)", marginTop: 2 }}>{formattedDate}</div></div>
             <div style={{ width: 1, height: 28, background: "var(--sg-border)" }} />
             <div><div className="mono" style={{ fontSize: 9, letterSpacing: "0.18em", color: "var(--sg-text-muted)" }}>EDITOR</div><div className="mono" style={{ fontSize: 13, color: "var(--sg-text-primary)", marginTop: 2 }}>SCOUT GAMER</div></div>
           </div>

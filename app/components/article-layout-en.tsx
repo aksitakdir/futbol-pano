@@ -356,7 +356,7 @@ export default function ArticleLayoutEn({
 
               <h1 className="display" style={{
                 fontSize: "clamp(40px, 5.5vw, 80px)", fontWeight: 700,
-                letterSpacing: "-0.04em", margin: 0, lineHeight: 0.92,
+                letterSpacing: "-0.04em", margin: 0, lineHeight: 0.92, paddingBottom: "0.14em",
                 textWrap: "balance", color: "var(--sg-text-primary)",
               }}>
                 <span className="grad-text">{title}</span>
@@ -395,7 +395,7 @@ export default function ArticleLayoutEn({
 
               <h1 className="display" style={{
                 fontSize: "clamp(40px, 5.5vw, 80px)", fontWeight: 700,
-                letterSpacing: "-0.04em", margin: 0, lineHeight: 0.92,
+                letterSpacing: "-0.04em", margin: 0, lineHeight: 0.92, paddingBottom: "0.14em",
                 textWrap: "balance", color: "var(--sg-text-primary)",
               }}>
                 <span className="grad-text">{title}</span>
