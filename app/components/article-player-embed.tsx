@@ -138,10 +138,32 @@ export default function ArticlePlayerEmbed({
   }
 
   if (!card) {
+    // No data in any source (fc_players / cache / BSD / API-Football). For a
+    // genuine deep cut this is expected — the prospect is too early to be
+    // mapped. Render an on-brand "One to Watch" placeholder instead of an error.
+    const nm = playerName.trim();
+    const initials = nm.split(/\s+/).map((w) => w[0]).filter(Boolean).slice(0, 2).join("").toUpperCase();
+    const accent = "var(--accent, var(--emerald, #00d4aa))";
+    const tmLink = `${tmBase}${encodeURIComponent(nm)}`;
+    const gLink = `https://www.google.com/search?q=${encodeURIComponent(nm + gq)}`;
     return (
-      <div className="article-player-embed" style={{ clear: "both", padding: "32px 0" }} data-scout-embed={playerName.trim()}>
-        <div style={{ padding: "16px 20px", borderRadius: 8, border: "1px dashed var(--sg-border)", background: "var(--sg-surface-low)", fontSize: 14, color: "var(--sg-text-muted)", textAlign: "center" }}>
-          Player not found: <strong style={{ color: "var(--sg-text-primary)" }}>{playerName.trim()}</strong>
+      <div className="article-player-embed" style={{ clear: "both", position: "relative", overflow: "hidden", borderTop: "1px solid var(--sg-border)", padding: "48px 0 56px" }} data-scout-embed={nm}>
+        <div className="article-player-panel" style={{ display: "grid", gridTemplateColumns: "minmax(0, 200px) 1fr", gap: 40, alignItems: "center" }}>
+          <div style={{ aspectRatio: "3 / 4", borderRadius: 12, border: `1px dashed color-mix(in oklch, ${accent} 45%, var(--sg-border))`, background: `linear-gradient(160deg, var(--sg-surface) 0%, color-mix(in oklch, ${accent} 8%, var(--sg-surface-low)) 100%)`, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 12 }}>
+            <span className="display" style={{ fontSize: 64, fontWeight: 800, color: accent, opacity: 0.28, letterSpacing: "-0.04em", lineHeight: 1 }}>{initials || "?"}</span>
+            <span className="mono" style={{ fontSize: 9, letterSpacing: "0.16em", color: accent, opacity: 0.85 }}>NO RATING YET</span>
+          </div>
+          <div>
+            <span className="mono" style={{ display: "inline-block", fontSize: 9, letterSpacing: "0.16em", padding: "4px 10px", borderRadius: 999, border: `1px solid color-mix(in oklch, ${accent} 45%, transparent)`, color: accent, marginBottom: 14 }}>UNCHARTED · ONE TO WATCH</span>
+            <h3 className="display" style={{ fontSize: "clamp(22px, 3vw, 30px)", fontWeight: 700, letterSpacing: "-0.02em", margin: "0 0 10px", color: "var(--sg-text-primary)" }}>{nm}</h3>
+            <p style={{ margin: "0 0 18px", fontSize: 15, lineHeight: 1.6, color: "var(--sg-text-secondary)", maxWidth: "52ch" }}>
+              Too early for a rating — and that is the point. The game and the stat databases haven&apos;t mapped this prospect yet. By the time they do, you&apos;ll already know the name. Consider this card one to watch appreciate.
+            </p>
+            <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+              <a href={tmLink} target="_blank" rel="noopener noreferrer" className="mono" style={{ fontSize: 10, letterSpacing: "0.08em", padding: "6px 12px", borderRadius: 999, border: "1px solid var(--sg-border)", color: "var(--sg-text-muted)", textDecoration: "none" }}>TRANSFERMARKT ↗</a>
+              <a href={gLink} target="_blank" rel="noopener noreferrer" className="mono" style={{ fontSize: 10, letterSpacing: "0.08em", padding: "6px 12px", borderRadius: 999, border: "1px solid var(--sg-border)", color: "var(--sg-text-muted)", textDecoration: "none" }}>SEARCH ↗</a>
+            </div>
+          </div>
         </div>
       </div>
     );
