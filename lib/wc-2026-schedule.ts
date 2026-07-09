@@ -231,10 +231,10 @@ export const WC_SCHEDULE: WcMatch[] = [
   { id: 95,  date: "2026-07-07", round: "r16", home: "ARG", away: "EGY", homeLabel: "W86", awayLabel: "W88", venue: "Mercedes-Benz Stadium", city: "Atlanta", status: S },
   { id: 96,  date: "2026-07-07", round: "r16", home: "SUI", away: "COL", homeLabel: "W85", awayLabel: "W87", venue: "BC Place", city: "Vancouver", status: S },
   // ── Quarterfinals (Jul 9–11) ──
-  { id: 97,  date: "2026-07-09", round: "qf", home: "", away: "", homeLabel: "W89", awayLabel: "W90", venue: "Boston Stadium", city: "Boston", status: S },
-  { id: 98,  date: "2026-07-10", round: "qf", home: "", away: "", homeLabel: "W93", awayLabel: "W94", venue: "Los Angeles Stadium", city: "Los Angeles", status: S },
-  { id: 99,  date: "2026-07-11", round: "qf", home: "", away: "", homeLabel: "W91", awayLabel: "W92", venue: "Hard Rock Stadium", city: "Miami", status: S },
-  { id: 100, date: "2026-07-11", round: "qf", home: "", away: "", homeLabel: "W95", awayLabel: "W96", venue: "Arrowhead Stadium", city: "Kansas City", status: S },
+  { id: 97,  date: "2026-07-09", round: "qf", home: "FRA", away: "MAR", homeLabel: "W89", awayLabel: "W90", venue: "Boston Stadium", city: "Boston", status: S },
+  { id: 98,  date: "2026-07-10", round: "qf", home: "ESP", away: "BEL", homeLabel: "W93", awayLabel: "W94", venue: "Los Angeles Stadium", city: "Los Angeles", status: S },
+  { id: 99,  date: "2026-07-11", round: "qf", home: "NOR", away: "ENG", homeLabel: "W91", awayLabel: "W92", venue: "Hard Rock Stadium", city: "Miami", status: S },
+  { id: 100, date: "2026-07-11", round: "qf", home: "ARG", away: "SUI", homeLabel: "W95", awayLabel: "W96", venue: "Arrowhead Stadium", city: "Kansas City", status: S },
   // ── Semifinals (Jul 14–15) ──
   { id: 101, date: "2026-07-14", round: "sf", home: "", away: "", homeLabel: "W97", awayLabel: "W98", venue: "AT&T Stadium", city: "Dallas", status: S },
   { id: 102, date: "2026-07-15", round: "sf", home: "", away: "", homeLabel: "W99", awayLabel: "W100", venue: "Mercedes-Benz Stadium", city: "Atlanta", status: S },
