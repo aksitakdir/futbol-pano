@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { slugify } from "@/lib/slugify";
 
 export const maxDuration = 60;
 
@@ -191,21 +192,9 @@ export async function POST(request: Request) {
       if (!validCats.has(category)) category = "lists";
       let seo = typeof it.seo_value === "string" ? it.seo_value.trim() : "Medium";
       if (!validSeo.has(seo)) seo = "Medium";
-      let slug = typeof it.slug === "string" ? it.slug.trim().toLowerCase().replace(/[^a-z0-9-]/g, "-").replace(/-+/g, "-").replace(/^-|-$/g, "") : "";
-      if (!slug && title) {
-        slug = title
-          .toLowerCase()
-          .replace(/ğ/g, "g")
-          .replace(/ü/g, "u")
-          .replace(/ş/g, "s")
-          .replace(/ı/g, "i")
-          .replace(/ö/g, "o")
-          .replace(/ç/g, "c")
-          .replace(/[^a-z0-9]+/g, "-")
-          .replace(/^-|-$/g, "")
-          .slice(0, 80);
-      }
-      return { title, category, seo_value: seo, slug: slug || "icerik" };
+      let slug = typeof it.slug === "string" ? slugify(it.slug) : "";
+      if (!slug && title) slug = slugify(title);
+      return { title, category, seo_value: seo, slug: slug || "content" };
     })
     .filter((it) => it.title.length > 0);
 

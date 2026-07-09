@@ -283,14 +283,24 @@ function parseMarkupToBlocks(input) {
 }
 
 // ---- helpers ------------------------------------------------------------
-function slugify(text) {
-  return text
+// Mirror of lib/slugify.ts — keep the two in sync (this script runs as a
+// standalone Node process and can't import the TS module).
+const MAX_SLUG_LENGTH = 80;
+function slugify(text, maxLength = MAX_SLUG_LENGTH) {
+  const base = text
     .toLowerCase()
     .replace(/ğ/g, "g").replace(/ü/g, "u").replace(/ş/g, "s")
     .replace(/ı/g, "i").replace(/ö/g, "o").replace(/ç/g, "c")
+    .normalize("NFD").replace(/\p{Diacritic}/gu, "")
     .replace(/[^a-z0-9]+/g, "-")
-    .replace(/^-+|-+$/g, "")
-    .slice(0, 80);
+    .replace(/^-+|-+$/g, "");
+
+  if (base.length <= maxLength) return base;
+
+  const cut = base.slice(0, maxLength);
+  const lastDash = cut.lastIndexOf("-");
+  const wordSafe = lastDash > 0 ? cut.slice(0, lastDash) : cut;
+  return wordSafe.replace(/-+$/g, "");
 }
 
 const CATEGORIES = ["radar", "tactics-lab", "lists", "wc-2026", "transfer"];

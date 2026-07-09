@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { createClient, type SupabaseClient } from "@supabase/supabase-js";
 import { parseMarkupToBlocks } from "@/lib/parse-blocks";
+import { slugify } from "@/lib/slugify";
 import { getPlayerContext, getTeamContext, TEAM_IDS, LEAGUE_IDS } from "@/lib/api-football-stats";
 
 export const maxDuration = 60;
@@ -472,16 +473,6 @@ async function buildStatsContext(
     ...sections,
     "---",
   ].join("\n");
-}
-
-function slugify(text: string): string {
-  return text
-    .toLowerCase()
-    .replace(/ğ/g, "g").replace(/ü/g, "u").replace(/ş/g, "s")
-    .replace(/ı/g, "i").replace(/ö/g, "o").replace(/ç/g, "c")
-    .replace(/[^a-z0-9]+/g, "-")
-    .replace(/^-+|-+$/g, "")
-    .slice(0, 80);
 }
 
 /** Round-robin category selection based on request index */
