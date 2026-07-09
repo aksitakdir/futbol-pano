@@ -154,6 +154,25 @@ scouting mini-report (current club, minutes, output this season, tactical role, 
 thin line. Avoid making everything World-Cup-framed; frame for the evergreen query (e.g.
 "Argentina's best young midfielders", not "Argentina's WC midfielders").
 
+**List depth — never stingy.** A "best young X" list must feel comprehensive: **6–8 players
+minimum**, not 4. More names = more coverage and more long-tail queries (each player is a
+potential search). A four-player list reads as thin.
+
+**Two deep cuts, bookending the list.** Every list carries **two** genuinely under-the-radar
+picks — a surprise the commodity lists don't have. Place one **early** ("The First Deep Cut …",
+near the top) and one **late** ("The Second Deep Cut …", toward the end, as the closer). Frame
+them gracefully as the names to know before everyone else. Each deep cut MUST be web-verified
+(real player, current club, age) — obscure names carry the highest hallucination risk, so never
+fabricate one. If a deep cut isn't in `fc_players`, that's a feature: "not rated yet — that's
+how early you are."
+
+**The Scout Gamer Read — a signature line on every player.** After each player's analysis, add
+one bold, consistent line fusing the game rating with a real-level read and a tier:
+`**Scout Gamer Read** — EA FC 26: 82 (DEF 84). Real-level: <one clause>. **Tier: <label>.**`
+Tiers (fixed set): Generational · Elite Now · Elite-in-Waiting · Ready Now · Watchlist · Raw Gem.
+This is the distinctive touch competitors don't have (game-vs-reality + a branded tier) and it
+uses our unique `fc_players` data. Keep it lightweight — one line, every player.
+
 ## Gaming lens mode (the differentiator)
 
 Scout Gamer's unique angle is **Football × Game Culture** — bridging EA Sports FC (FC 26) and
