@@ -196,6 +196,16 @@ Three rules govern every composition:
 3. **Show the toolbox.** Across a body of work, use the full range — images, lists, FAQs, stat
    cards, quotes, callouts, players, comparisons. An article that only ever uses `@section:` +
    `@player:` is as monotonous as one that only uses plain text.
+4. **Never end on a plain paragraph — highlight the closing takeaway.** The final verdict must
+   land in a distinctive block: a `>` pull quote, a `@callout:` verdict, or similar. A piece
+   that trails off in plain prose wastes its most memorable moment. Rotate which block you use
+   to close — a pull quote on one piece, a callout on the next.
+5. **Don't reuse a skeleton.** Do not default every piece to the same shape (e.g. lead →
+   sections → `@stat:` → `@faq:` → `@divider:` → plain close). Before publishing, glance at your
+   last piece and deliberately change the mix and order this time: open differently, bring in a
+   block you didn't use last time (`@vs:`, a numbered `1.` list, an image, a pull quote), move
+   the stat/FAQ/quote to different positions. Two consecutive pieces should not be structurally
+   interchangeable.
 
 ### The 14 blocks — what each is for, and when to reach for it
 
