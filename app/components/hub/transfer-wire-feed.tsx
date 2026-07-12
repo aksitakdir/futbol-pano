@@ -190,8 +190,9 @@ export default function TransferWireFeed({ initialLimit = 40 }: Props) {
     if (reloadCache) setWireRefreshing(true);
     else setWireLoading(true);
     try {
+      // reloadCache → force a live (cooldown-protected) RSS sync; initial load reads cache.
       const res = await fetch(
-        `/api/transfer-wire${reloadCache ? `?_=${Date.now()}` : ""}`,
+        reloadCache ? `/api/transfer-wire?live=1&_=${Date.now()}` : "/api/transfer-wire",
         reloadCache ? { cache: "no-store" } : undefined,
       );
       const data = await res.json();
@@ -201,6 +202,11 @@ export default function TransferWireFeed({ initialLimit = 40 }: Props) {
       }
       setHeadlines(list);
       setWireUpdated(data.updatedAt ?? null);
+      // Self-heal: if the cached feed is stale on first load, trigger one rate-limited
+      // live sync so real visitor traffic keeps the wire fresh without waiting for cron.
+      if (!reloadCache && data.stale) {
+        void loadWire(true);
+      }
     } catch {
       const fallback = await fetchMinimalNewsFallback();
       setHeadlines(fallback);

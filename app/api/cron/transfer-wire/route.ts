@@ -3,7 +3,11 @@ import { syncTransferWireCache } from "@/lib/transfer-wire-cache";
 
 export const maxDuration = 60;
 
-/** Hourly RSS sync — only Vercel cron + CRON_SECRET. Zero cost per page view. */
+/**
+ * Daily RSS sync (vercel.json: 06:00 UTC) — Vercel cron + CRON_SECRET only.
+ * Between cron runs the wire self-refreshes from visitor traffic via the
+ * cooldown-protected public `?live=1` path (see /api/transfer-wire). Zero API cost.
+ */
 export async function GET(request: NextRequest) {
   const secret = request.headers.get("authorization")?.replace("Bearer ", "");
   const cronSecret = process.env.CRON_SECRET;
