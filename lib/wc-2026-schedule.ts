@@ -236,8 +236,8 @@ export const WC_SCHEDULE: WcMatch[] = [
   { id: 99,  date: "2026-07-11", round: "qf", home: "NOR", away: "ENG", homeLabel: "W91", awayLabel: "W92", venue: "Hard Rock Stadium", city: "Miami", status: S },
   { id: 100, date: "2026-07-11", round: "qf", home: "ARG", away: "SUI", homeLabel: "W95", awayLabel: "W96", venue: "Arrowhead Stadium", city: "Kansas City", status: S },
   // ── Semifinals (Jul 14–15) ──
-  { id: 101, date: "2026-07-14", round: "sf", home: "", away: "", homeLabel: "W97", awayLabel: "W98", venue: "AT&T Stadium", city: "Dallas", status: S },
-  { id: 102, date: "2026-07-15", round: "sf", home: "", away: "", homeLabel: "W99", awayLabel: "W100", venue: "Mercedes-Benz Stadium", city: "Atlanta", status: S },
+  { id: 101, date: "2026-07-14", round: "sf", home: "FRA", away: "ESP", homeLabel: "W97", awayLabel: "W98", venue: "AT&T Stadium", city: "Dallas", status: S },
+  { id: 102, date: "2026-07-15", round: "sf", home: "ENG", away: "ARG", homeLabel: "W99", awayLabel: "W100", venue: "Mercedes-Benz Stadium", city: "Atlanta", status: S },
   // ── Third Place (Jul 18) ──
   { id: 103, date: "2026-07-18", round: "third", home: "", away: "", homeLabel: "L101", awayLabel: "L102", venue: "Hard Rock Stadium", city: "Miami", status: S },
   // ── Final (Jul 19) ──
