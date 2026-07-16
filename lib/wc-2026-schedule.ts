@@ -239,9 +239,9 @@ export const WC_SCHEDULE: WcMatch[] = [
   { id: 101, date: "2026-07-14", round: "sf", home: "FRA", away: "ESP", homeLabel: "W97", awayLabel: "W98", venue: "AT&T Stadium", city: "Dallas", status: S },
   { id: 102, date: "2026-07-15", round: "sf", home: "ENG", away: "ARG", homeLabel: "W99", awayLabel: "W100", venue: "Mercedes-Benz Stadium", city: "Atlanta", status: S },
   // ── Third Place (Jul 18) ──
-  { id: 103, date: "2026-07-18", round: "third", home: "", away: "", homeLabel: "L101", awayLabel: "L102", venue: "Hard Rock Stadium", city: "Miami", status: S },
+  { id: 103, date: "2026-07-18", round: "third", home: "FRA", away: "ENG", homeLabel: "L101", awayLabel: "L102", venue: "Hard Rock Stadium", city: "Miami", status: S },
   // ── Final (Jul 19) ──
-  { id: 104, date: "2026-07-19", round: "final", home: "", away: "", homeLabel: "W101", awayLabel: "W102", venue: "MetLife Stadium", city: "New York/NJ", status: S },
+  { id: 104, date: "2026-07-19", round: "final", home: "ESP", away: "ARG", homeLabel: "W101", awayLabel: "W102", venue: "MetLife Stadium", city: "New York/NJ", status: S },
 ];
 
 /* ── Helper utilities ── */
