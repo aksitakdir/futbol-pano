@@ -3,6 +3,22 @@ import type { LiveScoreMatch } from "@/app/api/wc-live-scores/route";
 
 const WC_TLA = new Set(WC_TEAMS.map((t) => t.code));
 
+/**
+ * football-data.org sometimes returns a different three-letter code for the same
+ * nation (Uruguay comes back as both URU and URY), which silently breaks score
+ * matching against our static WC fixtures — the match just renders without a score.
+ * Fold the strays onto our canonical WC_TEAMS codes.
+ */
+const WC_CODE_ALIASES: Record<string, string> = {
+  URY: "URU", // Uruguay
+};
+
+export function normalizeTla(tla?: string | null): string | undefined {
+  const t = tla?.toUpperCase();
+  if (!t) return undefined;
+  return WC_CODE_ALIASES[t] ?? t;
+}
+
 type FdTeam = { name?: string; shortName?: string; tla?: string };
 type FdMatch = {
   id: number;
@@ -23,7 +39,7 @@ function formatDate(d: Date): string {
 }
 
 function teamLabel(team: FdTeam): string {
-  const tla = team.tla?.toUpperCase();
+  const tla = normalizeTla(team.tla);
   const wc = WC_TEAMS.find((t) => t.code === tla);
   if (wc) return wc.nameEn;
   return team.shortName || team.name || tla || "—";
@@ -109,8 +125,8 @@ export async function fetchFootballDataMatches(apiKey: string): Promise<LiveScor
     id: String(m.id),
     home: teamLabel(m.homeTeam),
     away: teamLabel(m.awayTeam),
-    homeCode: m.homeTeam.tla ?? "—",
-    awayCode: m.awayTeam.tla ?? "—",
+    homeCode: normalizeTla(m.homeTeam.tla) ?? "—",
+    awayCode: normalizeTla(m.awayTeam.tla) ?? "—",
     score: formatScore(m),
     minute: formatMinute(m),
     status: mapStatus(m.status),
