@@ -55,11 +55,15 @@ const nextConfig: NextConfig = {
       { source: "/radar/avrupa-yukselen-cevher-genc-yildizlar", destination: "/radar", permanent: true },
       { source: "/radar/avrupa-liglerinde-2025-26-sezonunun-en-parlak-genc-yetenekleri", destination: "/radar", permanent: true },
       { source: "/radar/avrupa-yeni-yuz-parlayan-gencler", destination: "/radar", permanent: true },
+      // Argentina pillar reslugged to match search intent (2026-07-20).
+      // The old URL said "under-20 / 2026 world cup" while the demand is the
+      // evergreen "argentina young players" — 3,136 impressions at 1.75% CTR.
+      { source: "/lists/argentina-under-20-players-2026-world-cup", destination: "/lists/argentina-s-best-young-players-the-wonderkids-carrying-the-next-generation", permanent: true },
       // Turkish article slugs → English (migrated 2025-06-05)
       { source: "/world-cup-2026/adidas-trionda-teknik-analiz-2026-dunya-kupasi-topu", destination: "/world-cup-2026/adidas-trionda-tech-analysis-2026-world-cup-ball", permanent: true },
       { source: "/world-cup-2026/2026-dunya-kupasi-48-takim-format-analiz", destination: "/world-cup-2026/2026-world-cup-48-team-format-analysis", permanent: true },
       { source: "/lists/brezilya-2026-genc-oyuncular", destination: "/lists/brazil-2026-young-players-world-cup", permanent: true },
-      { source: "/lists/arjantin-20-yas-alti-oyuncular-2026-liste", destination: "/lists/argentina-under-20-players-2026-world-cup", permanent: true },
+      { source: "/lists/arjantin-20-yas-alti-oyuncular-2026-liste", destination: "/lists/argentina-s-best-young-players-the-wonderkids-carrying-the-next-generation", permanent: true },
       { source: "/lists/premier-lig-goz-actirtan-15-genc-yetenek", destination: "/lists/premier-league-15-young-talents-to-watch", permanent: true },
       { source: "/lists/bundesliga-en-potansiyelii-10-gen-futbolcu", destination: "/lists/bundesliga-top-10-young-talents", permanent: true },
       { source: "/lists/u20-transfer-hareketi-buyuk-kuluplerle", destination: "/lists/u20-transfer-moves-top-clubs", permanent: true },
