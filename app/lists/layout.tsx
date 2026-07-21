@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import ArticleIndexLinks from "../components/article-index-links";
 
 export const metadata: Metadata = {
   title: "Scouting Lists | Scout Gamer",
@@ -7,5 +8,10 @@ export const metadata: Metadata = {
 };
 
 export default function ListelerLayout({ children }: { children: React.ReactNode }) {
-  return children;
+  return (
+    <>
+      {children}
+      <ArticleIndexLinks category="lists" basePath="/lists" heading="All Lists" />
+    </>
+  );
 }

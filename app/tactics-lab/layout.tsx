@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import ArticleIndexLinks from "../components/article-index-links";
 
 export const metadata: Metadata = {
   title: "Tactics Lab | Scout Gamer",
@@ -7,5 +8,10 @@ export const metadata: Metadata = {
 };
 
 export default function TaktikLabLayout({ children }: { children: React.ReactNode }) {
-  return children;
+  return (
+    <>
+      {children}
+      <ArticleIndexLinks category="tactics-lab" basePath="/tactics-lab" heading="All Tactics Lab Analyses" />
+    </>
+  );
 }

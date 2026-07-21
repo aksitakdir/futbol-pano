@@ -1,4 +1,5 @@
 import HubPillarPage from "../components/hub-pillar-page";
+import ArticleIndexLinks from "../components/article-index-links";
 
 export const metadata = {
   title: "World Cup 2026 — Schedule, Squads, Groups & Analysis | Scout Gamer",
@@ -21,5 +22,11 @@ export const metadata = {
 };
 
 export default function Page() {
-  return <HubPillarPage hubId="wc-2026" />;
+  return (
+    <>
+      <HubPillarPage hubId="wc-2026" />
+      {/* Server-rendered crawl path — the hub lists articles client-side only */}
+      <ArticleIndexLinks category="wc-2026" basePath="/world-cup-2026" heading="All World Cup 2026 Coverage" />
+    </>
+  );
 }

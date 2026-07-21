@@ -1,4 +1,5 @@
 import HubPillarPage from "../components/hub-pillar-page";
+import ArticleIndexLinks from "../components/article-index-links";
 
 export const metadata = {
   title: "Transfers | Scout Gamer",
@@ -7,5 +8,11 @@ export const metadata = {
 };
 
 export default function Page() {
-  return <HubPillarPage hubId="transfer" />;
+  return (
+    <>
+      <HubPillarPage hubId="transfer" />
+      {/* Server-rendered crawl path — the hub lists articles client-side only */}
+      <ArticleIndexLinks category="transfer" basePath="/transfers" heading="All Transfer Analysis" />
+    </>
+  );
 }

@@ -34,6 +34,33 @@ No test suite is configured. Verify changes with `npm run build` and/or the dev 
 Data/maintenance scripts live in `scripts/` (mostly `.mjs`, run with `node`); SQL lives in
 `supabase/migrations/`.
 
+```bash
+node scripts/seo-check.mjs                      # raw-HTML SEO guard (production)
+node scripts/seo-check.mjs http://localhost:3000 # ...or against local dev
+```
+
+## SEO: verify the raw HTML, not the browser
+
+This is an SEO-driven site, so **a page "working in the browser" is not verification.** A
+browser runs the JavaScript that Googlebot's first pass does not.
+
+In July 2026 every category page (`/radar`, `/lists`, `/tactics-lab`, and the hubs) rendered its
+article list inside a client component that fetched from Supabase in a `useEffect`. The pages
+returned 200, sat in the sitemap, had no `noindex`, self-referencing canonicals, and looked
+perfect in a browser — but the served HTML contained **zero links to any article**. Six articles
+had no internal links at all and sat at 0 impressions for weeks.
+
+Rules that follow from it:
+
+- **Anything a search engine must see has to be server-rendered.** Article links, titles,
+  headings and copy belong in the HTML, not only in a client fetch. `ArticleIndexLinks`
+  (`app/components/article-index-links.tsx`) is the server-rendered crawl path for category
+  pages — keep it wired into every category/hub, and reuse it for new sections.
+- **Verify with `curl`, not just the preview browser.** After changing any listing, hub, or
+  routing code, run `node scripts/seo-check.mjs` (it fetches as Googlebot and asserts article
+  links exist without JS). It exits non-zero, so it can gate a deploy.
+- Client-side rendering is fine for interactivity layered *on top of* server-rendered content.
+
 ## Layout
 
 - `app/` — App Router; each top-level folder is a site section:
