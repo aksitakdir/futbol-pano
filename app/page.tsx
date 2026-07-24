@@ -12,8 +12,6 @@ import { supabase } from "@/lib/supabase";
 import { arenaPath, type ArenaGame } from "@/lib/arena-brackets";
 import HomeRecentCarousel from "./components/home-recent-carousel";
 import HomeHubPromo from "./components/home-hub-promo";
-import HomeWcSquads from "./components/home-wc-squads";
-import HomeWcMatches from "./components/home-wc-matches";
 import { categoryArticlePath } from "@/lib/category-config";
 import { getCategoryImage } from "@/lib/category-images";
 import {
@@ -598,11 +596,9 @@ export default function HomePage() {
 
       <HomeHubPromo wcArticles={wcHubPreview} transferArticles={transferHubPreview} />
 
-      {/* ── WC 2026 Upcoming Matches ── */}
-      <HomeWcMatches />
-
-      {/* ── WC 2026 Squad Grid ── */}
-      <HomeWcSquads />
+      {/* WC 2026 demoted post-tournament: the big matches + squad-grid sections are
+          retired; the World Cup now lives only as a compact card in HomeHubPromo
+          above, until the leagues start and we convert it into a proper archive. */}
 
       {/* ── Radar Player of the Week ── */}
       <section style={{ background: "var(--sg-surface-low)", borderTop: "1px solid var(--sg-border)", borderBottom: "1px solid var(--sg-border)" }}>
