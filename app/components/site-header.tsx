@@ -39,12 +39,12 @@ function navHrefMatches(pathname: string, href: string): boolean {
 
 const NAV_ITEMS = [
   { href: "/", label: "HOME", key: "home" },
-  { href: "/lists", label: "YOUNG TALENTS", key: "lists" },
-  { href: "/radar", label: "RADAR", key: "radar" },
-  { href: "/transfers", label: "TRANSFERS", key: "transfer" },
-  { href: "/tactics-lab", label: "TACTICS LAB", key: "tactics-lab" },
-  { href: "/arena", label: "ARENA", key: "arena" },
   { href: "/world-cup-2026", label: "WC 2026", key: "wc-2026" },
+  { href: "/transfers", label: "TRANSFERS", key: "transfer" },
+  { href: "/radar", label: "RADAR", key: "radar" },
+  { href: "/lists", label: "LISTS", key: "lists" },
+  { href: "/arena", label: "ARENA", key: "arena" },
+  { href: "/tactics-lab", label: "TACTICS LAB", key: "tactics-lab" },
 ];
 
 export default function SiteHeader({ activeNav }: Props) {

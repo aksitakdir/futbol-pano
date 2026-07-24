@@ -91,13 +91,13 @@ function ListelerPageInner() {
 
       <div className="sg-hero-text-block sg-page-shell--hero" style={{ display: "grid", gridTemplateColumns: "2fr 1fr", gap: 32, alignItems: "end" }}>
         <div>
-          <div className="eyebrow" style={{ color: "var(--emerald)" }}>SCOUTING</div>
-          <h1 className="display" style={{ fontSize: "clamp(56px, 7vw, 84px)", fontWeight: 700, letterSpacing: "-0.04em", lineHeight: 0.9, margin: "8px 0 0", paddingBottom: "0.14em" }}>
-            Young Talents
+          <div className="eyebrow" style={{ color: "var(--emerald)" }}>ARCHIVE</div>
+          <h1 className="display" style={{ fontSize: "clamp(56px, 7vw, 84px)", fontWeight: 700, letterSpacing: "-0.04em", lineHeight: 0.9, margin: "8px 0 0" }}>
+            Lists
           </h1>
         </div>
         <p style={{ fontSize: 18, color: "var(--sg-text-secondary)", lineHeight: 1.5, margin: 0 }}>
-          The best young footballers in world football — by country, league and position, each a real scouting report with stats, game-vs-reality reads and deep cuts.
+          Curated player lists — each with scout notes, stats and comparisons.
         </p>
       </div>
 
