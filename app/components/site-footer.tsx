@@ -62,12 +62,12 @@ We usually reply within 1–2 business days.`,
 };
 
 const NAV_LINKS = [
-  { href: "/world-cup-2026", label: "WC 2026" },
   { href: "/transfers",      label: "TRANSFERS" },
   { href: "/radar",          label: "RADAR" },
   { href: "/lists",           label: "LISTS" },
   { href: "/tactics-lab",    label: "TACTICS LAB" },
   { href: "/arena",          label: "ARENA" },
+  { href: "/world-cup-2026", label: "WC 2026" },
 ];
 
 export default function SiteFooter(_props?: Props) {
