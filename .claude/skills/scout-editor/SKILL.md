@@ -173,6 +173,40 @@ Tiers (fixed set): Generational · Elite Now · Elite-in-Waiting · Ready Now ·
 This is the distinctive touch competitors don't have (game-vs-reality + a branded tier) and it
 uses our unique `fc_players` data. Keep it lightweight — one line, every player.
 
+## Content types — the portfolio (not one format repeated)
+
+The site ran on effectively **one type** for months: the ranked country/position player
+list. It works (it is the proven search engine) but it cannot alone make the site a
+reference point, and every piece looking the same is its own risk. These are the types
+we deliberately produce. Each has a different job, a different data source and a
+different scorecard — do **not** judge them all by search clicks.
+
+Run `node scripts/content-opportunities.mjs` before choosing a topic: it scans the
+16k-row `fc_players` pool across country / league / club / position / age and reports
+which intersections actually hold enough talent, plus the scarcity profiles. Supply is
+answered by data; demand still needs a search check; individual players still need web
+verification (the pool is one game's CURRENT-ability ratings, and is Europe-biased
+because several leagues are unlicensed — Brazil shows only 29 U21 players).
+
+| Type | What it is | Signature | Scorecard |
+|---|---|---|---|
+| **Country / league / position list** | The proven engine. 6-8 players, 2 deep cuts. | Scout Gamer Read per player | Search clicks, CTR |
+| **Scarcity report** | *"Only 7 creative tens under 21 exist in world football."* A **finding**, not a ranking — computed from the pool, then web-verified. | The count in the headline | Citations, AI referrals, links |
+| **Index** | A ranked, dated, **regularly updated** reference (Wonderkid Index, Selling-Club Index). | Version/updated date, tier column | Return visits, links |
+| **FM / EA FC bridge** | Test the game's consensus against reality. FM/FC wonderkid content is a huge established category, and every competitor publishes raw database dumps — nobody verifies them. | Verdict: game-inflated / fair / game hasn't caught up | Search clicks (gaming queries) |
+| **Club / academy X-ray** | One club's production line dissected (*Strasbourg: 13 of 13 U21s are elite*). | The club-level stat nobody has computed | Search + feeds the transfer program |
+| **Supply map / data journalism** | *"Germany produces centre-backs and goalkeepers; Argentina produces No.10s — here are the numbers."* | Charts / stat blocks over prose | Citations, links |
+| **The receipt** | Accountability on our own past calls: *we wrote this on <date>; here is what happened.* Nobody does it because nobody wants to be held to it. | Dated back-reference to our own piece | Brand, social, trust |
+| **Head-to-head** | Two players, one question, settled with data. Uses `@vs:`. | The verdict line | Engagement, social |
+
+**Rules for the portfolio**
+- The proven list format stays the majority of output — it pays the bills.
+- Scarcity/Index/Supply-map pieces must lead with the **number**, not a name: the finding
+  is the product, and findings are what get cited.
+- A new type gets a fair trial: at least **2 pieces over ~6 weeks**, judged on *its own*
+  scorecard, before deciding anything.
+- Absence of GSC data for a type we have never published is **not** evidence against it.
+
 ## Gaming lens mode (the differentiator)
 
 Scout Gamer's unique angle is **Football × Game Culture** — bridging EA Sports FC (FC 26) and
