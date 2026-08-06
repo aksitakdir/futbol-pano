@@ -199,6 +199,30 @@ because several leagues are unlicensed — Brazil shows only 29 U21 players).
 | **The receipt** | Accountability on our own past calls: *we wrote this on <date>; here is what happened.* Nobody does it because nobody wants to be held to it. | Dated back-reference to our own piece | Brand, social, trust |
 | **Head-to-head** | Two players, one question, settled with data. Uses `@vs:`. | The verdict line | Engagement, social |
 
+### Scarcity reports: build on attributes, never on position labels
+
+A scarcity piece lives or dies on whether its count is defensible, so the field it counts on
+must be one the database actually gets right.
+
+**The failure (2026-08-07, piece killed before publication):** *The Vanishing No. 10* counted
+"attacking midfielders under 21 with elite dribbling" and produced seven names. The owner
+rejected it on football grounds, correctly — Kenan Yıldız, Garnacho and Mastantuono are all
+carded CAM by the game but are not deployed as tens by anyone. The premise collapsed. Worse,
+the draft itself noted that Garnacho "is used as a winger by nearly everyone who has coached
+him" — the contradiction was visible while writing and got treated as a nice line instead of a
+stop signal.
+
+Rules that follow:
+- **Position labels in `fc_players` are not ground truth.** Role is contextual and changes with
+  the manager. Never let a whole piece rest on one.
+- **Count on attributes** (pace, passing, physical) — measurable, stable, defensible — or on
+  positions where ambiguity is lowest (centre-back, goalkeeper). "Elite passing centre-backs" is
+  safe; "true number tens" is not.
+- **If a role claim is unavoidable, web-verify how every named player is actually deployed**
+  before counting them, not after.
+- **A contradiction you notice while drafting is a stop signal, not a rhetorical opportunity.**
+  If a name does not belong in the set, the set is wrong — go back and re-cut it.
+
 **Rules for the portfolio**
 - The proven list format stays the majority of output — it pays the bills.
 - Scarcity/Index/Supply-map pieces must lead with the **number**, not a name: the finding
