@@ -26,7 +26,27 @@ schema, same rendering — zero spend.
    and let them pick. Confirm the **category** (see below) — infer it but state your choice.
 
 2. **Web-search the current facts. This is mandatory — never write from memory.**
-   Your training data is stale. Before writing ANY factual claim, search for:
+
+   **Anchor every search to TODAY'S DATE — this is where verification usually fails.**
+   Searching is not enough; the results have to be *current*. Football facts have a shelf life
+   measured in weeks, and search happily returns authoritative articles that were true last
+   season. Before trusting any result, ask: what date was this written, and what has happened
+   since? Specifically:
+   - **Know which season it is right now**, and treat last season's stats as last season's.
+   - **Has a transfer window closed since the article was written?** If so, every club in it is
+     a guess. A player who "moved in January" may have moved again in the summer.
+   - **Spring reporting about "next season's plans" is not a description of the season once it
+     starts.** Plans change with managers, signings and pre-season.
+   - Re-verify the basics every time, even for players covered before: **current club, current
+     role, current age.** Ratings databases and old articles drift on all three.
+
+   Two real failures this rule exists to prevent (both caught by the owner, not by me):
+   *Endrick* was written as being on loan at Lyon — that was the previous season; he had
+   returned. Then he was written as "central to Real Madrid's project" from spring reporting,
+   when by August he was competing to be Mbappé's backup. *Santiago Castro* was placed at
+   Bologna when he had moved to Roma for €35m three weeks earlier.
+
+   Before writing ANY factual claim, search for:
    - The CURRENT manager of every club you name (managers get sacked — verify, don't assume).
    - Recent transfers, current squad, contract situation.
    - Current-season (2025-26) stats: goals, assists, appearances, minutes.
