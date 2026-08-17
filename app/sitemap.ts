@@ -5,6 +5,15 @@ import { WC_TEAMS } from "@/lib/wc-2026-teams";
 
 const base = "https://www.scoutgamer.com";
 
+/**
+ * Regenerate hourly. Without this the sitemap is built once at deploy time and
+ * then frozen, so an article published from the admin panel stays out of it until
+ * the next deploy — which is exactly what happened to the strikers piece: live and
+ * returning 200, but absent from the sitemap while an article published before the
+ * last build sat in it. Articles are published far more often than we deploy.
+ */
+export const revalidate = 3600;
+
 const staticEntries = [
   { url: "",                          priority: 1.0 },
   { url: "/world-cup-2026",           priority: 0.92 },
