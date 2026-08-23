@@ -87,7 +87,10 @@ export async function GET(request: NextRequest) {
   const q = `${query.trim()} ${suffix}`;
   const url = `https://news.google.com/rss/search?q=${encodeURIComponent(q)}&hl=${hl}&gl=${gl}&ceid=${ceid}`;
 
-  const res = await fetch(url, { next: { revalidate: 900 } });
+  // Hourly rather than every 15 minutes: this feeds the news strip on evergreen
+  // scouting articles, where a fresher headline is worth very little, and each
+  // article carries its own query — so the entry count multiplies the cost.
+  const res = await fetch(url, { next: { revalidate: 3600 } });
   if (!res.ok) {
     return NextResponse.json(
       { error: "News feed request failed", status: res.status },

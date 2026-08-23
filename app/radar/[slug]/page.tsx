@@ -9,7 +9,10 @@ import type { PlayerCardData } from "@/app/components/player-card";
 
 type Props = { params: Promise<{ slug: string }> };
 
-export const revalidate = 3600;
+// Daily, not hourly: article text only changes when we edit it, and the admin
+// save path already calls revalidatePath, so edits still publish immediately.
+// At 3600 these ~119 pages were regenerating 24x a day for no content change.
+export const revalidate = 86400;
 
 export async function generateStaticParams() {
   const supabase = createClient();

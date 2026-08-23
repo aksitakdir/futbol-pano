@@ -38,7 +38,10 @@ export async function GET(request: NextRequest) {
   url.searchParams.set("q", query.trim());
   url.searchParams.set("key", apiKey);
 
-  const res = await fetch(url.toString(), { next: { revalidate: 3600 } });
+  // Daily. Every article carries two YouTube queries, so this is one of the
+  // highest-entry-count caches on the site — and search results for
+  // "<player> goals" do not meaningfully change within a day.
+  const res = await fetch(url.toString(), { next: { revalidate: 86_400 } });
   if (!res.ok) {
     const text = await res.text();
     return NextResponse.json(

@@ -96,7 +96,11 @@ export async function fetchFootballDataMatches(apiKey: string): Promise<LiveScor
   const url = `https://api.football-data.org/v4/matches?dateFrom=${formatDate(from)}&dateTo=${formatDate(to)}`;
   const res = await fetch(url, {
     headers: { "X-Auth-Token": apiKey },
-    next: { revalidate: 300 },
+    // Every 5 minutes made sense while matches were being played. The World Cup
+    // is finished, so this window now refreshes final scores 288 times a day for
+    // data that cannot change — by far the most wasteful cache entry we had.
+    // Raise it back if a live tournament ever needs in-play scores again.
+    next: { revalidate: 86_400 },
   });
 
   if (!res.ok) {
