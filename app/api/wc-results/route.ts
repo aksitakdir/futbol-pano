@@ -9,7 +9,15 @@ export type WcFinishedResult = {
   awayScore: number;
 };
 
-const CACHE_TTL_MS = 5 * 60 * 1000;
+/**
+ * Five minutes was right while matches were being played. The tournament is
+ * finished and every score is final, so re-syncing that often meant each visit
+ * to the schedule page (bots included) could trigger a fresh sync and Supabase
+ * write for data that cannot change. Daily is generous for a completed event.
+ *
+ * Drop this back to minutes if a live tournament ever needs in-play scores.
+ */
+const CACHE_TTL_MS = 24 * 60 * 60 * 1000;
 
 export async function GET() {
   const hasApiKey = !!(process.env.FOOTBALL_DATA_API_KEY || process.env.FOOTBALL_API_KEY);
@@ -39,6 +47,8 @@ export async function GET() {
 
   return NextResponse.json(
     { results: finished, updatedAt: cache.updatedAt },
-    { headers: { "Cache-Control": "public, s-maxage=300, stale-while-revalidate=600" } },
+    // CDN-cache for an hour rather than five minutes, so the route itself runs
+    // far less often — final results do not need per-five-minute freshness.
+    { headers: { "Cache-Control": "public, s-maxage=3600, stale-while-revalidate=86400" } },
   );
 }

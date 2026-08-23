@@ -39,7 +39,14 @@ const FALLBACK_MATCHES: LiveScoreMatch[] = [
   },
 ];
 
-const CACHE_TTL_MS = 5 * 60 * 1000;
+/**
+ * Tuned for a tournament in progress, where a two-minute-old score is already
+ * stale. The World Cup is over, so this ticker now re-syncs finished results —
+ * the same waste as /api/wc-results, only more aggressive.
+ *
+ * Restore the short interval when there is live football to follow again.
+ */
+const CACHE_TTL_MS = 24 * 60 * 60 * 1000;
 
 export async function GET() {
   const hasApiKey = !!(process.env.FOOTBALL_DATA_API_KEY || process.env.FOOTBALL_API_KEY);
@@ -65,6 +72,6 @@ export async function GET() {
 
   return NextResponse.json(
     { matches, source, updatedAt: cache.updatedAt },
-    { headers: { "Cache-Control": "public, s-maxage=120, stale-while-revalidate=300" } },
+    { headers: { "Cache-Control": "public, s-maxage=3600, stale-while-revalidate=86400" } },
   );
 }
