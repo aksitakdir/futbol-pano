@@ -39,16 +39,54 @@ schema, same rendering — zero spend.
      starts.** Plans change with managers, signings and pre-season.
    - Re-verify the basics every time, even for players covered before: **current club, current
      role, current age.** Ratings databases and old articles drift on all three.
+   - **A source can be accurate and still be the wrong end of the story.** Transfer news has a
+     half-life measured in days: "club X are interested" becomes "bid rejected", "he signed", or
+     nothing at all, usually within a fortnight. Never write up the first report you find. Once
+     you have a story, **run a second search for what happened after that source's date** and
+     write the latest state of it, not the opening scene. If the follow-up search returns
+     nothing, the story is probably dead — say less, not more.
+   - **Colour details expire fastest of all.** Pre-season camps, training-ground absences,
+     "flew home early", injury scares — these are true for about a week. If a detail describes a
+     moment rather than a situation, either re-verify it against this week or cut it.
+   - **Weigh the source.** Sky Sports, BBC, ESPN, club sites and established national outlets
+     carry claims; aggregators and fan blogs (caughtoffside, footballinsider247, transferfeed and
+     similar) do not. A number that appears only on an aggregator — a fee, a valuation, a release
+     clause — is not verified. Cut it or attribute it qualitatively.
 
-   Two real failures this rule exists to prevent (both caught by the owner, not by me):
+   Three real failures this rule exists to prevent (all caught by the owner, not by me):
    *Endrick* was written as being on loan at Lyon — that was the previous season; he had
    returned. Then he was written as "central to Real Madrid's project" from spring reporting,
    when by August he was competing to be Mbappé's backup. *Santiago Castro* was placed at
-   Bologna when he had moved to Roma for €35m three weeks earlier.
+   Bologna when he had moved to Roma for €35m three weeks earlier. *Lewis Hall* was written as
+   the subject of a live Manchester United pursuit, from a report three weeks old: by the time
+   of writing Newcastle had rejected the enquiry and opened talks over a new contract, and the
+   draft also carried pre-season colour from a camp that was long over plus a £70m valuation
+   that existed only on an aggregator. The owner's tell was simple — *"I haven't seen that
+   story in days."* Absence of recent coverage is evidence; treat it as a prompt to re-search.
+
+   **Verify how every named player is actually deployed — this applies to EVERY article, not
+   just scarcity pieces.** Position labels in `fc_players` are the game's classification, and the
+   game is slower than football. Role is contextual, changes with the manager, and changes
+   mid-career. Before a player earns a place in any position-framed piece, check what he has
+   actually been playing in his most recent matches — not what his card says.
+   - If the label and the football disagree, the football wins. Cut the player, or keep him and
+     make the divergence the point — never card him as something he is not.
+   - **A contradiction you notice while drafting is a stop signal, not a rhetorical opportunity.**
+     If a name does not belong in the set, the set is wrong — go back and re-cut it.
+   - Say the caveat out loud in the piece. Where a count rests on the game's labels, state that
+     it does. Competitors reprint the database; naming where the label lies is the site's edge.
+
+   This rule has now failed twice, and the second time was a list, not a scarcity report — which
+   is why it lives here rather than under one content type. *The Vanishing No. 10* counted carded
+   CAMs who nobody deploys as tens. Then the full-backs list carded *Myles Lewis-Skelly* as a
+   left-back while Arteta was converting him into a defensive midfielder, and *Rico Lewis* as a
+   right-back when he lines up there and plays as a No. 8. Both were caught by the owner, with
+   the same tell: *"they didn't play full-back in their last match."*
 
    Before writing ANY factual claim, search for:
    - The CURRENT manager of every club you name (managers get sacked — verify, don't assume).
    - Recent transfers, current squad, contract situation.
+   - **How the player is currently being used** — position, and whether that has just changed.
    - Current-season (2025-26) stats: goals, assists, appearances, minutes.
    - League standings, recent results, injury status.
    - For World Cup 2026 content: the tournament runs June 11 – July 19, 2026 in USA/Canada/Mexico.
@@ -232,16 +270,17 @@ the draft itself noted that Garnacho "is used as a winger by nearly everyone who
 him" — the contradiction was visible while writing and got treated as a nice line instead of a
 stop signal.
 
-Rules that follow:
-- **Position labels in `fc_players` are not ground truth.** Role is contextual and changes with
-  the manager. Never let a whole piece rest on one.
+The general rule — *verify how every player is actually deployed, in every article* — lives in
+the verification step of the Workflow above, because it is not specific to this format. What is
+specific to a scarcity piece is what you are allowed to **count on**:
+
+- **Never let a whole piece rest on a position label.** A list can survive one miscast player by
+  cutting him; a scarcity count cannot survive a miscast premise.
 - **Count on attributes** (pace, passing, physical) — measurable, stable, defensible — or on
   positions where ambiguity is lowest (centre-back, goalkeeper). "Elite passing centre-backs" is
   safe; "true number tens" is not.
 - **If a role claim is unavoidable, web-verify how every named player is actually deployed**
   before counting them, not after.
-- **A contradiction you notice while drafting is a stop signal, not a rhetorical opportunity.**
-  If a name does not belong in the set, the set is wrong — go back and re-cut it.
 
 **Rules for the portfolio**
 - The proven list format stays the majority of output — it pays the bills.
