@@ -1002,7 +1002,7 @@ function ArticlesPageInner() {
                           Edit
                         </Link>
                         <a
-                          href={`${categoryArticlePath(item.category, item.slug)}?preview=1`}
+                          href={`/api/preview?path=${encodeURIComponent(categoryArticlePath(item.category, item.slug))}`}
                           target="_blank"
                           rel="noopener noreferrer"
                           className={`${ACTION_BTN} border-sky-500/40 bg-sky-500/10 text-sky-300 hover:border-sky-500/60 hover:bg-sky-500/18`}
