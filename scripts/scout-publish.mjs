@@ -40,6 +40,7 @@
 
 import { createClient } from "@supabase/supabase-js";
 import { readFileSync } from "fs";
+import { runPreflight } from "./preflight.mjs";
 
 // ---- env ----------------------------------------------------------------
 const env = Object.fromEntries(
@@ -388,6 +389,31 @@ async function main() {
       console.error("Parsed markup produced 0 blocks — check the markup syntax.");
       process.exit(1);
     }
+  }
+
+  // ---- pre-publish gate --------------------------------------------------
+  // Factual checks the editor must have done, enforced rather than advised.
+  // See scripts/preflight.mjs for why each rule exists. Runs on --dry too, so
+  // the gate is visible before anything is written.
+  if (hasArticle) {
+    const { blockers, warnings, notes } = await runPreflight({
+      brief,
+      sectionsJson,
+      supabase,
+    });
+
+    for (const w of warnings) console.error(`  warning  ${w}`);
+    for (const n of notes) console.error(`  note     ${n}`);
+
+    if (blockers.length) {
+      console.error(`\nPreflight failed — ${blockers.length} blocker(s):\n`);
+      for (const b of blockers) console.error(`  BLOCKED  ${b}`);
+      console.error(
+        "\nThese are not warnings. Fix the article or fill in the brief, then run again.\n",
+      );
+      process.exit(1);
+    }
+    console.error("  preflight OK\n");
   }
 
   // --dry: parse + validate only, never touch the DB

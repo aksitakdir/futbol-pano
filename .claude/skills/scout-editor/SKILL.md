@@ -53,22 +53,13 @@ schema, same rendering — zero spend.
      similar) do not. A number that appears only on an aggregator — a fee, a valuation, a release
      clause — is not verified. Cut it or attribute it qualitatively.
 
-   Three real failures this rule exists to prevent (all caught by the owner, not by me):
-   *Endrick* was written as being on loan at Lyon — that was the previous season; he had
-   returned. Then he was written as "central to Real Madrid's project" from spring reporting,
-   when by August he was competing to be Mbappé's backup. *Santiago Castro* was placed at
-   Bologna when he had moved to Roma for €35m three weeks earlier. *Lewis Hall* was written as
-   the subject of a live Manchester United pursuit, from a report three weeks old: by the time
-   of writing Newcastle had rejected the enquiry and opened talks over a new contract, and the
-   draft also carried pre-season colour from a camp that was long over plus a £70m valuation
-   that existed only on an aggregator. The owner's tell was simple — *"I haven't seen that
-   story in days."* Absence of recent coverage is evidence; treat it as a prompt to re-search.
+   The owner's tell for a stale story is simple — *"I haven't seen that in days."* Absence of
+   recent coverage is evidence; treat it as a prompt to re-search, not as permission.
 
-   **Verify how every named player is actually deployed — this applies to EVERY article, not
-   just scarcity pieces.** Position labels in `fc_players` are the game's classification, and the
-   game is slower than football. Role is contextual, changes with the manager, and changes
-   mid-career. Before a player earns a place in any position-framed piece, check what he has
-   actually been playing in his most recent matches — not what his card says.
+   **Verify how every named player is actually deployed.** Position labels in `fc_players` are
+   the game's classification, and the game is slower than football. Role is contextual, changes
+   with the manager, and changes mid-career. Before a player earns a place in a position-framed
+   piece, check what he has actually played in his most recent matches — not what his card says.
    - If the label and the football disagree, the football wins. Cut the player, or keep him and
      make the divergence the point — never card him as something he is not.
    - **A contradiction you notice while drafting is a stop signal, not a rhetorical opportunity.**
@@ -76,12 +67,8 @@ schema, same rendering — zero spend.
    - Say the caveat out loud in the piece. Where a count rests on the game's labels, state that
      it does. Competitors reprint the database; naming where the label lies is the site's edge.
 
-   This rule has now failed twice, and the second time was a list, not a scarcity report — which
-   is why it lives here rather than under one content type. *The Vanishing No. 10* counted carded
-   CAMs who nobody deploys as tens. Then the full-backs list carded *Myles Lewis-Skelly* as a
-   left-back while Arteta was converting him into a defensive midfielder, and *Rico Lewis* as a
-   right-back when he lines up there and plays as a No. 8. Both were caught by the owner, with
-   the same tell: *"they didn't play full-back in their last match."*
+   Every failure behind these rules is listed, one line each, in the header of
+   `scripts/preflight.mjs` — next to the check that now blocks it. See **The publish gate** below.
 
    Before writing ANY factual claim, search for:
    - The CURRENT manager of every club you name (managers get sacked — verify, don't assume).
@@ -93,6 +80,13 @@ schema, same rendering — zero spend.
    A single outdated fact (e.g. naming a departed manager) destroys the article's credibility
    and is exactly the failure the user is trying to eliminate. If a search returns nothing for
    a specific number, write qualitatively ("an elite creative outlet") instead of inventing a stat.
+
+2b. **Record what you checked, and show the shortlist BEFORE writing.** Fill in the brief's
+   `verification` block as you research — one row per player, while the search results are in
+   front of you, not reconstructed afterwards. Then put that table in front of the owner and
+   get the names agreed. His football judgment is the one thing the gate cannot replace, and a
+   correction on a seven-row table costs two minutes; the same correction on a finished
+   article costs a rewrite. Every player we have had to cut was visible at this stage.
 
 3. **Design the block structure for THIS article, then write it.** Do not reach for a fixed
    template. Before writing, decide which blocks the content actually needs (see the
@@ -119,6 +113,64 @@ schema, same rendering — zero spend.
    image / YouTube videos, and publish. If a `confirmed_deal` was filed, note that it's live in
    the Confirmed Deals strip on `/transfers` (it publishes immediately unless `is_published:
    false`).
+
+## The publish gate
+
+`scripts/preflight.mjs` runs on every publish and every `--dry`, and **exits non-zero** rather
+than warning. It exists because every rule in this file was written down, read, and then broken
+again in the next article. Prose advises; the gate refuses.
+
+What it will not let through:
+
+| Blocked | Why it exists |
+|---|---|
+| A carded player with no `verification` row, or any empty field in one | Endrick at Lyon a season late; Castro at Bologna after a €35m move |
+| A check dated more than 30 days ago, or in the future | "current" has a shelf life |
+| `last_match_position` outside the piece's `position_frame`, with no stated exception | Lewis-Skelly carded a left-back while being made a No. 6; Rico Lewis a right-back playing as an 8 |
+| `last_match_position` written as prose instead of a position code | "central midfield (listed at right-back)" defeats any word match while saying the opposite |
+| A declared club or age that disagrees with `fc_players` without `drift: true` | the ratings database goes stale and gets copied |
+| Manager talk with no `verification_managers` | Amorim named at Man Utd months after he was sacked; Guardiola at City after he left |
+| Any money figure absent from `sources` | a £70m valuation that existed only on an aggregator |
+| A `sources` entry older than 7 days | Lewis Hall written as a live pursuit from a report that had already resolved |
+| Markdown links inside `faq`/`vs`/`stat`/`list` blocks | they render as literal brackets |
+| More than one pull quote, or an article ending on a plain paragraph | house style |
+
+What it cannot check, and never will: **whether a name belongs in the piece at all.** That is
+football judgment and it stays with the owner — which is exactly why step 2b puts the shortlist
+in front of him before a word is written. The gate also cannot tell whether a source you cite is
+real; it only makes it impossible to publish without naming one.
+
+Fields the gate reads, alongside the article fields below:
+
+```json
+{
+  "position_frame": ["LB", "RB", "LWB", "RWB"],
+  "verification": {
+    "Givairo Read": {
+      "club": "Feyenoord",
+      "role": "Right-back, first choice; turned down a move to stay",
+      "last_match_position": "RB",
+      "age": 20,
+      "source": "ESPN via Goal.com, Aug 2026 — Feyenoord rejected €29m",
+      "as_of": "2026-08-26",
+      "drift": true
+    }
+  },
+  "verification_managers": [
+    { "name": "Enzo Maresca", "club": "Manchester City",
+      "as_of": "2026-08-26", "source": "Al Jazeera 2026-06-29 — succeeded Guardiola" }
+  ],
+  "sources": [
+    { "claim": "€33m asking price, Givairo Read",
+      "source": "ESPN via Goal.com", "as_of": "2026-08-26" }
+  ]
+}
+```
+
+`position_frame` and `last_match_position` use codes: GK, RB, LB, RWB, LWB, CB, CDM, CM, CAM,
+RM, LM, RW, LW, CF, ST. `drift: true` records that you checked and `fc_players` is the stale one.
+`frame_exception: "<why>"` on a player keeps him in a piece he does not fit — use it only when
+the divergence is the article's argument, never to get past the gate.
 
 ## Brief JSON shape
 
