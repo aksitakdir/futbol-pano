@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { notFound, redirect } from "next/navigation";
 import { draftMode } from "next/headers";
 import { createClient } from "@/lib/supabase";
+import ArticleIndexLinks from "@/app/components/article-index-links";
 import { articleMetadata } from "@/lib/article-metadata";
 import { categoryArticlePath } from "@/lib/category-config";
 import { articleJsonLd } from "@/lib/article-jsonld";
@@ -55,6 +56,9 @@ export default async function WcHubArticlePage({ params }: Props) {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
       <HubArticleDetailClient slug={slug} hubId="wc-2026" article={data} />
+      {/* No segment layout here, unlike /radar and /lists — without this an
+          article in this section links to no sibling at all. */}
+      <ArticleIndexLinks category="wc-2026" basePath="/world-cup-2026" heading="All World Cup 2026 Coverage" />
     </>
   );
 }
