@@ -2,7 +2,6 @@ import { createClient } from "@supabase/supabase-js";
 import { syncTransferWireCache } from "@/lib/transfer-wire-cache";
 import { TRANSFER_SCENARIOS } from "@/lib/transfer-scenarios";
 import { COMPLETED_TRANSFERS } from "@/lib/completed-transfers";
-import type { LiveScoreMatch } from "@/lib/wc-match";
 
 function supabaseAdmin() {
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL!;
@@ -12,49 +11,6 @@ function supabaseAdmin() {
     process.env.SUPABASE_SERVICE_ROLE_KEY ??
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
   return createClient(url, key);
-}
-
-const WC_CACHE_KEY = "hub_wc_matches_cache";
-
-/**
- * The single point where World Cup match data used to leave the site.
- *
- * The 2026 World Cup finished on 19 July 2026. Every score is final, so there is
- * nothing left to fetch: this now returns what is already stored and calls no
- * external API and writes nothing. Every caller — /api/wc-results and
- * /api/cron/hub-sync — is covered by closing this one door rather than each of
- * them separately.
- *
- * The stored results are untouched and the schedule pages still render them.
- *
- * TO REVIVE FOR A FUTURE TOURNAMENT: restore the body from git history
- * (`git log -- lib/hub-sync.ts`), which fetches football-data.org first and
- * api-football.com as a fallback, then merges the response with any finished
- * fixtures that have aged out of the API's rolling window.
- */
-export async function syncWcMatchesCache(): Promise<{ ok: boolean; count: number; source: string; error?: string }> {
-  const existing = await readWcMatchesCache();
-  return {
-    ok: true,
-    count: existing.matches.length,
-    source: existing.source || "stored",
-  };
-}
-
-export async function readWcMatchesCache(): Promise<{
-  matches: LiveScoreMatch[];
-  source: string;
-  updatedAt: string | null;
-}> {
-  const supabase = supabaseAdmin();
-  const { data } = await supabase.from("site_settings").select("value").eq("key", WC_CACHE_KEY).maybeSingle();
-  const raw = data?.value;
-  const v = (typeof raw === "string" ? JSON.parse(raw) : raw) as { matches?: LiveScoreMatch[]; source?: string; updatedAt?: string } | null;
-  return {
-    matches: v?.matches ?? [],
-    source: v?.source ?? "cache",
-    updatedAt: v?.updatedAt ?? null,
-  };
 }
 
 export async function seedTransferScenariosIfEmpty(): Promise<number> {
@@ -110,14 +66,14 @@ export async function syncAllHubData(): Promise<Record<string, unknown>> {
   await seedTransferScenariosIfEmpty();
   await seedCompletedTransfersIfEmpty();
 
-  const [wc, transfers, wire] = await Promise.all([
-    syncWcMatchesCache(),
+  // No World Cup entry any more: the 2026 tournament is over and its results are
+  // frozen in lib/wc-2026-results.ts, so there is nothing left to sync.
+  const [transfers, wire] = await Promise.all([
     syncCompletedTransfersFromApi(),
     syncTransferWireCache(),
   ]);
 
   return {
-    wc,
     transfers,
     wire,
     seeded: true,

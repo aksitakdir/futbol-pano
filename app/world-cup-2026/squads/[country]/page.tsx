@@ -12,7 +12,11 @@ export async function generateStaticParams() {
   return getAllTeamSlugs().map((slug) => ({ country: slug }));
 }
 
-export const revalidate = 86400; // ISR — refresh every 24 h
+// Frozen with the rest of the tournament. These are the squads that played the
+// 2026 World Cup; the list cannot change, so 48 pages were regenerating every
+// day — and re-reading fc_players every time — to produce identical output.
+// Built once, served for ever. Delete this line to resume daily rebuilds.
+export const revalidate = false;
 
 export async function generateMetadata({ params }: Props) {
   const { country } = await params;

@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useMemo, useEffect } from "react";
+import { WC_2026_RESULTS } from "@/lib/wc-2026-results";
 import Link from "next/link";
 import SiteHeader from "./site-header";
 import SiteFooter from "./site-footer";
@@ -118,42 +119,32 @@ function allTeamCodes(): { code: string; name: string }[] {
 
 type FaqItem = { q: string; a: string };
 
-type FinishedResult = {
-  homeCode: string;
-  awayCode: string;
-  homeScore: number;
-  awayScore: number;
-};
-
 export default function WcSchedulePage({ teamFilter, faqItems }: { teamFilter?: string; faqItems?: FaqItem[] }) {
   const [view, setView] = useState<ViewMode>("date");
   const [selectedTeam, setSelectedTeam] = useState<string>(teamFilter ?? "");
   const [mounted, setMounted] = useState(false);
   const [tzLabel, setTzLabel] = useState("ET — Eastern Time");
-  const [finishedResults, setFinishedResults] = useState<FinishedResult[]>([]);
 
+  // Only the timezone label needs the browser. The scores are a static import,
+  // so they render on the server and are present in the HTML — which is the
+  // whole point: fetched in a useEffect, they were invisible to search engines.
   useEffect(() => {
     setMounted(true);
     setTzLabel(getTimezoneLabel());
-    fetch("/api/wc-results")
-      .then((r) => r.json())
-      .then((d) => setFinishedResults(d.results ?? []))
-      .catch(() => {});
   }, []);
 
   const teams = useMemo(allTeamCodes, []);
   const days = useMemo(daysUntilKickoff, []);
 
   const schedule = useMemo(() => {
-    if (finishedResults.length === 0) return WC_SCHEDULE;
     return WC_SCHEDULE.map((m) => {
-      const result = finishedResults.find(
+      const result = WC_2026_RESULTS.find(
         (r) => r.homeCode === m.home && r.awayCode === m.away,
       );
       if (!result) return m;
       return { ...m, status: "finished" as const, homeScore: result.homeScore, awayScore: result.awayScore };
     });
-  }, [finishedResults]);
+  }, []);
 
   const filtered = useMemo(() => {
     if (!selectedTeam) return schedule;
