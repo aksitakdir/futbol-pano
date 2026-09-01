@@ -1,5 +1,5 @@
 import { WC_TEAMS } from "@/lib/wc-2026-teams";
-import type { LiveScoreMatch } from "@/app/api/wc-live-scores/route";
+import type { LiveScoreMatch } from "@/lib/wc-match";
 
 const WC_TLA = new Set(WC_TEAMS.map((t) => t.code));
 

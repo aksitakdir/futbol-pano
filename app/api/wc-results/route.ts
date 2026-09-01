@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { readWcMatchesCache, syncWcMatchesCache } from "@/lib/hub-sync";
+import { readWcMatchesCache } from "@/lib/hub-sync";
 import { normalizeTla } from "@/lib/football-data-matches";
 
 export type WcFinishedResult = {
@@ -9,26 +9,10 @@ export type WcFinishedResult = {
   awayScore: number;
 };
 
-/**
- * Five minutes was right while matches were being played. The tournament is
- * finished and every score is final, so re-syncing that often meant each visit
- * to the schedule page (bots included) could trigger a fresh sync and Supabase
- * write for data that cannot change. Daily is generous for a completed event.
- *
- * Drop this back to minutes if a live tournament ever needs in-play scores.
- */
-const CACHE_TTL_MS = 24 * 60 * 60 * 1000;
-
 export async function GET() {
-  const hasApiKey = !!(process.env.FOOTBALL_DATA_API_KEY || process.env.FOOTBALL_API_KEY);
-  let cache = await readWcMatchesCache();
-  const stale =
-    !cache.updatedAt || Date.now() - new Date(cache.updatedAt).getTime() > CACHE_TTL_MS;
-
-  if (stale && hasApiKey) {
-    const sync = await syncWcMatchesCache();
-    if (sync.ok) cache = await readWcMatchesCache();
-  }
+  // Read-only. The tournament is finished, so there is no refresh path left —
+  // this serves the stored final results and nothing else.
+  const cache = await readWcMatchesCache();
 
   const finished: WcFinishedResult[] = cache.matches
     .filter((m) => m.status === "ft")

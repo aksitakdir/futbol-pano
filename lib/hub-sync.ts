@@ -1,10 +1,8 @@
 import { createClient } from "@supabase/supabase-js";
-import { fetchFootballDataMatches } from "@/lib/football-data-matches";
-import { fetchApiFootballWcMatches } from "@/lib/api-football-wc";
 import { syncTransferWireCache } from "@/lib/transfer-wire-cache";
 import { TRANSFER_SCENARIOS } from "@/lib/transfer-scenarios";
 import { COMPLETED_TRANSFERS } from "@/lib/completed-transfers";
-import type { LiveScoreMatch } from "@/app/api/wc-live-scores/route";
+import type { LiveScoreMatch } from "@/lib/wc-match";
 
 function supabaseAdmin() {
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL!;
@@ -18,48 +16,29 @@ function supabaseAdmin() {
 
 const WC_CACHE_KEY = "hub_wc_matches_cache";
 
+/**
+ * The single point where World Cup match data used to leave the site.
+ *
+ * The 2026 World Cup finished on 19 July 2026. Every score is final, so there is
+ * nothing left to fetch: this now returns what is already stored and calls no
+ * external API and writes nothing. Every caller — /api/wc-results and
+ * /api/cron/hub-sync — is covered by closing this one door rather than each of
+ * them separately.
+ *
+ * The stored results are untouched and the schedule pages still render them.
+ *
+ * TO REVIVE FOR A FUTURE TOURNAMENT: restore the body from git history
+ * (`git log -- lib/hub-sync.ts`), which fetches football-data.org first and
+ * api-football.com as a fallback, then merges the response with any finished
+ * fixtures that have aged out of the API's rolling window.
+ */
 export async function syncWcMatchesCache(): Promise<{ ok: boolean; count: number; source: string; error?: string }> {
-  const supabase = supabaseAdmin();
-  const fdKey = process.env.FOOTBALL_DATA_API_KEY;
-  const afKey = process.env.FOOTBALL_API_KEY;
-
-  let freshMatches: LiveScoreMatch[] = [];
-  let source = "fallback";
-
-  if (fdKey) {
-    try {
-      freshMatches = await fetchFootballDataMatches(fdKey);
-      source = "football-data.org";
-    } catch (e) {
-      return { ok: false, count: 0, source, error: (e as Error).message };
-    }
-  } else if (afKey) {
-    try {
-      freshMatches = await fetchApiFootballWcMatches(afKey);
-      source = "api-football.com";
-    } catch (e) {
-      return { ok: false, count: 0, source: "api-football.com", error: (e as Error).message };
-    }
-  }
-
-  // Merge: keep previously cached finished results that may have fallen
-  // outside the API's rolling date window (-3d to +21d).
   const existing = await readWcMatchesCache();
-  const existingFinished = existing.matches.filter((m) => m.status === "ft");
-  const freshIds = new Set(freshMatches.map((m) => m.id));
-  const preserved = existingFinished.filter((m) => !freshIds.has(m.id));
-  const matches = [...freshMatches, ...preserved];
-
-  await supabase.from("site_settings").upsert(
-    {
-      key: WC_CACHE_KEY,
-      value: { matches, source, updatedAt: new Date().toISOString() },
-      updated_at: new Date().toISOString(),
-    },
-    { onConflict: "key" },
-  );
-
-  return { ok: true, count: matches.length, source };
+  return {
+    ok: true,
+    count: existing.matches.length,
+    source: existing.source || "stored",
+  };
 }
 
 export async function readWcMatchesCache(): Promise<{
