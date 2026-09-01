@@ -202,11 +202,12 @@ export default function TransferWireFeed({ initialLimit = 40 }: Props) {
       }
       setHeadlines(list);
       setWireUpdated(data.updatedAt ?? null);
-      // Self-heal: if the cached feed is stale on first load, trigger one rate-limited
-      // live sync so real visitor traffic keeps the wire fresh without waiting for cron.
-      if (!reloadCache && data.stale) {
-        void loadWire(true);
-      }
+      // No self-heal on load. This used to fire a second, deliberately
+      // cache-busting request (`?live=1&_=<now>` with cache: "no-store") on every
+      // visit that found a stale feed, so the CDN could never absorb it and the
+      // function ran per visitor. The daily cron at /api/cron/transfer-wire keeps
+      // the feed fresh, and the manual refresh button below still forces a sync
+      // when someone actually wants one.
     } catch {
       const fallback = await fetchMinimalNewsFallback();
       setHeadlines(fallback);
