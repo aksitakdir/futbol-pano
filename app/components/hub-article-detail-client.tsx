@@ -64,7 +64,10 @@ export default function HubArticleDetailClient({
       backLabel={`Back to ${config.title}`}
       youtubeId={article.youtube_id}
       coverImage={article.cover_image}
-      newsQuery={isFinishedEvent ? undefined : article.news_query}
+      // Passing an empty newsQuery is not enough: the layout falls back to a
+      // query derived from the title. showNewsSection is the real switch.
+      showNewsSection={!isFinishedEvent}
+      newsQuery={article.news_query}
       youtubeQuery1={isFinishedEvent ? undefined : article.youtube_query_1}
       youtubeQuery2={isFinishedEvent ? undefined : article.youtube_query_2}
       playerName={article.player_name}

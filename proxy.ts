@@ -14,12 +14,22 @@ function timingSafeEqual(a: string, b: string): boolean {
   return diff === 0;
 }
 
+/**
+ * Guards /admin. That is the whole job.
+ *
+ * This used to also set an `x-pathname` header on every response "for existing
+ * logic" — logic that no longer exists; nothing in the codebase read the header.
+ * To set it, the matcher ran this function on every page and every API request,
+ * so almost all of ~139k monthly function invocations opened middleware, wrote a
+ * header nobody read, and fell through. The matcher below now scopes it to the
+ * only paths where it does real work.
+ *
+ * Note that /api/admin/* is NOT covered here and never was — those handlers call
+ * isAdminRequest() from lib/admin-auth.ts themselves. Keep doing that.
+ */
 export function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
-
-  // Set x-pathname header for all requests (used by existing logic)
   const response = NextResponse.next();
-  response.headers.set("x-pathname", pathname);
 
   // Admin auth guard
   if (pathname.startsWith("/admin")) {
@@ -47,7 +57,6 @@ export function proxy(request: NextRequest) {
           timingSafeEqual(pass ?? "", adminPassword)
         ) {
           const authedResponse = NextResponse.next();
-          authedResponse.headers.set("x-pathname", pathname);
           authedResponse.cookies.set(SESSION_COOKIE, adminPassword, {
             httpOnly: true,
             secure: process.env.NODE_ENV === "production",
@@ -74,5 +83,7 @@ export function proxy(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)"],
+  // Only the paths this function actually guards. Everything else — every
+  // article, category page, image and API route — now skips middleware entirely.
+  matcher: ["/admin", "/admin/:path*"],
 };
