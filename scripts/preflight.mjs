@@ -194,17 +194,20 @@ export async function runPreflight({ brief, sectionsJson, supabase, today = new 
   }
 
   // ---- 3. declared club/age vs the fc_players row (the DB drifts) ----------
+  // Rows are kept for step 3b, which ranks them against each other.
+  const cards = new Map();
   if (supabase && carded.length) {
     for (const name of carded) {
       const row = verification[name];
       if (!row) continue;
       const { data } = await supabase
         .from("fc_players")
-        .select("name,club,age")
+        .select("name,club,age,overall,pace,shooting,passing,dribbling,defending,physical")
         .ilike("name", name)
         .limit(1)
         .maybeSingle();
 
+      if (data) cards.set(name, data);
       if (!data) {
         warnings.push(`"${name}" is not in fc_players — the player card will not render stats.`);
         continue;
@@ -227,6 +230,82 @@ export async function runPreflight({ brief, sectionsJson, supabase, today = new 
       }
       if (row.drift === true && !clubDrift && !ageDrift) {
         warnings.push(`verification["${name}"].drift is set but fc_players agrees.`);
+      }
+    }
+  }
+
+  // ---- 3b. superlatives about the list, checked against the list ----------
+  // The gate's blind spot until now: it forced a source for every fact taken
+  // FROM somewhere, but never checked the sentences the author derived himself.
+  // A hand-audit of the young-wingers piece found five such errors, including
+  // "the second-quickest on this list" about the player who was sixth of seven.
+  //
+  // The first attempt tried to read those sentences. It failed both ways in one
+  // run: it missed the real error, because the sentence said "He" rather than a
+  // name, and it blocked a correct sentence, because "slowest" and "dribbling"
+  // appeared in the same clause and it paired them. Prose is not parseable.
+  //
+  // So detection stays fuzzy and verification becomes exact. Anything that reads
+  // like a superlative about this list must be DECLARED in brief.claims, and the
+  // declaration — not the sentence — is what gets checked against the cards.
+  if (cards.size > 1) {
+    const SUPERLATIVE =
+      /\b(fastest|quickest|slowest|best|worst|highest[- ]rated|most|least|second[- ]\w+|third[- ]\w+)\b/i;
+    const SCOPED = /(on|in) this list|\bhere\b|\bof (?:them|these)\b|this group/i;
+    const ATTRS = ["overall", "pace", "shooting", "passing", "dribbling", "defending", "physical"];
+
+    const sentences = fullText
+      .replace(/<[^>]+>/g, " ")
+      .split(/(?<=[.!?])\s+/)
+      .map((x) => x.trim())
+      .filter((x) => SCOPED.test(x) && SUPERLATIVE.test(x));
+
+    const claims = Array.isArray(brief.claims) ? brief.claims : [];
+
+    for (const sent of sentences) {
+      const claim = claims.find((c) => c?.quote && norm(sent).includes(norm(c.quote)));
+      if (!claim) {
+        blockers.push(
+          `Unverified superlative about this list: "${sent.slice(0, 100)}". Either reword it, or ` +
+            `declare it in brief.claims as { quote, player, attribute, rank, lowest } so the gate ` +
+            `can check it against the cards.`,
+        );
+      }
+    }
+
+    for (const [i, c] of claims.entries()) {
+      // An exemption still forces the author to look at the sentence and say why
+      // it is not a claim about these players — a heading, a point about the wider
+      // cohort, a remark about other publishers' lists.
+      if (c?.exempt) {
+        if (!String(c.exempt).trim()) blockers.push(`claims[${i}].exempt must say why.`);
+        continue;
+      }
+      const card = [...cards.entries()].find(([n]) => norm(n) === norm(c?.player))?.[1];
+      if (!card) {
+        blockers.push(`claims[${i}].player "${c?.player}" is not a carded player in this article.`);
+        continue;
+      }
+      if (!ATTRS.includes(c?.attribute)) {
+        blockers.push(`claims[${i}].attribute must be one of: ${ATTRS.join(", ")}.`);
+        continue;
+      }
+      const wanted = Number(c?.rank);
+      if (!Number.isInteger(wanted) || wanted < 1) {
+        blockers.push(`claims[${i}].rank must be a positive integer (1 = top of the list).`);
+        continue;
+      }
+      const lowest = c?.lowest === true;
+      const order = [...cards.values()].sort((a, b) =>
+        lowest ? a[c.attribute] - b[c.attribute] : b[c.attribute] - a[c.attribute],
+      );
+      const actual = order.findIndex((x) => norm(x.name) === norm(card.name)) + 1;
+      if (actual !== wanted) {
+        blockers.push(
+          `claims[${i}]: "${c.player}" is claimed ${wanted === 1 ? "top" : "number " + wanted} for ` +
+            `${lowest ? "lowest " : ""}${c.attribute} on this list, but ranks ${actual} of ${order.length}. ` +
+            `Order: ${order.map((x) => `${x.name.split(" ").pop()} ${x[c.attribute]}`).join(" > ")}`,
+        );
       }
     }
   }

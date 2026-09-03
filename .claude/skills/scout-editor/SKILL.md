@@ -132,6 +132,8 @@ What it will not let through:
 | Manager talk with no `verification_managers` | Amorim named at Man Utd months after he was sacked; Guardiola at City after he left |
 | Any money figure absent from `sources` | a £70m valuation that existed only on an aggregator |
 | A `sources` entry older than 7 days | Lewis Hall written as a live pursuit from a report that had already resolved |
+| A superlative about your own list that is not declared in `claims` | nothing forced a check on the sentences the author derived himself |
+| A declared claim whose ranking the cards contradict | "the second-quickest on this list" about the player who was sixth of seven |
 | Markdown links inside `faq`/`vs`/`stat`/`list` blocks | they render as literal brackets |
 | More than one pull quote, or an article ending on a plain paragraph | house style |
 
@@ -166,6 +168,35 @@ Fields the gate reads, alongside the article fields below:
   ]
 }
 ```
+
+**Superlatives about your own list** — "the fastest here", "the best dribbler on this list",
+"the second-slowest" — are the one class of claim that comes from nowhere but your own reading of
+the data, so nothing else in the pipeline can catch them. A hand-audit of the young-wingers piece
+found five, one of which called a player the second-quickest when he was sixth of seven. The gate
+now flags every sentence that reads like a superlative scoped to the piece and refuses to publish
+until each one is declared:
+
+```json
+"claims": [
+  { "quote": "he is the best dribbler here", "player": "Jamie Gittens",
+    "attribute": "dribbling", "rank": 1 },
+  { "quote": "makes him the", "player": "Mika Godts",
+    "attribute": "pace", "rank": 1, "lowest": true },
+  { "quote": "the fastest players in the age group",
+    "exempt": "About the 159-player cohort, not this list." }
+]
+```
+
+`quote` is any distinctive fragment of the sentence; `attribute` is a card field; `rank` is the
+position claimed (1 = top); `lowest: true` flips the ordering for "slowest"/"worst" claims. Use
+`exempt` with a reason when a flagged sentence is not a ranking of these players — a heading, a
+point about the wider cohort, a remark about other publishers. An exemption is not a bypass: it
+still makes you look at the sentence and say what it is.
+
+Note that the detector is deliberately fuzzy and the verification is exact. An earlier version
+tried to read the sentences instead, and in a single run it both missed the real error (the
+sentence said "He", not a name) and blocked a correct one (it paired "slowest" with "dribbling"
+because they shared a clause). Prose is not parseable; declarations are checkable.
 
 `position_frame` and `last_match_position` use codes: GK, RB, LB, RWB, LWB, CB, CDM, CM, CAM,
 RM, LM, RW, LW, CF, ST. `drift: true` records that you checked and `fc_players` is the stale one.
