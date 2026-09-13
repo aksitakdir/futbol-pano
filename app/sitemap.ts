@@ -1,7 +1,5 @@
 import type { MetadataRoute } from "next";
 import { createClient } from "@/lib/supabase";
-import { getAllTeamSlugs } from "@/lib/wc-2026-schedule";
-import { WC_TEAMS } from "@/lib/wc-2026-teams";
 
 const base = "https://www.scoutgamer.com";
 
@@ -69,22 +67,19 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: 0.72,
   }));
 
-  const teamScheduleItems: MetadataRoute.Sitemap = getAllTeamSlugs().map((slug) => ({
-    url: `${base}/world-cup-2026/schedule/${slug}`,
-    lastModified: now,
-    changeFrequency: "weekly" as const,
-    priority: 0.82,
-  }));
-
-  // 48 per-team squad pages — high-intent search ("<country> world cup squad")
-  // during the hype window. Uses WC_TEAMS, the same source the squad routes
-  // (getWcTeam) and homepage links resolve against.
-  const teamSquadItems: MetadataRoute.Sitemap = WC_TEAMS.map((t) => ({
-    url: `${base}/world-cup-2026/squads/${t.slug}`,
-    lastModified: now,
-    changeFrequency: "weekly" as const,
-    priority: 0.84,
-  }));
-
-  return [...staticItems, ...teamScheduleItems, ...teamSquadItems, ...articleItems, ...arenaItems];
+  // The 48 per-team schedule pages and 48 per-team squad pages are deliberately
+  // NOT listed. They were here for the hype window, when "<country> world cup
+  // squad" was high-intent search. The tournament ended on 19 July 2026 and the
+  // 28 days to 13 September measured the result: 33 World Cup pages drew 1,257
+  // impressions and 6 clicks between them, the squad pages sitting at positions
+  // 21 to 52, and not one of the 48 team schedule pages registered at all.
+  //
+  // They were also 96 of the sitemap's 224 URLs — 69% of what we were asking
+  // Google to prioritise, for a finished event, while the scouting lists that
+  // earn 96.8% of the site's clicks were a minority of it.
+  //
+  // The pages themselves still exist, still render, and stay reachable through
+  // /world-cup-2026. Removing them from the sitemap withdraws a crawl-priority
+  // request; it does not deindex anything.
+  return [...staticItems, ...articleItems, ...arenaItems];
 }
