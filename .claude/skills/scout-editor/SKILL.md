@@ -439,14 +439,29 @@ Three rules govern every composition:
 | **Player card** | `@player:` | The piece genuinely profiles/features a player; give a card to each one actually highlighted (FIFA-style auto stats). | The player is only mentioned in passing, or the article isn't about people (a tactic, a trend). |
 | **VS** | `@vs:` | There is a real head-to-head: two players, two systems, two managers, two eras. | There's no genuine comparison — don't invent one. |
 | **Stat cards** | `@stat:` | 2–4 numbers deserve to land big (profiles, transfer fees, records). Every value web-searched. | You have no verified numbers, or only one. |
-| **List** | `- ` (bullet) / `1. ` (numbered) | Ranked entries (numbered = coral), or a clean set of points/principles (bullets). Core to **lists** pieces. | A flowing argument — write prose, not bullets. |
+| **List** | `- ` (bullet) / `1. ` (numbered) | Ranked entries (numbered = coral), or a clean set of points/principles (bullets). Core to **lists** pieces. | A flowing argument — write prose, not bullets. Also: the entries are *records* rather than sentences — use a table. |
+| **Table** | `@table:` / `@table:ranked` | The rows are records with the same shape: name, club, two ratings. Columns line the numbers up so the reader can compare them down the page instead of hunting mid-sentence. | Three rows or fewer, or the rows are arguments rather than data — that's a list or prose. |
 | **FAQ** | `@faq:` | Quick-reference facts that also earn SEO rich-results (deal details, key numbers, eligibility). | There are no natural questions to answer. |
 | **Image** | `![alt](url)` | You have a *reliable* image URL that adds real value. | You'd be hotlinking a fragile/unknown URL — instead leave a note recommending the editor upload one. |
 | **YouTube** | `@video:` | A specific clip materially adds to the piece. (The hero `youtube_query_*` fields already auto-populate a video strip, so inline video is optional.) | Just to decorate. |
 | **Divider** | `@divider:` `dots` / `gradient` | A clean visual break before a closing turn. Vary the style between articles. | Between every block — it's punctuation, not filler. |
 
 Inline, inside `@lead:` / `@callout:` / `@section:` bodies and plain paragraphs, you have
-`**bold**`, `*italic*`, and `[text](url)`.
+`**bold**`, `*italic*`, and `[text](url)`. List items and table cells take `**bold**` too.
+
+The table body is pipe-separated and **the first line is the header row**. A column whose
+every cell is a number is right-aligned in mono, so ratings and fees line up on the digit:
+
+```
+@table:ranked Ranked by passing. Every club below is the one he plays for now.
+Player | Club | PAS | DRI
+Dean Huijsen | Real Madrid | 73 | 74
+Pau Cubarsí | Barcelona | 66 | 77
+```
+
+`@table:ranked` adds the coral 01, 02 … down the left; plain `@table:` omits it. The text
+after the marker is an optional caption. Table cells go through the publish gate like any
+other prose, so a club or a fee in one is checked exactly as it would be in a paragraph.
 
 ### Block palettes by article type (starting points, not straitjackets)
 

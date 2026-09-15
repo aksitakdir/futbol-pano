@@ -29,6 +29,7 @@ const BLOCK_TYPES: { type: SectionBlock["type"]; label: string; icon: string; de
   { type: "vs", label: "Versus", icon: "⚔", desc: "Two-column comparison (A vs B)", color: "amber" },
   { type: "faq", label: "FAQ", icon: "❓", desc: "Q&A list with SEO rich-result schema", color: "violet" },
   { type: "stat-highlight", label: "Stat Cards", icon: "📊", desc: "Prominent stat cards with big numbers", color: "cyan" },
+  { type: "table", label: "Table", icon: "▦", desc: "Aligned columns — rankings, comparisons, ratings", color: "teal" },
   { type: "divider", label: "Divider", icon: "—", desc: "Decorative section divider line", color: "slate" },
 ];
 
@@ -78,6 +79,8 @@ function defaultBlock(type: SectionBlock["type"]): SectionBlock {
       return { type, heading: "", items: [{ q: "", a: "" }] };
     case "stat-highlight":
       return { type, title: undefined, stats: [{ value: "", label: "", note: "" }] };
+    case "table":
+      return { type, caption: "", columns: ["", ""], rows: [["", ""]], ranked: false };
     case "divider":
       return { type, style: "default" };
   }
@@ -130,6 +133,12 @@ function BlockEditor({
           {block.type === "image" && block.src && (
             <p className="text-[11px] text-slate-400 truncate mt-0.5">{block.alt || block.src}</p>
           )}
+          {block.type === "table" && block.rows.length > 0 && (
+            <span className="text-slate-500">
+              {block.columns.filter(Boolean).join(" · ")} — {block.rows.length} row{block.rows.length === 1 ? "" : "s"}
+            </span>
+          )}
+
           {block.type === "list" && block.items.length > 0 && (
             <p className="text-[11px] text-slate-400 truncate mt-0.5">
               {block.style === "ol" ? "1." : "•"} {block.items[0]?.slice(0, 50)}
@@ -291,6 +300,10 @@ function BlockEditor({
 
           {block.type === "stat-highlight" && (
             <StatHighlightEditor block={block} onChange={(b) => onChange(b)} />
+          )}
+
+          {block.type === "table" && (
+            <TableBlockEditor block={block} onChange={(b) => onChange(b)} />
           )}
 
           {block.type === "divider" && (
@@ -743,6 +756,84 @@ function ImageBlockEditor({
           />
         </div>
       )}
+    </div>
+  );
+}
+
+function TableBlockEditor({
+  block,
+  onChange,
+}: {
+  block: Extract<SectionBlock, { type: "table" }>;
+  onChange: (b: Extract<SectionBlock, { type: "table" }>) => void;
+}) {
+  const cols = block.columns.length;
+  const pad = (r: string[]) => Array.from({ length: cols }, (_, c) => r[c] ?? "");
+
+  function setCell(ri: number, ci: number, value: string) {
+    const rows = block.rows.map((r, i) => (i === ri ? pad(r).map((v, c) => (c === ci ? value : v)) : pad(r)));
+    onChange({ ...block, rows });
+  }
+  function setColumn(ci: number, value: string) {
+    onChange({ ...block, columns: block.columns.map((c, i) => (i === ci ? value : c)) });
+  }
+  function addColumn() {
+    onChange({ ...block, columns: [...block.columns, ""], rows: block.rows.map((r) => [...pad(r), ""]) });
+  }
+  function removeColumn(ci: number) {
+    if (cols <= 1) return;
+    onChange({ ...block, columns: block.columns.filter((_, i) => i !== ci), rows: block.rows.map((r) => pad(r).filter((_, i) => i !== ci)) });
+  }
+  function addRow() {
+    onChange({ ...block, rows: [...block.rows, Array.from({ length: cols }, () => "")] });
+  }
+  function removeRow(ri: number) {
+    if (block.rows.length <= 1) return;
+    onChange({ ...block, rows: block.rows.filter((_, i) => i !== ri) });
+  }
+
+  const input = "w-full rounded-lg border border-slate-700/80 bg-slate-900/60 px-2 py-1.5 text-xs text-slate-200";
+
+  return (
+    <div className="space-y-3">
+      <div>
+        <label className="mb-1 block text-[10px] font-semibold text-slate-400 uppercase tracking-wider">Caption</label>
+        <input className={input} value={block.caption ?? ""} onChange={(e) => onChange({ ...block, caption: e.target.value })} placeholder="Optional line above the table" />
+      </div>
+      <button
+        type="button"
+        onClick={() => onChange({ ...block, ranked: !block.ranked })}
+        className={`rounded-lg border px-3 py-1.5 text-xs font-semibold transition ${
+          block.ranked ? "border-teal-500/60 bg-teal-500/15 text-teal-200" : "border-slate-700/80 text-slate-500 hover:text-slate-300"
+        }`}
+      >
+        {block.ranked ? "✓ Ranked (01, 02 …)" : "Ranked (01, 02 …)"}
+      </button>
+      <div className="space-y-2">
+        <label className="block text-[10px] font-semibold text-slate-400 uppercase tracking-wider">Columns</label>
+        <div className="flex flex-wrap gap-2">
+          {block.columns.map((c, ci) => (
+            <div key={ci} className="flex items-center gap-1">
+              <input className={`${input} w-28`} value={c} onChange={(e) => setColumn(ci, e.target.value)} placeholder={`Col ${ci + 1}`} />
+              <button type="button" onClick={() => removeColumn(ci)} className="px-1 text-xs text-slate-600 hover:text-rose-400">✕</button>
+            </div>
+          ))}
+          <button type="button" onClick={addColumn} className="rounded-lg border border-slate-700/80 px-2 py-1 text-xs text-slate-400 hover:text-slate-200">+ column</button>
+        </div>
+      </div>
+      <div className="space-y-2">
+        <label className="block text-[10px] font-semibold text-slate-400 uppercase tracking-wider">Rows</label>
+        {block.rows.map((row, ri) => (
+          <div key={ri} className="flex items-center gap-1">
+            {block.ranked ? <span className="w-6 text-[10px] text-rose-400">{String(ri + 1).padStart(2, "0")}</span> : null}
+            {Array.from({ length: cols }, (_, ci) => (
+              <input key={ci} className={`${input} w-28`} value={pad(row)[ci]} onChange={(e) => setCell(ri, ci, e.target.value)} />
+            ))}
+            <button type="button" onClick={() => removeRow(ri)} className="px-1 text-xs text-slate-600 hover:text-rose-400">✕</button>
+          </div>
+        ))}
+        <button type="button" onClick={addRow} className="rounded-lg border border-slate-700/80 px-2 py-1 text-xs text-slate-400 hover:text-slate-200">+ row</button>
+      </div>
     </div>
   );
 }

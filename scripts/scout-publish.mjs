@@ -261,6 +261,30 @@ function parseMarkupToBlocks(input) {
       i = next - 1; continue;
     }
 
+    /**
+     * @table: caption            — pipe-separated, first body line is the header row
+     * @table:ranked caption      — same, with a coral 01, 02 … down the left
+     *
+     * Use it when the rows are records rather than sentences: name, club and two
+     * ratings read as a spreadsheet when they are written as ten list items, and the
+     * eye cannot compare the numbers because they never land in the same place.
+     */
+    if (/^@table\b/i.test(line)) {
+      flushAll();
+      const head = afterMarker(line, /^@table(:ranked)?:?/i).trim();
+      const ranked = /^@table:ranked/i.test(line);
+      const [body, next] = collectBody(i + 1);
+      const rows = body
+        .map((raw) => raw.replace(/^[-*]\s+/, "").trim())
+        .filter((b) => b && !/^\|?\s*[-:| ]+\s*\|?$/.test(b)) // tolerate a markdown separator row
+        .map((b) => b.replace(/^\||\|$/g, "").split("|").map((s) => s.trim()));
+      if (rows.length >= 2) {
+        const columns = rows[0];
+        blocks.push({ type: "table", caption: head || undefined, columns, rows: rows.slice(1), ranked });
+      }
+      i = next - 1; continue;
+    }
+
     if (/^@divider/i.test(line)) {
       flushAll();
       const stylePart = afterMarker(line, /^@divider:?/i).toLowerCase().trim();

@@ -255,6 +255,75 @@ export default function SectionsJsonBody({
           );
         }
 
+        /* ── Table: aligned columns for data a list cannot hold straight ── */
+        if (sec.type === "table") {
+          const cols = sec.columns ?? [];
+          /* Right-align a column when every cell in it is a number, so ratings and
+             fees line up on the digit rather than drifting with the club name. */
+          const numeric = cols.map((_, c) =>
+            sec.rows.length > 0 && sec.rows.every((r) => /^[\d.,%+-]+$/.test((r[c] ?? "").trim())),
+          );
+          const cell = (c: number): React.CSSProperties => ({
+            padding: "11px 14px",
+            textAlign: numeric[c] ? "right" : "left",
+            fontFamily: numeric[c] ? "var(--font-mono-stack)" : undefined,
+            fontVariantNumeric: numeric[c] ? "tabular-nums" : undefined,
+            whiteSpace: numeric[c] ? "nowrap" : undefined,
+            color: c === 0 ? "var(--sg-text-primary)" : "var(--sg-text-secondary)",
+            fontWeight: c === 0 ? 600 : 400,
+          });
+          return (
+            <div key={i} style={{ margin: "28px 0" }}>
+              {sec.caption ? (
+                <div style={{ fontSize: 14, lineHeight: 1.6, color: "var(--sg-text-muted)", marginBottom: 14 }}>{sec.caption}</div>
+              ) : null}
+              {/* The page itself must never scroll sideways — the table does, on its own. */}
+              <div style={{ overflowX: "auto", WebkitOverflowScrolling: "touch" }}>
+                <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 15, minWidth: 320 }}>
+                  <thead>
+                    <tr>
+                      {sec.ranked ? <th style={{ width: 34 }} /> : null}
+                      {cols.map((c, ci) => (
+                        <th
+                          key={ci}
+                          scope="col"
+                          style={{
+                            ...cell(ci),
+                            fontFamily: "var(--font-mono-stack)",
+                            fontSize: 10,
+                            letterSpacing: "0.12em",
+                            textTransform: "uppercase",
+                            color: "var(--sg-text-muted)",
+                            fontWeight: 500,
+                            borderBottom: "1px solid var(--sg-border, rgba(255,255,255,0.14))",
+                            paddingBottom: 9,
+                          }}
+                        >
+                          {c}
+                        </th>
+                      ))}
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {sec.rows.map((row, ri) => (
+                      <tr key={ri} style={{ borderBottom: "1px solid var(--sg-border, rgba(255,255,255,0.07))" }}>
+                        {sec.ranked ? (
+                          <td style={{ padding: "11px 0", fontFamily: "var(--font-display)", fontSize: 15, fontWeight: 700, color: "var(--rose)", verticalAlign: "middle" }}>
+                            {String(ri + 1).padStart(2, "0")}
+                          </td>
+                        ) : null}
+                        {cols.map((_, ci) => (
+                          <td key={ci} style={cell(ci)} dangerouslySetInnerHTML={{ __html: (row[ci] ?? "").replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>") }} />
+                        ))}
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          );
+        }
+
         /* ── VS block: prominent header + two-column comparison ── */
         if (sec.type === "vs") {
           const mainHeader = [sec.leftName, sec.rightName].filter(Boolean).join(" vs ");

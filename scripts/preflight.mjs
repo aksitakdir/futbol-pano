@@ -60,12 +60,21 @@ function norm(s) {
     .trim();
 }
 
+/**
+ * Every piece of prose a reader can see, flattened for the checks below. A block
+ * type whose text is missing here is a block the gate cannot see at all — no club
+ * drift check, no fee check, no superlative check — so extend this whenever a new
+ * block type is added. Table captions, headers and cells are included for exactly
+ * that reason: ten rows of names, clubs and ratings are ten unchecked claims.
+ */
 function blockText(b) {
-  return [b.html, b.text, b.heading, b.title]
+  return [b.html, b.text, b.heading, b.title, b.caption]
     .filter(Boolean)
     .concat((b.items ?? []).flatMap((i) => [i.q, i.a, typeof i === "string" ? i : ""]))
     .concat((b.stats ?? []).flatMap((s) => [s.value, s.label, s.note]))
     .concat([...(b.left?.items ?? []), ...(b.right?.items ?? [])])
+    .concat(b.columns ?? [])
+    .concat((b.rows ?? []).flat())
     .filter(Boolean)
     .join(" ");
 }

@@ -19,6 +19,8 @@ export type SectionBlock =
   | { type: "vs"; leftName: string; rightName: string; left: VsSide; right: VsSide }
   | { type: "faq"; heading?: string; items: FaqItem[] }
   | { type: "stat-highlight"; title?: string; stats: StatHighlightItem[] }
+  /** Ranked or plain data table. `ranked` prefixes each row with a coral 01, 02 … */
+  | { type: "table"; caption?: string; columns: string[]; rows: string[][]; ranked?: boolean }
   | { type: "divider"; style?: "default" | "dots" | "gradient" };
 
 export type TocItem = { text: string; id: string };
