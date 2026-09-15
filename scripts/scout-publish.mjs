@@ -329,6 +329,47 @@ function slugify(text, maxLength = MAX_SLUG_LENGTH) {
 }
 
 const CATEGORIES = ["radar", "tactics-lab", "lists", "wc-2026", "transfer"];
+
+/** Mirrors lib/category-config.ts — the URL folder each category lives under. */
+const CATEGORY_PATHS = {
+  radar: "radar",
+  lists: "lists",
+  "tactics-lab": "tactics-lab",
+  "wc-2026": "world-cup-2026",
+  transfer: "transfers",
+};
+
+/**
+ * Article pages are prerendered for a day and Vercel's ISR cache survives deploys, so
+ * writing a corrected row to Supabase changes nothing a reader can see until the window
+ * elapses. The admin panel revalidates in the same action that saves; this script writes
+ * from a terminal and used to skip it entirely — a fix could sit invisible for 24 hours
+ * while Google crawled the version it replaced. Never fail a publish over this: the row
+ * is already written, and a stale page is a smaller problem than a confusing exit code.
+ */
+async function revalidate(category, slug) {
+  const folder = CATEGORY_PATHS[category];
+  const base = (env.SITE_URL || "https://www.scoutgamer.com").replace(/\/$/, "");
+  if (!folder || !env.ADMIN_PASSWORD) {
+    console.log("  note     Skipped cache revalidation (no ADMIN_PASSWORD in .env.local); the page may serve old HTML for up to a day.");
+    return;
+  }
+  const paths = ["/", `/${folder}`, `/${folder}/${slug}`];
+  try {
+    const res = await fetch(`${base}/api/revalidate`, {
+      method: "POST",
+      headers: {
+        "content-type": "application/json",
+        authorization: `Basic ${Buffer.from(`scout:${env.ADMIN_PASSWORD}`).toString("base64")}`,
+      },
+      body: JSON.stringify({ paths }),
+    });
+    if (res.ok) console.log(`  note     Revalidated ${paths.join(", ")} — the change is live now, not in 24 hours.`);
+    else console.log(`  note     Revalidation returned HTTP ${res.status}; the page may serve old HTML for up to a day.`);
+  } catch (e) {
+    console.log(`  note     Revalidation could not be reached (${e.message}); the page may serve old HTML for up to a day.`);
+  }
+}
 const VALID_ACCENTS = ["emerald", "cyan", "sky", "rose", "amber", "lime"];
 const VALID_HERO = ["player-cards", "cover-image", "pitch-diagram", "text-only"];
 
@@ -547,6 +588,8 @@ async function main() {
       console.error("DB update failed:", error.message);
       process.exit(1);
     }
+    if (data.status === "published") await revalidate(category, data.slug);
+
     console.log(JSON.stringify({
       ok: true, updated: true, id: data.id, slug: data.slug,
       category, status: data.status, blocks: sectionsJson.length,
@@ -562,6 +605,8 @@ async function main() {
     console.error("DB insert failed:", error.message);
     process.exit(1);
   }
+
+  if (status === "published") await revalidate(category, data.slug);
 
   console.log(JSON.stringify({
     ok: true,
