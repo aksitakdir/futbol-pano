@@ -268,7 +268,9 @@ export default function SectionsJsonBody({
             textAlign: numeric[c] ? "right" : "left",
             fontFamily: numeric[c] ? "var(--font-mono-stack)" : undefined,
             fontVariantNumeric: numeric[c] ? "tabular-nums" : undefined,
-            whiteSpace: numeric[c] ? "nowrap" : undefined,
+            /* The first column holds the identity — a name broken across two lines is
+               the one wrap that reads as a mistake. Let the middle columns wrap instead. */
+            whiteSpace: numeric[c] || c === 0 ? "nowrap" : undefined,
             color: c === 0 ? "var(--sg-text-primary)" : "var(--sg-text-secondary)",
             fontWeight: c === 0 ? 600 : 400,
           });
@@ -279,7 +281,9 @@ export default function SectionsJsonBody({
               ) : null}
               {/* The page itself must never scroll sideways — the table does, on its own. */}
               <div style={{ overflowX: "auto", WebkitOverflowScrolling: "touch" }}>
-                <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 15, minWidth: 320 }}>
+                {/* Wide enough that a phone scrolls the table rather than crushing every
+                    column into two-line cells; the page itself still never moves. */}
+                <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 15, minWidth: 420 }}>
                   <thead>
                     <tr>
                       {sec.ranked ? <th style={{ width: 34 }} /> : null}

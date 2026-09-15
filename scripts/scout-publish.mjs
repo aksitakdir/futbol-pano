@@ -515,11 +515,33 @@ async function main() {
   const updateId = updateFlag !== -1 ? process.argv[updateFlag + 1] : null;
 
   if (updateId) {
+    /*
+     * A brief keeps saying "pending" long after the article it describes went live —
+     * the status in the file is where the piece started, not where it is now. Writing
+     * it back on an --update would quietly unpublish a page that is indexed, linked
+     * from six other articles and sitting in Google's queue, and nothing in the output
+     * would say so. Never demote a live article by accident; --unpublish means it.
+     */
+    const { data: current } = await supabase
+      .from("contents")
+      .select("status")
+      .eq("id", updateId)
+      .maybeSingle();
+
+    if (current?.status === "published" && status !== "published") {
+      if (process.argv.includes("--unpublish")) {
+        console.log("  note     --unpublish given: taking a live article offline.");
+      } else {
+        row.status = "published";
+        console.log('  note     Article is live; keeping it published (the brief still says "pending"). Pass --unpublish to take it down.');
+      }
+    }
+
     const { data, error } = await supabase
       .from("contents")
       .update(row)
       .eq("id", updateId)
-      .select("id, slug")
+      .select("id, slug, status")
       .single();
     if (error) {
       console.error("DB update failed:", error.message);
@@ -527,7 +549,7 @@ async function main() {
     }
     console.log(JSON.stringify({
       ok: true, updated: true, id: data.id, slug: data.slug,
-      category, status, blocks: sectionsJson.length,
+      category, status: data.status, blocks: sectionsJson.length,
       admin_edit: `/admin/edit/${data.id}`,
       ...out,
     }, null, 2));
