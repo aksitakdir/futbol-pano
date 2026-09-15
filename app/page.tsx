@@ -188,7 +188,9 @@ function mergeHeroSlides(
 }
 
 async function fetchFcPlayer(name: string, club?: string) {
-  const sel = "overall,pace,shooting,passing,dribbling,defending,physical,photo_url,position,club,league,age";
+  // Ratings and photo only — see the note in the in-form effect below for why the
+  // game's club/league/age columns must never reach a card.
+  const sel = "overall,pace,shooting,passing,dribbling,defending,physical,photo_url";
   const trimmed = name.trim();
   const words = trimmed.split(/\s+/).filter(Boolean);
   const clubQ = club?.trim();
@@ -363,13 +365,21 @@ export default function HomePage() {
         }
       }
       if (list.length) {
-        const { data: stats } = await supabase.from("fc_players").select("name,overall,position,pace,shooting,passing,dribbling,defending,physical,photo_url,club,league,age").in("name", list.map((p) => p.name));
+        // The game supplies numbers; we supply facts. fc_players is a frozen copy of
+        // the game's own database, so its club, league and age columns are a snapshot
+        // of the 2025-26 season: every age in it is a year low and every club is at
+        // least one transfer window behind. Selecting those columns is what put Mika
+        // Godts at Ajax and Johan Manzambi at Freiburg on the home page in September
+        // 2026, months after they had joined PSG and Aston Villa — and it also
+        // overwrote the *correct* curated club for Oskar Pietuszewski, who the game
+        // still files at Jagiellonia. Fetch the ratings and the photo only; identity
+        // comes from form_players_pool, which is verified by hand and carries as_of.
+        const { data: stats } = await supabase.from("fc_players").select("name,overall,pace,shooting,passing,dribbling,defending,physical,photo_url").in("name", list.map((p) => p.name));
         const sm = new Map(((stats ?? []) as { name: string }[]).map((s) => [s.name.toLowerCase(), s]));
         const withStats = list.map((p) => {
           const s = sm.get(p.name.toLowerCase());
           if (!s) return p;
-          const row = s as Partial<PlayerCardData> & { club?: string; league?: string; age?: unknown };
-          return { ...p, ...row, club: row.club?.trim() || p.club, league: row.league?.trim() || p.league, age: row.age != null && row.age !== "" ? String(row.age) : p.age };
+          return { ...p, ...(s as Partial<PlayerCardData>) };
         });
         setFormPlayers(shuffleInPlace(withStats.filter((p) => ((p as FormPlayerWithStats).overall ?? 0) > 0)).slice(0, 10) as FormPlayerWithStats[]);
       }
@@ -397,10 +407,10 @@ export default function HomePage() {
   const radarCard: PlayerCardData | null = featuredPlayer && featuredStats
     ? {
         name: featuredPlayer.name,
-        club: (featuredStats.club as string | undefined)?.trim() || featuredPlayer.club,
-        league: (featuredStats.league as string | undefined)?.trim() || featuredPlayer.league,
-        position: (featuredStats.position as string | undefined)?.trim() || featuredPlayer.position,
-        age: featuredStats.age != null && featuredStats.age !== "" ? String(featuredStats.age) : featuredPlayer.age,
+        club: featuredPlayer.club,
+        league: featuredPlayer.league,
+        position: featuredPlayer.position,
+        age: featuredPlayer.age,
         overall: featuredStats.overall ?? 0,
         pace: featuredStats.pace ?? 0,
         shooting: featuredStats.shooting ?? 0,
