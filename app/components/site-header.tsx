@@ -37,13 +37,32 @@ function navHrefMatches(pathname: string, href: string): boolean {
   return pathname === href || pathname.startsWith(`${href}/`);
 }
 
+/**
+ * Ordered by what the sections actually earn, measured over the 28 days to
+ * 13 September 2026:
+ *
+ *   lists          737 clicks   97.0%   38,737 impressions
+ *   tactics-lab     16 clicks    2.1%      599
+ *   world-cup-2026   6 clicks    0.8%    1,257
+ *   radar            0 clicks       —      390
+ *   arena            0 clicks       —       78
+ *   transfers        0 clicks       —       81
+ *
+ * Transfers led this navigation while returning nothing: the first link on every
+ * page of the site pointed at the section with no clicks, and the section with
+ * 97% of them sat third. That order was set during the summer window, when
+ * transfers was the live story; the window has closed and the numbers followed.
+ *
+ * Nothing is removed — transfers and arena keep their pages and their links, they
+ * simply stop being the first thing a reader is offered.
+ */
 const NAV_ITEMS = [
   { href: "/", label: "HOME", key: "home" },
-  { href: "/transfers", label: "TRANSFERS", key: "transfer" },
-  { href: "/radar", label: "RADAR", key: "radar" },
   { href: "/lists", label: "LISTS", key: "lists" },
   { href: "/tactics-lab", label: "TACTICS LAB", key: "tactics-lab" },
+  { href: "/radar", label: "RADAR", key: "radar" },
   { href: "/arena", label: "ARENA", key: "arena" },
+  { href: "/transfers", label: "TRANSFERS", key: "transfer" },
   // WC 2026 demoted to last post-tournament (kept for the archive, not a live section)
   { href: "/world-cup-2026", label: "WC 2026", key: "wc-2026" },
 ];
