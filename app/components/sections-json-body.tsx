@@ -171,6 +171,16 @@ export default function SectionsJsonBody({
 
         /* ── Lists ── */
         if (sec.type === "list") {
+          /*
+           * Every other block in this renderer takes HTML, so authors write emphasis
+           * the same way everywhere — and list items printed it raw. The published
+           * all-time World Cup scorers piece has been showing "**Gary Lineker**
+           * (England)" to readers, asterisks and all, since it went live. Accept the
+           * markup here too, and fold the ** spelling into <strong> so the articles
+           * already written this way are fixed without being rewritten.
+           */
+          const itemHtml = (item: string) =>
+            item.replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>");
           /* Ordered list: coral numbered items matching editorial style */
           if (sec.style === "ol") {
             return (
@@ -195,7 +205,7 @@ export default function SectionsJsonBody({
                       >
                         {String(j + 1).padStart(2, "0")}
                       </span>
-                      <span style={{ lineHeight: 1.65, color: "var(--sg-text-secondary)" }}>{item}</span>
+                      <span style={{ lineHeight: 1.65, color: "var(--sg-text-secondary)" }} dangerouslySetInnerHTML={{ __html: itemHtml(item) }} />
                     </div>
                   ))}
               </div>
@@ -238,7 +248,7 @@ export default function SectionsJsonBody({
                         opacity: 0.85,
                       }}
                     />
-                    <span>{item}</span>
+                    <span dangerouslySetInnerHTML={{ __html: itemHtml(item) }} />
                   </li>
                 ))}
             </ul>
