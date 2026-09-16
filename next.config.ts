@@ -78,11 +78,6 @@ const nextConfig: NextConfig = {
       { source: "/radar/transfer-pazarinda-buyuk-oyunlar-bu-ay", destination: "/radar/transfer-market-big-moves-this-month", permanent: true },
       { source: "/radar/roma-bologna-2025-26-sezonunun-anahtar-oyunculari", destination: "/radar/roma-bologna-2025-26-key-players", permanent: true },
       { source: "/radar/Radardabirdefansoyuncusu", destination: "/radar/jair-cunha-defensive-colossus-scouting-report", permanent: true },
-      // The last two. Every Turkish *route* had been redirected for months, but these
-      // two slugs lived in the contents table rather than in routing, so each round of
-      // redirect work left them serving a clean HTTP 200 on a Turkish URL.
-      { source: "/radar/porto-2025-26-sezon-radar", destination: "/radar/fc-porto-2025-26-reconstruction-and-key-players", permanent: true },
-      { source: "/radar/martintejon", destination: "/radar/martin-tejon-maritimo-creative-winger", permanent: true },
       // Turkish category slugs → English
       { source: "/kadrolar/:path*", destination: "/world-cup-2026/squads/:path*", permanent: true },
       { source: "/listeler/:path*", destination: "/lists/:path*", permanent: true },
