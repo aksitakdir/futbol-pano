@@ -159,6 +159,14 @@ yazılarla sitemap iki yönde uyuşuyor mu · orphan var mı (2'den az iç link)
 kapak görseli eksik mi. Sıfır olmayan kod döner, deploy'u kesebilir.
 İlk çalıştırmada **sitemap'te sayfası olmayan bir 404 buldu**
 (`/world-cup-2026/lists`) — çıkarıldı. Şu an 132/132 temiz.
+Her production deploy'undan sonra ve her gün 07:00 UTC'de GitHub Actions ile
+otomatik çalışıyor (`.github/workflows/health-check.yml`). **Secret gerektirmiyor.**
+
+**İsteğe bağlı, 2 dakikalık kurulum:** GitHub → Settings → Secrets and variables
+→ Actions → *Variables* sekmesine `NEXT_PUBLIC_SUPABASE_URL` ve
+`NEXT_PUBLIC_SUPABASE_ANON_KEY` eklenirse bir kontrol daha açılır: yayında olup
+sitemap'e hiç girmemiş yazı var mı. İkisi de zaten tarayıcıya giden public
+değerler. **Servis anahtarı asla gerekmiyor.**
 
 **2026-09-20 — sosyal altyapı**
 - `scripts/social-pack.mjs` — yayınlanan yazının gövdesinden Reddit açısı, X yanıt

@@ -22,26 +22,44 @@
  * decide whether a published page is actually reachable. Exits non-zero, so it
  * can gate a deploy.
  *
- *   1. every sitemap URL returns 200 — and no 200 is a frozen prerender
- *   2. published articles and the sitemap agree, in both directions
- *   3. no published article is an orphan (fewer than 2 inbound internal links)
- *   4. every published article has a cover image, or its shares fall back
+ *   1. every sitemap URL returns 200
+ *   2. no article is an orphan (fewer than 2 inbound internal links)
+ *   3. every article page serves an og:image
+ *   4. nothing published is missing from the sitemap — needs Supabase, optional
+ *
+ * Checks 1-3 read only the served HTML, so this runs in CI with no credentials
+ * whatsoever. Check 4 is the one direction the sitemap cannot see itself, and
+ * it switches on when the Supabase env vars are present. A check that needs no
+ * setup is a check that actually runs.
  *
  * --quick skips the link graph, which is the slow part.
  */
 
-import { createClient } from "@supabase/supabase-js";
 import { readFileSync } from "fs";
 
-const env = Object.fromEntries(
-  readFileSync(new URL("../.env.local", import.meta.url), "utf8")
-    .split("\n")
-    .filter((l) => l.includes("="))
-    .map((l) => {
-      const i = l.indexOf("=");
-      return [l.slice(0, i).trim(), l.slice(i + 1).trim()];
-    }),
-);
+/**
+ * Local runs read .env.local; CI has no such file and passes the same names in
+ * the environment. Only published rows are read, so the anon key is enough and
+ * CI never needs the service-role key.
+ */
+function loadEnv() {
+  try {
+    const parsed = Object.fromEntries(
+      readFileSync(new URL("../.env.local", import.meta.url), "utf8")
+        .split("\n")
+        .filter((l) => l.includes("="))
+        .map((l) => {
+          const i = l.indexOf("=");
+          return [l.slice(0, i).trim(), l.slice(i + 1).trim()];
+        }),
+    );
+    return { ...parsed, ...process.env };
+  } catch {
+    return process.env;
+  }
+}
+
+const env = loadEnv();
 
 const GOOGLEBOT = "Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)";
 const CONCURRENCY = 6;
@@ -145,77 +163,93 @@ async function main() {
   }
   say(`  status        ${pages.length - bad.length}/${pages.length} return 200`);
 
-  // ---- 2. the database and the sitemap, in both directions -------------
-  const supabase = createClient(
-    env.NEXT_PUBLIC_SUPABASE_URL,
-    env.SUPABASE_SERVICE_ROLE_KEY ?? env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
-  );
-  const { data: rows, error } = await supabase
-    .from("contents")
-    .select("id,slug,title,category,status,cover_image")
-    .eq("status", "published");
+  // The article URLs the sitemap itself advertises. Everything except the
+  // database cross-check below works from these alone, which is what lets this
+  // run in CI with no credentials at all — and a check that needs no setup is
+  // a check that actually runs.
+  // /world-cup-2026/<slug> is the article route, but schedule and squads are
+  // their own folders sitting at the same depth — leaving them in would have
+  // them judged as orphaned articles, and leaving the whole section out silently
+  // dropped 52 published pieces from the sweep.
+  const WC_NON_ARTICLE = new Set(["schedule", "squads", "lists"]);
+  const articlePaths = pages.map((p) => pathOf(p.url)).filter((path) => {
+    const m = path.match(/^\/(radar|lists|tactics-lab|transfers|world-cup-2026)\/([^/]+)$/);
+    if (!m) return false;
+    return !(m[1] === "world-cup-2026" && WC_NON_ARTICLE.has(m[2]));
+  });
 
-  if (error) {
-    warnings.push(`could not read contents: ${error.message}`);
-  }
-
-  const published = (rows ?? []).map((r) => ({
-    ...r,
-    path: `${CATEGORY_PATHS[r.category] ?? "/radar"}/${r.slug}`,
-  }));
-  const sitemapPaths = new Set(pages.map((p) => pathOf(p.url)));
-
-  const missing = published.filter((r) => !sitemapPaths.has(r.path));
-  for (const r of missing) {
-    problems.push(`published but absent from sitemap.xml: ${r.path}  (#${r.id})`);
-  }
-
-  // The reverse: a sitemap entry under an article path with no published row
-  // behind it. This is what /world-cup-2026/lists was.
-  const publishedPaths = new Set(published.map((r) => r.path));
-  const sectionRoots = new Set([...Object.values(CATEGORY_PATHS), "/arena", "/"]);
-  for (const p of pages) {
-    const path = pathOf(p.url);
-    if (sectionRoots.has(path) || publishedPaths.has(path)) continue;
-    if (/^\/(radar|lists|tactics-lab|transfers)\/[^/]+$/.test(path)) {
-      problems.push(`in sitemap.xml with no published article behind it: ${path}`);
-    }
-  }
-  say(`  sitemap       ${published.length} published articles, ${missing.length} missing from it`);
-
-  // ---- 3. cover images -------------------------------------------------
-  const noCover = published.filter((r) => !r.cover_image);
-  for (const r of noCover) {
-    warnings.push(`no cover image — shares fall back to the generic card: ${r.path}  (#${r.id})`);
-  }
-  say(`  cover images  ${published.length - noCover.length}/${published.length} set`);
-
-  // ---- 4. the link graph ----------------------------------------------
+  // ---- 2. inbound internal links ---------------------------------------
   if (!QUICK) {
     // Compare paths case-insensitively on both sides. Some early slugs are not
     // lowercase — #5 is "Kodaisano" — and lowering only the href reported a
     // perfectly well-linked article as an orphan on the first run.
-    const inbound = new Map(published.map((r) => [r.path.toLowerCase(), new Set()]));
+    const inbound = new Map(articlePaths.map((path) => [path.toLowerCase(), new Set()]));
     for (const page of pages) {
       if (page.status !== 200 || !page.body) continue;
-      const from = pathOf(page.url);
+      const from = pathOf(page.url).toLowerCase();
       for (const m of page.body.matchAll(ARTICLE_HREF)) {
         const target = `/${m[1]}/${m[2]}`.toLowerCase();
-        if (target === from.toLowerCase()) continue;
-        inbound.get(target)?.add(from.toLowerCase());
+        if (target === from) continue;
+        inbound.get(target)?.add(from);
       }
     }
-    const orphans = published
-      .map((r) => ({ ...r, n: inbound.get(r.path.toLowerCase())?.size ?? 0 }))
+    const orphans = articlePaths
+      .map((path) => ({ path, n: inbound.get(path.toLowerCase())?.size ?? 0 }))
       .filter((r) => r.n < 2)
       .sort((a, b) => a.n - b.n);
 
     for (const r of orphans) {
-      problems.push(`only ${r.n} inbound internal link${r.n === 1 ? "" : "s"}: ${r.path}  (#${r.id})`);
+      problems.push(`only ${r.n} inbound internal link${r.n === 1 ? "" : "s"}: ${r.path}`);
     }
-    say(`  inbound links ${published.length - orphans.length}/${published.length} have 2 or more`);
+    say(`  inbound links ${articlePaths.length - orphans.length}/${articlePaths.length} have 2 or more`);
   } else {
     say("  inbound links skipped (--quick)");
+  }
+
+  // ---- 3. share cards --------------------------------------------------
+  // Read from the served HTML rather than the database, because what matters is
+  // what a crawler or a chat app actually finds on the page.
+  const byPath = new Map(pages.map((p) => [pathOf(p.url), p]));
+  let withOg = 0;
+  for (const path of articlePaths) {
+    const page = byPath.get(path);
+    if (!page?.body) continue;
+    if (/<meta[^>]+property=["']og:image["']/i.test(page.body)) withOg += 1;
+    else warnings.push(`no og:image — shares fall back to the generic card: ${path}`);
+  }
+  say(`  share cards   ${withOg}/${articlePaths.length} have og:image`);
+
+  // ---- 4. the database, when we have credentials for it -----------------
+  // Optional on purpose. It adds the one direction the sitemap cannot see:
+  // an article that is published but never made it into the sitemap at all.
+  const supabaseUrl = env.NEXT_PUBLIC_SUPABASE_URL;
+  const supabaseKey = env.SUPABASE_SERVICE_ROLE_KEY || env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+  if (supabaseUrl && supabaseKey) {
+    // Imported here, not at the top, so a credential-free CI run needs no
+    // node_modules at all — checkout and node, nothing else.
+    const { createClient } = await import("@supabase/supabase-js");
+    const supabase = createClient(supabaseUrl, supabaseKey);
+    const { data: rows, error } = await supabase
+      .from("contents")
+      .select("id,slug,category,status")
+      .eq("status", "published");
+
+    if (error) {
+      warnings.push(`could not read contents: ${error.message}`);
+    } else {
+      const sitemapPaths = new Set(pages.map((p) => pathOf(p.url).toLowerCase()));
+      const published = (rows ?? []).map((r) => ({
+        ...r,
+        path: `${CATEGORY_PATHS[r.category] ?? "/radar"}/${r.slug}`,
+      }));
+      const missing = published.filter((r) => !sitemapPaths.has(r.path.toLowerCase()));
+      for (const r of missing) {
+        problems.push(`published but absent from sitemap.xml: ${r.path}  (#${r.id})`);
+      }
+      say(`  sitemap       ${published.length} published articles, ${missing.length} missing from it`);
+    }
+  } else {
+    say("  sitemap       database check skipped (no Supabase credentials)");
   }
 
   // ---- report ----------------------------------------------------------
