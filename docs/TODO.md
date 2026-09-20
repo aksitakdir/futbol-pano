@@ -10,7 +10,10 @@ tekrar eden sorunları görmenin tek yolu.
 
 ## 0. Şu an bekleyen tek el emeği
 
-**Altı yazı `pending`, altısı da kapak görseli bekliyor.**
+**Altı yazı `pending`.** Hepsi kapak görseli bekliyor — ama **kapak artık yayına
+girmenin şartı değil.** Kart varyantları (stat/contrast/verdict/list) görselsiz
+çalışıyor, yani bir yazı bugün yayına alınıp bugün dağıtılabilir. Kapak,
+paylaşımın önündeki engel olmaktan çıktı; sadece Style A kartını açıyor.
 
 | # | Başlık | Not |
 |---|---|---|
@@ -22,6 +25,8 @@ tekrar eden sorunları görmenin tek yolu.
 | 158 | Max Dowman | #157'ye link veriyor |
 
 Bunlar yayına girmeden yeni içerik üretmek kuyruğu uzatmaktan başka bir şey yapmaz.
+Yayın sonrası her biri için: `node scripts/post-publish.mjs <slug>` ve
+`node scripts/social-pack.mjs <slug>`.
 
 ---
 
