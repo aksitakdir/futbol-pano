@@ -433,6 +433,10 @@ export default function DuzenlePage() {
             coverImage={coverImage}
             slug={slug}
             publicUrl={`${categoryPublicPath(category)}/${slug.trim()}`}
+            // The blocks are already in state here, so the panel derives its cards
+            // and copy from the live editor — no fetch, no API spend, and it works
+            // on an unsaved draft.
+            sections={sectionsBlocks}
           />
         </div>
 

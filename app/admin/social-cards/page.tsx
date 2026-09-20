@@ -5,6 +5,7 @@ import Image from "next/image";
 import AdminLayout from "../components/admin-layout";
 import { supabase } from "@/lib/supabase";
 import { WC_TEAMS } from "@/lib/wc-2026-teams";
+import { buildPresetCopy } from "@/lib/social-extract.mjs";
 
 /* ── Types ── */
 
@@ -67,8 +68,6 @@ export default function SocialCardsStudioPage() {
 
   const [tweet, setTweet] = useState("");
   const [instagram, setInstagram] = useState("");
-  const [textLoading, setTextLoading] = useState(false);
-  const [textError, setTextError] = useState("");
   const [copied, setCopied] = useState<string | null>(null);
 
   const shareLink = publicUrl ? `https://scoutgamer.com${publicUrl}` : "";
@@ -130,26 +129,16 @@ export default function SocialCardsStudioPage() {
     URL.revokeObjectURL(a.href);
   }
 
-  async function generateText() {
-    setTextLoading(true);
-    setTextError("");
-    try {
-      const res = await fetch("/api/admin/social-text", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ title, category, slug }),
-      });
-      const data = (await res.json()) as { tweet?: string; instagram?: string; error?: string };
-      if (data.error) {
-        setTextError(data.error);
-      } else {
-        setTweet(data.tweet ?? "");
-        setInstagram(data.instagram ?? "");
-      }
-    } catch {
-      setTextError("Connection error");
-    }
-    setTextLoading(false);
+  /**
+   * These preset pages — the World Cup hub, squad pages, arena brackets — have
+   * no article body to quote from, so this composes from the title and the link.
+   * It used to call the Anthropic API, which was given exactly the same three
+   * fields and charged for the privilege of rephrasing them.
+   */
+  function generateText() {
+    const { tweet: t, instagram: ig } = buildPresetCopy(title, category, `https://scoutgamer.com${publicUrl}`);
+    setTweet(t);
+    setInstagram(ig);
   }
 
   async function handleImageUpload(file: File) {
@@ -365,18 +354,16 @@ export default function SocialCardsStudioPage() {
               </div>
             )}
 
-            {/* AI Text Generation */}
+            {/* Post copy — composed locally from the title and the link */}
             {canGenerate && (
               <div className="space-y-3 rounded-xl border border-slate-700/60 bg-slate-900/40 p-4">
                 <button
                   type="button"
                   onClick={generateText}
-                  disabled={textLoading}
-                  className="rounded-lg border border-emerald-600/50 bg-emerald-500/10 px-4 py-2 text-xs font-semibold text-emerald-300 transition hover:bg-emerald-500/20 disabled:opacity-50"
+                  className="rounded-lg border border-emerald-600/50 bg-emerald-500/10 px-4 py-2 text-xs font-semibold text-emerald-300 transition hover:bg-emerald-500/20"
                 >
-                  {textLoading ? "Generating…" : "✨ Generate post text (AI)"}
+                  ✍ Build post text
                 </button>
-                {textError ? <p className="text-[11px] text-rose-400">{textError}</p> : null}
 
                 {tweet ? (
                   <div className="space-y-1">

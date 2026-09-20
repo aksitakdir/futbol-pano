@@ -63,10 +63,13 @@ Günde 5-10 gerçek oyuncu yorumu, başkalarının thread'lerinin içinde. Link 
 - [x] **İçerik taşıyan kart varyantları** — `/api/social-card?variant=stat|contrast|verdict|list`.
       Style A (`variant=cover`) **aynen duruyor**, hiçbiri onu değiştirmiyor.
       Dördü de kapak görseli gerektirmiyor.
-- [ ] `/api/admin/social-text`'i emekli et — başlıktan yazıyor ve her çağrıda Anthropic
-      API'ye para ödüyor. Extractor gövdeyi okuyor ve bedava.
-- [ ] Varyantları admin panelindeki Social Card Studio'ya buton olarak bağla
-      (şu an sadece pack'in ürettiği URL üzerinden)
+- [x] `/api/admin/social-text` **silindi**. Başlıktan yazıyordu ve her çağrıda Anthropic
+      API'ye para ödüyordu. Yerine `lib/social-extract.mjs` — hem script hem admin paneli
+      aynı dosyayı kullanıyor, mirror kopya yok. Panel bloklarını editörün state'inden
+      okuyor: ağ çağrısı yok, maliyet yok, kaydedilmemiş taslakta da çalışıyor.
+- [x] Dört varyant admin panelinde sekme olarak. Style A ilk sırada ve varsayılan.
+      Hub/preset sayfaları (WC kadroları, arena) gövdesiz olduğu için onlara
+      `buildPresetCopy` — başlık + link, yine yerel.
 
 **Açık karar:** videolar sessiz mi (ekran yazısı) yoksa seslendirilmiş mi — kart metni
 yoğunluğunu bu belirliyor.

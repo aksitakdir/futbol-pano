@@ -24,11 +24,24 @@
  * be thin and will say so under GAPS, rather than inventing a number to fill
  * the space. That is the same rule the publish gate enforces upstream.
  *
+ * The extraction itself lives in lib/social-extract.mjs, shared with the admin
+ * panel so the two can never drift.
+ *
  * Every draft is a draft. Read it before it leaves the machine.
  */
 
 import { createClient } from "@supabase/supabase-js";
 import { readFileSync, writeFileSync } from "fs";
+import {
+  X_LIMIT,
+  CATEGORY_PATHS as PATHS,
+  extract,
+  sentences,
+  buildCards,
+  routeSubs,
+  haystackOf,
+  gapsOf,
+} from "../lib/social-extract.mjs";
 
 const env = Object.fromEntries(
   readFileSync(new URL("../.env.local", import.meta.url), "utf8")
@@ -41,183 +54,10 @@ const env = Object.fromEntries(
 );
 
 const BASE = "https://www.scoutgamer.com";
-const X_LIMIT = 280;
-
-const PATHS = {
-  radar: "/radar",
-  lists: "/lists",
-  "tactics-lab": "/tactics-lab",
-  transfer: "/transfers",
-  "wc-2026": "/world-cup-2026",
-};
-
-// ---- text helpers -------------------------------------------------------
-
-const strip = (s) =>
-  String(s ?? "")
-    .replace(/<[^>]+>/g, "")
-    .replace(/&amp;/g, "&")
-    .replace(/&lt;/g, "<")
-    .replace(/&gt;/g, ">")
-    .replace(/\s+/g, " ")
-    .trim();
-
-/** First sentence, respecting the decimals and initials that football prose is full of. */
-function firstSentence(text) {
-  const t = strip(text);
-  const m = t.match(/^.*?[.!?](?=\s+[A-Z“"']|$)/s);
-  return (m ? m[0] : t).trim();
-}
-
-function sentences(text) {
-  return strip(text)
-    .split(/(?<=[.!?])\s+(?=[A-Z“"'])/)
-    .map((s) => s.trim())
-    .filter(Boolean);
-}
 
 const fits = (s) => `${s.length > X_LIMIT ? "OVER" : "ok"} ${String(s.length).padStart(3)}`;
 
-// ---- material extraction ------------------------------------------------
-
-/**
- * Pull everything quotable out of sections_json. Nothing is rephrased here;
- * this is a filing exercise, not a writing one.
- */
-function extract(blocks) {
-  const m = {
-    lead: "",
-    stats: [],      // { value, label, note }
-    callouts: [],
-    pullquotes: [],
-    contrasts: [],  // { left, right, rows: [[l, r]] }
-    tables: [],
-    faqs: [],
-    sections: [],   // { heading, deck, body }
-    players: [],
-    listItems: [],
-  };
-
-  for (const b of blocks ?? []) {
-    switch (b?.type) {
-      case "intro":
-        if (!m.lead) m.lead = strip(b.html);
-        break;
-      case "plain":
-        if (!m.lead) m.lead = strip(b.text);
-        break;
-      case "callout":
-        m.callouts.push(strip(b.html));
-        break;
-      case "pullquote":
-        m.pullquotes.push(strip(b.text));
-        break;
-      case "stat-highlight":
-        for (const s of b.stats ?? []) {
-          if (strip(s.value)) {
-            m.stats.push({ value: strip(s.value), label: strip(s.label), note: strip(s.note) });
-          }
-        }
-        break;
-      case "vs": {
-        const rows = [];
-        const n = Math.max(b.left?.items?.length ?? 0, b.right?.items?.length ?? 0);
-        for (let i = 0; i < n; i++) {
-          const l = strip(b.left?.items?.[i]);
-          const r = strip(b.right?.items?.[i]);
-          if (l || r) rows.push([l, r]);
-        }
-        m.contrasts.push({ left: strip(b.leftName), right: strip(b.rightName), rows });
-        break;
-      }
-      case "table":
-        m.tables.push({
-          caption: strip(b.caption),
-          columns: (b.columns ?? []).map(strip),
-          rows: (b.rows ?? []).map((r) => r.map(strip)),
-        });
-        break;
-      case "faq":
-        for (const it of b.items ?? []) {
-          if (strip(it.q)) m.faqs.push({ q: strip(it.q), a: strip(it.a) });
-        }
-        break;
-      case "section": {
-        const body = strip(b.html);
-        const heading = strip(b.heading);
-        // The skill's house style puts a one-line deck under every heading, so the
-        // first sentence of a section is usually the sharpest summary in the piece.
-        if (heading || body) m.sections.push({ heading, deck: firstSentence(body), body });
-        break;
-      }
-      case "player":
-        if (strip(b.name)) m.players.push(strip(b.name));
-        break;
-      case "list":
-        for (const it of b.items ?? []) if (strip(it)) m.listItems.push(strip(it));
-        break;
-      default:
-        break;
-    }
-  }
-  return m;
-}
-
-// ---- card URLs ----------------------------------------------------------
-
-/**
- * Ready-to-open URLs for the content-carrying card variants in
- * app/api/social-card/route.tsx. Style A (the cover card) is unchanged and is
- * still produced from the admin panel; these are the additions that carry a
- * number, a contrast, a verdict or a list instead of the headline — and none of
- * them needs a cover image.
- */
-function buildCards(row, path, m, base) {
-  const cards = [];
-  const q = (o) =>
-    Object.entries(o)
-      .filter(([, v]) => v)
-      .map(([k, v]) => `${k}=${encodeURIComponent(v)}`)
-      .join("&");
-
-  const cta = `THE FULL REPORT → ${path.toUpperCase()}`;
-  const common = { format: "x", category: row.category, title: row.title, cta };
-
-  for (const s of m.stats.slice(0, 3)) {
-    cards.push({
-      label: `stat — ${s.value}`,
-      url: `${base}/api/social-card?${q({ ...common, variant: "stat", value: s.value, label: s.label, note: s.note })}`,
-    });
-  }
-  const c = m.contrasts[0];
-  if (c?.rows.length) {
-    cards.push({
-      label: `contrast — ${c.left} vs ${c.right}`,
-      url: `${base}/api/social-card?${q({
-        ...common,
-        variant: "contrast",
-        leftName: c.left,
-        rightName: c.right,
-        rows: c.rows.slice(0, 5).map(([l, r]) => `${l}~${r}`).join(";"),
-      })}`,
-    });
-  }
-  const verdict = m.pullquotes[m.pullquotes.length - 1];
-  if (verdict) {
-    cards.push({
-      label: "verdict — the closing line",
-      url: `${base}/api/social-card?${q({ ...common, variant: "verdict", quote: verdict })}`,
-    });
-  }
-  if (m.players.length >= 3) {
-    cards.push({
-      label: `list — ${m.players.length} names`,
-      // A list reads better tall; square is the Instagram post size.
-      url: `${base}/api/social-card?${q({ ...common, format: "square", variant: "list", items: m.players.join(";") })}`,
-    });
-  }
-  return cards;
-}
+// ---- pack builders ------------------------------------------------------
 
 function buildCardSection(cards) {
   const out = ["## 0. Cards — open, screenshot, post\n"];
@@ -232,34 +72,6 @@ function buildCardSection(cards) {
   out.push("");
   return out.join("\n");
 }
-
-// ---- subreddit routing --------------------------------------------------
-
-/**
- * Only subs I am reasonably sure exist. The pack tells you to check the rules
- * anyway, because self-promo policy is per-sub and changes.
- */
-const SUB_RULES = [
-  { sub: "r/soccer", always: true, note: "huge reach, strictest self-promo rules — comment, do not link" },
-  { sub: "r/football", always: true, note: "smaller, more tolerant of analysis posts" },
-  { sub: "r/EASportsFC", match: /\bEA FC|FC 2[567]|player card|rating|ratings database\b/i, note: "our ratings-vs-reality angle is native here" },
-  { sub: "r/FIFA", match: /\bEA FC|FIFA \d|player card|rating\b/i, note: "same angle, older and larger audience" },
-  { sub: "r/footballmanagergames", match: /\bFootball Manager|FM2[567]|wonderkid|regen\b/i, note: "wonderkid lists do well; link policy is relaxed" },
-  { sub: "r/MLS", match: /\bMLS|Major League Soccer|Philadelphia Union|Inter Miami\b/i },
-  { sub: "r/PremierLeague", match: /\bPremier League|Arsenal|Liverpool|Chelsea|Manchester (City|United)|Tottenham\b/i },
-  { sub: "r/Bundesliga", match: /\bBundesliga|Bayern|Dortmund|Leverkusen|Leipzig\b/i },
-  { sub: "r/seriea", match: /\bSerie A|Juventus|Milan|Inter Milan|Napoli|Roma\b/i },
-  { sub: "r/LaLiga", match: /\bLa Liga|Real Madrid|Barcelona|Atlético|Sevilla|Girona\b/i },
-  { sub: "r/Ligue1", match: /\bLigue 1|PSG|Paris Saint-Germain|Marseille|Lyon|Monaco|Strasbourg\b/i },
-  { sub: "r/Eredivisie", match: /\bEredivisie|Ajax|PSV|Feyenoord|AZ Alkmaar\b/i },
-  { sub: "r/PrimeiraLiga", match: /\bPrimeira Liga|Liga Portugal|Benfica|Sporting|FC Porto\b/i },
-];
-
-function routeSubs(haystack) {
-  return SUB_RULES.filter((r) => r.always || r.match?.test(haystack));
-}
-
-// ---- pack builders ------------------------------------------------------
 
 function buildReddit(row, url, m, haystack) {
   const out = [];
@@ -440,20 +252,8 @@ async function packFor(supabase, key) {
   const path = PATHS[row.category] ?? "/radar";
   const url = `${BASE}${path}/${row.slug}`;
   const m = extract(row.sections_json);
-  const haystack = [
-    row.title,
-    m.lead,
-    ...m.callouts,
-    ...m.sections.map((s) => `${s.heading} ${s.body}`),
-    ...m.listItems,
-  ].join(" ");
-
-  const gaps = [];
-  if (row.status !== "published") gaps.push(`status is "${row.status}" — the link will 404 for anyone who clicks it`);
-  if (!row.cover_image) gaps.push("no cover image — every share falls back to the generic OG image");
-  if (m.stats.length === 0) gaps.push("no stat block — the X reply lines and the video will be thin");
-  if (m.contrasts.length === 0) gaps.push("no vs block — no ready-made contrast to post");
-  if (m.pullquotes.length === 0) gaps.push("no pull quote — no closing line to end a video on");
+  const haystack = haystackOf(row, m);
+  const gaps = gapsOf(row, m);
 
   const head = [
     `# Social pack — ${row.title}`,
@@ -476,7 +276,7 @@ async function packFor(supabase, key) {
   return {
     text: [
       head,
-      buildCardSection(buildCards(row, path, m, BASE)),
+      buildCardSection(buildCards(row, m, BASE)),
       "---\n",
       buildReddit(row, url, m, haystack),
       "---\n",
