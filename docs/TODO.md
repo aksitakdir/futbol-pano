@@ -56,11 +56,17 @@ Günde 5-10 gerçek oyuncu yorumu, başkalarının thread'lerinin içinde. Link 
 **Sıralama kuralı: aynı anda tek lane.** Üçünü birden denemek, sıfırın sebebi.
 
 ### Benim üstüme düşen
-- [ ] **Social pack üreteci** — yayınlanan her yazı için hazır Reddit yorum açısı,
-      X yanıt cümleleri, carousel metni üreten script. Boş sayfa problemi, hiçbir şeyin
-      paylaşılmamasının asıl sebebi; onu ortadan kaldırır. ($0, scout-publish yanında)
-- [ ] Player card formatı Social Card Studio'ya **ek seçenek** olarak eklenecek —
-      mevcut format **değiştirilmeyecek**
+- [x] **Social pack üreteci** — `scripts/social-pack.mjs <slug|id>`. Yayınlanan yazının
+      gövdesinden Reddit açısı, X yanıt cümleleri (karakter sayılı), carousel slaytları,
+      16 sn video kurgusu ve kart URL'leri çıkarır. Hiçbir cümleyi kendisi yazmaz —
+      hepsi `sections_json`'dan birebir alıntı. $0.
+- [x] **İçerik taşıyan kart varyantları** — `/api/social-card?variant=stat|contrast|verdict|list`.
+      Style A (`variant=cover`) **aynen duruyor**, hiçbiri onu değiştirmiyor.
+      Dördü de kapak görseli gerektirmiyor.
+- [ ] `/api/admin/social-text`'i emekli et — başlıktan yazıyor ve her çağrıda Anthropic
+      API'ye para ödüyor. Extractor gövdeyi okuyor ve bedava.
+- [ ] Varyantları admin panelindeki Social Card Studio'ya buton olarak bağla
+      (şu an sadece pack'in ürettiği URL üzerinden)
 
 **Açık karar:** videolar sessiz mi (ekran yazısı) yoksa seslendirilmiş mi — kart metni
 yoğunluğunu bu belirliyor.
