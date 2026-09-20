@@ -145,7 +145,6 @@ seslendirilmiş mi — kart metni yoğunluğunu bu belirliyor.
   %96.8'i orada.** FC 27 çekimi bunu toptan düzeltecek.
 - **API-Football 4. kademe** — hesap askıda, zarar yok ama eşleşmeyen isimde
   3.3 sn gecikme. **Çıkarılabilir.**
-- **WC knockout fikstürü** — "2nd Group A" placeholder'ları duruyor
 
 ---
 
