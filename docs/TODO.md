@@ -2,18 +2,54 @@
 
 Son güncelleme: 2026-09-20
 
-Bu liste sohbette yaşıyordu ve her seferinde yeniden kuruluyordu. Artık burada.
-Tamamlananı silmeyin — **Biten** bölümüne taşıyın; neyin ne zaman çözüldüğü,
+Bu liste sohbette yaşıyordu ve her sorulduğunda yeniden kuruluyordu. İlk repo
+sürümünü bir sohbet **özetinden** kurdum ve dört madde ile birçok gerekçe düştü;
+bu sürüm 20 Eylül'ün orijinal kapsamlı listesinden yeniden kuruldu. Ders şu:
+liste burada yaşar, hafızada değil.
+
+Tamamlananı silmeyin — **Biten** bölümüne taşıyın. Neyin ne zaman çözüldüğü,
 tekrar eden sorunları görmenin tek yolu.
 
 ---
 
-## 0. Şu an bekleyen tek el emeği
+## 🔴 Takvimli
+
+### FC 27 — 25 Eylül, 5 gün kaldı
+
+`fc_players` 16.228 satır, EA FC 26 verisi (Eylül 2025). 0 MLS oyuncusu,
+15-16 yaş yok (taban 17, 52 oyuncu), `created_at` yok. Erken erişim 18 Eylül'de
+başladı, veri seti çıkmış olabilir.
+
+- [ ] **ÖNCE dondurma. Sıra yanlış olursa 15 yazı kendiyle çelişir.**
+      82 yazıda oyuncu kartı var; 15'i **hem** metinde EA FC 26 reytingi anıyor
+      **hem** canlı kart render ediyor. Import edildiği an metin 68 derken kart
+      74 gösterir.
+
+      | # | yazı | kart | reyting anması |
+      |---|---|---|---|
+      | 145 | Strikers | 8 | 12 |
+      | 146 | Full-Backs | 7 | 12 |
+      | 136 | **Centre-Backs** — sitenin en çok tıklanan sayfası (28 günde 356 tık) | 7 | 9 |
+      | 152 | Ball-Playing CBs | 6 | 9 |
+      | 138 | *"The Midfielders EA FC 26 Still Underrates"* — çelişki **başlıkta** | 6 | 8 |
+
+      Çözüm: yayın anında kart verisini bloğa göm, renderer önce onu kullansın,
+      yoksa aramaya düşsün. Tarihli bir scouting yazısının kartı zaten bir
+      fotoğraf olmalı. **Ek fayda:** bugün canlı sorgu olan her kart statikleşir.
+- [ ] Kaggle CSV indir → yolunu ver → import script'i. `--dry` önce kaç kulübün
+      değiştiğini gösterir; o sayı, verinin ne kadar bayatladığının tek cümlelik cevabı.
+- [ ] Yedek al
+- [ ] `fix_fc_players_club_names.sql` yeniden uygula
+- [ ] `created_at` / `dataset_version` kolonları ekle — bu sefer tarih bilinsin
+
+---
+
+## 🟠 Yayın kuyruğu
 
 **Altı yazı `pending`.** Hepsi kapak görseli bekliyor — ama **kapak artık yayına
 girmenin şartı değil.** Kart varyantları (stat/contrast/verdict/list) görselsiz
-çalışıyor, yani bir yazı bugün yayına alınıp bugün dağıtılabilir. Kapak,
-paylaşımın önündeki engel olmaktan çıktı; sadece Style A kartını açıyor.
+çalışıyor; bir yazı bugün yayına alınıp bugün dağıtılabilir. Kapak yalnızca
+Style A kartını açıyor.
 
 | # | Başlık | Not |
 |---|---|---|
@@ -21,119 +57,131 @@ paylaşımın önündeki engel olmaktan çıktı; sadece Style A kartını açı
 | 154 | Central Midfielders | |
 | 155 | Portugal's Best Young Footballers | |
 | 156 | Brazil Got 4.4 Years Younger | |
-| 157 | Cavan Sullivan | **önce bu yayına girmeli** |
-| 158 | Max Dowman | #157'ye link veriyor |
+| 157 | Cavan Sullivan | **önce bu** |
+| 158 | Max Dowman | #157'ye link veriyor · rekabet riski flag'li |
 
-Bunlar yayına girmeden yeni içerik üretmek kuyruğu uzatmaktan başka bir şey yapmaz.
-Yayın sonrası her biri için: `node scripts/post-publish.mjs <slug>` ve
-`node scripts/social-pack.mjs <slug>`.
+Yayın sonrası her biri için:
+`node scripts/post-publish.mjs <slug>` · `node scripts/social-pack.mjs <slug>`
+
+### Radar kadansı
+Son radar yazısı 26 Ağustos (Nico Paz) idi; #149 Ngumoha 20 Eylül'de yayına
+girdi ve **25 günlük sessizliği kırdı.** Ama site hâlâ iki yerde *"a new talent
+every week"* diyor ve bu vaat tutulmuyor → aşağıdaki Görev A/B.
 
 ---
 
-## 1. Sosyal medya — dağıtım (YENİ, 2026-09-20 eklendi)
+## 🟡 Onayını bekleyen
 
-**Teşhis:** trafiğin sosyalden gelmemesi bir içerik sorunu değil, bir dağıtım sorunu.
-Sıfır takipçiyle link paylaşmak, her platformda sonucu garanti sıfır olan tek eylem.
-Ağustos 2026'da bir strateji yazıldı ve hiç uygulanmadı — eksik olan plan değil, rutin.
+- [ ] **`publish_at` + günlük cron** — toplu yaz, haftaya yay. Şema değişikliği.
+      Mekanizma frekanstan bağımsız; frekansı sonra ayarlarız.
+- [ ] **110 KB ölü Türkçe metin** — 28 yayındaki satırın kullanılmayan `content`
+      kolonunda. Okuyucuya görünmüyor ama `app/{lists,radar,tactics-lab}/[slug]/page.tsx`
+      içindeki `select("*")` yüzünden her ziyaretçiye RSC payload'ında gidiyor.
+      **İki seçenek:** (a) kolonları tek tek saymak — ucuz, payload'ı da küçültür;
+      (b) kolonları boşaltmak.
+- [ ] **Görev A / B** — "haftalık radar" vaadi dört yerde geçiyor.
+      **B'yi (radar gerçekten haftalık) yaparsak A'ya (metinden kaldırmak) gerek yok.**
 
-**Kural:** sosyal, ilk aşamada bir **trafik** kanalı değil bir **kitle edinme** kanalıdır.
-Şimdi GA oturumlarıyla ölçersek, işe yaramadan kapatırız. Son 49 günde olan tam olarak bu.
+---
+
+## 🟢 Planda
+
+- [ ] **`/tactics-lab/high-press-striker` yerinde dönüşüm** — sayfa "en iyi
+      pressing forvetler" gibi *oyuncu listesi* sorgusuyla yükseliyor (7.4, 8.0),
+      taktik sorgusuyla değil. Rol × oyuncu listesi formatına çevrilecek, URL
+      korunacak (`--update 33`). Artık tablo bloğu da var.
+      **Engel:** oyuncu başına pressing verisi yok — oyunda böyle bir özellik yok,
+      arama 2026-27 için oyuncu bazlı sayı vermiyor, FBref 403 dönüyor.
+      **Çözüm:** veri boşluğunu yazının omurgası yap — kart yanlış (Ngumoha) /
+      lig yok (Sullivan) / yaş yok (Dowman) üçlüsünün dördüncüsü.
+      Kendi başına bir araştırma oturumu gerektiriyor.
+
+---
+
+## 📣 Sosyal medya — dağıtım (2026-09-20 eklendi)
+
+**Teşhis:** trafiğin sosyalden gelmemesi bir içerik sorunu değil, bir dağıtım
+sorunu. Sıfır takipçiyle link paylaşmak, her platformda sonucu garanti sıfır olan
+tek eylem. Ağustos 2026'da bir strateji yazıldı ve **49 gün hiç uygulanmadı** —
+eksik olan plan değil, rutin.
+
+**Kural:** sosyal, ilk aşamada bir **trafik** kanalı değil bir **kitle edinme**
+kanalıdır. Şimdi GA oturumlarıyla ölçersek, işe yaramadan kapatırız.
+İlk 6 hafta ölçüt: tıklama değil, **profil ziyareti.**
 
 ### Lane A — Reddit / forumlar ⭐ önce bu
-Sıfır takipçiyle **ilk hafta** trafik getirebilen tek kanal. Takipçi grafiğine değil ilgi
-grafiğine dağıtıyor, üstelik indeksleniyor. IP'miz (`oyunun veritabanı şu konuda yanlış`)
-zaten yerli Reddit içeriği. r/soccer, r/FIFA, r/footballmanagergames, r/MLS, ülke subları.
-Kapak görseli yok, video yok, montaj yok.
+Sıfır takipçiyle **ilk hafta** trafik getirebilen tek kanal: ilgi grafiğine
+dağıtıyor, üstelik indeksleniyor. IP'miz (*"oyunun veritabanı şu konuda yanlış"*)
+zaten yerli Reddit içeriği. Kapak yok, video yok, montaj yok.
 - [ ] Hedef 6 sub seç, her birinin self-promo kuralını oku
 - [ ] Haftada 5 yorum: önce değer, link sadece izin veren yerde
 - [ ] 3 hafta sonra referrer'ları ölç
 
 ### Lane B — Kısa video, 3/hafta
-Sıfırdan takipçi büyütmenin tek motoru. Tek video → TikTok + Reels + Shorts. 8-16 sn.
-Üç tekrarlanabilir format: **"oyun yanılıyor"** · **"deep cut"** · **"makbuz"**
-(şu tarihte şunu söyledik, sonra şu oldu). Makbuz formatı farkımız — kimse
-tuttuğu tahminin arkasında durmak istemiyor. Bankadaki makbuzlar: Bouaddi, Robinio Vaz,
-Ngumoha.
+Sıfırdan takipçi büyütmenin tek motoru. Tek video → TikTok + Reels + Shorts, 8-16 sn.
+Üç format: **"oyun yanılıyor"** · **"deep cut"** · **"makbuz"** (şu tarihte şunu
+söyledik, sonra şu oldu). Makbuz farkımız. Bankadakiler: Bouaddi, Robinio Vaz, Ngumoha.
 
 ### Lane C — X, %80 yanıt / %20 paylaşım
-Günde 5-10 gerçek oyuncu yorumu, başkalarının thread'lerinin içinde. Link yok, pitch yok.
+Günde 5-10 gerçek oyuncu yorumu, başkalarının thread'lerinin içinde. Link yok.
+**Nereye yanıt verileceği** uygunluk sırasına göre: reyting şikayeti thread'leri →
+"bu çocuk kim" thread'leri (ilk 30 dk) → wonderkid/FM → transfer söylentileri →
+ve thread değil, yanıtları okunan ~20 hesaplık sabit liste.
 
 **Sıralama kuralı: aynı anda tek lane.** Üçünü birden denemek, sıfırın sebebi.
 
-### Benim üstüme düşen
-- [x] **Social pack üreteci** — `scripts/social-pack.mjs <slug|id>`. Yayınlanan yazının
-      gövdesinden Reddit açısı, X yanıt cümleleri (karakter sayılı), carousel slaytları,
-      16 sn video kurgusu ve kart URL'leri çıkarır. Hiçbir cümleyi kendisi yazmaz —
-      hepsi `sections_json`'dan birebir alıntı. $0.
-- [x] **İçerik taşıyan kart varyantları** — `/api/social-card?variant=stat|contrast|verdict|list`.
-      Style A (`variant=cover`) **aynen duruyor**, hiçbiri onu değiştirmiyor.
-      Dördü de kapak görseli gerektirmiyor.
-- [x] `/api/admin/social-text` **silindi**. Başlıktan yazıyordu ve her çağrıda Anthropic
-      API'ye para ödüyordu. Yerine `lib/social-extract.mjs` — hem script hem admin paneli
-      aynı dosyayı kullanıyor, mirror kopya yok. Panel bloklarını editörün state'inden
-      okuyor: ağ çağrısı yok, maliyet yok, kaydedilmemiş taslakta da çalışıyor.
-- [x] Dört varyant admin panelinde sekme olarak. Style A ilk sırada ve varsayılan.
-      Hub/preset sayfaları (WC kadroları, arena) gövdesiz olduğu için onlara
-      `buildPresetCopy` — başlık + link, yine yerel.
-
-**Açık karar:** videolar sessiz mi (ekran yazısı) yoksa seslendirilmiş mi — kart metni
-yoğunluğunu bu belirliyor.
+**Açık karar (Ağustos'tan beri):** videolar sessiz mi (ekran yazısı) yoksa
+seslendirilmiş mi — kart metni yoğunluğunu bu belirliyor.
 
 ---
 
-## 2. FC 27 güncellemesi — 25 Eylül ve sonrası
+## ⚪ Park halinde
 
-`fc_players` 16.228 satır, EA FC 26 verisi (Eylül 2025). 0 MLS oyuncusu, 15-16 yaş yok.
-
-- [ ] **ÖNCE dondurma:** 15 yayındaki yazı metninde FC 26 reytingi geçiyor **ve** canlı
-      kart render ediyor. Import yapılırsa yazılar kendi kendileriyle çelişir.
-      Reytingler yayın anında yazıya gömülmeli — **import'tan önce**.
-- [ ] Kaggle CSV indir, `--dry` diff al, yedek al
-- [ ] `fix_fc_players_club_names.sql` yeniden uygula
-- [ ] `created_at` / `dataset_version` kolonları ekle (bu sefer tarih bilinsin)
-
----
-
-## 3. İçerik
-
-- [ ] **`/tactics-lab/high-press-striker` yerinde dönüşüm** — sayfa "en iyi pressing
-      forvetler" gibi *liste* sorgusuyla yükseliyor (7.4, 8.0), taktik sorgusuyla değil.
-      Rol × oyuncu listesi formatına çevrilecek, URL korunacak (`--update 33`).
-      **Engel:** oyuncu başına pressing verisi yok — oyunda böyle bir özellik yok, arama
-      2026-27 için oyuncu bazlı sayı vermiyor, FBref 403 dönüyor. Çözüm: veri boşluğunu
-      yazının omurgası yap (kart yanlış / lig yok / yaş yok üçlüsünün dördüncüsü).
-      Kendi başına bir araştırma oturumu gerektiriyor.
-- [ ] **`publish_at` + günlük cron** — yayınları pencereye yay, toplu basma (önerildi,
-      onay bekliyor)
-- [ ] "Haftalık radar" vaadi 4 yerde geçiyor ama tutulmuyor — ya tut ya metinden kaldır
+- **Newsletter "The Deep Cut"** — kayıt formu **en son** adım
+- **Kapının boşluğu** — kartı olmayan oyuncular hakkındaki düz metin iddiaları
+  denetimsiz (**Chilwell vakası**). `preflight.mjs` yalnızca kartlı oyuncuyu görüyor.
+- **Canlı sayfa sağlık kontrolü** — 404 kesintisinden sonra not düşüldü, başlanmadı
+- **Oyun verisi gösteren üç yüzey** — liste kartları öncelikli, çünkü **tıkların
+  %96.8'i orada.** FC 27 çekimi bunu toptan düzeltecek.
+- **API-Football 4. kademe** — hesap askıda, zarar yok ama eşleşmeyen isimde
+  3.3 sn gecikme. **Çıkarılabilir.**
+- **WC knockout fikstürü** — "2nd Group A" placeholder'ları duruyor
 
 ---
 
-## 4. Teknik borç
+## ✅ Biten
 
-- [ ] Kullanılmayan legacy `content` kolonunda ~110KB ölü Türkçe, 28 yayındaki satırda.
-      Görünmüyor ama `app/{lists,radar,tactics-lab}/[slug]/page.tsx` içindeki `select("*")`
-      yüzünden her ziyaretçiye RSC payload'ıyla gidiyor.
-- [ ] Kapı (`preflight.mjs`) kartı olmayan oyuncuları göremiyor — kör nokta
-- [ ] Periyodik canlı sayfa sağlık kontrolü
+**2026-09-20 — sosyal altyapı**
+- `scripts/social-pack.mjs` — yayınlanan yazının gövdesinden Reddit açısı, X yanıt
+  cümleleri (karakter sayılı), carousel slaytları, 16 sn video kurgusu, kart URL'leri.
+  Hiçbir cümleyi kendisi yazmaz; hepsi `sections_json`'dan birebir alıntı. $0.
+- İçerik taşıyan **dört kart varyantı** — `/api/social-card?variant=stat|contrast|verdict|list`.
+  Style A (`variant=cover`) aynen duruyor. Dördü de kapak görseli gerektirmiyor.
+- `/api/admin/social-text` **silindi** — başlıktan yazıyordu ve her çağrıda Anthropic
+  API'ye para ödüyordu. Yerine `lib/social-extract.mjs`, script ve panel ortak.
+  Panel bloklarını editörün state'inden okuyor: ağ çağrısı yok, kaydedilmemiş
+  taslakta da çalışıyor. Hub/preset sayfalarına `buildPresetCopy`.
 
----
+**2026-09 — içerik & altyapı**
+- #149 Ngumoha, #151, #152 yayında ve indekste
+- Ana sayfa kartları yanlış kulüp gösteriyordu — `fc_players` curated kimliği
+  eziyordu; select'ten club/league/age çıkarıldı, `scripts/form-pool.mjs` havuzu doğruluyor
+- `**bold**` liste bloklarında düz metin render ediliyordu (lansmandan beri, #102 dahil)
+- `--update` canlı yazıyı sessizce yayından kaldırıyordu — guard eklendi
+- ISR cache script güncellemelerini 24 saate kadar gizliyordu — `/api/revalidate`
+- Tablo bloğu (`@table:` / `@table:ranked`)
+- Navigasyon sıralaması — kazanılana göre, geçen yazın hikâyesine göre değil
+- Türkçe denetimi üç katmanda temiz. **İki Türkçe URL senin kararınla Türkçe kaldı**,
+  gözden kaçma değil — hafızaya "sorulmadan tekrar düzeltilmesin" diye yazıldı.
 
-## Park edilmiş
+**2026-09-20 — +7 gün Vercel kontrolü kapandı**
 
-- Newsletter "The Deep Cut" — kayıt formu **en son** adım
-- API-Football tier 4 — hesap askıda, zararsız, 3.3sn gecikme
-- WC knockout fikstüründe "2nd Group A" placeholder'ları
+| ölçüt | 13 Eylül | 20 Eylül | değişim | limitin % |
+|---|---|---|---|---|
+| ISR Writes | 112K | 51K | −54% | 25% (önce %56) |
+| Function Invocations | 137K | 61K | −55% | 6% (önce %14) |
+| Fluid Active CPU | 2sa 47dk | 1sa 41dk | −40% | **42%** (önce %70) |
 
----
-
-## Biten
-
-- **2026-09:** Ana sayfa kartları yanlış kulüp gösteriyordu — `fc_players` kimliği eziyordu;
-  select'ten club/league/age çıkarıldı, `scripts/form-pool.mjs` havuzu doğruluyor
-- **2026-09:** `**bold**` liste bloklarında düz metin olarak render ediliyordu (lansmandan beri)
-- **2026-09:** `--update` canlı yazıyı sessizce yayından kaldırıyordu — guard eklendi
-- **2026-09:** ISR cache script güncellemelerini 24 saate kadar gizliyordu — `/api/revalidate`
-- **2026-09:** Tablo bloğu (`@table:` / `@table:ranked`) eklendi
-- **2026-09:** Türkçe denetimi 3 katmanda temiz; iki Türkçe URL **kararla** canlı bırakıldı
-- **2026-09:** Vercel kullanımı yarıya indi — ISR yazma −%54, invocation −%55, CPU %70→%42
+Tek sıkışık kalem CPU'ydu, sınıra çarpma riski fiilen kalktı. Pencere hâlâ
+düzeltme öncesi günleri içeriyor, yani gerçek güncel hız bunun altında.
+*Not: tahminim %20-25'ti, %42 çıktı — yön doğru, büyüklük değil.*
