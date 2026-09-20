@@ -140,7 +140,9 @@ seslendirilmiş mi — kart metni yoğunluğunu bu belirliyor.
 - **Newsletter "The Deep Cut"** — kayıt formu **en son** adım
 - **Kapının boşluğu** — kartı olmayan oyuncular hakkındaki düz metin iddiaları
   denetimsiz (**Chilwell vakası**). `preflight.mjs` yalnızca kartlı oyuncuyu görüyor.
-- **Canlı sayfa sağlık kontrolü** — 404 kesintisinden sonra not düşüldü, başlanmadı
+- **#5 `Kodaisano` slug'ı** — büyük harfli, tireli değil, `lib/slugify.ts`
+  konvansiyonuna aykırı (Mart 2026'dan). Sayfa 200 dönüyor ve linkleri var,
+  yani acil değil; düzeltilirse 308 yönlendirme gerekir.
 - **Oyun verisi gösteren üç yüzey** — liste kartları öncelikli, çünkü **tıkların
   %96.8'i orada.** FC 27 çekimi bunu toptan düzeltecek.
 - **API-Football 4. kademe** — hesap askıda, zarar yok ama eşleşmeyen isimde
@@ -149,6 +151,14 @@ seslendirilmiş mi — kart metni yoğunluğunu bu belirliyor.
 ---
 
 ## ✅ Biten
+
+**2026-09-20 — canlı sayfa sağlık kontrolü** (18 günlük 404 kesintisinden beri
+park halindeydi). `node scripts/health-check.mjs` — sitemap'teki her URL'yi
+Googlebot olarak çeker, dört şeyi kontrol eder: her URL 200 mü · yayındaki
+yazılarla sitemap iki yönde uyuşuyor mu · orphan var mı (2'den az iç link) ·
+kapak görseli eksik mi. Sıfır olmayan kod döner, deploy'u kesebilir.
+İlk çalıştırmada **sitemap'te sayfası olmayan bir 404 buldu**
+(`/world-cup-2026/lists`) — çıkarıldı. Şu an 132/132 temiz.
 
 **2026-09-20 — sosyal altyapı**
 - `scripts/social-pack.mjs` — yayınlanan yazının gövdesinden Reddit açısı, X yanıt
