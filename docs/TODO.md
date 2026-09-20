@@ -102,8 +102,17 @@ every week"* diyor ve bu vaat tutulmuyor → aşağıdaki Görev A/B.
 
 **Teşhis:** trafiğin sosyalden gelmemesi bir içerik sorunu değil, bir dağıtım
 sorunu. Sıfır takipçiyle link paylaşmak, her platformda sonucu garanti sıfır olan
-tek eylem. Ağustos 2026'da bir strateji yazıldı ve **49 gün hiç uygulanmadı** —
-eksik olan plan değil, rutin.
+tek eylem.
+
+1 Ağustos 2026'da bir strateji yazıldı; memory'de karar *"kullanıcı düşünüyor"*
+diye kaldı ve sonraki hiçbir oturumda verilmedi. **Paylaşım durmadı** — plandaki
+üç lane (Reddit, kısa video, yanıt öncelikli X) hiç başlamadı.
+
+*Kanıtın kaynağı:* hesaplara erişimimiz yok, post geçmişi ve analytics elimizde
+yok. Dayandığımız şey kullanıcının iki tarihteki kendi beyanı — 1 Ağustos
+("sadece post yapıyorum ama istikrarsız, hiçbir yorum yapmışlığım yok") ve
+17 Ağustos ("sosyal medyadan bir kişilik bile trafik almadık"). Ölçüm değil,
+beyan. Lane A'nın üçüncü maddesi (referrer ölçümü) bunu ilk kez ölçüye çevirecek.
 
 **Kural:** sosyal, ilk aşamada bir **trafik** kanalı değil bir **kitle edinme**
 kanalıdır. Şimdi GA oturumlarıyla ölçersek, işe yaramadan kapatırız.
