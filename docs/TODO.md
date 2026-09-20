@@ -74,11 +74,6 @@ every week"* diyor ve bu vaat tutulmuyor → aşağıdaki Görev A/B.
 
 - [ ] **`publish_at` + günlük cron** — toplu yaz, haftaya yay. Şema değişikliği.
       Mekanizma frekanstan bağımsız; frekansı sonra ayarlarız.
-- [ ] **110 KB ölü Türkçe metin** — 28 yayındaki satırın kullanılmayan `content`
-      kolonunda. Okuyucuya görünmüyor ama `app/{lists,radar,tactics-lab}/[slug]/page.tsx`
-      içindeki `select("*")` yüzünden her ziyaretçiye RSC payload'ında gidiyor.
-      **İki seçenek:** (a) kolonları tek tek saymak — ucuz, payload'ı da küçültür;
-      (b) kolonları boşaltmak.
 - [ ] **Görev A / B** — "haftalık radar" vaadi dört yerde geçiyor.
       **B'yi (radar gerçekten haftalık) yaparsak A'ya (metinden kaldırmak) gerek yok.**
 
