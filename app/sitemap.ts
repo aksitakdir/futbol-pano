@@ -17,7 +17,9 @@ const staticEntries = [
   { url: "/world-cup-2026",           priority: 0.92 },
   { url: "/world-cup-2026/schedule",   priority: 0.90 },
   { url: "/world-cup-2026/squads",    priority: 0.88 },
-  { url: "/world-cup-2026/lists",     priority: 0.85 },
+  // /world-cup-2026/lists was listed here without ever being built — the route
+  // folder is empty, so the sitemap sent Googlebot to a 404 of our own making.
+  // Put it back only alongside a page.tsx.
   { url: "/transfers",                priority: 0.9 },
   { url: "/radar",                    priority: 0.85 },
   { url: "/lists",                     priority: 0.85 },
