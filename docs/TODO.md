@@ -44,24 +44,6 @@ başladı, veri seti çıkmış olabilir.
 
 ---
 
-## 🔴 Ana sayfa Googlebot'a "LOADING..." gösteriyor (2026-09-22 bulundu)
-
-`app/page.tsx` ilk satırı `"use client"`. Ana sayfanın tamamı client component;
-hero slider, son yazılar karuseli, hub promoları — hepsi `useEffect` içinde
-Supabase'den çekiliyor. **Ham HTML 36 KB ve içinde tek bir yazı linki yok**,
-RSC payload'ında da yok. Googlebot navigasyonu ve iki yerde `LOADING...` görüyor.
-
-Bu, `CLAUDE.md`'de belgelenen hatanın aynısı — bu sefer sitenin en yetkili
-sayfasında. Yazılar yine de taranıyor (kategori sayfalarında `ArticleIndexLinks`
-sunucuda render ediliyor), yani görünmezlik değil; **kaybedilen şey ana sayfadan
-akması gereken link değeri ve tazelik sinyali.**
-
-- [ ] `app/page.tsx` → `app/home-client.tsx` olarak taşı, `app/page.tsx` sunucu
-      bileşeni olsun: `<HomeClient />` + `<ArticleIndexLinks />`. Kategori
-      sayfalarındaki çözümün aynısı, ek bir kalıp icat etmeden.
-
----
-
 ## 🟠 Yayın kuyruğu
 
 **Beş yazı `pending`.** Hepsi kapak görseli bekliyor — ama **kapak artık yayına
@@ -172,6 +154,13 @@ seslendirilmiş mi — kart metni yoğunluğunu bu belirliyor.
 ---
 
 ## ✅ Biten
+
+**2026-09-22 — ana sayfanın tarama yolu.** `app/page.tsx` `"use client"` ile
+başlıyordu; ham HTML 36 KB ve içinde tek bir yazı linki yoktu, iki yerde
+`LOADING...` vardı. Artık sunucu bileşeni: interaktif ana sayfayı içine alıyor,
+altına kategori sayfalarındaki `ArticleIndexLinks` geliyor. Googlebot olarak
+ölçüldü: **0 → 41 yazı linki.** Hero ve karusel hâlâ client-render — bu düzeltme
+onların yanına gerçek bir tarama yolu ekliyor, onları dönüştürmüyor.
 
 **2026-09-20 — canlı sayfa sağlık kontrolü** (18 günlük 404 kesintisinden beri
 park halindeydi). `node scripts/health-check.mjs` — sitemap'teki her URL'yi
