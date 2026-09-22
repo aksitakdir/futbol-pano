@@ -1,5 +1,5 @@
 import { createClient } from "@/lib/supabase";
-import { stripHtml } from "@/lib/utils";
+import { articleExcerpt } from "@/lib/article-excerpt";
 
 const BASE = "https://www.scoutgamer.com";
 
@@ -36,8 +36,7 @@ export async function GET() {
       if (!catPath) return null;
       const title = a.title_en || a.title;
       const body = a.content_en || a.content || "";
-      const plain = stripHtml(body).replace(/\s+/g, " ").trim();
-      const description = plain.length > 280 ? `${plain.slice(0, 280)}…` : plain;
+      const description = articleExcerpt(body, { max: 280 });
       const url = `${BASE}/${catPath}/${a.slug}`;
       const pubDate = new Date(a.created_at).toUTCString();
       const coverImage = a.cover_image?.trim();

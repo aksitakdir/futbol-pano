@@ -1,14 +1,7 @@
 import type { Metadata } from "next";
 import { createClient } from "./supabase";
 
-function plainText(html: string): string {
-  return html
-    .replace(/<[^>]+>/g, " ")
-    .replace(/^@\w+:\s*/gm, "")
-    .replace(/[#*_\n]/g, " ")
-    .replace(/\s+/g, " ")
-    .trim();
-}
+import { articlePlainText as plainText, truncateAtWord } from "./article-excerpt";
 
 /**
  * Build a description from the block editor's sections_json.
@@ -39,13 +32,7 @@ function descriptionFromBlocks(blocks: unknown): string {
   return parts.join(" ").trim();
 }
 
-/** Cut at a word boundary so the snippet never ends mid-word. */
-function truncate(text: string, max = 160): string {
-  if (text.length <= max) return text;
-  const cut = text.slice(0, max);
-  const lastSpace = cut.lastIndexOf(" ");
-  return (lastSpace > 60 ? cut.slice(0, lastSpace) : cut).replace(/[\s,;:—-]+$/, "") + "…";
-}
+const truncate = (text: string, max = 160) => truncateAtWord(text, max);
 
 export async function articleMetadata(
   slug: string,

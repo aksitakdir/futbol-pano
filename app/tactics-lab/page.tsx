@@ -6,9 +6,9 @@ import SiteHeader from "../components/site-header";
 import SiteFooter from "../components/site-footer";
 import { ContentHighlightPills } from "../components/content-highlight-pills";
 import { supabase } from "@/lib/supabase";
-import { stripHtml } from "@/lib/utils";
 import { extractArticleHighlights, HIGHLIGHT_CARD_ACCENTS_CYCLE } from "@/lib/content-highlight-tags";
 import { getCategoryImage } from "@/lib/category-images";
+import { articleExcerpt } from "@/lib/article-excerpt";
 
 
 type Content = {
@@ -112,7 +112,7 @@ export default function TaktikLabPage() {
                 <span className="grad-text">{featured.title_en || featured.title}</span>
               </h2>
               <p style={{ fontSize: 16, color: "var(--sg-text-secondary)", lineHeight: 1.55, marginTop: 18, maxWidth: 580 }}>
-                {stripHtml(featured.content_en || featured.content).replace(/\s+/g, " ").trim().slice(0, 200)}…
+                {articleExcerpt(featured.content_en || featured.content, { max: 200 })}
               </p>
               {featuredHighlights?.length ? (
                 <div style={{ marginTop: 22 }}>

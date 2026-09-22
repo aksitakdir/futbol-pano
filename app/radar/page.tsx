@@ -8,7 +8,6 @@ import SiteFooter from "../components/site-footer";
 import PlayerCard, { type PlayerCardData } from "../components/player-card";
 import { ContentHighlightPills } from "../components/content-highlight-pills";
 import { supabase } from "@/lib/supabase";
-import { stripHtml } from "@/lib/utils";
 import { extractArticleHighlights, HIGHLIGHT_CARD_ACCENTS_CYCLE } from "@/lib/content-highlight-tags";
 import {
   COVER_STORY_SETTINGS_KEY,
@@ -16,6 +15,7 @@ import {
   orderWithCoverPin,
 } from "@/lib/cover-story";
 import { getCategoryImage } from "@/lib/category-images";
+import { articleExcerpt } from "@/lib/article-excerpt";
 
 
 type Content = {
@@ -27,8 +27,7 @@ type Content = {
 const PAGE_SIZE = 12;
 
 function summaryBody(content: string, max = 180): string {
-  const t = stripHtml(content).replace(/\s+/g, " ").trim();
-  return t.length > max ? `${t.slice(0, max)}…` : t;
+  return articleExcerpt(content, { max });
 }
 
 export default function RadarPage() {

@@ -7,9 +7,9 @@ import SiteHeader from "../components/site-header";
 import SiteFooter from "../components/site-footer";
 import { ContentHighlightPills } from "../components/content-highlight-pills";
 import { supabase } from "@/lib/supabase";
-import { stripHtml } from "@/lib/utils";
 import { extractArticleHighlights, HIGHLIGHT_CARD_ACCENTS_CYCLE } from "@/lib/content-highlight-tags";
 import { getCategoryImage } from "@/lib/category-images";
+import { articleExcerpt } from "@/lib/article-excerpt";
 
 
 type Content = {
@@ -24,8 +24,7 @@ const LIST_COVER_ACCENT = "var(--emerald)";
 
 function listSummary(item: Content, max = 200): string {
   const body = item.content_en || item.content || "";
-  const t = stripHtml(body).replace(/\s+/g, " ").trim();
-  return t.length > max ? `${t.slice(0, max)}…` : t;
+  return articleExcerpt(body, { max });
 }
 
 export default function ListelerPage() {

@@ -16,13 +16,7 @@ const CATEGORY_PATH: Record<string, string> = {
   transfer: "/transfers",
 };
 
-function plainText(html: string): string {
-  return html
-    .replace(/<[^>]+>/g, " ")
-    .replace(/[#*_\n]/g, " ")
-    .replace(/\s+/g, " ")
-    .trim();
-}
+import { articlePlainText as plainText } from "./article-excerpt";
 
 export function articleJsonLd(article: {
   title_en?: string;

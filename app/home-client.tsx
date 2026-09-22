@@ -27,6 +27,7 @@ import {
   prioritizeHeroContent,
 } from "@/lib/cover-story";
 import { EDITORIAL_ARTICLE_SELECT } from "@/lib/cover-story-store";
+import { articleExcerpt } from "@/lib/article-excerpt";
 
 type SlideContent = {
   id: string;
@@ -493,14 +494,10 @@ export default function HomeClient() {
                     </h2>
                     <p className="hidden sm:block line-clamp-3" style={{ fontSize: 17, lineHeight: 1.6, color: "var(--ink-200)", maxWidth: 600, marginBottom: 36 }}>
                       {(() => {
-                        const raw = item.slide.content_en || item.slide.content;
-                        const clean = raw.replace(/<[^>]+>/g, " ").replace(/[#*_\n]/g, " ").replace(/\s+/g, " ").trim();
-                        const titleText = item.slide.title_en || item.slide.title;
-                        const titleNorm = titleText.replace(/\s+/g, " ").trim().toLowerCase();
-                        const cleanStart = clean.toLowerCase().startsWith(titleNorm) ? clean.slice(titleText.length).trim() : clean;
-                        const firstSentence = cleanStart.match(/^[^.!?]{20,}[.!?]/)?.[0];
-                        const text = firstSentence ? firstSentence.trim() : cleanStart.slice(0, 140);
-                        return text.length > 140 ? text.slice(0, 140) + "…" : text;
+                        return articleExcerpt(item.slide.content_en || item.slide.content, {
+                          max: 140,
+                          title: item.slide.title_en || item.slide.title,
+                        });
                       })()}
                     </p>
                     <Link href={categoryArticlePath(item.slide.category, item.slide.slug)} className="btn btn-solid">Read More →</Link>

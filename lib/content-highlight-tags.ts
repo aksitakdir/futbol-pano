@@ -1,4 +1,5 @@
 import { stripHtml } from "@/lib/utils";
+import { articlePlainText } from "./article-excerpt";
 
 /** Card pill length / word-count caps */
 const MAX_TAG_CHARS = 30;
@@ -264,7 +265,7 @@ export function extractArticleHighlights(raw: string | undefined | null, opts: A
     if (out.length >= max) break;
   }
 
-  const plain = stripHtml(raw ?? "").replace(/\s+/g, " ").trim();
+  const plain = articlePlainText(raw);
   /** If few structured candidates, fall back to plain-text comma splits */
   if (plain && out.length < max && structuredRaw.length < 2) {
     const chunks = plain.split(/\s*[,;]\s*|\s*·\s+|\s+—\s+|\s+–\s+/);
