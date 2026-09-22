@@ -1,6 +1,6 @@
 # Scout Gamer — To-Do
 
-Son güncelleme: 2026-09-20
+Son güncelleme: 2026-09-22
 
 Bu liste sohbette yaşıyordu ve her sorulduğunda yeniden kuruluyordu. İlk repo
 sürümünü bir sohbet **özetinden** kurdum ve dört madde ile birçok gerekçe düştü;
@@ -14,7 +14,7 @@ tekrar eden sorunları görmenin tek yolu.
 
 ## 🔴 Takvimli
 
-### FC 27 — 25 Eylül, 5 gün kaldı
+### FC 27 — 25 Eylül, 3 gün kaldı
 
 `fc_players` 16.228 satır, EA FC 26 verisi (Eylül 2025). 0 MLS oyuncusu,
 15-16 yaş yok (taban 17, 52 oyuncu), `created_at` yok. Erken erişim 18 Eylül'de
@@ -44,9 +44,27 @@ başladı, veri seti çıkmış olabilir.
 
 ---
 
+## 🔴 Ana sayfa Googlebot'a "LOADING..." gösteriyor (2026-09-22 bulundu)
+
+`app/page.tsx` ilk satırı `"use client"`. Ana sayfanın tamamı client component;
+hero slider, son yazılar karuseli, hub promoları — hepsi `useEffect` içinde
+Supabase'den çekiliyor. **Ham HTML 36 KB ve içinde tek bir yazı linki yok**,
+RSC payload'ında da yok. Googlebot navigasyonu ve iki yerde `LOADING...` görüyor.
+
+Bu, `CLAUDE.md`'de belgelenen hatanın aynısı — bu sefer sitenin en yetkili
+sayfasında. Yazılar yine de taranıyor (kategori sayfalarında `ArticleIndexLinks`
+sunucuda render ediliyor), yani görünmezlik değil; **kaybedilen şey ana sayfadan
+akması gereken link değeri ve tazelik sinyali.**
+
+- [ ] `app/page.tsx` → `app/home-client.tsx` olarak taşı, `app/page.tsx` sunucu
+      bileşeni olsun: `<HomeClient />` + `<ArticleIndexLinks />`. Kategori
+      sayfalarındaki çözümün aynısı, ek bir kalıp icat etmeden.
+
+---
+
 ## 🟠 Yayın kuyruğu
 
-**Altı yazı `pending`.** Hepsi kapak görseli bekliyor — ama **kapak artık yayına
+**Beş yazı `pending`.** Hepsi kapak görseli bekliyor — ama **kapak artık yayına
 girmenin şartı değil.** Kart varyantları (stat/contrast/verdict/list) görselsiz
 çalışıyor; bir yazı bugün yayına alınıp bugün dağıtılabilir. Kapak yalnızca
 Style A kartını açıyor.
@@ -54,7 +72,6 @@ Style A kartını açıyor.
 | # | Başlık | Not |
 |---|---|---|
 | 153 | England's Best Young Footballers | |
-| 154 | Central Midfielders | |
 | 155 | Portugal's Best Young Footballers | |
 | 156 | Brazil Got 4.4 Years Younger | |
 | 157 | Cavan Sullivan | **önce bu** |
