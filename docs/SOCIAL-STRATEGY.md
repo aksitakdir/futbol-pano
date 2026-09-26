@@ -949,3 +949,141 @@ aynı hata sosyalde tekrarlanmaz.
   oturumlar.
 - **B yönü:** sitedeki takip çağrısının tıklanması · aynı dönemde takipçi artışı. B yönünün
   ilk 4 haftası, arama okurunun ne kadarının takip ettiğini gösteren ilk gerçek sayı olacak.
+
+---
+
+## 11. İşletim modeli
+
+### 11.1 İlke: önce elle, sonra otomatik
+
+**Elle işe yaradığı görülmemiş bir şey otomatikleştirilmez.** Otomasyon, çalışan bir işi
+hızlandırır; çalışmayan bir işi daha hızlı çalışmayan hale getirir. §1'in 105 gönderisi
+bunun örneği: ücretli bir AI butonu hız verdi, doğru içeriği vermedi.
+
+Bu yüzden üç aşama:
+
+| Aşama | Ne zaman | Ne olur |
+|---|---|---|
+| **0 — Elle** | Strateji biter bitmez, altyapı beklenmeden | Ben haftalık paketi hazırlarım, sen elle paylaşırsın. Kurallar gerçek hayatta sınanır, ilk ölçümler gelir. |
+| **1 — Kurulum** | Aşama 0 ile paralel | Onay kuyruğu, yayıncı, ajanlar kurulur. |
+| **2 — Orkestra** | Kurulum bitince | Ajanlar hazırlar, sen onaylarsın, yayıncı yayınlar. |
+
+### 11.2 Roller
+
+| Rol | Kim / ne | İşi |
+|---|---|---|
+| **Şef** | Zamanlanmış Claude görevi, her sabah | Strateji belgesini, takvimi, kuyruğu ve skor tablosunu okur; ajanlara iş dağıtır |
+| **İçerik ajanı** | Şefin çağırdığı ajan | Yazılardan gönderi taslağı + kart (§6, §8) |
+| **Keşif ajanı** | 〃 | Takip listesinden (§9.5) yanıt verilecek konuşmaları bulur (§7.2) |
+| **Yanıt ajanı** | 〃 | §7.4 kurallarıyla taslak yanıt |
+| **Doğrulama ajanı** | 〃 | Her gerçeği yazıya ve kaynağa karşı kontrol eder; geçmeyen taslak kuyruğa girmez |
+| **Rapor ajanı** | Cuma | Skor tablosu (§2.5, §7.10, §9.6) |
+| **Yayıncı** | Vercel cron — **düz kod, yapay zekâ değil** | Onaylanmış gönderiyi zamanında X ve Instagram'a yayınlar |
+| **Sen** | — | Onay; X yanıtlarını tek dokunuşla gönderme; Instagram yorumları; video; hesap kurulumları |
+| **Bu sohbet** | Ben, seninle | Tasarım, kural değişikliği, strateji. Günlük iş burada yapılmaz — bağlam dolmaz. |
+
+Şef bilgisayar açıkken çalışır (zamanlanmış görevlerin sınırı). Yayıncı Vercel'de her zaman
+çalışır — onaylanmış bir gönderi, bilgisayar kapalı olsa da zamanında çıkar.
+
+### 11.3 Akış
+
+```
+            Strateji belgeleri (bu dosya) — ajanların kural kitabı
+                              │
+   [Şef — her sabah] ──► İçerik · Keşif · Yanıt ajanları
+                              │
+                       Doğrulama ajanı ── geçmeyen taslak düşer
+                              │
+                 Onay kuyruğu — /admin/social (telefondan)
+                  │  sen: onayla · düzenle · reddet (+ sebep)
+        ┌─────────┴──────────┐
+  Kendi gönderimiz        Başkasına yanıt / yorum
+        │                      │
+  Yayıncı (Vercel cron)   X: tek dokunuşluk link → sen gönderirsin
+  → X API · Instagram API  Instagram: sen, elle
+        │                      │
+        └──────► ölçüm ◄───────┘ ──► Cuma raporu ──► en fazla 3 karar
+```
+
+Reddettiğin taslağın **sebebi kaydedilir.** Tekrarlayan sebepler bu belgeye kural olarak
+eklenir — ajanlar kural kitabından öğrenir, bir sonraki taslak aynı hatayı yapmaz.
+
+### 11.4 Haftalık takvim — başlangıç
+
+§2.4'ün sabit kuralı (7 günlük boşluk yok) ve §6.3'ün karışımı üzerine. **Başlangıç;
+6. haftada gözden geçirilir.** §1'deki patlama-sessizlik döngüsünden sonra öncelik
+**hacim değil, sürdürülebilirlik.**
+
+| Gün | X | Instagram |
+|---|---|---|
+| Pzt | ① Liste | ① Carousel |
+| Sal | ② Kart vs gerçek | — |
+| Çar | ③ Oyuncu profili | ⑤ Hikâye anketi |
+| Per | ⑤ Anket | ② Kart vs gerçek |
+| Cum | ① Liste | — |
+| Hafta sonu | Sadece yanıtlar | Sadece yorumlar |
+
+**Haftada:** X'te 5 kendi gönderisi + ~25 yanıt · Instagram'da 2 gönderi + 1 anket +
+~15 yorum. ④ makbuz, fırsat çıktığında takvimdeki bir gönderinin yerine geçer.
+
+### 11.5 Onay akışı
+
+Her öğenin durumu: **taslak → doğrulandı → onay bekliyor → onaylandı → zamanlandı →
+yayınlandı / gönderildi → ölçüldü.**
+
+- **Onay kaydı olmadan hiçbir şey yayınlanmaz.** Onayın, o öğe için benim verdiğim bir
+  izin değil, senin kuyruktaki kararın.
+- Düzenleme kuyrukta yapılır; düzenlenmiş hali yeniden doğrulamadan geçer.
+- **Günlük tavan:** en fazla 2 kendi gönderisi, en fazla 8 yanıt taslağı. Spam koruması.
+- **Kapatma düğmesi:** tek bir ayar tüm yayını durdurur.
+- **Kayıt:** kim, neyi, ne zaman onayladı — denetlenebilir.
+
+### 11.6 Güvenlik ve maliyet
+
+- **Anahtarlar:** X ve Instagram erişim anahtarlarını sen `.env.local`'a ve Vercel'e
+  girersin. Sohbete girmezler; ben anahtar girmem.
+- **Yayıncının tetikleyicisi:** Vercel cron'ları `CRON_SECRET` ile doğrulanıyor ve bu değer
+  daha önce bir ekran görüntüsünde göründü (değiştirmeme kararın duruyor). Tasarım bunu
+  etkisiz kılar: **yayıncı sadece onaylanmış ve zamanı gelmiş öğeleri yayınlar.** Biri
+  tetikleyiciyi bilse bile onaylanmamış hiçbir şeyi yayınlatamaz; en fazla onaylı bir
+  gönderiyi birkaç dakika erken çıkarır.
+- **Instagram anahtarının ömrü:** uzun ömürlü Meta anahtarları süreli; yenileme otomatik
+  kurulur, süresi dolmadan uyarı verir.
+- **Maliyet:** X API — gönderiler ayda birkaç dolar, keşif okumaları senin koyacağın tavana
+  göre (~$15–30). Instagram API ücretsiz. Claude — günde tek şef çalıştırması.
+- **Senin zamanın:** kurulum ~2–3 saat; sonra haftada ~1,5–2 saat (§11.7).
+
+### 11.7 Senin haftan — Aşama 2'de
+
+| | Süre |
+|---|---|
+| Her gün: kuyruk — ~1 gönderi + ~5 yanıt taslağı | ~10 dk |
+| Her gün: X yanıtlarını tek dokunuşla gönder, Instagram'da ~3 yorum | ~5 dk |
+| Cuma: rapor + en fazla 3 karar | ~15 dk |
+| **Toplam** | **~1,5–2 saat / hafta** |
+
+*Tahmin; ilk iki haftanın gerçek süresiyle güncellenir.*
+
+### 11.8 Kurulum sırası — Aşama 1
+
+Her adım kendi başına işe yarar; biri gecikirse diğerleri beklemez.
+
+1. **Kart düzeltmeleri** — contrast/list 4:5 boyutu, kartta oyun sürümü (§8.6 a, d)
+2. **UTM** — `social-pack.mjs`'e (§10.6 c)
+3. **Onay kuyruğu** — Supabase tablosu + `/admin/social`, telefonda kullanılabilir
+4. **Tek dokunuşluk yanıt linkleri** — X'in yanıt linki biçimi kurulumda doğrulanır
+5. **Yayıncı** — Vercel cron; X API, sonra Instagram API (carousel dahil)
+6. **Şef ve ajanlar** — zamanlanmış görev + bu belgeden türetilmiş ajan talimatları
+7. **Cuma raporu** ve skor tablosu
+8. **Bio link sayfası ve yazı sonu takip çağrısı** (§10.6 a, b)
+
+### 11.9 Açık kararlar
+
+| # | Karar | Önerim |
+|---|---|---|
+| 1 | Çizgi: kendi gönderilerimiz onayla otomatik; başkalarına yanıt ajan hazırlar, sen gönderirsin | Kabul |
+| 2 | X API aylık tavanı | ~$30 |
+| 3 | Instagram profesyonel hesap + Facebook sayfası + Meta uygulaması | Evet — en uzun süren kurulum, erken başla |
+| 4 | Sıralama | §12'yi bitir → Aşama 0 hemen → Aşama 1 paralel |
+| 5 | Hesap adlarını birleştirmek (§4.5) | Yeni hesaplar açılırken birlikte |
+| 6 | Video: sessiz + ekran metni mi, seslendirme mi | Hafta 3'e kadar |
