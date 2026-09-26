@@ -46,12 +46,10 @@ başladı, veri seti çıkmış olabilir.
 
 ## 🔐 Güvenlik — açık kalanlar (2026-09-26 incelemesi)
 
-- [ ] **Güvenlik başlıkları** — canlıda sadece HSTS var. `X-Frame-Options` / CSP
-      `frame-ancestors`, `X-Content-Type-Options`, `Referrer-Policy` eksik.
-- [ ] **Kalan 5 bağımlılık açığı** (2 yüksek, 3 orta) — tiptap, nanoid, postcss/sharp,
-      Anthropic SDK. Next'ten ayrı, her biri kendi testini ister.
-- [ ] **Edge Runtime deprecated** — `app/api/social-card/route.tsx` hâlâ
-      `runtime = "edge"`. 16.3 build'i uyarıyor; henüz hata değil.
+- [ ] **Edge Runtime — kalan 4 dosya.** `app/opengraph-image.tsx`,
+      `app/world-cup-2026/opengraph-image.tsx`, `.../schedule/opengraph-image.tsx`,
+      `app/api/logo/route.tsx`. Build uyarısı bunlar yüzünden sürüyor; edge ayrıca bu
+      sayfaların statik üretimini kapatıyor.
 - [ ] `CLAUDE.md` "iki cron" diyor, `vercel.json`'da tek cron var (`/api/cron` artık
       zamanlanmıyor). Doküman düzeltmesi.
 
@@ -177,6 +175,13 @@ seslendirilmiş mi — kart metni yoğunluğunu bu belirliyor.
 ---
 
 ## ✅ Biten
+
+**2026-09-26 — güvenlik turu, ikinci yarı.** Güvenlik başlıkları canlıda
+(`X-Frame-Options`, CSP `frame-ancestors`, `X-Content-Type-Options`,
+`Referrer-Policy` — `/admin` dahil). Bilinçli olarak tam CSP değil.
+`npm audit`: **0 açık** — dördü kırılmadan güncellendi, beşincisi hiç kullanılmayan
+Anthropic SDK'daydı; SDK ve tek kullanıcısı olan eski Türkçe çeviri script'i silindi.
+`social-card` Edge'den Node'a taşındı; beş kart türü canlıda render ediliyor.
 
 **2026-09-26 — iki güvenlik düzeltmesi.**
 Yedi API rotası kimlik doğrulamasızdı (`proxy.ts` sadece `/admin` sayfalarını
