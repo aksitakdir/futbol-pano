@@ -26,10 +26,12 @@ oyunun kendisi sanılmasından çıktı; yayın kapısı kartsız oyuncu iddiala
       kondu. URL, kapak ve diğer 16 blok dokunulmadı. Yedek: `sections_json` önceki hali.
       Eski sosyal paket kullanılmaz; `social-pack.mjs` canlı veriden yenisini üretir.
       Not: *"70 bekliyordu"* iddiası doğrulanamadı, hiçbir yere girmedi.
-- [ ] **#158 Dowman: yayından önce düzelt.** Dowman kısmı doğru; ama Sullivan'dan
-      "kartı yok, ligi oyunda değil" diye bahseden iki yer yanlış. SSS'deki "52" sayısı
-      bizim veri setimizden — oyunun sayısı olarak yazılmamalı.
-- [ ] `fc_players` hakkındaki notları düzelt: "0 MLS" veri setinin özelliği, oyunun değil.
+- [x] **#158 düzeltildi (2026-09-26), hâlâ `pending`.** Dowman'ın FC 27'de olmadığı ve
+      bu sezon 9 lig dakikası oynadığı yeniden doğrulandı — başlık ve tez sağlam. Değişen:
+      callout, karşılaştırma tablosunun iki "kart" satırı, SSS. Sullivan artık "67, ilk kartı".
+      Veri setimizin "52" sayısı çıkarıldı. İki kolon (`sections_json` + `content_en`)
+      birlikte güncellendi. Düzeltme notu yok — hiç yayına girmedi.
+- [x] `fc_players` notu düzeltildi (hafıza): "0 MLS" veri setinin özelliği, oyunun değil.
 
 ---
 
