@@ -447,8 +447,110 @@ Orkestra modeliyle (TODO'da not düşüldü, §11'e girecek) her platformda neyi
 | Kısa video | Yayın API'leri var; kurulumda doğrulanacak | Elle |
 | Reddit | **Elle** | **Elle** — otomasyona en az tolerans gösteren platform; bilinçli olarak dışarıda |
 
-### 5.6 Senin cevabın gereken
+### 5.6 Hesap durumu (2026-09-26, senin cevabınla)
 
-- **TikTok, YouTube, Reddit hesabı var mı?** Bilmiyorum; varsaymadım.
-- **Video:** sessiz + ekran metni mi, seslendirme mi? (Ağustos'tan beri açık.) Hafta 3'e kadar
-  karar yeterli.
+**TikTok, YouTube ve Reddit hesabı yok.** Instagram Reels mevcut hesapla yapılır.
+
+- **Reddit — erken aç.** Hafta 3'te katılım başlayacaksa hesabın şimdiden açılması gerekiyor:
+  topluluklar yeni ve geçmişsiz hesaplara güvenmiyor. İlk haftalarda link yok, sadece
+  gerçek katılım.
+- **TikTok ve YouTube — hafta 3'e kadar.** Video, X ve Instagram'da tutan açılar belli
+  olunca başlıyor; hesapların o zamana hazır olması yeterli.
+- **Hesap adları:** yeni hesaplar açılırken §4.5'teki birleştirme kararı birlikte verilir —
+  dört platformda da aynı ad.
+- **Video:** sessiz + ekran metni mi, seslendirme mi? Hafta 3'e kadar karar yeterli.
+
+Hesapları sen açarsın; ben hesap açmam.
+
+---
+
+## 6. İçerik ayakları ve formatlar
+
+### 6.1 Hammadde: arşiv
+
+*Sayım: 2026-09-26, yayındaki yazılar.*
+
+**122 yazı yayında — 70'i Dünya Kupası dışı.** (27 liste, 20 taktik, 15 radar, 8 transfer.)
+İçlerindeki hazır sosyal malzeme:
+
+| Blok | Kaç yazıda | Sosyalde ne olur |
+|---|---|---|
+| Kapanış cümlesi (pull quote) | 89 | Verdict kartı, gönderinin son cümlesi |
+| Oyuncu kartı | 83 | Carousel slaytı, kart vs gerçek |
+| Karşılaştırma (vs) | 58 | Contrast kartı |
+| SSS | 68 | X yanıt cümlesi |
+| Stat bloğu | 40 | Stat kartı, videonun sayıları |
+
+Sosyal **yeni içerik üretmek zorunda değil.** İşi, yazıların içinde zaten olanı taşımak —
+§1'de taşınmayan tam da buydu. `scripts/social-pack.mjs` bu blokları bugün çıkarabiliyor.
+
+### 6.2 Beş ayak
+
+**① Listeler — "The best young X"**
+*Kitle:* ① ana kitle — aramadaki tıkların %93'ü. *Kaynak:* 12 çekirdek liste
+(pozisyon listeleri, ülke listeleri, Temmuz–Eylül). *Format:* Instagram carousel,
+X'te tek sayılı gönderi. *Evergreen:* bu listeler haftalar sonra da paylaşılabilir.
+
+**② Kart vs gerçek — farkımız**
+*Kitle:* ② oyuncu, ama ①'i de yakalar. *Kaynak:* oyuncu kartlı yazılar + gerçek sezon
+verisi. *Format:* contrast kartı, 15 sn video. *Dikkat:* elimizdeki reytingler FC 26'nın;
+FC 27 çıktı. FC 27 verisi (~6 Ekim) gelene kadar bu ayakta **hangi oyunun reytingi olduğu
+her gönderide açıkça yazılır** — *"FC 26 rated him 68"* — ya da FC 27'nin resmi sayfasından
+doğrulanmış sayı kullanılır.
+
+**③ Oyuncu profili — "the name before everyone"**
+*Kitle:* ③ taraftar, ① liste okuru. *Kaynak:* radar yazıları, listelerdeki "deep cut"lar.
+*Format:* stat kartı, X'te kısa dizi (thread). *Çarpan:* adı geçen oyuncunun kulübünün
+taraftarları.
+
+**④ Makbuz — "we said this, then this happened"**
+*Kitle:* hepsi; §2'deki otorite hedefinin doğrudan aracı. *Kaynak:* tarihli yazılarımız +
+sonrasında olan. *Format:* verdict kartı, üzerinde yazının tarihi. *Doğası gereği seyrek:*
+ancak gerçek bir gelişme olduğunda — uydurulamaz, beklenir.
+
+**⑤ Soru — "who's better?"**
+*Kitle:* hepsi; §2'deki hızlı geri bildirim hedefinin aracı. *Kaynak:* listelerdeki
+karşılaştırmalar. *Format:* Instagram hikâye anketi, X anketi. *Maliyet:* en düşük —
+ve hangi açının ilgi gördüğünü söyler.
+
+### 6.3 Başlangıç karışımı
+
+Sosyal veri yok; bu oran **§3'ün kanıtından türetilmiş bir başlangıç varsayımı**, 6. haftada
+gerçek veriyle değişir. Haftalık gönderi sayısı §11'de kesinleşecek; oran ona uygulanır.
+
+| Ayak | Pay | Gerekçe |
+|---|---|---|
+| ① Listeler | ~%40 | Kanıtlanmış talep |
+| ② Kart vs gerçek | ~%25 | Farkımız; §3'teki açık soruyu bilinçli olarak test eder |
+| ③ Oyuncu profili | ~%20 | Taraftar çarpanı |
+| ⑤ Soru | ~%15 | Ucuz etkileşim + geri bildirim |
+| ④ Makbuz | fırsat oldukça | Takvime konmaz |
+
+### 6.4 Format × platform
+
+| | X | Instagram | Kısa video (hafta 3+) |
+|---|---|---|---|
+| ① Liste | Tek sayılı gönderi, liste dizisi | **Carousel** | "3 isim, 3 sayı" |
+| ② Kart vs gerçek | Contrast kartı | Tek görsel / carousel | **"Kart 68, sezon 17"** |
+| ③ Profil | Dizi (thread) | Carousel | Kısa profil |
+| ④ Makbuz | Verdict kartı + tarih | Tek görsel | — |
+| ⑤ Soru | Anket | **Hikâye anketi** | — |
+
+Mevcut kart türleri (`/api/social-card`): **stat, contrast, verdict, list** ve başlık kartı
+(Style A). Eksik olan: **carousel için oyuncu başına slayt** — bugünkü `list` kartı tek görsel.
+§8'de ele alınacak.
+
+### 6.5 Ne paylaşmıyoruz
+
+- Dünya Kupası içeriği (§3 ⑤).
+- Genç oyuncu açısı olmayan transfer haberi, maç önizlemesi (§4.2).
+- **Yazının sadece başlığı** — §1'in ana hatası. Her gönderi yazının içinden en az bir
+  gerçek taşır.
+
+### 6.6 İki doğruluk kuralı
+
+1. **Eski yazı yeniden paylaşılmadan önce gerçekleri yeniden doğrulanır** — kulüp, yaş,
+   sayılar. Listeler evergreen ama oyuncular kulüp değiştiriyor (15 Eylül'de ana sayfa
+   kartlarında gördüğümüz hata).
+2. **"Oyunda toplam şu kadar oyuncu var" cümlesi kurulmaz.** Veri setimiz oyunun tamamı
+   değil (§4 sonundaki not). Tek tek oyuncu reytingleri kullanılabilir; havuz sayıları değil.

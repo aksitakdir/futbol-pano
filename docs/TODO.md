@@ -154,7 +154,7 @@ işletim kılavuzu taslağı — strateji tamamlanınca ona göre yeniden yazıl
 - [x] 3. **Hedef kitle** — [SOCIAL-STRATEGY.md §3](SOCIAL-STRATEGY.md) (2026-09-26)
 - [x] 4. **Konumlanma ve ses** — [SOCIAL-STRATEGY.md §4](SOCIAL-STRATEGY.md) (2026-09-26)
 - [x] 5. **Platform rolleri** — [SOCIAL-STRATEGY.md §5](SOCIAL-STRATEGY.md) (2026-09-26)
-- [ ] 6. **İçerik ayakları ve formatlar** — tür, oran, görsel
+- [x] 6. **İçerik ayakları ve formatlar** — [SOCIAL-STRATEGY.md §6](SOCIAL-STRATEGY.md) (2026-09-26)
 - [ ] 7. **Etkileşim stratejisi** — hangi konuşmalar, hangi hesaplar, nasıl yorum; günlük ritim
 - [ ] 8. **Görsel kimlik sistemi** — kart şablonları, tutarlılık
 - [ ] 9. **Hashtag ve anahtar kelime stratejisi** — takip ve kullanım
@@ -172,6 +172,10 @@ anahtar kelimeye dayalı otomatik yanıtı yasaklıyor, IG API başkasının gö
 desteklemiyor. Tahmini katılım: kurulum ~2–3 saat, sonra haftada ~1,5–2 saat.
 Açık kararlar: (1) bu çizgi, (2) X API aylık tavanı, (3) IG profesyonel hesap + FB sayfası,
 (4) sıralama — önerim §3–7 önce.
+
+**Hesaplar (senin cevabın, 26 Eyl):** TikTok, YouTube, Reddit hesabı yok.
+- [ ] **Reddit hesabı — erken aç** (sen). Hafta 3'te katılım başlayacaksa şimdiden yaşlanmalı.
+- [ ] TikTok + YouTube hesapları — hafta 3'e kadar (sen). Hesap adı kararıyla birlikte (§4.5).
 
 **Beklemede — strateji bitince**
 - Oyun kitabındaki FC 27 kampanyası ve araç listesi (UTM, yanıt bankası, player card)
