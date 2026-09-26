@@ -144,7 +144,7 @@ işletim kılavuzu taslağı — strateji tamamlanınca ona göre yeniden yazıl
 
 **Strateji kapsamı — sırayla**
 - [x] 1. **Mevcut durum teşhisi** — [SOCIAL-STRATEGY.md §1](SOCIAL-STRATEGY.md) (2026-09-26)
-- [ ] 2. **Amaç ve ölçü** — sosyal ne işe yarayacak (kitle / trafik / otorite), neyle ölçülecek
+- [x] 2. **Amaç ve ölçü** — [SOCIAL-STRATEGY.md §2](SOCIAL-STRATEGY.md) (2026-09-26)
 - [ ] 3. **Hedef kitle** — FC/FUT oyuncuları, FM oyuncuları, genç yetenek meraklıları, kulüp taraftarları; nerede, ne istiyorlar
 - [ ] 4. **Konumlanma ve ses** — "Football × Game Culture" sosyalde neye benziyor
 - [ ] 5. **Platform rolleri** — X, Instagram, kısa video, Reddit: her birinin işi
