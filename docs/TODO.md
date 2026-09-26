@@ -46,10 +46,6 @@ başladı, veri seti çıkmış olabilir.
 
 ## 🔐 Güvenlik — açık kalanlar (2026-09-26 incelemesi)
 
-- [ ] **Edge Runtime — kalan 4 dosya.** `app/opengraph-image.tsx`,
-      `app/world-cup-2026/opengraph-image.tsx`, `.../schedule/opengraph-image.tsx`,
-      `app/api/logo/route.tsx`. Build uyarısı bunlar yüzünden sürüyor; edge ayrıca bu
-      sayfaların statik üretimini kapatıyor.
 - [ ] `CLAUDE.md` "iki cron" diyor, `vercel.json`'da tek cron var (`/api/cron` artık
       zamanlanmıyor). Doküman düzeltmesi.
 
@@ -181,7 +177,8 @@ seslendirilmiş mi — kart metni yoğunluğunu bu belirliyor.
 `Referrer-Policy` — `/admin` dahil). Bilinçli olarak tam CSP değil.
 `npm audit`: **0 açık** — dördü kırılmadan güncellendi, beşincisi hiç kullanılmayan
 Anthropic SDK'daydı; SDK ve tek kullanıcısı olan eski Türkçe çeviri script'i silindi.
-`social-card` Edge'den Node'a taşındı; beş kart türü canlıda render ediliyor.
+`social-card` ve kalan dört rota Edge'den Node'a taşındı — build uyarısı 2 → 0, üç OG
+görseli dinamikten statiğe geçti (canlıda `x-vercel-cache: PRERENDER`).
 
 **2026-09-26 — iki güvenlik düzeltmesi.**
 Yedi API rotası kimlik doğrulamasızdı (`proxy.ts` sadece `/admin` sayfalarını
