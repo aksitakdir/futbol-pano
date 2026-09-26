@@ -2,9 +2,26 @@
 
 Son güncelleme: 2026-09-26 · Sahibi: sosyal medya içerik yöneticisi (Claude) + hesap sahibi
 
-Bu belge bir strateji değil, bir **işletim kılavuzu**. Ağustos 2026'da iyi bir strateji
-yazıldı ve hiç çalıştırılmadı; eksik olan fikir değil, rutindi. O yüzden her bölüm
-"kim, ne zaman, kaç dakika, hangi araçla" sorusuna cevap veriyor.
+Bu belge bir strateji değil, bir **işletim kılavuzu** — her bölüm "kim, ne zaman,
+kaç dakika, hangi araçla" sorusuna cevap veriyor.
+
+### Sıfır noktası (2026-09-26, hesaplara bakılarak ölçüldü)
+
+| Hesap | Gönderi | Takipçi | Takip | Açılış |
+|---|---|---|---|---|
+| X `@scoutgamerx` | **54** | **2** | 68 | Haziran 2026 |
+| Instagram `@scoutgamer_fc` | **51** | **4** | 106 | — |
+
+**105 gönderi, 6 takipçi.** Paylaşım yapıldı, düzenli ve bol. Eksik olan paylaşım değil,
+paylaşımın *biçimi*: görünen son X gönderisi (15 Eylül, genç kanatlar listesi) başlıktan
+türetilmiş genel bir metin, üç genel hashtag (`#WorldCup2026` bir transfer listesinde) ve
+gönderinin içinde link taşıyor — sıfır takipçili bir hesabın erişiminin en düşük olduğu
+biçim. Bu belgenin değiştirmeye çalıştığı şey tam olarak bu.
+
+> **Düzeltme.** Bu paragrafın ilk sürümü (ve daha önceki notlar) Ağustos planının "hiç
+> çalıştırılmadığını" söylüyordu. Yanlıştı ve hiçbir veriye dayanmıyordu — hesaplara hiç
+> bakılmamıştı. Doğrusu: planın üç kanalı (Reddit, kısa video, yanıt öncelikli X)
+> başlamadı; paylaşım hiç durmadı.
 
 Tüm gönderi ve yanıt metinleri **İngilizce** — site İngilizce, kitle global.
 Açıklamalar Türkçe.
@@ -47,7 +64,7 @@ Bugün sosyal medyanın performansı hakkında **tek bir ölçümümüz yok.** H
 
 - [ ] **UTM her linkte.** `?utm_source=x|instagram|reddit&utm_medium=social&utm_campaign=<slug>`
       `social-pack.mjs` bunu otomatik eklemeli (bkz. §11).
-- [ ] **Sıfır noktası.** Bugünkü takipçi sayısı (X, IG) bir kez not edilir.
+- [x] **Sıfır noktası** — yukarıdaki tablo (2026-09-26). Her Cuma aynı dört sayı tekrar alınır.
 - [ ] **Haftalık skor tablosu** — beş satır, her Cuma:
 
 | Metrik | Kaynak | Neden |

@@ -140,7 +140,7 @@ Buradaki maddeler sadece takip için.
 
 **Hafta 0 — ertelenmez**
 - [ ] UTM'i `social-pack.mjs`'e ekle (Claude)
-- [ ] Sıfır noktası: bugünkü takipçi sayıları (sen)
+- [x] Sıfır noktası (26 Eyl): X 54 gönderi / 2 takipçi · IG 51 gönderi / 4 takipçi
 - [ ] Bio + sabit gönderi (sen, Claude metni hazırlar)
 - [ ] Video kararı: sessiz + ekran metni mi, seslendirme mi (Ağustos'tan beri açık)
 
