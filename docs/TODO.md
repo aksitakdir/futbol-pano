@@ -1,6 +1,6 @@
 # Scout Gamer — To-Do
 
-Son güncelleme: 2026-09-22
+Son güncelleme: 2026-09-26
 
 Bu liste sohbette yaşıyordu ve her sorulduğunda yeniden kuruluyordu. İlk repo
 sürümünü bir sohbet **özetinden** kurdum ve dört madde ile birçok gerekçe düştü;
@@ -41,6 +41,29 @@ başladı, veri seti çıkmış olabilir.
 - [ ] Yedek al
 - [ ] `fix_fc_players_club_names.sql` yeniden uygula
 - [ ] `created_at` / `dataset_version` kolonları ekle — bu sefer tarih bilinsin
+
+---
+
+## 🔐 Güvenlik — açık kalanlar (2026-09-26 incelemesi)
+
+- [ ] **Güvenlik başlıkları** — canlıda sadece HSTS var. `X-Frame-Options` / CSP
+      `frame-ancestors`, `X-Content-Type-Options`, `Referrer-Policy` eksik.
+- [ ] **Kalan 5 bağımlılık açığı** (2 yüksek, 3 orta) — tiptap, nanoid, postcss/sharp,
+      Anthropic SDK. Next'ten ayrı, her biri kendi testini ister.
+- [ ] **Edge Runtime deprecated** — `app/api/social-card/route.tsx` hâlâ
+      `runtime = "edge"`. 16.3 build'i uyarıyor; henüz hata değil.
+- [ ] `CLAUDE.md` "iki cron" diyor, `vercel.json`'da tek cron var (`/api/cron` artık
+      zamanlanmıyor). Doküman düzeltmesi.
+
+## 🟠 Performans — 2026-09-26 incelemesinden
+
+- [ ] **Ana sayfa arşivine "en çok okunan" bloğu.** "Son 15" kuralı yüzünden
+      **Argentina (tık sıralamasında 3., 112 tık) ana sayfadan hiç linklenmiyor.**
+      Her yeni yayın bir kanıtlanmış sayfayı daha dışarı itecek.
+- [ ] **GSC ingest script'i + sabit skor tablosu.** Downloads'ta 41 export var,
+      hepsi farklı pencerelerde; karşılaştırılabilir tek bir seri yok.
+- [ ] **Argentina başlığı** — poz 6,7, TO %2,08. Strikers'ın %4,1'ine çıksa +110 tık.
+- [ ] Core Web Vitals ölçülmüyor — Speed Insights kurulu değil.
 
 ---
 
@@ -154,6 +177,16 @@ seslendirilmiş mi — kart metni yoğunluğunu bu belirliyor.
 ---
 
 ## ✅ Biten
+
+**2026-09-26 — iki güvenlik düzeltmesi.**
+Yedi API rotası kimlik doğrulamasızdı (`proxy.ts` sadece `/admin` sayfalarını
+kapsıyor, `/api`'yi değil): `migrate-content` ve `auto-cover` tek istekle tüm
+yazılara yazabiliyordu, dördü Anthropic API'ye para harcatıyordu. Hepsine
+`isAdminRequest()` eklendi; cron `ADMIN_PASSWORD` ile Basic auth yapıyor
+(açığa çıkmış `CRON_SECRET`'ın yetkisini genişletmemek için). Ve Next.js
+16.1.6 → **16.3.6**: 29 advisory, proxy bypass'lar dahil — `/admin`'in tek
+koruması proxy olduğu için doğrudan ilgili. Audit 9 → 5, kritik 1 → 0.
+Production'da doğrulandı: 7 rota + `/admin` 401, health-check 135/135.
 
 **2026-09-22 — ana sayfanın tarama yolu.** `app/page.tsx` `"use client"` ile
 başlıyordu; ham HTML 36 KB ve içinde tek bir yazı linki yoktu, iki yerde
