@@ -768,3 +768,100 @@ Sağ üstteki etiket bugün sitenin kategorisini gösteriyor (*PLAYER RADAR*, *S
 
 Carousel slaytlarındaki kulüp ve yaş, `fc_players`'tan değil, **yazının doğrulanmış
 verisinden** gelir — 15 Eylül'de ana sayfa kartlarında yaşanan hatanın dersi.
+
+---
+
+## 9. Hashtag ve anahtar kelime stratejisi
+
+### 9.1 Bugünkü kullanım
+
+*§1'deki 12 Instagram gönderisinin hashtag'leri sayıldı.*
+
+- **67 hashtag, 43 farklı, gönderi başına ortalama 5,6** — 12 gönderinin 9'unda 6 ile 8 arası.
+- **En sık kullanılanlar:** `#Football` (6), `#WorldCup2026` (6), `#Scouting` (5),
+  `#YoungTalent` (3), `#TransferNews` (3).
+- **Oyun hashtag'i: sıfır.** `#FC26`, `#CareerMode`, `#FM26`, `#Wonderkids` — hiçbiri yok.
+  "Football × Game Culture" diyen bir hesap, oyun kitlesinin (§3 ②) aradığı hiçbir etikette yok.
+- **Oyuncu adı hashtag'i iki tane** — Onana ve Hincapié. İkisi de genç değil. Hakkında
+  yazdığımız genç oyuncuların hiçbiri etiketlenmemiş.
+- **`#WorldCup2026` turnuva bittikten sonra iki kez** (1 Ağustos, 13 Eylül).
+
+Özetle: çok geniş (herkesin kullandığı), yanlış (bitmiş bir turnuva), ve kitlenin yarısını
+tamamen dışarıda bırakan etiketler.
+
+### 9.2 Platformlar bugün nasıl çalışıyor
+
+**Instagram** — [Instagram'ın kendi açıklamasına göre](https://creatorlanehq.com/blog/instagram-5-hashtag-limit-2026)
+Aralık 2025'ten beri **gönderi başına en fazla 5 hashtag**, önerilen 3–5. Instagram'ın başı
+Adam Mosseri'ye göre hashtag'ler artık erişimi büyütmüyor; gönderinin **ne hakkında
+olduğunu sınıflandırıyor.** Algoritma açıklamayı, görseldeki metni ve içeriği doğrudan okuyor.
+
+*Bizim verimizle bir çelişki:* Haziran–Eylül 2026'daki gönderilerimizin 9'unda 6–8 hashtag var
+ve paylaşılmış — sınır paylaşımı engellemiyor. Fazlasının yok sayıldığı ya da erişimi
+düşürdüğü söyleniyor; bunu doğrulayamadım. Sonuç değişmiyor: **en fazla 5.**
+
+**X** — hashtag'ler küçük bir rol oynuyor; arama gönderinin metnini okuyor.
+
+İki platformda da ortak sonuç: **kelimeler hashtag'lerden önemli.** İnsanlar sosyalde
+aradıklarında, aradıkları kelimeler gönderinin metninde olmalı.
+
+### 9.3 Anahtar kelimeler — insanların gerçekten yazdığı şey
+
+§3'teki arama verisi, kitlenin hangi kelimelerle aradığını zaten söylüyor. Bunlar gönderinin
+**ilk satırına** girer — hashtag olarak değil, cümle olarak:
+
+| Kitlenin yazdığı | Gönderide |
+|---|---|
+| *best young strikers in the world*, *best young centre backs* | *"The best young centre-backs in the world right now"* |
+| *argentina wonderkids*, *japanese wonderkids* | *"Argentina's wonderkids"* — oyun dili, kitlenin kendi kelimesi |
+| *best young midfielders fc 26* | Oyun sürümüyle birlikte: *"FC 26"* / *"FC 27"* |
+| Oyuncu adları | Her zaman tam adla — hashtag'de değil, cümlede |
+
+### 9.4 Bizim hashtag setimiz — üç katman
+
+Her gönderi için **ayrı seçilir.** Sabit bir blok yapıştırılmaz.
+
+| Katman | Örnek | Ne zaman |
+|---|---|---|
+| **Konu** | Gönderideki oyuncunun adı (`#MikaGodts`), gerekiyorsa kulübü | Hemen her gönderide |
+| **Topluluk** | `#Wonderkids` · `#FC27` / `#FC26` · `#CareerMode` · `#FM26` | Oyun kitlesine (§3 ②) dönük gönderilerde |
+| **Marka** | `#ScoutGamer` | Her gönderide, tek |
+
+**Sayı:** Instagram'da 3–5. X'te 0–2.
+
+**Bırakılanlar:** `#Football`, `#Soccer`, `#Scouting` (fazla geniş), `#WorldCup2026` (bitti),
+`#TransferNews` (konumlanmamız değil — §4.2).
+
+**İki kural:**
+- **Oyun hashtag'i gönderideki reytingle aynı sürümde olur.** FC 26 reytingi gösteren bir
+  gönderiye `#FC27` konmaz (§8.6 d ile aynı ilke).
+- **Gönderiyle ilgisi olmayan gündem hashtag'ine binilmez.** Spam sinyali.
+
+*Topluluk hashtag'lerinin gerçek kullanım yoğunluğu hafta 1'de elle kontrol edilecek;
+kullanılmayan listeden çıkar.*
+
+### 9.5 Takip — ne izliyoruz
+
+Bu liste keşif ajanının (§7) girdisidir.
+
+**Oyuncular — takip listesinin çekirdeği.** Dünya Kupası dışındaki yayındaki yazılarımızda
+**151 oyuncu** kartla yer alıyor; 32'si birden fazla yazıda. Bunlardan biri gündeme
+geldiğinde — gol, ilk maç, transfer, milli takım, yeni kart — elimizde doğrulanmış bir yazı
+hazır demektir. Liste her yeni yazıyla otomatik büyür.
+
+**Anahtar kelimeler:**
+- `"[oyuncu adı]" rating` · `"[oyuncu adı]" FC 27`
+- `wonderkid` · `wonderkids`
+- `best young [pozisyon]`
+- `youngest ever` · `first goal` · `debut` — takip listesindeki isimlerle birlikte
+
+**Hashtag'ler** — `#Wonderkids`, `#CareerMode`, `#FC27`: bizim kullandığımız değil,
+kitlenin konuştuğu yer olarak.
+
+### 9.6 Ölçüm
+
+Her Cuma (§2.5'e ek):
+- Instagram'da gönderi başına erişimin ne kadarının hashtag'lerden geldiği (Insights gösteriyor).
+- Hiç erişim getirmeyen hashtag 3 hafta üst üste → listeden çıkar.
+- Hangi anahtar kelime ve oyuncu, keşif ajanına en çok konuşma buldurdu → bir sonraki haftanın
+  içerik önceliği.
