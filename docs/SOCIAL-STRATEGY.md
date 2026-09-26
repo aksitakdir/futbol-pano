@@ -554,3 +554,128 @@ Mevcut kart türleri (`/api/social-card`): **stat, contrast, verdict, list** ve 
    kartlarında gördüğümüz hata).
 2. **"Oyunda toplam şu kadar oyuncu var" cümlesi kurulmaz.** Veri setimiz oyunun tamamı
    değil (§4 sonundaki not). Tek tek oyuncu reytingleri kullanılabilir; havuz sayıları değil.
+
+---
+
+## 7. Etkileşim stratejisi
+
+Orkestra modelinde keşif ve yanıt ajanlarının uyacağı kurallar bu bölümdür.
+
+### 7.1 Neden ana kaldıraç bu
+
+6 takipçili bir hesabın kendi gönderisi, kabaca 6 kişinin akışına düşer. Başka bir hesabın
+gönderisinin altındaki yanıt ise **o hesabın kitlesinin** önüne çıkar. Bu, ölçülmüş bir sonuç
+değil, platformların işleyişinden gelen bir çıkarım — ama §1'deki tablo onunla tutarlı:
+105 kendi gönderisi, 6 takipçi, başkalarının konuşmalarında görünür bir iz yok.
+
+1. aşamada (§2.3) **yanıtlar ana iş, kendi gönderilerimiz vitrin.**
+
+### 7.2 Hangi konuşmalar — öncelik sırasıyla
+
+| # | Konuşma türü | Kitle (§3) | Neden bizim |
+|---|---|---|---|
+| 1 | **Reyting konuşmaları** — "bu kart adil mi", yeni kart açıklamaları, "oyundaki en iyi genç stoper kim" | ② + ① | Konumlanmamızın ta kendisi (§4.1) |
+| 2 | **Genç oyuncu anları** — ilk gol, ilk maç, milli takım çağrısı, "bu çocuk kim?" | ③ + ① | Hakkında yazdığımız oyuncular; zamanlama belirleyici |
+| 3 | **Sıralama tartışmaları** — başka hesapların "en iyi genç forvetler" gönderileri | ① | En güçlü içerik türümüz |
+| 4 | **Kulüp konuşmaları** — taraftarların kendi gençleri hakkında | ③ | Taraftar çarpanı |
+| 5 | **Ülke gençlik konuşmaları** | ④ | Ülke listelerimiz |
+
+**Girilmeyen konuşmalar:** genç oyuncu açısı olmayan transfer dedikodusu, Dünya Kupası,
+siyaset, kavga, hakemlik tartışmaları.
+
+### 7.3 Hangi hesaplar
+
+İsim listesi değil, kategori — her hesap **kullanılmadan önce var ve aktif olduğu doğrulanır.**
+Hafta 1'de 20–30 hesaplık bir takip listesi kurulur; keşif ajanı onu günceller.
+
+- **Oyun hesapları:** EA FC resmi hesapları, reyting veritabanı siteleri, kariyer modu ve
+  Football Manager içerik üreticileri.
+- **Veri ve istatistik hesapları.**
+- **Kulüp hesapları** — resmi ve taraftar — hakkında yazdığımız oyuncuların kulüpleri.
+- **Genç futbolu izleyen gazeteciler.**
+- **Orta büyüklükteki hesaplar öncelikli.** Dev bir hesabın altındaki binlerce yanıt arasında
+  kaybolunur; orta büyüklükte bir hesabın altında görünür olunur. *(Çıkarım; 6 haftada sınanır.)*
+
+### 7.4 Nasıl — yanıt kuralları
+
+1. **Onlarda olmayan bir gerçek ekle.** Bir sayı, bir tarih, bir bağlam — **yayındaki,
+   doğrulanmış bir yazımızdan.**
+2. **Gönderinin kendisine cevap ver.** Konuyu kendi yazımıza çekme.
+3. **Link yok.** Biri sormadıkça. *"Check out our site"* hiçbir zaman.
+4. **Katıl ya da karşı çık — kanıtla. Alay yok** — oyuncuyla, taraftarla, gönderi sahibiyle,
+   EA ile.
+5. **Bir konuşmaya bir yanıt.** Aynı hesabın altına her gün yazılmaz.
+6. **Kısa ve İngilizce** (§4.3).
+7. **Emin değilsen gönderme.** #157'nin dersi — yanlış bir gerçek, sıfır yanıttan kötüdür.
+8. **Reşit olmayan oyuncuları etiketleme.** Hakkında yazdığımız oyuncuların çoğu 16–17 yaşında.
+   Onlar hakkında konuşuruz, onlara değil — kişisel hesaplarına yanıt ya da etiket yok.
+
+### 7.5 Yanıt türleri — gerçek örneklerle
+
+Her örnekteki her gerçek yayındaki bir yazıdan (2026-09-26'da kontrol edildi).
+
+**Reyting konuşması** — biri Ngumoha'nın kartını soruyor:
+> 90 pace inside a 68 overall. The card reads last season, when he played on the left. A rating
+> measures what a player has been asked to do.
+*(#149)*
+
+**Genç oyuncu anı** — Sullivan için "bu çocuk kim?" soruluyor:
+> Debuted in MLS at 14 years 293 days — the youngest in any major American pro sport. Manchester
+> City agreed his move when he was fourteen; he can join them in September 2027.
+*(#157)*
+
+**Sıralama tartışması** — birinin "en iyi genç kanatlar" listesinin altı:
+> The market already voted on some of these: €55m for Godts, £30.8m for Fofana. The fees tell you
+> who clubs think is ready now.
+*(#150)*
+
+**Kart vs gerçek** — yeni kart açıklamasının altı:
+> His first card is a 67. Before it existed he had 17 goal contributions in an MLS season — the
+> card arrived last.
+*(#157)*
+
+Ajanlar bu dört kalıbı her gün, o günün konuşmasına ve arşivdeki doğru yazıya göre doldurur.
+
+### 7.6 Kendi gönderilerimizde
+
+- Her yoruma **24 saat içinde** yanıt.
+- İyi bir yorumu öne çıkar; bir soru sorarak konuşmayı uzat.
+- 1. aşamada seyrek olacak — ama olduğunda en değerli etkileşim bu.
+
+### 7.7 Takip politikası
+
+- Etkileşim kurduğumuz hesapları takip et; toplu takip / bırak yok (spam sinyali).
+- Etkileşim grupları (pod), takipçi satın alma, "takibe takip" yok.
+
+### 7.8 Girdi hedefleri — başlangıç
+
+§2.4'te "§7'de kesinleşecek" dediğim sayılar. **Başlangıç noktası; 6. haftada gözden geçirilir.**
+
+| Platform | Hedef | Kim gönderir |
+|---|---|---|
+| X | **Hafta içi günde 5 yanıt** (~25/hafta) | Sen, tek dokunuşla (ajan hazırlar) |
+| Instagram | **Günde 3 yorum** | Sen, elle (API desteklemiyor) |
+| Reddit | Hafta 3'ten itibaren **haftada 3 değer veren yorum**, link yok | Sen, elle |
+
+### 7.9 Günlük akış
+
+**Ajanlar kurulduktan sonra:**
+1. **Sabah — ajanlar:** keşif ajanı 10–15 aday konuşma bulur → yanıt ajanı 5–8 taslak yazar →
+   doğrulama ajanı her gerçeği yazıya ve kaynağa karşı kontrol eder → onay kuyruğu.
+2. **Sen, ~10 dk:** onayla / düzenle / reddet → X'te tek dokunuşla gönder → Instagram'da 3 yorum.
+3. **Zamanlama:** aramadaki tıkların %35'i İngiltere + ABD'den (§3.2). Başlangıç önerisi,
+   İngiltere akşamı ile ABD öğleden sonrasının kesiştiği saatler. **Test edilecek.**
+
+**Ajanlar kurulana kadar:** her Pazartesi 20–25 satırlık bir yanıt bankası hazırlarım
+(bu bölümdeki kurallarla, yazılardan). Sen hafta boyunca uygun konuşmalarda kullanırsın.
+
+**Maliyet notu:** keşif ajanı X'te okuduğu her gönderi için $0,005 öder. Günde ~200 gönderi
+taraması ayda ~$30 — TODO'daki açık "X API aylık tavanı" kararına bağlı.
+
+### 7.10 Ölçüm
+
+§2.5'teki tabloya ek olarak, her Cuma:
+- Gönderilen yanıt sayısı (girdi) — hedefe karşı.
+- Yanıt başına ortalama beğeni ve yanıt.
+- En çok etkileşim alan 3 yanıt — hangi konuşma türünden (§7.2) — bir sonraki haftanın
+  önceliğini belirler.
