@@ -1,8 +1,16 @@
 import { NextResponse } from "next/server";
+import { isAdminRequest } from "@/lib/admin-auth";
 import { createClient } from "@supabase/supabase-js";
 import { suggestCoverImage } from "@/lib/cover-image-suggest";
 
 export async function POST(request: Request) {
+  // Guarded 2026-09-26. proxy.ts only covers /admin pages, never /api — so this
+  // route was callable by anyone, and it either writes with the service-role key
+  // or spends on the Anthropic API. See docs/GUVENLIK-RLS-NOTLARI.md: every
+  // write goes through isAdminRequest().
+  if (!(await isAdminRequest())) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
   const supabaseKey =
     process.env.SUPABASE_SERVICE_ROLE_KEY ?? process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;

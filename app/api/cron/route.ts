@@ -283,7 +283,15 @@ export async function GET(request: NextRequest) {
   const [contentResult, playerResult, formResult, hubResult] = await Promise.allSettled([
     fetch(`${origin}/api/generate-content`, {
       method: "POST",
-      headers: { "content-type": "application/json" },
+      headers: {
+        "content-type": "application/json",
+        // generate-content is admin-only now. A server-to-server call carries no
+        // session cookie, so the cron authenticates the way a script would —
+        // Basic auth with the admin password it already holds. Deliberately not
+        // CRON_SECRET: that value has been seen outside the project, and widening
+        // what it unlocks to a paid write route would compound that.
+        authorization: `Basic ${Buffer.from(`scout:${process.env.ADMIN_PASSWORD ?? ""}`).toString("base64")}`,
+      },
       body: JSON.stringify({ count: 3 }),
     }).then((r) => r.json()),
     updateFeaturedPlayerPool(supabaseUrl, supabaseKey, apiKey),

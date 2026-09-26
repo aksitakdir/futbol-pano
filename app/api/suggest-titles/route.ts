@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { isAdminRequest } from "@/lib/admin-auth";
 import { slugify } from "@/lib/slugify";
 
 export const maxDuration = 60;
@@ -89,6 +90,13 @@ function extractJsonArray(raw: string): string | null {
 }
 
 export async function POST(request: Request) {
+  // Guarded 2026-09-26. proxy.ts only covers /admin pages, never /api — so this
+  // route was callable by anyone, and it either writes with the service-role key
+  // or spends on the Anthropic API. See docs/GUVENLIK-RLS-NOTLARI.md: every
+  // write goes through isAdminRequest().
+  if (!(await isAdminRequest())) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
   const apiKey = process.env.ANTHROPIC_API_KEY;
   if (!apiKey) {
     return NextResponse.json({ error: "ANTHROPIC_API_KEY is not configured" }, { status: 500 });
