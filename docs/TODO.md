@@ -37,7 +37,11 @@ oyunun kendisi sanılmasından çıktı; yayın kapısı kartsız oyuncu iddiala
 
 ## 🔴 Takvimli
 
-### FC 27 — 25 Eylül, 3 gün kaldı
+### FC 27 verisi — hedef ~6 Ekim (karar: 2026-09-26)
+
+Oyun 25 Eylül'de çıktı ama lansman ile verinin oturması arasında zaman geçiyor
+(ilk günlerde reyting düzeltmeleri, eksik oyuncular, veri setlerinin güncellenmesi).
+**~10 gün beklenip 6 Ekim civarı çekilecek.** Acele yok.
 
 `fc_players` 16.228 satır, EA FC 26 verisi (Eylül 2025). 0 MLS oyuncusu,
 15-16 yaş yok (taban 17, 52 oyuncu), `created_at` yok. Erken erişim 18 Eylül'de
@@ -132,27 +136,30 @@ every week"* diyor ve bu vaat tutulmuyor → aşağıdaki Görev A/B.
 
 ---
 
-## 📣 Sosyal medya — içerik yöneticiliği
+## 📣 Sosyal medya — strateji çalışması (kapsam onaylandı 2026-09-26)
 
-**Tam plan: [`docs/SOCIAL-PLAYBOOK.md`](SOCIAL-PLAYBOOK.md)** — kim ne yapar, ölçüm,
-içerik ayakları, yanıt kitabı, takip listesi, haftalık ritim, FC 27 açılış kampanyası.
-Buradaki maddeler sadece takip için.
+Önce strateji, sonra uygulama. Mevcut [`docs/SOCIAL-PLAYBOOK.md`](SOCIAL-PLAYBOOK.md) bir
+işletim kılavuzu taslağı — strateji tamamlanınca ona göre yeniden yazılacak.
 
-**Hafta 0 — ertelenmez**
-- [ ] UTM'i `social-pack.mjs`'e ekle (Claude)
-- [x] Sıfır noktası (26 Eyl): X 54 gönderi / 2 takipçi · IG 51 gönderi / 4 takipçi
-- [ ] Bio + sabit gönderi (sen, Claude metni hazırlar)
-- [ ] Video kararı: sessiz + ekran metni mi, seslendirme mi (Ağustos'tan beri açık)
+**Strateji kapsamı — sırayla**
+- [ ] 1. **Mevcut durum teşhisi** — 105 gönderi, 6 takipçi: biçim, ton, zamanlama, hedef
+- [ ] 2. **Amaç ve ölçü** — sosyal ne işe yarayacak (kitle / trafik / otorite), neyle ölçülecek
+- [ ] 3. **Hedef kitle** — FC/FUT oyuncuları, FM oyuncuları, genç yetenek meraklıları, kulüp taraftarları; nerede, ne istiyorlar
+- [ ] 4. **Konumlanma ve ses** — "Football × Game Culture" sosyalde neye benziyor
+- [ ] 5. **Platform rolleri** — X, Instagram, kısa video, Reddit: her birinin işi
+- [ ] 6. **İçerik ayakları ve formatlar** — tür, oran, görsel
+- [ ] 7. **Etkileşim stratejisi** — hangi konuşmalar, hangi hesaplar, nasıl yorum; günlük ritim
+- [ ] 8. **Görsel kimlik sistemi** — kart şablonları, tutarlılık
+- [ ] 9. **Hashtag ve anahtar kelime stratejisi** — takip ve kullanım
+- [ ] 10. **CTA ve dönüşüm** — yanıt → profil → site hunisi; link nerede durur
+- [ ] 11. **İşletim modeli** — kim ne yapar, haftalık takvim, onay akışı
+- [ ] 12. **Kampanya çerçevesi** — güncel olaylar (transfer penceresi, oyun çıkışı, milli maçlar) stratejiye nasıl bağlanır
 
-**FC 27 açılış kampanyası — 26 Eylül → 10 Ekim**
-- [ ] Sullivan (kart 67 vs sezon) — #157 düzeltildikten sonra
-- [ ] Ngumoha receipt — FC 27 reytingi alınınca
-- [ ] Dowman — #158 düzeltildikten sonra
-- [ ] Centre-backs listesi vs FC 27
-- [ ] Günde 5 reyting-şikayeti yanıtı
+**Ölçülmüş sıfır noktası (26 Eyl):** X 54 gönderi / 2 takipçi · IG 51 gönderi / 4 takipçi
 
-**Claude'un araçları**
-- [ ] Yanıt bankası üreteci · FC 26→27 fark listesi · haftalık skor tablosu · player card varyantı
+**Beklemede — strateji bitince**
+- Oyun kitabındaki FC 27 kampanyası ve araç listesi (UTM, yanıt bankası, player card)
+- Video kararı: sessiz + ekran metni mi, seslendirme mi
 
 ---
 
