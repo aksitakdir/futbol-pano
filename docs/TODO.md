@@ -21,9 +21,11 @@ FC 26 reyting sayfası var. Cavan'ın FC 26'da olmamasının sebebi büyük ihti
 **67'lik kartı var** (EA resmi sayfa). Hata, Kaggle setimizdeki 0 MLS oyuncusunun
 oyunun kendisi sanılmasından çıktı; yayın kapısı kartsız oyuncu iddialarını göremiyor.
 
-- [ ] **#157: karar senin** — yayından kaldır, ya da yerinde düzelt. Düzeltilmiş hikâye
-      daha güçlü: *kart 67 (kendisi 70 bekliyordu), sezon 17 gol katkısı, 16 yaşında
-      milli takımda.* Sullivan için üretilen sosyal paket **paylaşılmamalı.**
+- [x] **#157 yerinde düzeltildi (2026-09-26).** Dört blok değişti (giriş, MLS callout'u,
+      SSS, kapanış), stat bloğuna FC 27 kartı (67) eklendi, sona tarihli bir düzeltme notu
+      kondu. URL, kapak ve diğer 16 blok dokunulmadı. Yedek: `sections_json` önceki hali.
+      Eski sosyal paket kullanılmaz; `social-pack.mjs` canlı veriden yenisini üretir.
+      Not: *"70 bekliyordu"* iddiası doğrulanamadı, hiçbir yere girmedi.
 - [ ] **#158 Dowman: yayından önce düzelt.** Dowman kısmı doğru; ama Sullivan'dan
       "kartı yok, ligi oyunda değil" diye bahseden iki yer yanlış. SSS'deki "52" sayısı
       bizim veri setimizden — oyunun sayısı olarak yazılmamalı.

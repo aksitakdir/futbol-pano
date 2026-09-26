@@ -255,7 +255,7 @@ yapar. Sitenin bütün IP'si bu tartışma. Bu pencere kaçarsa bir yıl bekleni
 
 | # | İçerik | Ayak | Kaynak |
 |---|---|---|---|
-| 1 | **Sullivan: kart 67, sezon 17 gol katkısı, 16 yaşında milli takımda.** Kendisi 70 bekliyordu. | Game is wrong | EA resmi sayfa + #157 (düzeltildikten sonra) |
+| 1 | **Sullivan: ilk kartı 67, ama o kart gelmeden 17 gol katkısı ve 16 yaşında milli takım.** | Game is wrong | EA resmi sayfa + #157 (26 Eyl'de düzeltildi) |
 | 2 | **Ngumoha receipt:** 20 Eylül'de "kart ona inanmıyor" yazdık. FC 27 ne verdi? | Receipt | #149 + EA FC 27 |
 | 3 | **Dowman:** 3 PL rekoru, **kartı yok** — EA 17 yaş altını almıyor. 31 Aralık'ta 17 olacak. | Game is wrong | #158 (Sullivan satırları düzeltildikten sonra) |
 | 4 | **"Our centre-backs list vs FC 27"** — 1 numaralı sayfamızın oyuncuları yeni reytinglerle | List | #136 + EA FC 27 |
