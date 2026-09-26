@@ -175,6 +175,14 @@ işletim kılavuzu taslağı — strateji tamamlanınca ona göre yeniden yazıl
 - [ ] **Odak noktası** — admin'de kapak yüklemenin yanında sol / orta / sağ (isteğe bağlı)
 - [ ] **Sosyal kuyrukta görsel durumu** — hazır / eksik (Aşama 1 kuyruğuyla birlikte)
 
+*Havuz şablonları (§6.7) — öncelik sırasıyla*
+- [ ] Karşılaştırma — iki oyuncu
+- [ ] İpucu kartı (Oyuncuyu tahmin et)
+- [ ] Anket kartı
+- [ ] Carousel kapanış / CTA slaytları
+- [ ] İlk 11 dizilişi · zaman çizelgesi · dörtlü sayı tablosu · tek sayfa liste · tarihli makbuz
+- [ ] Scout Gamer Read kartı — FC 27 verisiyle doldurulur (~6 Ekim)
+
 *Görseller (§8.6)*
 - [ ] a. contrast ve list kartlarını 4:5'te büyüt
 - [ ] b. Kartta oyun sürümü damgası (*EA FC 26* / *EA FC 27*)

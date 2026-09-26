@@ -555,6 +555,98 @@ Mevcut kart türleri (`/api/social-card`): **stat, contrast, verdict, list** ve 
 2. **"Oyunda toplam şu kadar oyuncu var" cümlesi kurulmaz.** Veri setimiz oyunun tamamı
    değil (§4 sonundaki not). Tek tek oyuncu reytingleri kullanılabilir; havuz sayıları değil.
 
+
+### 6.7 İçerik ve görsel havuzu (2026-09-27)
+
+§6.2'deki beş ayak **ne** paylaştığımızı söylüyor; bu havuz **hangi biçimde** ve **hangi eylemi
+tetikleyerek** paylaştığımızı genişletiyor. Her format bir ayağa bağlı, böylece §6.3'teki
+karışım geçerli kalır.
+
+**Neden geniş olmalı — iki sebep:**
+1. **Çeşitlilik.** §1'deki 12 gönderinin 12'si aynı kalıptaydı.
+2. **Maliyet.** Yazıya bağlı her gönderi senin özel görselini bekliyor (§8.7) — yayın bekleyen
+   üç yazı da tam bunu bekliyor. Havuzun yarısı **yeni görsel gerektirmeyen** formatlardan
+   oluşur ki ritim, görsel üretim hızına bağlı kalmasın.
+
+Sütunlar: **CTA** = formatın tetiklediği eylem · **Görsel** = senin özel görselin gerekir mi.
+
+#### A. Yanıt ve tartışma
+
+| Format | Nasıl | CTA | Ayak | Görsel |
+|---|---|---|---|---|
+| **Kim daha iyi?** | İki genç oyuncu, üçer gerçek sayı | *"Who would you sign?"* | ② / ⑤ | Hayır |
+| **Oyuncuyu tahmin et** | İsimsiz ipuçları — *"16. Debuted in MLS at 14y 293d. Who?"* | Yanıtta tahmin | ⑤ | Hayır |
+| **Sırala** | 5 oyuncu; takipçiler sıralar, ertesi gün bizim sıralamamız | Yanıtta sıralama | ⑤ / ① | Hayır |
+| **Al ya da sat** | Doğrulanmış bonservisle bir genç oyuncu | Anket | ⑤ | Hayır |
+| **İlk 11'i tamamla** | Listelerimizden genç bir 11, bir mevki boş | *"Who's your pick?"* | ① | Hayır |
+| **Reytingi puanla** | Kart vs gerçek sezon | Çok düşük / adil / çok yüksek | ② | Hayır |
+
+#### B. Kaydetme ve paylaşma
+
+| Format | Nasıl | CTA | Ayak | Görsel |
+|---|---|---|---|---|
+| **Kariyer modu rehberi** | *"10 young players to sign in Career Mode"* | *"Save this for your next save"* | ① + ② | Hero + slaytlar |
+| **Tek sayfa liste** | Bir listenin tamamı tek görselde | Kaydet / paylaş | ① | Hayır |
+| **Yükseliş zaman çizelgesi** | Bir oyuncunun beş tarihte yükselişi | Kaydet | ③ | Hero |
+| **Rakamlarla** | Bir oyuncu, dört sayılık tablo | Paylaş | ③ | Hero ya da hayır |
+| **Haftanın takip listesi** | Ör. milli maç arasında izlenecek 5 isim | Kaydet | ③ | Hayır |
+
+#### C. Takip — yalnızca sürdürülebilirse
+
+| Format | Nasıl | Ayak |
+|---|---|---|
+| **Numaralı dizi** | *"Deep cut #1, #2…"* — biriktirilebilir | ③ |
+| **Makbuz** | *"We said this on 3 Sep. Then…"* | ④ |
+| **Haftalık oyuncu** | Her hafta bir isim — **ancak ritim tutarsa** (§10.5) | ③ |
+
+#### D. Gündemle çalışan
+
+| Format | Nasıl | Ayak |
+|---|---|---|
+| **Hızlı tepki kartı** | Takip listesindeki bir oyuncu gol atınca ya da ilk maçına çıkınca, yazımızdaki gerçeklerle, saatler içinde | ③ |
+| **Rekor nöbeti** | *"If he plays today, he becomes…"* — olaydan önce | ③ |
+| **Yükseltme adayı** | Oyunun sezon içi güncellemesinde kim yükselmeli | ② |
+
+#### E. Tıklama — 2. aşamada (§2.3)
+
+| Format | Nasıl | Ayak |
+|---|---|---|
+| **Merak kartı** | Listeden üç isim görünür: *"The other five are in the full list."* | ① |
+| **Yazı duyurusu** | Hero görsel + kanca sayı | hepsi |
+
+#### Görsel şablon havuzu
+
+**Var:** stat · contrast · verdict · list · başlık kartı (Style A) · hero (taslak, §8.7).
+
+**Eklenecek:**
+
+| Şablon | Beslediği formatlar |
+|---|---|
+| **Karşılaştırma — iki oyuncu** | Kim daha iyi, Al ya da sat, Reytingi puanla |
+| **İpucu kartı** | Oyuncuyu tahmin et |
+| **Anket kartı** | Al ya da sat, Reytingi puanla, Sırala |
+| **İlk 11 dizilişi** | İlk 11'i tamamla |
+| **Zaman çizelgesi** | Yükseliş zaman çizelgesi |
+| **Dörtlü sayı tablosu** | Rakamlarla |
+| **Tek sayfa liste** | Tek sayfa liste, Haftanın takip listesi |
+| **Makbuz — tarihli** | Makbuz |
+| **Scout Gamer Read kartı** | Reytingi puanla, Kariyer modu rehberi, Yükseltme adayı |
+| **Carousel kapanış slaytları** | *"Save this"* · *"Who did we miss?"* · *"Follow for Deep cut #4"* |
+
+Hepsi bizim tasarımımız; **EA kart görseli yok.** "Scout Gamer Read" bizim kendi kartımız.
+
+#### Kurallar
+
+- **Bunlar sınanacak formatlar, kanıtlanmış olanlar değil.** 6 haftalık testte aynı anda
+  **6–8 format** döner — her birini yargılayacak kadar tekrar olsun diye. Tutmayan düşer,
+  yerine havuzdan bir sonraki girer.
+- **Oyun reytingine dayananlar FC 27 verisini bekler** (~6 Ekim): Reytingi puanla,
+  Kariyer modu rehberi, Yükseltme adayı.
+- **Şablonlar tek seferde kurulmaz.** Önce en çok formatı besleyenler: **hero, karşılaştırma,
+  ipucu kartı, anket kartı.**
+- **Her format §4'ün sesine, §6.6'nın doğruluk kurallarına ve §7.4'ün reşit olmayan oyuncu
+  kuralına tabidir.** *"Oyuncuyu tahmin et"* gibi oyunlaştırılmış formatlar dahil.
+
 ---
 
 ## 7. Etkileşim stratejisi
