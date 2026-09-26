@@ -728,9 +728,11 @@ eklendi; sosyalde henüz hiç paylaşılmadı.
 2. **Bir görsel, bir fikir.**
 3. **Telefonda bir saniyede okunur.** Gövdede ~15 kelimeden fazla yok.
 4. **Hep aynı çerçeve.** Tutarlılık, 6 takipçili bir hesabın akışta tanınmasının tek yolu.
-5. **Tipografik varsayılan.** Oyuncu fotoğrafı yok, EA kart görseli ya da oyun ekran
-   görüntüsü yok — hakkı bizde olmayan hiçbir görsel yok. Başlık kartındaki kapak görselleri
-   yalnızca kullanım hakkı bizde olanlarla.
+5. **Yazıya bağlı gönderinin kahramanı, o yazı için üretilmiş özel görsel** (§8.7).
+   Tipografik kartlar veri slaytları, anketler ve yanıtlar için. Hakkı bizde olmayan hiçbir
+   görsel yok — EA kart görseli, oyun ekran görüntüsü, ajans fotoğrafı.
+   *(Düzeltme, 2026-09-27: ilk sürüm "tipografik varsayılan" diyordu; her yazı için özel
+   görsel üretildiği hesaba katılmamıştı.)*
 6. **Her görselin alternatif metni (alt text) var.** X ve Instagram destekliyor; erişilebilirlik
    için ve ajan bunu yazabilir.
 
@@ -768,6 +770,50 @@ Sağ üstteki etiket bugün sitenin kategorisini gösteriyor (*PLAYER RADAR*, *S
 
 Carousel slaytlarındaki kulüp ve yaş, `fc_players`'tan değil, **yazının doğrulanmış
 verisinden** gelir — 15 Eylül'de ana sayfa kartlarında yaşanan hatanın dersi.
+
+### 8.7 Özel görsel — üretim sürecinin parçası
+
+*Ölçüm: 2026-09-27.*
+
+**Her yazı için özel bir görsel üretiliyor.** Dünya Kupası dışındaki son 40 yazının 37'sinde
+var; eksik üçü yayın bekleyenler (#153, #155, #158). Son yazıların hepsi **1456×816 — 16:9**
+(daha eskileri 1280×717). Tutarlı bir editoryal illüstrasyon dili; görsellerin üzerinde yazı
+yok. Bu, hesabın en ayırt edici görsel varlığı.
+
+**Sorun: bugünkü kart sistemi bu görseli dikey formatlarda bozuyor.** Başlık kartı görseli
+ortadan kırpıyor:
+
+| Format | Görselin kalan genişliği | #157 Sullivan'da sonuç |
+|---|---|---|
+| 16:9 (X) | %100 | Tam |
+| 4:5 (Instagram) | **%45** | **Yüzün yarısı kesik** |
+| 9:16 (hikâye, Reels) | **%32** | **Yüz neredeyse tamamen dışarıda** |
+
+Ayrıca 4:5'te görsel 816 pikselden 1350'ye büyütülüyor (1,65 kat) — yumuşuyor. §1'deki
+Instagram gönderilerinin görselleri büyük ihtimalle bu şekilde kırpılmıştı.
+
+**Çözüm: görsel kırpılmaz, çerçeveye yerleştirilir.**
+
+| Format | Düzen |
+|---|---|
+| **16:9 — X** | Görsel tam ekran; alttaki koyu geçiş alanında **sayı** (bugünkü başlık kartının başlık yerine gerçek taşıyan hali) |
+| **4:5 — Instagram** | **"Hero" düzeni:** görselin tamamı üstte bant olarak (1080×605, kırpılmadan, küçültülerek — keskin), altında sayı ve etiket. §8.2'deki boşluk sorununu da çözer: o alanı artık görsel dolduruyor. |
+| **9:16 — hikâye, Reels** | Aynı bant düzeni, daha büyük metin alanıyla; tam ekran isteniyorsa odak noktasına göre kırpma |
+| **Carousel** | 1. slayt hero (görsel + kanca sayı) → oyuncu başına tipografik slaytlar → kapanış (verdict) |
+
+Taslak render: `mock-hero` (2026-09-27, geçici — kurulumda ayarlanacak).
+
+**Üretim sürecinde takip:**
+
+| Nerede | Ne | Durum |
+|---|---|---|
+| Yazı kaydı | `cover_image` — 16:9 ana görsel | **Var.** Zaten yayının ön koşulu; yayın bekleyen yazılar bunu bekliyor. |
+| Yazı kaydı | **Odak noktası** — sol / orta / sağ | **Yeni, isteğe bağlı.** Admin'de kapak yüklemenin yanında üç düğme; sadece dikey tam ekran kırpmada kullanılır. Varsayılan: orta. |
+| Sosyal kuyruk | **Görsel durumu** — hazır / eksik | **Yeni.** Ajanlar hero düzenini sadece görsel hazırsa kullanır; değilse tipografik kartla ilerler ya da bekler. |
+| Yazı kaydı | Ek 4:5 / 9:16 versiyonlar | **İsteğe bağlı**, öne çıkan yazılar için. |
+
+**Senin üretiminde değişen:** zorunlu hiçbir şey. 16:9 üretmeye devam; görselin üzerine yazı
+koyma (yazıyı kart ekliyor). İsteğe bağlı: yüklerken odak noktasına tıkla.
 
 ---
 

@@ -169,6 +169,12 @@ işletim kılavuzu taslağı — strateji tamamlanınca ona göre yeniden yazıl
 
 **Görsel ve metin çalışması — FC 27 verisine kadar**
 
+*Özel görsel — önce bu (§8.7, 2026-09-27)*
+- [ ] **Hero düzeni** — senin görselin kırpılmadan: X'te tam + sayı, Instagram'da bant + sayı,
+      9:16'da bant. Carousel'in 1. slaytı. (Bugün 4:5'te yüz yarıdan kesiliyor, 9:16'da kadraj dışı.)
+- [ ] **Odak noktası** — admin'de kapak yüklemenin yanında sol / orta / sağ (isteğe bağlı)
+- [ ] **Sosyal kuyrukta görsel durumu** — hazır / eksik (Aşama 1 kuyruğuyla birlikte)
+
 *Görseller (§8.6)*
 - [ ] a. contrast ve list kartlarını 4:5'te büyüt
 - [ ] b. Kartta oyun sürümü damgası (*EA FC 26* / *EA FC 27*)
