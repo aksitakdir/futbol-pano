@@ -389,3 +389,66 @@ who want more"* her hesabın söylediği şey.
 **Hesap adları tutarsız:** X'te `@scoutgamerx`, Instagram'da `@scoutgamer_fc`. Birini bilen
 diğerini tahmin edemiyor. Birleştirmek önerilir — hangi adın iki platformda da boş olduğu
 kontrol edilmeli. Karar senin.
+
+---
+
+## 5. Platform rolleri
+
+### 5.1 Bugünkü durum: iki platform, tek rol
+
+§1'de görebildiğimiz kadarıyla X ve Instagram **aynı işi** yaptı: aynı yazı, aynı başlık
+kartı, benzer açıklama, iki platforma birden. (Örnek: kanatlar yazısı Instagram'da 13 Eylül'de,
+X'te 15 Eylül'de, aynı kalıpla.) Platformlar farklı davranışları ödüllendirir; aynı içeriği
+iki yere koymak, ikisinde de ortalamanın altında kalmak demek.
+
+Kural: **her platformun tek bir ana işi var.** Aynı yazı her platforma girer, ama her birine
+o platformun işine göre biçimlenmiş olarak.
+
+### 5.2 Dört platform, dört iş
+
+| Platform | Ana iş | Neden bu platform | Ana format | Asıl metrik |
+|---|---|---|---|---|
+| **X** | **Konuşma** | Futbol tartışması orada ve gerçek zamanlı; ② oyuncu ve ③ taraftar kitlesi orada tartışıyor | Başkalarının konuşmalarına yanıt (§7) + kısa, tek sayılı kendi gönderileri | Yanıtların etkileşimi · profil ziyareti · takipçi |
+| **Instagram** | **Vitrin** | Görsel, kaydedilebilir; en güçlü formatımız (liste) bire bir oturuyor | Carousel: bir slayt, bir oyuncu, bir sayı | Kaydetme · paylaşma · erişim · takipçi |
+| **Kısa video** (Reels, TikTok, Shorts) | **Keşif** | Takip etmeyenlere ulaşan format — dağıtım takipçiye değil ilgiye göre *(genel bilgi; bu hesaplar için test edilecek)* | 8–16 sn: "kart vs gerçek" | Erişim · izlenme süresi · takipçi |
+| **Reddit** | **Topluluk ve trafik** | Takipçi grafiği yok, ilgi grafiği var; başlıklar Google'da dizinleniyor | Değer veren yorum; link sadece kuralların izin verdiği yerde | Yorum puanı · sitede Reddit'ten gelen oturum |
+
+### 5.3 Bir yazı, dört biçim
+
+Örnek: #150, genç kanatlar (§4.4'teki veri).
+
+| Platform | Ne olur |
+|---|---|
+| X | *"€55m for Mika Godts. £30.8m for Malick Fofana. €12.5m for Leo Sauer. Everyone can see who is fast. Almost nobody is paying for it."* + transfer konuşmalarında bu sayılarla yanıtlar. Link, gönderinin altındaki ilk yanıtta. |
+| Instagram | Carousel: kapak → her kanat için bir slayt (isim, bonservis, tek cümle) → kapanış slaytı (yazının cümlesi). |
+| Kısa video | 15 sn: bonservis → oyuncu → yazının cümlesi. |
+| Reddit | Bir transfer tartışmasında sorulan soruya yazıdaki bir gerçekle cevap. Link ancak subreddit kuralı izin veriyorsa. |
+
+### 5.4 Sıralama — hepsi birden değil
+
+Üç kanalı aynı anda açmak, düzensiz ritmin (§1.3 D) tekrarı olur.
+
+| Dönem | Platformlar | Neden |
+|---|---|---|
+| **Hafta 1–2** | X + Instagram | Hesaplar zaten var. İş: §4'teki sesle yeni biçim + X'te yanıtlar. |
+| **Hafta 3–4** | + Reddit (önce yalnızca katılım, link yok) | Reddit yeni ya da geçmişsiz hesaplara güvenmiyor; önce topluluk içinde bir geçmiş gerekiyor. |
+| **Hafta 3–6** | + Kısa video | En pahalı üretim. X ve Instagram'da tutan 2–3 açı belli olunca, kazananlar videoya dönüşür — boşa video üretilmez. |
+
+**Kapsam dışı, şimdilik:** Facebook, LinkedIn, Threads, Bluesky. Odak.
+
+### 5.5 Platform ve otomasyon
+
+Orkestra modeliyle (TODO'da not düşüldü, §11'e girecek) her platformda neyin otomatikleşeceği:
+
+| Platform | Kendi gönderimiz | Başkasına yanıt / yorum |
+|---|---|---|
+| X | Onayla otomatik (API) | Ajan hazırlar, sen tek dokunuşla gönderirsin — kurallar otomatik yanıtı yasaklıyor |
+| Instagram | Onayla otomatik (API — profesyonel hesap + Facebook sayfası) | Elle — API desteklemiyor |
+| Kısa video | Yayın API'leri var; kurulumda doğrulanacak | Elle |
+| Reddit | **Elle** | **Elle** — otomasyona en az tolerans gösteren platform; bilinçli olarak dışarıda |
+
+### 5.6 Senin cevabın gereken
+
+- **TikTok, YouTube, Reddit hesabı var mı?** Bilmiyorum; varsaymadım.
+- **Video:** sessiz + ekran metni mi, seslendirme mi? (Ağustos'tan beri açık.) Hafta 3'e kadar
+  karar yeterli.

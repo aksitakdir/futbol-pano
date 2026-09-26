@@ -153,7 +153,7 @@ işletim kılavuzu taslağı — strateji tamamlanınca ona göre yeniden yazıl
 - [x] 2. **Amaç ve ölçü** — [SOCIAL-STRATEGY.md §2](SOCIAL-STRATEGY.md) (2026-09-26)
 - [x] 3. **Hedef kitle** — [SOCIAL-STRATEGY.md §3](SOCIAL-STRATEGY.md) (2026-09-26)
 - [x] 4. **Konumlanma ve ses** — [SOCIAL-STRATEGY.md §4](SOCIAL-STRATEGY.md) (2026-09-26)
-- [ ] 5. **Platform rolleri** — X, Instagram, kısa video, Reddit: her birinin işi
+- [x] 5. **Platform rolleri** — [SOCIAL-STRATEGY.md §5](SOCIAL-STRATEGY.md) (2026-09-26)
 - [ ] 6. **İçerik ayakları ve formatlar** — tür, oran, görsel
 - [ ] 7. **Etkileşim stratejisi** — hangi konuşmalar, hangi hesaplar, nasıl yorum; günlük ritim
 - [ ] 8. **Görsel kimlik sistemi** — kart şablonları, tutarlılık
