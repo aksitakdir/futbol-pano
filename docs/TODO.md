@@ -138,11 +138,12 @@ every week"* diyor ve bu vaat tutulmuyor → aşağıdaki Görev A/B.
 
 ## 📣 Sosyal medya — strateji çalışması (kapsam onaylandı 2026-09-26)
 
-Önce strateji, sonra uygulama. Mevcut [`docs/SOCIAL-PLAYBOOK.md`](SOCIAL-PLAYBOOK.md) bir
+Önce strateji, sonra uygulama. Strateji: [`docs/SOCIAL-STRATEGY.md`](SOCIAL-STRATEGY.md).
+Mevcut [`docs/SOCIAL-PLAYBOOK.md`](SOCIAL-PLAYBOOK.md) bir
 işletim kılavuzu taslağı — strateji tamamlanınca ona göre yeniden yazılacak.
 
 **Strateji kapsamı — sırayla**
-- [ ] 1. **Mevcut durum teşhisi** — 105 gönderi, 6 takipçi: biçim, ton, zamanlama, hedef
+- [x] 1. **Mevcut durum teşhisi** — [SOCIAL-STRATEGY.md §1](SOCIAL-STRATEGY.md) (2026-09-26)
 - [ ] 2. **Amaç ve ölçü** — sosyal ne işe yarayacak (kitle / trafik / otorite), neyle ölçülecek
 - [ ] 3. **Hedef kitle** — FC/FUT oyuncuları, FM oyuncuları, genç yetenek meraklıları, kulüp taraftarları; nerede, ne istiyorlar
 - [ ] 4. **Konumlanma ve ses** — "Football × Game Culture" sosyalde neye benziyor
