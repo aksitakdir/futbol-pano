@@ -679,3 +679,92 @@ taraması ayda ~$30 — TODO'daki açık "X API aylık tavanı" kararına bağl�
 - Yanıt başına ortalama beğeni ve yanıt.
 - En çok etkileşim alan 3 yanıt — hangi konuşma türünden (§7.2) — bir sonraki haftanın
   önceliğini belirler.
+
+---
+
+## 8. Görsel kimlik sistemi
+
+### 8.1 Bugün elimizde ne var
+
+`/api/social-card` beş kart türü, üç format üretiyor. Hepsi 2026-09-26'da, yayındaki
+yazılardan doğrulanmış verilerle Instagram formatında (4:5) render edilip incelendi.
+
+| Kart | Ne gösterir | §6 ayağı |
+|---|---|---|
+| **stat** | Tek dev sayı + etiket + not | ① ③ |
+| **contrast** | İki sütun karşılaştırma | ② |
+| **verdict** | Kapanış cümlesi, tırnak içinde | ④, kapanış |
+| **list** | Numaralı isimler | ① |
+| **cover** (Style A) | Kapak görseli + başlık | Yazı duyurusu — seyrek |
+
+| Format | Boyut | Platform |
+|---|---|---|
+| `x` | 1200×675 (16:9) | X |
+| `square` | 1080×1350 (4:5) | Instagram akışı, carousel |
+| `story` | 1080×1920 (9:16) | Hikâye, Reels, TikTok, Shorts |
+
+**§1'deki gönderilerde sadece başlık kartı kullanıldı.** Dört içerik kartı 20 Eylül'de
+eklendi; sosyalde henüz hiç paylaşılmadı.
+
+### 8.2 Render'lar ne gösteriyor
+
+**Çalışan:**
+- **Aynı çerçeve** — üstte renk şeridi, solda SG logosu, sağda kategori etiketi, altta
+  başlık ve site. Akışta tanınırlık bundan gelir.
+- **Tipografik** — fotoğraf yok, sadece sayı ve kelime. Hızlı, tutarlı, hak sorunu yok.
+- **stat kartında sayı gerçekten kahraman** — 4:5'te de baskın.
+
+**Çalışmayan:**
+- **contrast ve list kartları 4:5'te küçük kalıyor.** İçerik görselin yüksekliğinin
+  yalnızca **%11–14**'ünü kaplıyor; geri kalanı çerçeve ve boşluk. Metin boyutları X'in
+  16:9 formatına göre ayarlı. Instagram vitrin platformumuz (§5) ve tıkların %76'sı mobil
+  (§3) — telefonda bu kartlar olabileceğinden çok daha küçük okunuyor.
+  *Düzeltme küçük: stat kartının zaten yaptığı gibi, formata göre büyüyen metin.*
+
+### 8.3 Görsel ilkeler
+
+1. **Sayı kahramandır.** Görseldeki en büyük şey gerçek — §4'teki "sayı önce" kuralının
+   görsel karşılığı.
+2. **Bir görsel, bir fikir.**
+3. **Telefonda bir saniyede okunur.** Gövdede ~15 kelimeden fazla yok.
+4. **Hep aynı çerçeve.** Tutarlılık, 6 takipçili bir hesabın akışta tanınmasının tek yolu.
+5. **Tipografik varsayılan.** Oyuncu fotoğrafı yok, EA kart görseli ya da oyun ekran
+   görüntüsü yok — hakkı bizde olmayan hiçbir görsel yok. Başlık kartındaki kapak görselleri
+   yalnızca kullanım hakkı bizde olanlarla.
+6. **Her görselin alternatif metni (alt text) var.** X ve Instagram destekliyor; erişilebilirlik
+   için ve ajan bunu yazabilir.
+
+### 8.4 Renk ve yazı
+
+Koddaki mevcut değerler (`app/api/social-card/route.tsx`) — sistem bunlarla sabitlenir:
+
+| Öğe | Değer | Kullanım |
+|---|---|---|
+| Arka plan | Koyu lacivert gradyan `#060f1e → #0d2338` | Her kart |
+| Üst şerit | Nane → camgöbeği → kehribar `#00d4aa · #22d3ee · #FFB81C` | Her kart, marka imzası |
+| Nane | `#2fe6c4` | Etiketler, birinci taraf, CTA |
+| Mercan | `#ff6b5a` | İkinci taraf, liste numaraları |
+| Kehribar | `#FFD479` | Kategori etiketi |
+| Yazı | Space Grotesk 700 | Her şey |
+
+### 8.5 Öneri: etiket ayağı söylesin
+
+Sağ üstteki etiket bugün sitenin kategorisini gösteriyor (*PLAYER RADAR*, *SCOUT LIST*).
+Öneri: **§6'daki ayağı** göstersin — *THE LIST*, *CARD VS REALITY*, *THE RECEIPT*,
+*ONE TO WATCH*. Takipçi birkaç haftada formatları tanır; bir *RECEIPT* etiketi, açmadan
+önce ne okuyacağını söyler.
+
+### 8.6 Kurulacaklar — orkestra aşamasında
+
+| # | Ne | Neden |
+|---|---|---|
+| a | **contrast ve list kartlarını 4:5'te büyüt** | §8.2 — en küçük düzeltme, en büyük etki |
+| b | **Carousel seti** — kapak + oyuncu başına slayt (isim, kulüp, yaş, bir sayı, bir cümle) + kapanış | Instagram'ın ana formatı (§6.4); bugün list kartı tek görsel |
+| c | **"Scout Gamer Read" kartı** — oyuncu, reyting, gerçek sezon sayısı, hüküm (Underrated / Fair / Overrated) | ② ayağının kendi kartı; Ağustos'tan beri bekliyor, **Style A'nın yerine değil, yanına** |
+| d | **Kartın üzerinde oyun sürümü** — *"EA FC 26"* ya da *"EA FC 27"* | Reyting eskiyince kart kendi kendini yalanlamasın (§6.2) |
+| e | **Makbuz kartında tarih** — *"Called on 3 Sep 2026"* | ④ ayağının kanıtı tarihin kendisi |
+| f | **Alt text üretimi** | §8.3 ilke 6 |
+| g | **Video şablonu (9:16)** — hafta 3+ | §5.4 |
+
+Carousel slaytlarındaki kulüp ve yaş, `fc_players`'tan değil, **yazının doğrulanmış
+verisinden** gelir — 15 Eylül'de ana sayfa kartlarında yaşanan hatanın dersi.
