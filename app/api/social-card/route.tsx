@@ -31,7 +31,9 @@ import { ImageResponse } from "next/og";
  *   list:      items — semicolon-separated, e.g. "Mora;Quenda;Simões"
  */
 
-export const runtime = "edge";
+// Node, not Edge: Next 16.3 deprecates the Edge Runtime and warns on every
+// build. next/og's ImageResponse is fully supported on Node.
+export const runtime = "nodejs";
 
 const ACCENT = "linear-gradient(90deg, #00d4aa, #22d3ee, #FFB81C)";
 

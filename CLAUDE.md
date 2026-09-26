@@ -16,7 +16,9 @@ tactical deep-dives, plus an admin CMS with AI-assisted content generation.
 - **Styling:** Tailwind CSS v4 **and** CSS Modules (`*.module.css`) are both used — match
   the convention of the file/folder you're editing.
 - **Data:** Supabase (Postgres), accessed via the anon client (subject to RLS).
-- **AI:** `@anthropic-ai/sdk` for admin content generation/translation.
+- **AI:** the admin routes call the Anthropic Messages API directly with `fetch` (no SDK;
+  it was unused and removed 2026-09-26). New content is written with the `scout-editor`
+  skill instead, at no API cost.
 - **Editor:** TipTap + a custom block editor under `app/admin`.
 - **Animation:** framer-motion, lenis (smooth scroll).
 - **Deploy:** Vercel.

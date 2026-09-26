@@ -25,6 +25,29 @@ const nextConfig: NextConfig = {
       { protocol: "https", hostname: "flagcdn.com" },
     ],
   },
+  /**
+   * Security headers (2026-09-26). Until now only HSTS was served.
+   *
+   * Deliberately NOT a full Content-Security-Policy: the site loads GA, Vercel
+   * Analytics, YouTube embeds and Supabase-hosted images, and a script-src
+   * policy written without testing each would break one of them silently.
+   * `frame-ancestors` is the one CSP directive taken here — it controls who may
+   * embed *us*, not what we embed, so the YouTube iframes are unaffected — and
+   * it is what stops /admin being framed for a clickjacking attempt.
+   */
+  async headers() {
+    return [
+      {
+        source: "/:path*",
+        headers: [
+          { key: "X-Frame-Options", value: "SAMEORIGIN" },
+          { key: "Content-Security-Policy", value: "frame-ancestors 'self'" },
+          { key: "X-Content-Type-Options", value: "nosniff" },
+          { key: "Referrer-Policy", value: "strict-origin-when-cross-origin" },
+        ],
+      },
+    ];
+  },
   async redirects() {
     return [
       // EN prefix redirects — strip /en
