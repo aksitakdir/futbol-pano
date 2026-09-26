@@ -1087,3 +1087,78 @@ Her adım kendi başına işe yarar; biri gecikirse diğerleri beklemez.
 | 4 | Sıralama | §12'yi bitir → Aşama 0 hemen → Aşama 1 paralel |
 | 5 | Hesap adlarını birleştirmek (§4.5) | Yeni hesaplar açılırken birlikte |
 | 6 | Video: sessiz + ekran metni mi, seslendirme mi | Hafta 3'e kadar |
+
+---
+
+## 12. Kampanya çerçevesi
+
+### 12.1 Evergreen çekirdek, olaylar dalga
+
+Scout Gamer'ın çekirdeği **evergreen** — genç oyuncu listeleri haftalarca geçerli (§6.2).
+Olaylar — bir oyunun çıkışı, bir transfer dönemi, bir milli maç arası — geçici ilgi dalgaları
+yaratır. Kampanya, bu dalgayı çekirdeğe bağlamanın yoludur; çekirdeğin yerine geçmez.
+
+### 12.2 Yıllık tekrar eden anlar
+
+*Tarihler her yıl değişir; her kampanyadan önce doğrulanır.*
+
+| An | Tipik dönem | Kitle (§3) | Ayak (§6) | Bizim açımız |
+|---|---|---|---|---|
+| **Oyun çıkışı ve reyting açıklamaları** (EA FC) | Yaz sonu – sonbahar | ② | ② kart vs gerçek | Hangi genç doğru, hangisi yanlış okunmuş |
+| **Oyun içi reyting güncellemeleri** | Sezon içi, kış | ② | ② · ④ makbuz | "Biz söylemiştik, oyun da kabul etti" |
+| **Football Manager'ın yıllık sürümü** | Sonbahar | ② | ① liste | Wonderkid listeleri, oyunun diliyle |
+| **Transfer dönemleri** | Yaz, Ocak | ① ③ | ① ③ | Bonservisin arkasındaki genç oyuncu |
+| **Milli maç araları** | Yılda birkaç kez | ③ ④ | ③ profil | İlk çağrılar, ilk maçlar |
+| **Genç oyuncu ödülleri** (Golden Boy, Kopa) | Sonbahar | ① ③ | ① · ④ | Aday listeleri — ve bizim listelerimizle karşılaştırma |
+| **Gençlik turnuvaları** (U-17, U-20…) | Değişken | ④ | ③ ④ | Henüz kimsenin bilmediği isimler |
+| **Sezon başı ve sonu** | Yaz sonu / bahar | ① ③ | ① ③ | İlk goller; sezonun çıkış yapanları |
+
+Her anın karşılığı §3'te bir kitle ve §6'da bir ayak. Karşılığı olmayan bir olay, ne kadar
+gündemde olursa olsun, kampanya konusu değildir (§4.2).
+
+### 12.3 Altı kural — kendi geçmişimizden
+
+1. **Her kampanyanın bitiş tarihi ve çıkış planı var.** *Ders: Dünya Kupası.* 52 yazı yazıldı,
+   turnuva 19 Temmuz'da bitti; site ondan sonra da bir Dünya Kupası sitesi gibi kaldı ve bu
+   konudaki 165 arama sorgusu bugün 0 tık getiriyor (§3.1). Bir kampanya başlarken nasıl
+   biteceği de yazılır.
+2. **Veri oturmadan başlanmaz.** *Ders: FC 27.* Oyunun çıkış günü ile verinin oturduğu gün
+   aynı değil — senin kararınla FC 27 verisi ~6 Ekim'e bırakıldı. Reytinge dayanan bir
+   kampanya, o veri gelmeden başlamaz.
+3. **Her kampanya gönderisi aynı doğrulamadan geçer.** *Ders: #157.* Sullivan hatası tam da
+   gündemdeki bir oyuncu hakkında hızlı yazılan bir yazıda oldu. Acele doğrulamayı atlatmaz.
+4. **Kampanya yer değiştirir, eklemez.** Kampanya gönderileri §11.4'teki takvimde bir
+   gönderinin yerini alır; takvimin üstüne binmez. §1'deki patlama-sessizlik döngüsü tekrarlanmaz.
+5. **Kampanya bir kitleye ve bir ayağa hizmet eder** (§12.2). Gündem olduğu için değil.
+6. **Her kampanya bir makbuz tohumu eker.** Kampanya sırasında yazılan tarihli iddialar,
+   aylar sonra ④ makbuz ayağının malzemesi olur — kampanyanın asıl uzun vadeli getirisi bu.
+
+### 12.4 Kampanya şablonu
+
+Her kampanya başlamadan önce tek sayfalık bir plan olarak yazılır ve **senin onayından geçer**:
+
+| Alan | İçerik |
+|---|---|
+| Ad | |
+| Olay ve tarihler | Doğrulanmış |
+| Kitle ve ayak | §3 ve §6'dan |
+| İçerik | Arşivden ne kullanılır; hangi yeni yazı gerekir |
+| Takvim | §11.4'te hangi gönderilerin yerini alır |
+| Başlangıç koşulu | Ör. "veri oturduğunda" |
+| **Bitiş tarihi** | Zorunlu |
+| **Çıkış** | Bittiğinde ne olur — içerik evergreen'e mi döner, hangi makbuzlar takvime yazılır |
+| Başarı ölçüsü | Bulunduğumuz aşamanın metriği (§2.3) |
+
+### 12.5 Kim ne yapar
+
+- **Ben (bu sohbet):** kampanya sayfasını taslak olarak hazırlarım.
+- **Sen:** onaylarsın ya da düzeltirsin.
+- **Şef:** onaylı kampanyaları takvime işler, bitiş tarihinde durdurur.
+
+### 12.6 Yaklaşan adaylar
+
+İçerik değil, sadece aday — her biri §12.4'e göre seninle planlanır:
+
+- **FC 27 reytingleri** — başlangıç koşulu: FC 27 verisinin oturması (~6 Ekim).
+- **Genç oyuncu ödülleri sezonu** — sonbahar; tarihleri doğrulanacak.
+- **Ocak transfer dönemi.**

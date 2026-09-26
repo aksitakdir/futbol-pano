@@ -1,5 +1,9 @@
 # Scout Gamer — Sosyal Medya Oyun Kitabı
 
+> **Not (2026-09-26):** Bu belge `docs/SOCIAL-STRATEGY.md`'den önce yazılmış bir taslak.
+> Strateji tamamlandı; bu kılavuz ona göre yeniden yazılacak. Çelişki olursa strateji geçerli.
+
+
 Son güncelleme: 2026-09-26 · Sahibi: sosyal medya içerik yöneticisi (Claude) + hesap sahibi
 
 Bu belge bir strateji değil, bir **işletim kılavuzu** — her bölüm "kim, ne zaman,

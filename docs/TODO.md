@@ -160,7 +160,13 @@ işletim kılavuzu taslağı — strateji tamamlanınca ona göre yeniden yazıl
 - [x] 9. **Hashtag ve anahtar kelime stratejisi** — [SOCIAL-STRATEGY.md §9](SOCIAL-STRATEGY.md) (2026-09-26)
 - [x] 10. **CTA ve dönüşüm** — [SOCIAL-STRATEGY.md §10](SOCIAL-STRATEGY.md) (2026-09-26)
 - [x] 11. **İşletim modeli** — [SOCIAL-STRATEGY.md §11](SOCIAL-STRATEGY.md) (2026-09-26) — açık kararlar §11.9'da
-- [ ] 12. **Kampanya çerçevesi** — güncel olaylar (transfer penceresi, oyun çıkışı, milli maçlar) stratejiye nasıl bağlanır
+- [x] 12. **Kampanya çerçevesi** — [SOCIAL-STRATEGY.md §12](SOCIAL-STRATEGY.md) (2026-09-26)
+
+**Strateji tamamlandı (12/12, 2026-09-26). Sıradaki:**
+- [ ] §11.9'daki açık kararlar (sen)
+- [ ] **Aşama 0** — ilk haftalık paket, elle paylaşım (ben hazırlarım, sen paylaşırsın)
+- [ ] `SOCIAL-PLAYBOOK.md`'yi stratejiye göre yeniden yaz — Aşama 0'ın işletim kılavuzu
+- [ ] Aşama 1 kurulumu — §11.8 sırasıyla
 
 **Ölçülmüş sıfır noktası (26 Eyl):** X 54 gönderi / 2 takipçi · IG 51 gönderi / 4 takipçi
 
