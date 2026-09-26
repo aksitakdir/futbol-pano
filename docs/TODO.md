@@ -164,7 +164,31 @@ işletim kılavuzu taslağı — strateji tamamlanınca ona göre yeniden yazıl
 
 **Strateji tamamlandı (12/12, 2026-09-26). Sıradaki:**
 - [ ] §11.9'daki açık kararlar (sen)
-- [ ] **Aşama 0** — ilk haftalık paket, elle paylaşım (ben hazırlarım, sen paylaşırsın)
+- [ ] **Aşama 0 — BEKLEMEDE (karar: 2026-09-27).** Paylaşım, FC 27 verisi çekilip
+      değerlendirilene kadar (~6 Ekim) başlamaz. O zamana kadar: görsel ve metin çalışması ↓
+
+**Görsel ve metin çalışması — FC 27 verisine kadar**
+
+*Görseller (§8.6)*
+- [ ] a. contrast ve list kartlarını 4:5'te büyüt
+- [ ] b. Kartta oyun sürümü damgası (*EA FC 26* / *EA FC 27*)
+- [ ] c. Etiket ayağı söylesin (*THE LIST · CARD VS REALITY · THE RECEIPT · ONE TO WATCH*) — §8.5
+- [ ] d. Makbuz kartında tarih
+- [ ] e. Carousel seti — kapak + oyuncu başına slayt + kapanış
+- [ ] f. "Scout Gamer Read" kartı — Style A'nın yanına, yerine değil
+- [ ] g. Alt text üretimi
+
+*Metinler*
+- [ ] h. `social-pack.mjs` → stratejiye göre metin: ilk satırda anahtar kelime (§9.3), ses
+      kuralları (§4.3), hashtag seti (§9.4), CTA dili (§10.5), UTM (§10.6 c)
+- [ ] i. Sosyal metin kapısı — yasak kalıplar (§4.3), havuz sayısı (§6.6), sürüm/hashtag
+      uyuşmazlığı (§9.4), reşit olmayan oyuncu etiketi (§7.4) — `preflight.mjs` gibi reddeder
+- [ ] j. Yanıt bankası üreteci — §7.5'teki dört tür
+- [ ] k. Bio metinleri — §4.5 (hesap adı kararıyla birlikte)
+- [ ] l. `SOCIAL-PLAYBOOK.md`'yi stratejiye göre Aşama 0 kılavuzu olarak yeniden yaz
+
+*FC 27 verisi gelince:* kart vs gerçek görselleri FC 27 reytingleriyle doldurulur; FC 26'lık
+her görsel sürüm damgasıyla işaretli kalır.
 - [ ] `SOCIAL-PLAYBOOK.md`'yi stratejiye göre yeniden yaz — Aşama 0'ın işletim kılavuzu
 - [ ] Aşama 1 kurulumu — §11.8 sırasıyla
 
