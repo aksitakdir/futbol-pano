@@ -212,3 +212,86 @@ Haftalık skor tablosu repoda tutulur; her Cuma bir satır. Biçimi §11'de.
   gönderi başına istatistikler 1. aşamaya yetiyor. 2. aşamada yeniden bakılır.
 - **Instagram profesyonel hesap** — değilse geçiş öneriyorum: ücretsiz ve Insights'ı açıyor.
   Hesabın şu an profesyonel olup olmadığını giriş yapmadan göremiyorum.
+
+---
+
+## 3. Hedef kitle
+
+*Veri: GSC, son 28 gün (25 Eylül export'u) — 1000 sorgu, 196 ülke, cihaz kırılımı.
+Export Google'ın gösterdiği 1000 sorguyla sınırlı: 910 tıkın 269'u sorgu düzeyinde görünüyor,
+gerisi anonimleştirilmiş uzun kuyruk. Oranlar yön gösterir, kesin değildir. Sosyaldeki 6
+takipçi kitle hakkında bir şey söylemiyor — kitleyi aramadan okuyoruz.*
+
+### 3.1 Aramada kim bizi buluyor — niyete göre
+
+| Niyet | Sorgu | Tık | Gösterim | TO |
+|---|---|---|---|---|
+| **Genç yetenek listesi** — "best young strikers in the world" | 296 | **250** | 5.528 | 4,5% |
+| Belirli oyuncu adı ve diğer | 475 | 12 | 1.078 | 1,1% |
+| Dünya Kupası 2026 | 165 | **0** | 592 | 0% |
+| **Oyun dili** — "argentina wonderkids", "best young midfielders fc 26" | 52 | 5 | 247 | 2,0% |
+| Taktik | 11 | 2 | 35 | 5,7% |
+
+Görünen tıkların **%93'ü** tek bir niyetten: *en iyi genç oyuncular listesi.*
+
+### 3.2 Nerede ve neyle
+
+- **196 ülke.** İlk beş: İngiltere %24, ABD %11, Hindistan %7, Kanada %4, Endonezya %4 —
+  ilk beşin toplamı ancak %50. Sonra Malezya, Avustralya, Nijerya, Almanya, İtalya, İrlanda,
+  Vietnam, Bangladeş, Singapur. Tek bir pazar yok; site ilkesi olan coğrafi tarafsızlık
+  kitlenin kendisinde de var.
+- **İngilizce konuşulan dünya + Güney/Güneydoğu Asya + Nijerya.** İngilizce olmayan sorgular
+  da geliyor (Endonezyaca: *"cb muda terbaik"*, *"pemain muda argentina"*) — ama site
+  İngilizce kalır; bu okurlar İngilizce içeriğe zaten geliyor.
+- **Tıkların %76'sı mobilden.** Mobil TO %3,6, masaüstü %1,5. Sosyal zaten mobil; her görsel
+  telefon ekranı için tasarlanır.
+
+### 3.3 Beş kitle
+
+**① Genç yetenek listesi okuru — ANA KİTLE**
+*Kanıt:* tıkların %93'ü. *Ne istiyor:* isim, sıralama, üzerinde tartışılabilecek bir görüş.
+*Sosyalde:* futbol X'inde "kim daha iyi" tartışmaları, liste paylaşımları, genel futbol
+toplulukları. *Onlara verdiğimiz:* sitenin zaten en iyi yaptığı şey — doğrulanmış listeler.
+
+**② Oyuncu — Career Mode ve Football Manager — FARKIMIZIN KİTLESİ**
+*Kanıt:* aramada küçük (52 sorgu, 247 gösterim), ama dili belirgin: *"wonderkids"*,
+*"fc 26"*. "Wonderkid" bir oyun terimi. *Ne istiyor:* kariyer modunda kimi almalı, kart
+oyuncuyu olduğundan iyi mi kötü mü gösteriyor, potansiyeli ne. *Sosyalde:* oyun toplulukları,
+reyting tartışmaları, oyun içerik üreticilerinin gönderileri. *Onlara verdiğimiz:* sitenin
+tek gerçek farkı — **reyting ile sahadaki gerçeğin karşılaştırması.**
+*Açık soru:* bu kitle gerçekten küçük mü, yoksa aramada küçük çünkü biz onlar için açıkça
+yazmıyoruz mu? Veri bunu ayırt etmiyor. Sosyal, bunu test edeceğimiz yer.
+
+**③ Kulüp taraftarı — ÇARPAN**
+*Kanıt:* oyuncu adıyla gelen yüzlerce sorgu (tıkları düşük). *Ne istiyor:* "kendi"
+gençlerinin değerinin görülmesi. *Sosyalde:* kulüp taraftar hesaplarının ve kulübün resmi
+hesaplarının altı — sosyalin en hareketli köşeleri. *Onlara verdiğimiz:* adıyla yazılmış her
+oyuncunun hazır bir taraftar kitlesi var; Dowman yazısı bir Arsenal taraftarının yazısıdır.
+
+**④ Ülke takipçisi — İKİNCİL**
+*Kanıt:* ülke listeleri aramada güçlü — Arjantin 112, İspanya 58, Almanya 40, Japonya ve
+Fransa 30'ar tık. İlk ülkeler arasında Endonezya, Malezya, Nijerya, Hindistan. *Ne istiyor:*
+kendi ülkesinin gelecek kuşağı. *Onlara verdiğimiz:* ülke listeleri — İngilizce.
+
+**⑤ Dünya Kupası izleyicisi — HEDEF DEĞİL**
+*Kanıt:* 165 sorgu, **0 tık.** Turnuva bitti. Bilinçli olarak dışarıda.
+
+### 3.4 Çekirdek kişi
+
+Beş kitlenin kesiştiği yer tek bir kişi — ve sitenin adı onu zaten tarif ediyor:
+
+> **Scout Gamer:** hafta sonu maç izleyen, hafta içi kariyer modunda ya da Football
+> Manager'da kadro kuran futbol meraklısı. "Bu çocuk gerçekten iyi mi, yoksa sadece kartı mı
+> iyi?" sorusunu soran kişi.
+
+① ana kitle, ② o kişinin bizi başkalarından ayıran tarafı. Stratejinin geri kalanı —
+ses, içerik, etkileşim — bu kişiye göre kurulur.
+
+### 3.5 Test edilecek varsayımlar
+
+Aramadan okunan bir kitlenin sosyalde nerede ve nasıl davrandığı henüz ölçülmedi.
+İlk 6 hafta bunları sınar:
+
+- ② kitlesi sosyalde, aramada göründüğünden büyük mü?
+- ③ kulüp taraftarı konuşmaları, genel futbol konuşmalarından daha fazla etkileşim getiriyor mu?
+- Hangi ülke saatleri daha çok etkileşim getiriyor? (İngiltere + ABD, tıkların %35'i.)

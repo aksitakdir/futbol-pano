@@ -145,7 +145,7 @@ işletim kılavuzu taslağı — strateji tamamlanınca ona göre yeniden yazıl
 **Strateji kapsamı — sırayla**
 - [x] 1. **Mevcut durum teşhisi** — [SOCIAL-STRATEGY.md §1](SOCIAL-STRATEGY.md) (2026-09-26)
 - [x] 2. **Amaç ve ölçü** — [SOCIAL-STRATEGY.md §2](SOCIAL-STRATEGY.md) (2026-09-26)
-- [ ] 3. **Hedef kitle** — FC/FUT oyuncuları, FM oyuncuları, genç yetenek meraklıları, kulüp taraftarları; nerede, ne istiyorlar
+- [x] 3. **Hedef kitle** — [SOCIAL-STRATEGY.md §3](SOCIAL-STRATEGY.md) (2026-09-26)
 - [ ] 4. **Konumlanma ve ses** — "Football × Game Culture" sosyalde neye benziyor
 - [ ] 5. **Platform rolleri** — X, Instagram, kısa video, Reddit: her birinin işi
 - [ ] 6. **İçerik ayakları ve formatlar** — tür, oran, görsel
@@ -157,6 +157,15 @@ işletim kılavuzu taslağı — strateji tamamlanınca ona göre yeniden yazıl
 - [ ] 12. **Kampanya çerçevesi** — güncel olaylar (transfer penceresi, oyun çıkışı, milli maçlar) stratejiye nasıl bağlanır
 
 **Ölçülmüş sıfır noktası (26 Eyl):** X 54 gönderi / 2 takipçi · IG 51 gönderi / 4 takipçi
+
+**Konuşuldu, kararlar açık (2026-09-26) — orkestra modeli (§11'e girecek)**
+Ajanlar (şef + içerik / keşif / yanıt / doğrulama / rapor) taslak üretir → `/admin/social`
+onay kuyruğu → **kendi gönderilerimiz** onayla otomatik yayınlanır (Vercel cron + X/IG API);
+**başkalarına yanıt/yorum** ajan hazırlar, sen tek dokunuşla gönderirsin — X kuralları
+anahtar kelimeye dayalı otomatik yanıtı yasaklıyor, IG API başkasının gönderisine yorumu
+desteklemiyor. Tahmini katılım: kurulum ~2–3 saat, sonra haftada ~1,5–2 saat.
+Açık kararlar: (1) bu çizgi, (2) X API aylık tavanı, (3) IG profesyonel hesap + FB sayfası,
+(4) sıralama — önerim §3–7 önce.
 
 **Beklemede — strateji bitince**
 - Oyun kitabındaki FC 27 kampanyası ve araç listesi (UTM, yanıt bankası, player card)
