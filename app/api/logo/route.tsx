@@ -13,7 +13,7 @@ import { ImageResponse } from "next/og";
  * /api/logo?size=1000&bg=accent      -> teal gradient background
  */
 
-export const runtime = "edge";
+export const runtime = "nodejs";
 
 const ACCENT = "linear-gradient(135deg, #00d4aa, #22d3ee, #FFB81C)";
 
