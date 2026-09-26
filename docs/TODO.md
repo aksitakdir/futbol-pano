@@ -31,6 +31,12 @@ oyunun kendisi sanılmasından çıktı; yayın kapısı kartsız oyuncu iddiala
       callout, karşılaştırma tablosunun iki "kart" satırı, SSS. Sullivan artık "67, ilk kartı".
       Veri setimizin "52" sayısı çıkarıldı. İki kolon (`sections_json` + `content_en`)
       birlikte güncellendi. Düzeltme notu yok — hiç yayına girmedi.
+- [ ] **Sakin, acil değil — havuz sayıları.** #152 (*"424 centre-backs aged 21 or under in
+      EA FC 26"*) ve #154 (*"593 central midfielders… in EA FC 26"*) veri setimizin sayısını
+      oyunun sayısı gibi yazıyor. Set MLS'i içermiyor, başka ligleri de eksik olabilir —
+      gerçek sayı büyük ihtimalle daha yüksek. Oyuncu reytingleri doğru; sorun sadece "oyunda
+      toplam şu kadar" cümleleri. FC 27 importunda (~6 Ekim) setin kapsamı kontrol edilip bu
+      cümleler "in the FC 26 database we use" gibi yeniden yazılmalı.
 - [x] `fc_players` notu düzeltildi (hafıza): "0 MLS" veri setinin özelliği, oyunun değil.
 
 ---
@@ -146,7 +152,7 @@ işletim kılavuzu taslağı — strateji tamamlanınca ona göre yeniden yazıl
 - [x] 1. **Mevcut durum teşhisi** — [SOCIAL-STRATEGY.md §1](SOCIAL-STRATEGY.md) (2026-09-26)
 - [x] 2. **Amaç ve ölçü** — [SOCIAL-STRATEGY.md §2](SOCIAL-STRATEGY.md) (2026-09-26)
 - [x] 3. **Hedef kitle** — [SOCIAL-STRATEGY.md §3](SOCIAL-STRATEGY.md) (2026-09-26)
-- [ ] 4. **Konumlanma ve ses** — "Football × Game Culture" sosyalde neye benziyor
+- [x] 4. **Konumlanma ve ses** — [SOCIAL-STRATEGY.md §4](SOCIAL-STRATEGY.md) (2026-09-26)
 - [ ] 5. **Platform rolleri** — X, Instagram, kısa video, Reddit: her birinin işi
 - [ ] 6. **İçerik ayakları ve formatlar** — tür, oran, görsel
 - [ ] 7. **Etkileşim stratejisi** — hangi konuşmalar, hangi hesaplar, nasıl yorum; günlük ritim

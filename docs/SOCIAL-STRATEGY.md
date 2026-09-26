@@ -295,3 +295,97 @@ Aramadan okunan bir kitlenin sosyalde nerede ve nasıl davrandığı henüz öl�
 - ② kitlesi sosyalde, aramada göründüğünden büyük mü?
 - ③ kulüp taraftarı konuşmaları, genel futbol konuşmalarından daha fazla etkileşim getiriyor mu?
 - Hangi ülke saatleri daha çok etkileşim getiriyor? (İngiltere + ABD, tıkların %35'i.)
+
+---
+
+## 4. Konumlanma ve ses
+
+*Kaynaklar: sitenin editoryal sesi (`.claude/skills/scout-editor/SKILL.md` → "Editorial voice"),
+§1'deki gerçek açıklamalar, §3'teki kitle.*
+
+### 4.1 Konumlanma
+
+> **Scout Gamer: genç oyuncuları reytinglerine karşı okuyan hesap.**
+
+Uzun hali:
+
+> §3'teki kişi için — maç izleyen, kariyer modunda ya da Football Manager'da kadro kuran ve
+> *"bu çocuk gerçekten iyi mi, yoksa sadece kartı mı iyi?"* diye soran futbol meraklısı —
+> Scout Gamer genç oyuncuyu oyunun reytingine karşı okuyan hesaptır: doğrulanmış sayılarla ve
+> tarihli iddialarla.
+
+Neden bu boşluk bizim: **istatistik hesapları** oyunsuz sayı verir; **oyun hesapları**
+futbolsuz oyun verir; **transfer hesapları** oyuncusuz bonservis verir. İkisini birden tutan,
+ve bunu doğrulanmış veriyle yapan bir hesap alanı boş. Sitenin adı — Scout + Gamer — zaten bu.
+
+### 4.2 Ne değiliz
+
+- **Transfer haber hesabı değil.** Haberi ilk veren olmak başkalarının işi; bizim işimiz
+  bonservisin arkasındaki oyuncu.
+- **Dünya Kupası hesabı değil.** Turnuva bitti (§3 ⑤).
+- **Paket açılışı ya da FUT ticaret hesabı değil.** Oyunu futbolu okumak için kullanırız.
+- **Sıcak yorum hesabı değil.** Her iddianın bir sayısı var.
+- **Alay hesabı değil.** Oyuncuyla, taraftarla, EA ile dalga geçmeyiz. "Kart yanlış" demek,
+  "EA aptal" demek değildir.
+
+§1'deki odak dağınıklığı — Onana'nın kiralanması, 23 yaşındaki bir oyuncunun transferi,
+bir maç önizlemesi — bu çizginin dışında kalıyor.
+
+### 4.3 Ses — sekiz kural
+
+Sitenin yazılarında zaten var olan ses; sosyale taşınmamıştı.
+
+1. **Sayı önce, sıfat sonra.** *"Unmatched"* değil, *"€55m"*.
+2. **Pozisyon al — kanıtla.** Sitenin kuralı: *"Take positions… Be confident."* Ama her
+   pozisyonun bir sayısı ya da tarihi var.
+3. **Kuru ve kesin.** Heyecan cümlesi yok. §1'den çıkan **yasak kalıplar:** *masterclass,
+   unmatched, the future is here, game-changer, changing the game, making waves, can't stop
+   talking about, discover, Tap the link in bio* (bir formül olarak).
+4. **Oyun dilini doğal konuş.** *Wonderkid, potential, OVR, card, meta, hidden gem* — sitenin
+   kuralıyla: *"analytical, never gimmicky."*
+5. **Kimseyle alay etmeyiz** — EA'in reytingiyle bile.
+6. **Kısa.** X'te en fazla iki cümle ve bir sayı. Instagram'da **ilk satır** sayıyı taşır —
+   akışta sadece o görünüyor.
+7. **Belirsizliği söyle.** *"Reported"*, *"per EA's ratings page"*. Doğruluk sesin parçası:
+   #157'deki hata, sesin kendisinden emin olup verisinden emin olmamasıydı.
+8. **Dil: İngilizce, sitenin İngilizcesi** — *centre-back, footballer*. Ama global okunur:
+   yerel argo yok, çünkü kitle 196 ülkede.
+
+### 4.4 Önce ve sonra — gerçek bir gönderiyle
+
+**Önce** — Instagram, 13 Eylül (§1):
+
+> The transfer market just went all-in on young wingers.
+> Clubs are paying premium fees for pace, creativity, and potential on the flanks. We've
+> ranked the breakout talents making waves this window—and revealed why scouts can't stop
+> talking about them.
+> Tap the link in bio to discover the next generation of wing threats.
+> #Wingers #TransferMarket #YoungTalent #Football #Scouting #WorldCup2026 #footballtransfers
+
+Tek bir isim yok, tek bir sayı yok, dört yasak kalıp, turnuva bittikten sonra `#WorldCup2026`.
+
+**Sonra** — aynı yazının (#150) yayındaki verisiyle:
+
+> €55m for Mika Godts. £30.8m for Malick Fofana. €12.5m for Leo Sauer.
+>
+> Three young wingers, three fees. Everyone can see who is fast. Almost nobody is paying for it.
+
+Üç isim, üç doğrulanmış bonservis, yazının kendi kapanış cümlesi. Görsel: `stat` ya da `list`
+kartı. Link ve hashtag'ler §9 ve §10'da.
+
+### 4.5 Kimlik
+
+**Bugünkü bio** (iki hesapta da benzer):
+*"FOOTBALL × GAME CULTURE / Smart football, zero lecture. Scouting reports, transfer analysis —
+built for fans who want more."*
+*"Zero lecture"* iyi ve kalmalı. *"Transfer analysis"* artık çekirdek değil; *"built for fans
+who want more"* her hesabın söylediği şey.
+
+**Önerilen bio:**
+
+> Football × Game Culture. Young players, read against the ratings — is he good, or is it just
+> his card? Verified numbers, dated calls. scoutgamer.com
+
+**Hesap adları tutarsız:** X'te `@scoutgamerx`, Instagram'da `@scoutgamer_fc`. Birini bilen
+diğerini tahmin edemiyor. Birleştirmek önerilir — hangi adın iki platformda da boş olduğu
+kontrol edilmeli. Karar senin.
