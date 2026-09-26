@@ -115,7 +115,8 @@ tarihli yazıyoruz. Bankadakiler: Bouaddi (12 Tem), Robinio Vaz, Ngumoha (20 Eyl
 
 **X**
 - Tekil gönderi + kart görseli. **Link gönderide değil, kendi gönderimizin altındaki
-  ilk yanıtta** — X dışarı link veren gönderinin erişimini kısıyor.
+  ilk yanıtta** — birçok kaynak ana gönderideki linkin erişimi düşürdüğünü söylüyor; X
+  bunu resmi olarak belgelemedi (bkz. SOCIAL-STRATEGY.md §10.4).
 - Liste → thread: bir oyuncu, bir tweet, bir kart.
 - Hashtag en fazla 2.
 

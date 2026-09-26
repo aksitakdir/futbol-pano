@@ -158,7 +158,7 @@ işletim kılavuzu taslağı — strateji tamamlanınca ona göre yeniden yazıl
 - [x] 7. **Etkileşim stratejisi** — [SOCIAL-STRATEGY.md §7](SOCIAL-STRATEGY.md) (2026-09-26)
 - [x] 8. **Görsel kimlik sistemi** — [SOCIAL-STRATEGY.md §8](SOCIAL-STRATEGY.md) (2026-09-26)
 - [x] 9. **Hashtag ve anahtar kelime stratejisi** — [SOCIAL-STRATEGY.md §9](SOCIAL-STRATEGY.md) (2026-09-26)
-- [ ] 10. **CTA ve dönüşüm** — yanıt → profil → site hunisi; link nerede durur
+- [x] 10. **CTA ve dönüşüm** — [SOCIAL-STRATEGY.md §10](SOCIAL-STRATEGY.md) (2026-09-26)
 - [ ] 11. **İşletim modeli** — kim ne yapar, haftalık takvim, onay akışı
 - [ ] 12. **Kampanya çerçevesi** — güncel olaylar (transfer penceresi, oyun çıkışı, milli maçlar) stratejiye nasıl bağlanır
 

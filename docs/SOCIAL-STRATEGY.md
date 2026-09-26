@@ -865,3 +865,87 @@ Her Cuma (§2.5'e ek):
 - Hiç erişim getirmeyen hashtag 3 hafta üst üste → listeden çıkar.
 - Hangi anahtar kelime ve oyuncu, keşif ajanına en çok konuşma buldurdu → bir sonraki haftanın
   içerik önceliği.
+
+---
+
+## 10. CTA ve dönüşüm
+
+### 10.1 Bugün
+
+- **Instagram:** 12 açıklamanın 12'si *"Tap the link in bio…"* ile bitiyor — aynı formül,
+  her gönderide.
+- **X:** görünen gönderide link, ana gönderinin içinde.
+- **Sonuç:** 105 gönderi, 6 takipçi.
+
+Ve daha önemlisi, ters yönde:
+
+- **Siteden sosyale neredeyse hiç köprü yok.** Sosyal hesaplarımıza linkler **sadece
+  footer'da** (`app/components/site-footer.tsx`). Hiçbir yazı sayfasında "takip et" çağrısı
+  yok, bülten yok. *(Kontrol: 2026-09-26, canlı bir liste sayfasının ham HTML'i.)*
+
+Aramadan son 28 günde **910 tık** geldi (§2.1). O okurların hiçbirine bizi takip etmesi
+söylenmiyor.
+
+### 10.2 Hunide iki yön
+
+```
+A. Sosyal → site        yanıt (link yok) → profil → bio + sabit gönderi → site (UTM)
+B. Site → sosyal        arama okuru → yazının sonunda "takip et" → takipçi
+```
+
+**B yönü, 1. aşamanın (§2.3 — keşfedilmek, takipçi kazanmak) belki de en hızlı yolu.**
+Sosyalde 6 takipçimiz var; sitede ayda yaklaşık bin okurumuz. O okur zaten bir listemizi
+okumuş, zaten ilgilenen kişi. *Ne kadarının takip edeceği ölçülmedi — B yönü bu yüzden
+ölçülerek başlar.*
+
+### 10.3 CTA aşamayı izler
+
+| Aşama (§2.3) | Sosyalde CTA | Sitede CTA |
+|---|---|---|
+| **1 — Keşfedilmek** (şimdi) | **Takip et** · profile git | **Bizi takip et** |
+| 2 — Geri gelen kitle | Kaydet · paylaş · oku | Takip et |
+| 3 — Trafik ve bülten | Oku · abone ol | **Bültene abone ol** |
+
+1. aşamada sosyaldeki asıl CTA tıklama değil, **takip.** Tıklama, trafik hedefine hizmet
+eder; trafik şimdilik son sırada (§2.2).
+
+### 10.4 Link nerede durur
+
+| Yer | Kural |
+|---|---|
+| **X — kendi gönderimiz** | Ana gönderide link yok; link **ilk kendi yanıtımızda.** *Neden:* birçok kaynak ana gönderideki dış linkin erişimi düşürdüğünü söylüyor. X bunu resmi olarak belgelemedi ve verilen oranlar tutarsız — kesin bir gerçek değil, maliyeti olmayan bir uygulama. *API notu:* linkli gönderi $0,20, linki yanıta taşımak bunu değiştirmez; değişen erişim. |
+| **X — başkalarına yanıt** | Link yok, biri sormadıkça (§7.4). |
+| **Instagram — açıklama** | Açıklamadaki linkler tıklanmıyor. Linkten söz edilir ama formül tekrarlanmaz. |
+| **Instagram — bio** | Tek link. Hedefi aşağıda (§10.6 a). |
+| **Instagram — hikâye** | Link çıkartması; yeni yazının yayın gününde. |
+| **Reddit** | Sadece topluluk kuralı izin veriyorsa (§7). |
+
+### 10.5 CTA dili
+
+§4'ün sesinde: formül değil, **gönderiye özgü ve somut.**
+
+| Yerine | Şöyle |
+|---|---|
+| *"Tap the link in bio to discover the next generation of wing threats."* | *"The other five wingers — and what their clubs paid — are in the full list. Link in bio."* |
+| *"Check out our full analysis!"* | *(X, kendi yanıtımızda)* *"Full list, with the fees: [link]"* |
+| — | *(1. aşama)* *"We read one young player against his rating every week. Follow for the next one."* |
+
+Sonuncusu bir vaat içeriyor: **tutabileceğimiz bir ritim** (§11) olmadan kullanılmaz.
+Sitede *"a new talent every week"* vaadinin tutulmadığı kayıtlı (`docs/TODO.md`, Görev A/B) —
+aynı hata sosyalde tekrarlanmaz.
+
+### 10.6 Kurulacaklar
+
+| # | Ne | Neden |
+|---|---|---|
+| a | **Bio link sayfası — sitenin kendi sayfası** (ör. `scoutgamer.com/latest`), sunucu tarafında render edilen, son paylaşılan yazılar | Trafik bizim alan adımızda kalır; aynı zamanda aranabilir bir sayfa. Harici bir "link in bio" servisi yerine. |
+| b | **Yazı sonunda takip çağrısı** — yazının kendi içeriğinin **altında**, bir site bileşeni olarak | B yönü (§10.2). Yazı kendi kapanış cümlesiyle bitmeye devam eder; bu, yazının parçası değil. |
+| c | **UTM düzeni** — `utm_source` = x / instagram / reddit / tiktok / youtube · `utm_medium` = social · `utm_campaign` = ayak (§6) · `utm_content` = yazının slug'ı | Hangi platform, hangi ayak, hangi yazı — GA'da ayrılabilsin (§2.5). |
+| d | **Bülten** — "The Deep Cut" | 3. aşama. Hafızada "en son adım" olarak park edilmiş; öyle kalır. |
+
+### 10.7 Ölçüm
+
+- **A yönü:** profil ziyareti → takipçi · bio link tıklaması (Instagram Insights) · GA'da UTM'li
+  oturumlar.
+- **B yönü:** sitedeki takip çağrısının tıklanması · aynı dönemde takipçi artışı. B yönünün
+  ilk 4 haftası, arama okurunun ne kadarının takip ettiğini gösteren ilk gerçek sayı olacak.
