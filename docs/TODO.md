@@ -12,6 +12,25 @@ tekrar eden sorunları görmenin tek yolu.
 
 ---
 
+## 🚨 Canlıda yanlış bir iddia — #157 Sullivan (2026-09-26 bulundu)
+
+Yazının tezi: *"EA FC 26 MLS'i taşımıyor, lig lisanssız; Sullivan'ın kartı yok."*
+**Yanlış.** MLS EA FC'de lisanslı — Quinn Sullivan'ın (Philadelphia Union) resmi
+FC 26 reyting sayfası var. Cavan'ın FC 26'da olmamasının sebebi büyük ihtimalle
+**yaş kuralı** (EA 17 yaş altını almıyor — Dowman'la aynı). Ve FC 27'de artık
+**67'lik kartı var** (EA resmi sayfa). Hata, Kaggle setimizdeki 0 MLS oyuncusunun
+oyunun kendisi sanılmasından çıktı; yayın kapısı kartsız oyuncu iddialarını göremiyor.
+
+- [ ] **#157: karar senin** — yayından kaldır, ya da yerinde düzelt. Düzeltilmiş hikâye
+      daha güçlü: *kart 67 (kendisi 70 bekliyordu), sezon 17 gol katkısı, 16 yaşında
+      milli takımda.* Sullivan için üretilen sosyal paket **paylaşılmamalı.**
+- [ ] **#158 Dowman: yayından önce düzelt.** Dowman kısmı doğru; ama Sullivan'dan
+      "kartı yok, ligi oyunda değil" diye bahseden iki yer yanlış. SSS'deki "52" sayısı
+      bizim veri setimizden — oyunun sayısı olarak yazılmamalı.
+- [ ] `fc_players` hakkındaki notları düzelt: "0 MLS" veri setinin özelliği, oyunun değil.
+
+---
+
 ## 🔴 Takvimli
 
 ### FC 27 — 25 Eylül, 3 gün kaldı
@@ -109,49 +128,27 @@ every week"* diyor ve bu vaat tutulmuyor → aşağıdaki Görev A/B.
 
 ---
 
-## 📣 Sosyal medya — dağıtım (2026-09-20 eklendi)
+## 📣 Sosyal medya — içerik yöneticiliği
 
-**Teşhis:** trafiğin sosyalden gelmemesi bir içerik sorunu değil, bir dağıtım
-sorunu. Sıfır takipçiyle link paylaşmak, her platformda sonucu garanti sıfır olan
-tek eylem.
+**Tam plan: [`docs/SOCIAL-PLAYBOOK.md`](SOCIAL-PLAYBOOK.md)** — kim ne yapar, ölçüm,
+içerik ayakları, yanıt kitabı, takip listesi, haftalık ritim, FC 27 açılış kampanyası.
+Buradaki maddeler sadece takip için.
 
-1 Ağustos 2026'da bir strateji yazıldı; memory'de karar *"kullanıcı düşünüyor"*
-diye kaldı ve sonraki hiçbir oturumda verilmedi. **Paylaşım durmadı** — plandaki
-üç lane (Reddit, kısa video, yanıt öncelikli X) hiç başlamadı.
+**Hafta 0 — ertelenmez**
+- [ ] UTM'i `social-pack.mjs`'e ekle (Claude)
+- [ ] Sıfır noktası: bugünkü takipçi sayıları (sen)
+- [ ] Bio + sabit gönderi (sen, Claude metni hazırlar)
+- [ ] Video kararı: sessiz + ekran metni mi, seslendirme mi (Ağustos'tan beri açık)
 
-*Kanıtın kaynağı:* hesaplara erişimimiz yok, post geçmişi ve analytics elimizde
-yok. Dayandığımız şey kullanıcının iki tarihteki kendi beyanı — 1 Ağustos
-("sadece post yapıyorum ama istikrarsız, hiçbir yorum yapmışlığım yok") ve
-17 Ağustos ("sosyal medyadan bir kişilik bile trafik almadık"). Ölçüm değil,
-beyan. Lane A'nın üçüncü maddesi (referrer ölçümü) bunu ilk kez ölçüye çevirecek.
+**FC 27 açılış kampanyası — 26 Eylül → 10 Ekim**
+- [ ] Sullivan (kart 67 vs sezon) — #157 düzeltildikten sonra
+- [ ] Ngumoha receipt — FC 27 reytingi alınınca
+- [ ] Dowman — #158 düzeltildikten sonra
+- [ ] Centre-backs listesi vs FC 27
+- [ ] Günde 5 reyting-şikayeti yanıtı
 
-**Kural:** sosyal, ilk aşamada bir **trafik** kanalı değil bir **kitle edinme**
-kanalıdır. Şimdi GA oturumlarıyla ölçersek, işe yaramadan kapatırız.
-İlk 6 hafta ölçüt: tıklama değil, **profil ziyareti.**
-
-### Lane A — Reddit / forumlar ⭐ önce bu
-Sıfır takipçiyle **ilk hafta** trafik getirebilen tek kanal: ilgi grafiğine
-dağıtıyor, üstelik indeksleniyor. IP'miz (*"oyunun veritabanı şu konuda yanlış"*)
-zaten yerli Reddit içeriği. Kapak yok, video yok, montaj yok.
-- [ ] Hedef 6 sub seç, her birinin self-promo kuralını oku
-- [ ] Haftada 5 yorum: önce değer, link sadece izin veren yerde
-- [ ] 3 hafta sonra referrer'ları ölç
-
-### Lane B — Kısa video, 3/hafta
-Sıfırdan takipçi büyütmenin tek motoru. Tek video → TikTok + Reels + Shorts, 8-16 sn.
-Üç format: **"oyun yanılıyor"** · **"deep cut"** · **"makbuz"** (şu tarihte şunu
-söyledik, sonra şu oldu). Makbuz farkımız. Bankadakiler: Bouaddi, Robinio Vaz, Ngumoha.
-
-### Lane C — X, %80 yanıt / %20 paylaşım
-Günde 5-10 gerçek oyuncu yorumu, başkalarının thread'lerinin içinde. Link yok.
-**Nereye yanıt verileceği** uygunluk sırasına göre: reyting şikayeti thread'leri →
-"bu çocuk kim" thread'leri (ilk 30 dk) → wonderkid/FM → transfer söylentileri →
-ve thread değil, yanıtları okunan ~20 hesaplık sabit liste.
-
-**Sıralama kuralı: aynı anda tek lane.** Üçünü birden denemek, sıfırın sebebi.
-
-**Açık karar (Ağustos'tan beri):** videolar sessiz mi (ekran yazısı) yoksa
-seslendirilmiş mi — kart metni yoğunluğunu bu belirliyor.
+**Claude'un araçları**
+- [ ] Yanıt bankası üreteci · FC 26→27 fark listesi · haftalık skor tablosu · player card varyantı
 
 ---
 
