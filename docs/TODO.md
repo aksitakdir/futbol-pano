@@ -174,8 +174,8 @@ işletim kılavuzu taslağı — strateji tamamlanınca ona göre yeniden yazıl
       9:16'da bant. Carousel'in 1. slaytı. (Bugün 4:5'te yüz yarıdan kesiliyor, 9:16'da kadraj dışı.)
       **DENEMEDE (2026-09-27)** — `exp/hero-card` dalında, `variant=hero`. Main'e birleştirilmedi,
       push edilmedi, canlıda yok. İki kapakla (#157, #150) üç formatta render edildi; ikinci
-      turda metin ortalandı, hikâyedeki üst geçiş kaldırıldı. Açık sorular: (1) bazı görsellerin
-      krem kâğıt kenarlığı — olduğu gibi mi, hafif kırpılsın mı; (2) PNG'ler ~1,4 MB.
+      turda metin ortalandı, hikâyedeki üst geçiş kaldırıldı. Karar (2026-09-27): kullanıcının
+      görselleri **kırpılmaz, olduğu gibi** yerleşir (krem kenarlık dahil). PNG'ler ~1,4 MB — bilgi.
 - [ ] **Odak noktası** — admin'de kapak yüklemenin yanında sol / orta / sağ (isteğe bağlı)
 - [ ] **Sosyal kuyrukta görsel durumu** — hazır / eksik (Aşama 1 kuyruğuyla birlikte)
 
