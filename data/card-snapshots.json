@@ -1,0 +1,6350 @@
+{
+ "articles": {
+  "28": {
+   "slug": "false-9",
+   "frozen_at": "2026-09-29",
+   "dataset": "fc26-kaggle-2025-09",
+   "cards": {
+    "lionel messi": {
+     "tier": "exact",
+     "row": {
+      "name": "Lionel Messi",
+      "overall": 86,
+      "pace": 78,
+      "shooting": 85,
+      "passing": 85,
+      "dribbling": 90,
+      "defending": 33,
+      "physical": 64,
+      "position": "RW",
+      "club": "Inter Miami CF",
+      "league": "MLS",
+      "age": 38,
+      "photo_url": "https://cdn.sofifa.net/players/158/023/26_120.png"
+     }
+    },
+    "francesco totti": null,
+    "lamine yamal": {
+     "tier": "exact",
+     "row": {
+      "name": "Lamine Yamal",
+      "overall": 89,
+      "pace": 85,
+      "shooting": 81,
+      "passing": 86,
+      "dribbling": 90,
+      "defending": 23,
+      "physical": 53,
+      "position": "RM",
+      "club": "FC Barcelona",
+      "league": "LALIGA EA SPORTS",
+      "age": 18,
+      "photo_url": "https://cdn.sofifa.net/players/277/643/26_120.png"
+     }
+    },
+    "florian wirtz": {
+     "tier": "exact",
+     "row": {
+      "name": "Florian Wirtz",
+      "overall": 89,
+      "pace": 80,
+      "shooting": 82,
+      "passing": 88,
+      "dribbling": 90,
+      "defending": 54,
+      "physical": 67,
+      "position": "CAM",
+      "club": "Liverpool",
+      "league": "Premier League",
+      "age": 22,
+      "photo_url": "https://cdn.sofifa.net/players/256/630/26_120.png"
+     }
+    },
+    "pedri": {
+     "tier": "exact",
+     "row": {
+      "name": "Pedri",
+      "overall": 89,
+      "pace": 77,
+      "shooting": 73,
+      "passing": 85,
+      "dribbling": 91,
+      "defending": 78,
+      "physical": 77,
+      "position": "CM",
+      "club": "FC Barcelona",
+      "league": "LALIGA EA SPORTS",
+      "age": 23,
+      "photo_url": "https://cdn.sofifa.net/players/251/854/26_120.png"
+     }
+    },
+    "phil foden": {
+     "tier": "exact",
+     "row": {
+      "name": "Phil Foden",
+      "overall": 85,
+      "pace": 81,
+      "shooting": 81,
+      "passing": 82,
+      "dribbling": 89,
+      "defending": 57,
+      "physical": 57,
+      "position": "RW",
+      "club": "Manchester City",
+      "league": "Premier League",
+      "age": 25,
+      "photo_url": "https://cdn.sofifa.net/players/237/692/26_120.png"
+     }
+    },
+    "roberto firmino": {
+     "tier": "last",
+     "row": {
+      "name": "Adriano Firmino",
+      "overall": 70,
+      "pace": 55,
+      "shooting": 53,
+      "passing": 64,
+      "dribbling": 62,
+      "defending": 70,
+      "physical": 70,
+      "position": "CDM",
+      "club": "Santa Clara",
+      "league": "Liga Portugal",
+      "age": 26,
+      "photo_url": "https://cdn.sofifa.net/players/271/297/26_120.png"
+     }
+    }
+   }
+  },
+  "29": {
+   "slug": "box-to-box-engine",
+   "frozen_at": "2026-09-29",
+   "dataset": "fc26-kaggle-2025-09",
+   "cards": {
+    "frank lampard": null,
+    "jude bellingham": {
+     "tier": "exact",
+     "row": {
+      "name": "Jude Bellingham",
+      "overall": 90,
+      "pace": 80,
+      "shooting": 86,
+      "passing": 83,
+      "dribbling": 90,
+      "defending": 78,
+      "physical": 85,
+      "position": "CAM",
+      "club": "Real Madrid",
+      "league": "LALIGA EA SPORTS",
+      "age": 22,
+      "photo_url": "https://cdn.sofifa.net/players/252/371/26_120.png"
+     }
+    },
+    "federico valverde": {
+     "tier": "exact",
+     "row": {
+      "name": "Federico Valverde",
+      "overall": 89,
+      "pace": 88,
+      "shooting": 84,
+      "passing": 84,
+      "dribbling": 84,
+      "defending": 83,
+      "physical": 85,
+      "position": "CM",
+      "club": "Real Madrid",
+      "league": "LALIGA EA SPORTS",
+      "age": 27,
+      "photo_url": "https://cdn.sofifa.net/players/239/053/26_120.png"
+     }
+    },
+    "rodri": {
+     "tier": "exact",
+     "row": {
+      "name": "Rodri",
+      "overall": 90,
+      "pace": 65,
+      "shooting": 80,
+      "passing": 86,
+      "dribbling": 84,
+      "defending": 86,
+      "physical": 85,
+      "position": "CDM",
+      "club": "Manchester City",
+      "league": "Premier League",
+      "age": 29,
+      "photo_url": "https://cdn.sofifa.net/players/231/866/26_120.png"
+     }
+    },
+    "n'golo kanté": {
+     "tier": "exact",
+     "row": {
+      "name": "N'Golo Kanté",
+      "overall": 85,
+      "pace": 77,
+      "shooting": 65,
+      "passing": 73,
+      "dribbling": 80,
+      "defending": 85,
+      "physical": 79,
+      "position": "CDM",
+      "club": "Al Ittihad",
+      "league": "ROSHN Saudi League",
+      "age": 34,
+      "photo_url": "https://cdn.sofifa.net/players/215/914/26_120.png"
+     }
+    }
+   }
+  },
+  "30": {
+   "slug": "inverted-winger",
+   "frozen_at": "2026-09-29",
+   "dataset": "fc26-kaggle-2025-09",
+   "cards": {
+    "vinicius jr.": null,
+    "bukayo saka": {
+     "tier": "exact",
+     "row": {
+      "name": "Bukayo Saka",
+      "overall": 88,
+      "pace": 84,
+      "shooting": 82,
+      "passing": 85,
+      "dribbling": 88,
+      "defending": 60,
+      "physical": 73,
+      "position": "RW",
+      "club": "Arsenal",
+      "league": "Premier League",
+      "age": 24,
+      "photo_url": "https://cdn.sofifa.net/players/246/669/26_120.png"
+     }
+    },
+    "raphinha": {
+     "tier": "exact",
+     "row": {
+      "name": "Raphinha",
+      "overall": 89,
+      "pace": 91,
+      "shooting": 84,
+      "passing": 85,
+      "dribbling": 87,
+      "defending": 53,
+      "physical": 75,
+      "position": "LM",
+      "club": "FC Barcelona",
+      "league": "LALIGA EA SPORTS",
+      "age": 29,
+      "photo_url": "https://cdn.sofifa.net/players/233/419/26_120.png"
+     }
+    },
+    "khvicha kvaratskhelia": {
+     "tier": "exact",
+     "row": {
+      "name": "Khvicha Kvaratskhelia",
+      "overall": 87,
+      "pace": 86,
+      "shooting": 80,
+      "passing": 83,
+      "dribbling": 88,
+      "defending": 58,
+      "physical": 78,
+      "position": "LW",
+      "club": "Paris SG",
+      "league": "Ligue 1 McDonald's",
+      "age": 25,
+      "photo_url": "https://cdn.sofifa.net/players/247/635/26_120.png"
+     }
+    }
+   }
+  },
+  "31": {
+   "slug": "ball-playing-cb",
+   "frozen_at": "2026-09-29",
+   "dataset": "fc26-kaggle-2025-09",
+   "cards": {
+    "virgil van dijk": {
+     "tier": "exact",
+     "row": {
+      "name": "Virgil van Dijk",
+      "overall": 90,
+      "pace": 73,
+      "shooting": 60,
+      "passing": 72,
+      "dribbling": 72,
+      "defending": 90,
+      "physical": 87,
+      "position": "CB",
+      "club": "Liverpool",
+      "league": "Premier League",
+      "age": 34,
+      "photo_url": "https://cdn.sofifa.net/players/203/376/26_120.png"
+     }
+    },
+    "gerard piqué": null,
+    "william saliba": {
+     "tier": "exact",
+     "row": {
+      "name": "William Saliba",
+      "overall": 87,
+      "pace": 77,
+      "shooting": 39,
+      "passing": 68,
+      "dribbling": 72,
+      "defending": 87,
+      "physical": 83,
+      "position": "CB",
+      "club": "Arsenal",
+      "league": "Premier League",
+      "age": 24,
+      "photo_url": "https://cdn.sofifa.net/players/243/715/26_120.png"
+     }
+    },
+    "joško gvardiol": {
+     "tier": "exact",
+     "row": {
+      "name": "Joško Gvardiol",
+      "overall": 84,
+      "pace": 78,
+      "shooting": 71,
+      "passing": 75,
+      "dribbling": 78,
+      "defending": 84,
+      "physical": 82,
+      "position": "LB",
+      "club": "Manchester City",
+      "league": "Premier League",
+      "age": 24,
+      "photo_url": "https://cdn.sofifa.net/players/251/517/26_120.png"
+     }
+    },
+    "merih demiral": {
+     "tier": "exact",
+     "row": {
+      "name": "Merih Demiral",
+      "overall": 78,
+      "pace": 73,
+      "shooting": 39,
+      "passing": 49,
+      "dribbling": 61,
+      "defending": 79,
+      "physical": 81,
+      "position": "CB",
+      "club": "Al Ahli",
+      "league": "ROSHN Saudi League",
+      "age": 28,
+      "photo_url": "https://cdn.sofifa.net/players/238/160/26_120.png"
+     }
+    },
+    "lisandro martínez": {
+     "tier": "exact",
+     "row": {
+      "name": "Lisandro Martínez",
+      "overall": 81,
+      "pace": 67,
+      "shooting": 59,
+      "passing": 75,
+      "dribbling": 75,
+      "defending": 81,
+      "physical": 80,
+      "position": "CB",
+      "club": "Man Utd",
+      "league": "Premier League",
+      "age": 28,
+      "photo_url": "https://cdn.sofifa.net/players/239/301/26_120.png"
+     }
+    },
+    "alessandro bastoni": {
+     "tier": "exact",
+     "row": {
+      "name": "Alessandro Bastoni",
+      "overall": 87,
+      "pace": 74,
+      "shooting": 46,
+      "passing": 75,
+      "dribbling": 76,
+      "defending": 88,
+      "physical": 82,
+      "position": "CB",
+      "club": "Inter",
+      "league": "Serie A Enilive",
+      "age": 26,
+      "photo_url": "https://cdn.sofifa.net/players/237/383/26_120.png"
+     }
+    },
+    "castello lukeba": {
+     "tier": "exact",
+     "row": {
+      "name": "Castello Lukeba",
+      "overall": 80,
+      "pace": 72,
+      "shooting": 43,
+      "passing": 68,
+      "dribbling": 73,
+      "defending": 81,
+      "physical": 75,
+      "position": "CB",
+      "club": "RB Leipzig",
+      "league": "Bundesliga",
+      "age": 23,
+      "photo_url": "https://cdn.sofifa.net/players/262/138/26_120.png"
+     }
+    }
+   }
+  },
+  "32": {
+   "slug": "inverted-fullback",
+   "frozen_at": "2026-09-29",
+   "dataset": "fc26-kaggle-2025-09",
+   "cards": {
+    "joão cancelo": {
+     "tier": "exact",
+     "row": {
+      "name": "João Cancelo",
+      "overall": 84,
+      "pace": 83,
+      "shooting": 73,
+      "passing": 84,
+      "dribbling": 84,
+      "defending": 78,
+      "physical": 74,
+      "position": "RB",
+      "club": "Al Hilal",
+      "league": "ROSHN Saudi League",
+      "age": 31,
+      "photo_url": "https://cdn.sofifa.net/players/210/514/26_120.png"
+     }
+    },
+    "philipp lahm": {
+     "tier": "last",
+     "row": {
+      "name": "Noah Lahmadi",
+      "overall": 62,
+      "pace": 62,
+      "shooting": 56,
+      "passing": 60,
+      "dribbling": 63,
+      "defending": 55,
+      "physical": 57,
+      "position": "CM",
+      "club": "Toulouse FC",
+      "league": "Ligue 1 McDonald's",
+      "age": 21,
+      "photo_url": "https://cdn.sofifa.net/players/277/820/26_120.png"
+     }
+    },
+    "trent alexander-arnold": {
+     "tier": "exact",
+     "row": {
+      "name": "Trent Alexander-Arnold",
+      "overall": 86,
+      "pace": 76,
+      "shooting": 72,
+      "passing": 89,
+      "dribbling": 80,
+      "defending": 80,
+      "physical": 74,
+      "position": "RB",
+      "club": "Real Madrid",
+      "league": "LALIGA EA SPORTS",
+      "age": 27,
+      "photo_url": "https://cdn.sofifa.net/players/231/281/26_120.png"
+     }
+    },
+    "jeremie frimpong": {
+     "tier": "exact",
+     "row": {
+      "name": "Jeremie Frimpong",
+      "overall": 83,
+      "pace": 94,
+      "shooting": 62,
+      "passing": 74,
+      "dribbling": 84,
+      "defending": 72,
+      "physical": 63,
+      "position": "RB",
+      "club": "Liverpool",
+      "league": "Premier League",
+      "age": 25,
+      "photo_url": "https://cdn.sofifa.net/players/253/149/26_120.png"
+     }
+    },
+    "achraf hakimi": {
+     "tier": "exact",
+     "row": {
+      "name": "Achraf Hakimi",
+      "overall": 89,
+      "pace": 92,
+      "shooting": 79,
+      "passing": 82,
+      "dribbling": 83,
+      "defending": 82,
+      "physical": 79,
+      "position": "RB",
+      "club": "Paris SG",
+      "league": "Ligue 1 McDonald's",
+      "age": 27,
+      "photo_url": "https://cdn.sofifa.net/players/235/212/26_120.png"
+     }
+    },
+    "alphonso davies": {
+     "tier": "exact",
+     "row": {
+      "name": "Alphonso Davies",
+      "overall": 84,
+      "pace": 94,
+      "shooting": 66,
+      "passing": 78,
+      "dribbling": 85,
+      "defending": 74,
+      "physical": 76,
+      "position": "LB",
+      "club": "FC Bayern München",
+      "league": "Bundesliga",
+      "age": 25,
+      "photo_url": "https://cdn.sofifa.net/players/234/396/26_120.png"
+     }
+    }
+   }
+  },
+  "33": {
+   "slug": "high-press-striker",
+   "frozen_at": "2026-09-29",
+   "dataset": "fc26-kaggle-2025-09",
+   "cards": {
+    "roberto firmino": {
+     "tier": "last",
+     "row": {
+      "name": "Adriano Firmino",
+      "overall": 70,
+      "pace": 55,
+      "shooting": 53,
+      "passing": 64,
+      "dribbling": 62,
+      "defending": 70,
+      "physical": 70,
+      "position": "CDM",
+      "club": "Santa Clara",
+      "league": "Liga Portugal",
+      "age": 26,
+      "photo_url": "https://cdn.sofifa.net/players/271/297/26_120.png"
+     }
+    },
+    "darwin núñez": {
+     "tier": "exact",
+     "row": {
+      "name": "Darwin Núñez",
+      "overall": 79,
+      "pace": 88,
+      "shooting": 79,
+      "passing": 72,
+      "dribbling": 76,
+      "defending": 49,
+      "physical": 82,
+      "position": "ST",
+      "club": "Al Hilal",
+      "league": "ROSHN Saudi League",
+      "age": 26,
+      "photo_url": "https://cdn.sofifa.net/players/253/072/26_120.png"
+     }
+    },
+    "erling haaland": {
+     "tier": "exact",
+     "row": {
+      "name": "Erling Haaland",
+      "overall": 90,
+      "pace": 86,
+      "shooting": 91,
+      "passing": 70,
+      "dribbling": 80,
+      "defending": 45,
+      "physical": 88,
+      "position": "ST",
+      "club": "Manchester City",
+      "league": "Premier League",
+      "age": 25,
+      "photo_url": "https://cdn.sofifa.net/players/239/085/26_120.png"
+     }
+    },
+    "luka jović": {
+     "tier": "exact",
+     "row": {
+      "name": "Luka Jović",
+      "overall": 76,
+      "pace": 75,
+      "shooting": 76,
+      "passing": 68,
+      "dribbling": 74,
+      "defending": 29,
+      "physical": 70,
+      "position": "ST",
+      "club": "AEK Athens",
+      "league": "Hellas Liga",
+      "age": 28,
+      "photo_url": "https://cdn.sofifa.net/players/232/432/26_120.png"
+     }
+    }
+   }
+  },
+  "44": {
+   "slug": "argentina-s-best-young-players-the-wonderkids-carrying-the-next-generation",
+   "frozen_at": "2026-09-29",
+   "dataset": "fc26-kaggle-2025-09",
+   "cards": {
+    "franco mastantuono": {
+     "tier": "exact",
+     "row": {
+      "name": "Franco Mastantuono",
+      "overall": 77,
+      "pace": 74,
+      "shooting": 71,
+      "passing": 75,
+      "dribbling": 80,
+      "defending": 50,
+      "physical": 63,
+      "position": "CAM",
+      "club": "Real Madrid",
+      "league": "LALIGA EA SPORTS",
+      "age": 18,
+      "photo_url": "https://cdn.sofifa.net/players/279/173/26_120.png"
+     }
+    },
+    "claudio echeverri": {
+     "tier": "exact",
+     "row": {
+      "name": "Claudio Echeverri",
+      "overall": 74,
+      "pace": 84,
+      "shooting": 66,
+      "passing": 71,
+      "dribbling": 80,
+      "defending": 38,
+      "physical": 47,
+      "position": "CAM",
+      "club": "Leverkusen",
+      "league": "Bundesliga",
+      "age": 20,
+      "photo_url": "https://cdn.sofifa.net/players/276/528/26_120.png"
+     }
+    },
+    "ian subiabre": {
+     "tier": "exact",
+     "row": {
+      "name": "Ian Subiabre",
+      "overall": 69,
+      "pace": 85,
+      "shooting": 65,
+      "passing": 58,
+      "dribbling": 75,
+      "defending": 32,
+      "physical": 60,
+      "position": "LW",
+      "club": "River Plate",
+      "league": "LPF",
+      "age": 19,
+      "photo_url": "https://cdn.sofifa.net/players/279/934/26_120.png"
+     }
+    },
+    "alejo sarco": {
+     "tier": "exact",
+     "row": {
+      "name": "Alejo Sarco",
+      "overall": 64,
+      "pace": 72,
+      "shooting": 63,
+      "passing": 51,
+      "dribbling": 63,
+      "defending": 28,
+      "physical": 60,
+      "position": "ST",
+      "club": "Leverkusen",
+      "league": "Bundesliga",
+      "age": 20,
+      "photo_url": "https://cdn.sofifa.net/players/071/101/26_120.png"
+     }
+    },
+    "julio soler": {
+     "tier": "exact",
+     "row": {
+      "name": "Julio Soler",
+      "overall": 68,
+      "pace": 75,
+      "shooting": 46,
+      "passing": 60,
+      "dribbling": 67,
+      "defending": 65,
+      "physical": 60,
+      "position": "LB",
+      "club": "AFC Bournemouth",
+      "league": "Premier League",
+      "age": 21,
+      "photo_url": "https://cdn.sofifa.net/players/269/796/26_120.png"
+     }
+    },
+    "máximo perrone": {
+     "tier": "exact",
+     "row": {
+      "name": "Máximo Perrone",
+      "overall": 73,
+      "pace": 72,
+      "shooting": 55,
+      "passing": 70,
+      "dribbling": 76,
+      "defending": 68,
+      "physical": 66,
+      "position": "CDM",
+      "club": "Como",
+      "league": "Serie A Enilive",
+      "age": 23,
+      "photo_url": "https://cdn.sofifa.net/players/267/991/26_120.png"
+     }
+    }
+   }
+  },
+  "46": {
+   "slug": "brazil-2026-young-players-world-cup",
+   "frozen_at": "2026-09-29",
+   "dataset": "fc26-kaggle-2025-09",
+   "cards": {
+    "endrick": {
+     "tier": "exact",
+     "row": {
+      "name": "Endrick",
+      "overall": 77,
+      "pace": 87,
+      "shooting": 77,
+      "passing": 62,
+      "dribbling": 78,
+      "defending": 30,
+      "physical": 68,
+      "position": "ST",
+      "club": "Real Madrid",
+      "league": "LALIGA EA SPORTS",
+      "age": 19,
+      "photo_url": "https://cdn.sofifa.net/players/272/505/26_120.png"
+     }
+    },
+    "vini jr.": {
+     "tier": "exact",
+     "row": {
+      "name": "Vini Jr.",
+      "overall": 89,
+      "pace": 95,
+      "shooting": 84,
+      "passing": 81,
+      "dribbling": 91,
+      "defending": 29,
+      "physical": 69,
+      "position": "LW",
+      "club": "Real Madrid",
+      "league": "LALIGA EA SPORTS",
+      "age": 25,
+      "photo_url": "https://cdn.sofifa.net/players/238/794/26_120.png"
+     }
+    },
+    "gabriel martinelli": {
+     "tier": "exact",
+     "row": {
+      "name": "Gabriel Martinelli",
+      "overall": 81,
+      "pace": 90,
+      "shooting": 77,
+      "passing": 75,
+      "dribbling": 83,
+      "defending": 46,
+      "physical": 72,
+      "position": "LW",
+      "club": "Arsenal",
+      "league": "Premier League",
+      "age": 24,
+      "photo_url": "https://cdn.sofifa.net/players/251/566/26_120.png"
+     }
+    },
+    "andrey santos": {
+     "tier": "exact",
+     "row": {
+      "name": "Andrey Santos",
+      "overall": 80,
+      "pace": 74,
+      "shooting": 69,
+      "passing": 74,
+      "dribbling": 78,
+      "defending": 77,
+      "physical": 80,
+      "position": "CM",
+      "club": "Chelsea",
+      "league": "Premier League",
+      "age": 21,
+      "photo_url": "https://cdn.sofifa.net/players/273/018/26_120.png"
+     }
+    },
+    "bremer": {
+     "tier": "exact",
+     "row": {
+      "name": "Bremer",
+      "overall": 85,
+      "pace": 82,
+      "shooting": 50,
+      "passing": 58,
+      "dribbling": 66,
+      "defending": 86,
+      "physical": 80,
+      "position": "CB",
+      "club": "Juventus",
+      "league": "Serie A Enilive",
+      "age": 29,
+      "photo_url": "https://cdn.sofifa.net/players/239/580/26_120.png"
+     }
+    }
+   }
+  },
+  "52": {
+   "slug": "la-masia-scouting-report-barcelona-prospect-analysis",
+   "frozen_at": "2026-09-29",
+   "dataset": "fc26-kaggle-2025-09",
+   "cards": {
+    "lionel messi": {
+     "tier": "exact",
+     "row": {
+      "name": "Lionel Messi",
+      "overall": 86,
+      "pace": 78,
+      "shooting": 85,
+      "passing": 85,
+      "dribbling": 90,
+      "defending": 33,
+      "physical": 64,
+      "position": "RW",
+      "club": "Inter Miami CF",
+      "league": "MLS",
+      "age": 38,
+      "photo_url": "https://cdn.sofifa.net/players/158/023/26_120.png"
+     }
+    },
+    "sergio busquets": {
+     "tier": "exact",
+     "row": {
+      "name": "Sergio Busquets",
+      "overall": 80,
+      "pace": 35,
+      "shooting": 61,
+      "passing": 76,
+      "dribbling": 77,
+      "defending": 77,
+      "physical": 73,
+      "position": "CDM",
+      "club": "Inter Miami CF",
+      "league": "MLS",
+      "age": 37,
+      "photo_url": "https://cdn.sofifa.net/players/189/511/26_120.png"
+     }
+    },
+    "gavi": {
+     "tier": "exact",
+     "row": {
+      "name": "Gavi",
+      "overall": 83,
+      "pace": 76,
+      "shooting": 66,
+      "passing": 78,
+      "dribbling": 85,
+      "defending": 68,
+      "physical": 70,
+      "position": "CM",
+      "club": "FC Barcelona",
+      "league": "LALIGA EA SPORTS",
+      "age": 21,
+      "photo_url": "https://cdn.sofifa.net/players/264/240/26_120.png"
+     }
+    },
+    "lamine yamal": {
+     "tier": "exact",
+     "row": {
+      "name": "Lamine Yamal",
+      "overall": 89,
+      "pace": 85,
+      "shooting": 81,
+      "passing": 86,
+      "dribbling": 90,
+      "defending": 23,
+      "physical": 53,
+      "position": "RM",
+      "club": "FC Barcelona",
+      "league": "LALIGA EA SPORTS",
+      "age": 18,
+      "photo_url": "https://cdn.sofifa.net/players/277/643/26_120.png"
+     }
+    },
+    "pedri": {
+     "tier": "exact",
+     "row": {
+      "name": "Pedri",
+      "overall": 89,
+      "pace": 77,
+      "shooting": 73,
+      "passing": 85,
+      "dribbling": 91,
+      "defending": 78,
+      "physical": 77,
+      "position": "CM",
+      "club": "FC Barcelona",
+      "league": "LALIGA EA SPORTS",
+      "age": 23,
+      "photo_url": "https://cdn.sofifa.net/players/251/854/26_120.png"
+     }
+    }
+   }
+  },
+  "53": {
+   "slug": "world-cup-2026-scouting-top-10-prospects-analysis",
+   "frozen_at": "2026-09-29",
+   "dataset": "fc26-kaggle-2025-09",
+   "cards": {
+    "lamine yamal": {
+     "tier": "exact",
+     "row": {
+      "name": "Lamine Yamal",
+      "overall": 89,
+      "pace": 85,
+      "shooting": 81,
+      "passing": 86,
+      "dribbling": 90,
+      "defending": 23,
+      "physical": 53,
+      "position": "RM",
+      "club": "FC Barcelona",
+      "league": "LALIGA EA SPORTS",
+      "age": 18,
+      "photo_url": "https://cdn.sofifa.net/players/277/643/26_120.png"
+     }
+    },
+    "ibrahim mbaye": {
+     "tier": "exact",
+     "row": {
+      "name": "Ibrahim Mbaye",
+      "overall": 66,
+      "pace": 77,
+      "shooting": 59,
+      "passing": 59,
+      "dribbling": 70,
+      "defending": 25,
+      "physical": 45,
+      "position": "RW",
+      "club": "Paris SG",
+      "league": "Ligue 1 McDonald's",
+      "age": 18,
+      "photo_url": "https://cdn.sofifa.net/players/074/449/26_120.png"
+     }
+    },
+    "désiré doué": {
+     "tier": "exact",
+     "row": {
+      "name": "Désiré Doué",
+      "overall": 85,
+      "pace": 83,
+      "shooting": 80,
+      "passing": 77,
+      "dribbling": 90,
+      "defending": 55,
+      "physical": 74,
+      "position": "RW",
+      "club": "Paris SG",
+      "league": "Ligue 1 McDonald's",
+      "age": 20,
+      "photo_url": "https://cdn.sofifa.net/players/271/421/26_120.png"
+     }
+    },
+    "lennart karl": {
+     "tier": "exact",
+     "row": {
+      "name": "Lennart Karl",
+      "overall": 63,
+      "pace": 69,
+      "shooting": 58,
+      "passing": 60,
+      "dribbling": 69,
+      "defending": 34,
+      "physical": 37,
+      "position": "CAM",
+      "club": "FC Bayern München",
+      "league": "Bundesliga",
+      "age": 18,
+      "photo_url": "https://cdn.sofifa.net/players/078/063/26_120.png"
+     }
+    },
+    "antonio nusa": {
+     "tier": "exact",
+     "row": {
+      "name": "Antonio Nusa",
+      "overall": 76,
+      "pace": 89,
+      "shooting": 72,
+      "passing": 68,
+      "dribbling": 81,
+      "defending": 41,
+      "physical": 63,
+      "position": "LM",
+      "club": "RB Leipzig",
+      "league": "Bundesliga",
+      "age": 20,
+      "photo_url": "https://cdn.sofifa.net/players/262/863/26_120.png"
+     }
+    },
+    "yan diomande": {
+     "tier": "exact",
+     "row": {
+      "name": "Yan Diomande",
+      "overall": 66,
+      "pace": 71,
+      "shooting": 61,
+      "passing": 62,
+      "dribbling": 64,
+      "defending": 25,
+      "physical": 49,
+      "position": "LM",
+      "club": "RB Leipzig",
+      "league": "Bundesliga",
+      "age": 19,
+      "photo_url": "https://cdn.sofifa.net/players/078/012/26_120.png"
+     }
+    },
+    "aleksandar pavlović": {
+     "tier": "exact",
+     "row": {
+      "name": "Aleksandar Pavlović",
+      "overall": 79,
+      "pace": 62,
+      "shooting": 64,
+      "passing": 79,
+      "dribbling": 78,
+      "defending": 76,
+      "physical": 71,
+      "position": "CDM",
+      "club": "FC Bayern München",
+      "league": "Bundesliga",
+      "age": 21,
+      "photo_url": "https://cdn.sofifa.net/players/275/298/26_120.png"
+     }
+    },
+    "rayan cherki": {
+     "tier": "exact",
+     "row": {
+      "name": "Rayan Cherki",
+      "overall": 81,
+      "pace": 75,
+      "shooting": 75,
+      "passing": 80,
+      "dribbling": 88,
+      "defending": 21,
+      "physical": 65,
+      "position": "RW",
+      "club": "Manchester City",
+      "league": "Premier League",
+      "age": 22,
+      "photo_url": "https://cdn.sofifa.net/players/251/570/26_120.png"
+     }
+    },
+    "estêvão": {
+     "tier": "exact",
+     "row": {
+      "name": "Estêvão",
+      "overall": 78,
+      "pace": 90,
+      "shooting": 74,
+      "passing": 73,
+      "dribbling": 82,
+      "defending": 33,
+      "physical": 57,
+      "position": "RM",
+      "club": "Chelsea",
+      "league": "Premier League",
+      "age": 18,
+      "photo_url": "https://cdn.sofifa.net/players/076/687/26_120.png"
+     }
+    },
+    "pau cubarsí": {
+     "tier": "exact",
+     "row": {
+      "name": "Pau Cubarsí",
+      "overall": 82,
+      "pace": 70,
+      "shooting": 42,
+      "passing": 66,
+      "dribbling": 77,
+      "defending": 84,
+      "physical": 76,
+      "position": "CB",
+      "club": "FC Barcelona",
+      "league": "LALIGA EA SPORTS",
+      "age": 19,
+      "photo_url": "https://cdn.sofifa.net/players/278/046/26_120.png"
+     }
+    }
+   }
+  },
+  "54": {
+   "slug": "world-cup-2026-scouting-4-debutants-analysis",
+   "frozen_at": "2026-09-29",
+   "dataset": "fc26-kaggle-2025-09",
+   "cards": {
+    "ryan mendes": {
+     "tier": "exact",
+     "row": {
+      "name": "Ryan Mendes",
+      "overall": 71,
+      "pace": 74,
+      "shooting": 67,
+      "passing": 69,
+      "dribbling": 74,
+      "defending": 28,
+      "physical": 54,
+      "position": "LM",
+      "club": "Kocaelispor",
+      "league": "Trendyol Süper Lig",
+      "age": 36,
+      "photo_url": "https://cdn.sofifa.net/players/194/847/26_120.png"
+     }
+    },
+    "eldor shomurodov": {
+     "tier": "exact",
+     "row": {
+      "name": "Eldor Shomurodov",
+      "overall": 74,
+      "pace": 79,
+      "shooting": 71,
+      "passing": 64,
+      "dribbling": 75,
+      "defending": 40,
+      "physical": 66,
+      "position": "ST",
+      "club": "Başakşehir",
+      "league": "Trendyol Süper Lig",
+      "age": 30,
+      "photo_url": "https://cdn.sofifa.net/players/239/964/26_120.png"
+     }
+    },
+    "steven moreira": {
+     "tier": "exact",
+     "row": {
+      "name": "Steven Moreira",
+      "overall": 72,
+      "pace": 73,
+      "shooting": 33,
+      "passing": 67,
+      "dribbling": 71,
+      "defending": 72,
+      "physical": 74,
+      "position": "CB",
+      "club": "Columbus Crew",
+      "league": "MLS",
+      "age": 31,
+      "photo_url": "https://cdn.sofifa.net/players/212/401/26_120.png"
+     }
+    },
+    "abdukodir khusanov": {
+     "tier": "exact",
+     "row": {
+      "name": "Abdukodir Khusanov",
+      "overall": 77,
+      "pace": 85,
+      "shooting": 39,
+      "passing": 59,
+      "dribbling": 64,
+      "defending": 77,
+      "physical": 76,
+      "position": "CB",
+      "club": "Manchester City",
+      "league": "Premier League",
+      "age": 22,
+      "photo_url": "https://cdn.sofifa.net/players/277/031/26_120.png"
+     }
+    }
+   }
+  },
+  "55": {
+   "slug": "market-value-analysis-top-5-defenders-scouting-2026",
+   "frozen_at": "2026-09-29",
+   "dataset": "fc26-kaggle-2025-09",
+   "cards": {
+    "jarrad branthwaite": {
+     "tier": "exact",
+     "row": {
+      "name": "Jarrad Branthwaite",
+      "overall": 79,
+      "pace": 71,
+      "shooting": 39,
+      "passing": 58,
+      "dribbling": 60,
+      "defending": 80,
+      "physical": 78,
+      "position": "CB",
+      "club": "Everton",
+      "league": "Premier League",
+      "age": 23,
+      "photo_url": "https://cdn.sofifa.net/players/247/649/26_120.png"
+     }
+    },
+    "levi colwill": {
+     "tier": "exact",
+     "row": {
+      "name": "Levi Colwill",
+      "overall": 80,
+      "pace": 70,
+      "shooting": 43,
+      "passing": 71,
+      "dribbling": 72,
+      "defending": 81,
+      "physical": 80,
+      "position": "CB",
+      "club": "Chelsea",
+      "league": "Premier League",
+      "age": 23,
+      "photo_url": "https://cdn.sofifa.net/players/262/859/26_120.png"
+     }
+    },
+    "murillo": {
+     "tier": "exact",
+     "row": {
+      "name": "Murillo",
+      "overall": 83,
+      "pace": 80,
+      "shooting": 48,
+      "passing": 67,
+      "dribbling": 71,
+      "defending": 83,
+      "physical": 83,
+      "position": "CB",
+      "club": "Nott'm Forest",
+      "league": "Premier League",
+      "age": 23,
+      "photo_url": "https://cdn.sofifa.net/players/278/016/26_120.png"
+     }
+    },
+    "dean huijsen": {
+     "tier": "exact",
+     "row": {
+      "name": "Dean Huijsen",
+      "overall": 82,
+      "pace": 71,
+      "shooting": 55,
+      "passing": 73,
+      "dribbling": 74,
+      "defending": 82,
+      "physical": 76,
+      "position": "CB",
+      "club": "Real Madrid",
+      "league": "LALIGA EA SPORTS",
+      "age": 20,
+      "photo_url": "https://cdn.sofifa.net/players/278/349/26_120.png"
+     }
+    },
+    "pau cubarsí": {
+     "tier": "exact",
+     "row": {
+      "name": "Pau Cubarsí",
+      "overall": 82,
+      "pace": 70,
+      "shooting": 42,
+      "passing": 66,
+      "dribbling": 77,
+      "defending": 84,
+      "physical": 76,
+      "position": "CB",
+      "club": "FC Barcelona",
+      "league": "LALIGA EA SPORTS",
+      "age": 19,
+      "photo_url": "https://cdn.sofifa.net/players/278/046/26_120.png"
+     }
+    }
+   }
+  },
+  "56": {
+   "slug": "england-world-cup-2026-squad-announcement-video",
+   "frozen_at": "2026-09-29",
+   "dataset": "fc26-kaggle-2025-09",
+   "cards": {
+    "harry kane": {
+     "tier": "exact",
+     "row": {
+      "name": "Harry Kane",
+      "overall": 89,
+      "pace": 64,
+      "shooting": 92,
+      "passing": 83,
+      "dribbling": 82,
+      "defending": 48,
+      "physical": 82,
+      "position": "ST",
+      "club": "FC Bayern München",
+      "league": "Bundesliga",
+      "age": 32,
+      "photo_url": "https://cdn.sofifa.net/players/202/126/26_120.png"
+     }
+    },
+    "jude bellingham": {
+     "tier": "exact",
+     "row": {
+      "name": "Jude Bellingham",
+      "overall": 90,
+      "pace": 80,
+      "shooting": 86,
+      "passing": 83,
+      "dribbling": 90,
+      "defending": 78,
+      "physical": 85,
+      "position": "CAM",
+      "club": "Real Madrid",
+      "league": "LALIGA EA SPORTS",
+      "age": 22,
+      "photo_url": "https://cdn.sofifa.net/players/252/371/26_120.png"
+     }
+    },
+    "bukayo saka": {
+     "tier": "exact",
+     "row": {
+      "name": "Bukayo Saka",
+      "overall": 88,
+      "pace": 84,
+      "shooting": 82,
+      "passing": 85,
+      "dribbling": 88,
+      "defending": 60,
+      "physical": 73,
+      "position": "RW",
+      "club": "Arsenal",
+      "league": "Premier League",
+      "age": 24,
+      "photo_url": "https://cdn.sofifa.net/players/246/669/26_120.png"
+     }
+    },
+    "declan rice": {
+     "tier": "exact",
+     "row": {
+      "name": "Declan Rice",
+      "overall": 87,
+      "pace": 72,
+      "shooting": 73,
+      "passing": 84,
+      "dribbling": 80,
+      "defending": 83,
+      "physical": 83,
+      "position": "CDM",
+      "club": "Arsenal",
+      "league": "Premier League",
+      "age": 27,
+      "photo_url": "https://cdn.sofifa.net/players/234/378/26_120.png"
+     }
+    }
+   }
+  },
+  "57": {
+   "slug": "england-world-cup-2026-squad-tactical-analysis",
+   "frozen_at": "2026-09-29",
+   "dataset": "fc26-kaggle-2025-09",
+   "cards": {
+    "jude bellingham": {
+     "tier": "exact",
+     "row": {
+      "name": "Jude Bellingham",
+      "overall": 90,
+      "pace": 80,
+      "shooting": 86,
+      "passing": 83,
+      "dribbling": 90,
+      "defending": 78,
+      "physical": 85,
+      "position": "CAM",
+      "club": "Real Madrid",
+      "league": "LALIGA EA SPORTS",
+      "age": 22,
+      "photo_url": "https://cdn.sofifa.net/players/252/371/26_120.png"
+     }
+    },
+    "ivan toney": {
+     "tier": "exact",
+     "row": {
+      "name": "Ivan Toney",
+      "overall": 81,
+      "pace": 78,
+      "shooting": 82,
+      "passing": 71,
+      "dribbling": 75,
+      "defending": 51,
+      "physical": 81,
+      "position": "ST",
+      "club": "Al Ahli",
+      "league": "ROSHN Saudi League",
+      "age": 30,
+      "photo_url": "https://cdn.sofifa.net/players/212/228/26_120.png"
+     }
+    }
+   }
+  },
+  "59": {
+   "slug": "brazil-world-cup-2026-squad-tactical-analysis",
+   "frozen_at": "2026-09-29",
+   "dataset": "fc26-kaggle-2025-09",
+   "cards": {
+    "vini jr.": {
+     "tier": "exact",
+     "row": {
+      "name": "Vini Jr.",
+      "overall": 89,
+      "pace": 95,
+      "shooting": 84,
+      "passing": 81,
+      "dribbling": 91,
+      "defending": 29,
+      "physical": 69,
+      "position": "LW",
+      "club": "Real Madrid",
+      "league": "LALIGA EA SPORTS",
+      "age": 25,
+      "photo_url": "https://cdn.sofifa.net/players/238/794/26_120.png"
+     }
+    }
+   }
+  },
+  "60": {
+   "slug": "world-cup-2026-panini-sticker-economics-scouting",
+   "frozen_at": "2026-09-29",
+   "dataset": "fc26-kaggle-2025-09",
+   "cards": {
+    "pau cubarsí": {
+     "tier": "exact",
+     "row": {
+      "name": "Pau Cubarsí",
+      "overall": 82,
+      "pace": 70,
+      "shooting": 42,
+      "passing": 66,
+      "dribbling": 77,
+      "defending": 84,
+      "physical": 76,
+      "position": "CB",
+      "club": "FC Barcelona",
+      "league": "LALIGA EA SPORTS",
+      "age": 19,
+      "photo_url": "https://cdn.sofifa.net/players/278/046/26_120.png"
+     }
+    },
+    "endrick": {
+     "tier": "exact",
+     "row": {
+      "name": "Endrick",
+      "overall": 77,
+      "pace": 87,
+      "shooting": 77,
+      "passing": 62,
+      "dribbling": 78,
+      "defending": 30,
+      "physical": 68,
+      "position": "ST",
+      "club": "Real Madrid",
+      "league": "LALIGA EA SPORTS",
+      "age": 19,
+      "photo_url": "https://cdn.sofifa.net/players/272/505/26_120.png"
+     }
+    }
+   }
+  },
+  "61": {
+   "slug": "colombia-world-cup-2026-squad-announcement-analysis",
+   "frozen_at": "2026-09-29",
+   "dataset": "fc26-kaggle-2025-09",
+   "cards": {
+    "luis díaz": {
+     "tier": "exact",
+     "row": {
+      "name": "Luis Díaz",
+      "overall": 85,
+      "pace": 88,
+      "shooting": 81,
+      "passing": 76,
+      "dribbling": 87,
+      "defending": 45,
+      "physical": 75,
+      "position": "LM",
+      "club": "FC Bayern München",
+      "league": "Bundesliga",
+      "age": 29,
+      "photo_url": "https://cdn.sofifa.net/players/241/084/26_120.png"
+     }
+    }
+   }
+  },
+  "62": {
+   "slug": "spain-world-cup-2026-squad-tactical-analysis",
+   "frozen_at": "2026-09-29",
+   "dataset": "fc26-kaggle-2025-09",
+   "cards": {
+    "pau cubarsí": {
+     "tier": "exact",
+     "row": {
+      "name": "Pau Cubarsí",
+      "overall": 82,
+      "pace": 70,
+      "shooting": 42,
+      "passing": 66,
+      "dribbling": 77,
+      "defending": 84,
+      "physical": 76,
+      "position": "CB",
+      "club": "FC Barcelona",
+      "league": "LALIGA EA SPORTS",
+      "age": 19,
+      "photo_url": "https://cdn.sofifa.net/players/278/046/26_120.png"
+     }
+    }
+   }
+  },
+  "63": {
+   "slug": "usa-world-cup-2026-squad-tactical-analysis-pochettino",
+   "frozen_at": "2026-09-29",
+   "dataset": "fc26-kaggle-2025-09",
+   "cards": {
+    "christian pulisic": {
+     "tier": "exact",
+     "row": {
+      "name": "Christian Pulisic",
+      "overall": 84,
+      "pace": 88,
+      "shooting": 82,
+      "passing": 80,
+      "dribbling": 86,
+      "defending": 46,
+      "physical": 65,
+      "position": "RW",
+      "club": "AC Milan",
+      "league": "Serie A Enilive",
+      "age": 27,
+      "photo_url": "https://cdn.sofifa.net/players/227/796/26_120.png"
+     }
+    },
+    "giovanni reyna": {
+     "tier": "exact",
+     "row": {
+      "name": "Giovanni Reyna",
+      "overall": 75,
+      "pace": 67,
+      "shooting": 72,
+      "passing": 72,
+      "dribbling": 80,
+      "defending": 38,
+      "physical": 68,
+      "position": "RM",
+      "club": "M'gladbach",
+      "league": "Bundesliga",
+      "age": 23,
+      "photo_url": "https://cdn.sofifa.net/players/245/541/26_120.png"
+     }
+    }
+   }
+  },
+  "64": {
+   "slug": "world-cup-2026-top-10-wonderkids-tactical-analysis",
+   "frozen_at": "2026-09-29",
+   "dataset": "fc26-kaggle-2025-09",
+   "cards": {
+    "lamine yamal": {
+     "tier": "exact",
+     "row": {
+      "name": "Lamine Yamal",
+      "overall": 89,
+      "pace": 85,
+      "shooting": 81,
+      "passing": 86,
+      "dribbling": 90,
+      "defending": 23,
+      "physical": 53,
+      "position": "RM",
+      "club": "FC Barcelona",
+      "league": "LALIGA EA SPORTS",
+      "age": 18,
+      "photo_url": "https://cdn.sofifa.net/players/277/643/26_120.png"
+     }
+    },
+    "endrick": {
+     "tier": "exact",
+     "row": {
+      "name": "Endrick",
+      "overall": 77,
+      "pace": 87,
+      "shooting": 77,
+      "passing": 62,
+      "dribbling": 78,
+      "defending": 30,
+      "physical": 68,
+      "position": "ST",
+      "club": "Real Madrid",
+      "league": "LALIGA EA SPORTS",
+      "age": 19,
+      "photo_url": "https://cdn.sofifa.net/players/272/505/26_120.png"
+     }
+    },
+    "kobbie mainoo": {
+     "tier": "exact",
+     "row": {
+      "name": "Kobbie Mainoo",
+      "overall": 77,
+      "pace": 68,
+      "shooting": 69,
+      "passing": 74,
+      "dribbling": 81,
+      "defending": 73,
+      "physical": 74,
+      "position": "CM",
+      "club": "Man Utd",
+      "league": "Premier League",
+      "age": 20,
+      "photo_url": "https://cdn.sofifa.net/players/269/136/26_120.png"
+     }
+    },
+    "pau cubarsí": {
+     "tier": "exact",
+     "row": {
+      "name": "Pau Cubarsí",
+      "overall": 82,
+      "pace": 70,
+      "shooting": 42,
+      "passing": 66,
+      "dribbling": 77,
+      "defending": 84,
+      "physical": 76,
+      "position": "CB",
+      "club": "FC Barcelona",
+      "league": "LALIGA EA SPORTS",
+      "age": 19,
+      "photo_url": "https://cdn.sofifa.net/players/278/046/26_120.png"
+     }
+    },
+    "franco mastantuono": {
+     "tier": "exact",
+     "row": {
+      "name": "Franco Mastantuono",
+      "overall": 77,
+      "pace": 74,
+      "shooting": 71,
+      "passing": 75,
+      "dribbling": 80,
+      "defending": 50,
+      "physical": 63,
+      "position": "CAM",
+      "club": "Real Madrid",
+      "league": "LALIGA EA SPORTS",
+      "age": 18,
+      "photo_url": "https://cdn.sofifa.net/players/279/173/26_120.png"
+     }
+    },
+    "warren zaïre-emery": {
+     "tier": "exact",
+     "row": {
+      "name": "Warren Zaïre-Emery",
+      "overall": 80,
+      "pace": 79,
+      "shooting": 68,
+      "passing": 76,
+      "dribbling": 79,
+      "defending": 75,
+      "physical": 79,
+      "position": "CM",
+      "club": "Paris SG",
+      "league": "Ligue 1 McDonald's",
+      "age": 20,
+      "photo_url": "https://cdn.sofifa.net/players/270/673/26_120.png"
+     }
+    },
+    "kenan yıldız": {
+     "tier": "exact",
+     "row": {
+      "name": "Kenan Yıldız",
+      "overall": 79,
+      "pace": 84,
+      "shooting": 78,
+      "passing": 74,
+      "dribbling": 83,
+      "defending": 35,
+      "physical": 66,
+      "position": "CAM",
+      "club": "Juventus",
+      "league": "Serie A Enilive",
+      "age": 20,
+      "photo_url": "https://cdn.sofifa.net/players/277/954/26_120.png"
+     }
+    },
+    "nico paz": {
+     "tier": "exact",
+     "row": {
+      "name": "Nico Paz",
+      "overall": 79,
+      "pace": 78,
+      "shooting": 71,
+      "passing": 77,
+      "dribbling": 82,
+      "defending": 51,
+      "physical": 64,
+      "position": "CAM",
+      "club": "Como",
+      "league": "Serie A Enilive",
+      "age": 21,
+      "photo_url": "https://cdn.sofifa.net/players/277/846/26_120.png"
+     }
+    },
+    "arthur vermeeren": {
+     "tier": "exact",
+     "row": {
+      "name": "Arthur Vermeeren",
+      "overall": 77,
+      "pace": 70,
+      "shooting": 55,
+      "passing": 77,
+      "dribbling": 79,
+      "defending": 68,
+      "physical": 66,
+      "position": "CM",
+      "club": "OM",
+      "league": "Ligue 1 McDonald's",
+      "age": 21,
+      "photo_url": "https://cdn.sofifa.net/players/269/859/26_120.png"
+     }
+    },
+    "julien duranville": {
+     "tier": "exact",
+     "row": {
+      "name": "Julien Duranville",
+      "overall": 72,
+      "pace": 88,
+      "shooting": 61,
+      "passing": 63,
+      "dribbling": 82,
+      "defending": 26,
+      "physical": 49,
+      "position": "RM",
+      "club": "Borussia Dortmund",
+      "league": "Bundesliga",
+      "age": 19,
+      "photo_url": "https://cdn.sofifa.net/players/262/105/26_120.png"
+     }
+    }
+   }
+  },
+  "65": {
+   "slug": "netherlands-world-cup-2026-squad-tactical-analysis-koeman",
+   "frozen_at": "2026-09-29",
+   "dataset": "fc26-kaggle-2025-09",
+   "cards": {
+    "tijjani reijnders": {
+     "tier": "exact",
+     "row": {
+      "name": "Tijjani Reijnders",
+      "overall": 86,
+      "pace": 79,
+      "shooting": 79,
+      "passing": 82,
+      "dribbling": 85,
+      "defending": 77,
+      "physical": 77,
+      "position": "CM",
+      "club": "Manchester City",
+      "league": "Premier League",
+      "age": 27,
+      "photo_url": "https://cdn.sofifa.net/players/240/638/26_120.png"
+     }
+    },
+    "cody gakpo": {
+     "tier": "exact",
+     "row": {
+      "name": "Cody Gakpo",
+      "overall": 84,
+      "pace": 83,
+      "shooting": 82,
+      "passing": 80,
+      "dribbling": 83,
+      "defending": 47,
+      "physical": 74,
+      "position": "LM",
+      "club": "Liverpool",
+      "league": "Premier League",
+      "age": 26,
+      "photo_url": "https://cdn.sofifa.net/players/242/516/26_120.png"
+     }
+    }
+   }
+  },
+  "66": {
+   "slug": "argentina-world-cup-2026-squad-tactical-analysis",
+   "frozen_at": "2026-09-29",
+   "dataset": "fc26-kaggle-2025-09",
+   "cards": {
+    "cristian romero": {
+     "tier": "exact",
+     "row": {
+      "name": "Cristian Romero",
+      "overall": 82,
+      "pace": 66,
+      "shooting": 48,
+      "passing": 62,
+      "dribbling": 65,
+      "defending": 83,
+      "physical": 81,
+      "position": "CB",
+      "club": "Spurs",
+      "league": "Premier League",
+      "age": 27,
+      "photo_url": "https://cdn.sofifa.net/players/232/488/26_120.png"
+     }
+    },
+    "julián alvarez": {
+     "tier": "exact",
+     "row": {
+      "name": "Julián Alvarez",
+      "overall": 87,
+      "pace": 85,
+      "shooting": 87,
+      "passing": 81,
+      "dribbling": 87,
+      "defending": 57,
+      "physical": 79,
+      "position": "ST",
+      "club": "Atlético de Madrid",
+      "league": "LALIGA EA SPORTS",
+      "age": 26,
+      "photo_url": "https://cdn.sofifa.net/players/246/191/26_120.png"
+     }
+    }
+   }
+  },
+  "67": {
+   "slug": "arne-slot-liverpool-sacked-tactical-statistical-breakdown",
+   "frozen_at": "2026-09-29",
+   "dataset": "fc26-kaggle-2025-09",
+   "cards": {
+    "virgil van dijk": {
+     "tier": "exact",
+     "row": {
+      "name": "Virgil van Dijk",
+      "overall": 90,
+      "pace": 73,
+      "shooting": 60,
+      "passing": 72,
+      "dribbling": 72,
+      "defending": 90,
+      "physical": 87,
+      "position": "CB",
+      "club": "Liverpool",
+      "league": "Premier League",
+      "age": 34,
+      "photo_url": "https://cdn.sofifa.net/players/203/376/26_120.png"
+     }
+    },
+    "florian wirtz": {
+     "tier": "exact",
+     "row": {
+      "name": "Florian Wirtz",
+      "overall": 89,
+      "pace": 80,
+      "shooting": 82,
+      "passing": 88,
+      "dribbling": 90,
+      "defending": 54,
+      "physical": 67,
+      "position": "CAM",
+      "club": "Liverpool",
+      "league": "Premier League",
+      "age": 22,
+      "photo_url": "https://cdn.sofifa.net/players/256/630/26_120.png"
+     }
+    }
+   }
+  },
+  "70": {
+   "slug": "uruguay-world-cup-2026-squad-bielsa-tactical-analysis",
+   "frozen_at": "2026-09-29",
+   "dataset": "fc26-kaggle-2025-09",
+   "cards": {
+    "ronald araujo": {
+     "tier": "exact",
+     "row": {
+      "name": "Ronald Araujo",
+      "overall": 83,
+      "pace": 80,
+      "shooting": 53,
+      "passing": 63,
+      "dribbling": 61,
+      "defending": 81,
+      "physical": 83,
+      "position": "CB",
+      "club": "FC Barcelona",
+      "league": "LALIGA EA SPORTS",
+      "age": 27,
+      "photo_url": "https://cdn.sofifa.net/players/253/163/26_120.png"
+     }
+    },
+    "federico valverde": {
+     "tier": "exact",
+     "row": {
+      "name": "Federico Valverde",
+      "overall": 89,
+      "pace": 88,
+      "shooting": 84,
+      "passing": 84,
+      "dribbling": 84,
+      "defending": 83,
+      "physical": 85,
+      "position": "CM",
+      "club": "Real Madrid",
+      "league": "LALIGA EA SPORTS",
+      "age": 27,
+      "photo_url": "https://cdn.sofifa.net/players/239/053/26_120.png"
+     }
+    }
+   }
+  },
+  "71": {
+   "slug": "mexico-world-cup-2026-squad-tactical-analysis",
+   "frozen_at": "2026-09-29",
+   "dataset": "fc26-kaggle-2025-09",
+   "cards": {
+    "edson álvarez": {
+     "tier": "exact",
+     "row": {
+      "name": "Edson Álvarez",
+      "overall": 78,
+      "pace": 65,
+      "shooting": 58,
+      "passing": 69,
+      "dribbling": 72,
+      "defending": 78,
+      "physical": 79,
+      "position": "CDM",
+      "club": "Fenerbahçe",
+      "league": "Trendyol Süper Lig",
+      "age": 28,
+      "photo_url": "https://cdn.sofifa.net/players/235/844/26_120.png"
+     }
+    },
+    "santiago giménez": {
+     "tier": "exact",
+     "row": {
+      "name": "Santiago Giménez",
+      "overall": 79,
+      "pace": 78,
+      "shooting": 80,
+      "passing": 70,
+      "dribbling": 77,
+      "defending": 46,
+      "physical": 69,
+      "position": "ST",
+      "club": "AC Milan",
+      "league": "Serie A Enilive",
+      "age": 24,
+      "photo_url": "https://cdn.sofifa.net/players/245/152/26_120.png"
+     }
+    }
+   }
+  },
+  "72": {
+   "slug": "paraguay-world-cup-2026-squad-tactical-analysis",
+   "frozen_at": "2026-09-29",
+   "dataset": "fc26-kaggle-2025-09",
+   "cards": {
+    "julio césar enciso": {
+     "tier": "exact",
+     "row": {
+      "name": "Julio César Enciso",
+      "overall": 73,
+      "pace": 74,
+      "shooting": 72,
+      "passing": 70,
+      "dribbling": 78,
+      "defending": 33,
+      "physical": 51,
+      "position": "CAM",
+      "club": "Strasbourg",
+      "league": "Ligue 1 McDonald's",
+      "age": 22,
+      "photo_url": "https://cdn.sofifa.net/players/255/434/26_120.png"
+     }
+    }
+   }
+  },
+  "73": {
+   "slug": "australia-world-cup-2026-squad-tactical-analysis",
+   "frozen_at": "2026-09-29",
+   "dataset": "fc26-kaggle-2025-09",
+   "cards": {
+    "harry souttar": {
+     "tier": "exact",
+     "row": {
+      "name": "Harry Souttar",
+      "overall": 73,
+      "pace": 46,
+      "shooting": 28,
+      "passing": 51,
+      "dribbling": 54,
+      "defending": 73,
+      "physical": 75,
+      "position": "CB",
+      "club": "Leicester City",
+      "league": "EFL Championship",
+      "age": 27,
+      "photo_url": "https://cdn.sofifa.net/players/229/901/26_120.png"
+     }
+    },
+    "nestory irankunda": {
+     "tier": "exact",
+     "row": {
+      "name": "Nestory Irankunda",
+      "overall": 67,
+      "pace": 88,
+      "shooting": 70,
+      "passing": 62,
+      "dribbling": 70,
+      "defending": 43,
+      "physical": 74,
+      "position": "RM",
+      "club": "Watford",
+      "league": "EFL Championship",
+      "age": 20,
+      "photo_url": "https://cdn.sofifa.net/players/266/245/26_120.png"
+     }
+    }
+   }
+  },
+  "75": {
+   "slug": "turkey-official-world-cup-2026-roster-tactical-analysis",
+   "frozen_at": "2026-09-29",
+   "dataset": "fc26-kaggle-2025-09",
+   "cards": {
+    "hakan çalhanoğlu": {
+     "tier": "exact",
+     "row": {
+      "name": "Hakan Çalhanoğlu",
+      "overall": 86,
+      "pace": 71,
+      "shooting": 81,
+      "passing": 87,
+      "dribbling": 82,
+      "defending": 81,
+      "physical": 73,
+      "position": "CDM",
+      "club": "Inter",
+      "league": "Serie A Enilive",
+      "age": 32,
+      "photo_url": "https://cdn.sofifa.net/players/208/128/26_120.png"
+     }
+    },
+    "arda güler": {
+     "tier": "exact",
+     "row": {
+      "name": "Arda Güler",
+      "overall": 81,
+      "pace": 70,
+      "shooting": 77,
+      "passing": 83,
+      "dribbling": 83,
+      "defending": 52,
+      "physical": 50,
+      "position": "RM",
+      "club": "Real Madrid",
+      "league": "LALIGA EA SPORTS",
+      "age": 21,
+      "photo_url": "https://cdn.sofifa.net/players/264/309/26_120.png"
+     }
+    },
+    "kenan yıldız": {
+     "tier": "exact",
+     "row": {
+      "name": "Kenan Yıldız",
+      "overall": 79,
+      "pace": 84,
+      "shooting": 78,
+      "passing": 74,
+      "dribbling": 83,
+      "defending": 35,
+      "physical": 66,
+      "position": "CAM",
+      "club": "Juventus",
+      "league": "Serie A Enilive",
+      "age": 20,
+      "photo_url": "https://cdn.sofifa.net/players/277/954/26_120.png"
+     }
+    },
+    "kerem aktürkoğlu": {
+     "tier": "exact",
+     "row": {
+      "name": "Kerem Aktürkoğlu",
+      "overall": 80,
+      "pace": 85,
+      "shooting": 75,
+      "passing": 74,
+      "dribbling": 81,
+      "defending": 41,
+      "physical": 58,
+      "position": "LW",
+      "club": "Fenerbahçe",
+      "league": "Trendyol Süper Lig",
+      "age": 27,
+      "photo_url": "https://cdn.sofifa.net/players/258/580/26_120.png"
+     }
+    }
+   }
+  },
+  "76": {
+   "slug": "ghana-official-world-cup-2026-roster-tactical-analysis",
+   "frozen_at": "2026-09-29",
+   "dataset": "fc26-kaggle-2025-09",
+   "cards": {
+    "thomas partey": {
+     "tier": "exact",
+     "row": {
+      "name": "Thomas Partey",
+      "overall": 83,
+      "pace": 59,
+      "shooting": 71,
+      "passing": 80,
+      "dribbling": 77,
+      "defending": 80,
+      "physical": 82,
+      "position": "CDM",
+      "club": "Villarreal CF",
+      "league": "LALIGA EA SPORTS",
+      "age": 32,
+      "photo_url": "https://cdn.sofifa.net/players/209/989/26_120.png"
+     }
+    },
+    "ernest nuamah": {
+     "tier": "exact",
+     "row": {
+      "name": "Ernest Nuamah",
+      "overall": 75,
+      "pace": 82,
+      "shooting": 70,
+      "passing": 69,
+      "dribbling": 78,
+      "defending": 24,
+      "physical": 58,
+      "position": "RM",
+      "club": "OL",
+      "league": "Ligue 1 McDonald's",
+      "age": 22,
+      "photo_url": "https://cdn.sofifa.net/players/268/763/26_120.png"
+     }
+    },
+    "iñaki williams": {
+     "tier": "exact",
+     "row": {
+      "name": "Iñaki Williams",
+      "overall": 83,
+      "pace": 94,
+      "shooting": 81,
+      "passing": 74,
+      "dribbling": 80,
+      "defending": 45,
+      "physical": 84,
+      "position": "RM",
+      "club": "Athletic Club",
+      "league": "LALIGA EA SPORTS",
+      "age": 31,
+      "photo_url": "https://cdn.sofifa.net/players/216/201/26_120.png"
+     }
+    },
+    "antoine semenyo": {
+     "tier": "exact",
+     "row": {
+      "name": "Antoine Semenyo",
+      "overall": 80,
+      "pace": 80,
+      "shooting": 78,
+      "passing": 73,
+      "dribbling": 81,
+      "defending": 40,
+      "physical": 79,
+      "position": "RM",
+      "club": "AFC Bournemouth",
+      "league": "Premier League",
+      "age": 26,
+      "photo_url": "https://cdn.sofifa.net/players/241/236/26_120.png"
+     }
+    }
+   }
+  },
+  "78": {
+   "slug": "world-cup-squads-ranked-strongest",
+   "frozen_at": "2026-09-29",
+   "dataset": "fc26-kaggle-2025-09",
+   "cards": {
+    "kylian mbappé": {
+     "tier": "exact",
+     "row": {
+      "name": "Kylian Mbappé",
+      "overall": 91,
+      "pace": 97,
+      "shooting": 90,
+      "passing": 81,
+      "dribbling": 92,
+      "defending": 37,
+      "physical": 76,
+      "position": "ST",
+      "club": "Real Madrid",
+      "league": "LALIGA EA SPORTS",
+      "age": 27,
+      "photo_url": "https://cdn.sofifa.net/players/231/747/26_120.png"
+     }
+    },
+    "jude bellingham": {
+     "tier": "exact",
+     "row": {
+      "name": "Jude Bellingham",
+      "overall": 90,
+      "pace": 80,
+      "shooting": 86,
+      "passing": 83,
+      "dribbling": 90,
+      "defending": 78,
+      "physical": 85,
+      "position": "CAM",
+      "club": "Real Madrid",
+      "league": "LALIGA EA SPORTS",
+      "age": 22,
+      "photo_url": "https://cdn.sofifa.net/players/252/371/26_120.png"
+     }
+    },
+    "harry kane": {
+     "tier": "exact",
+     "row": {
+      "name": "Harry Kane",
+      "overall": 89,
+      "pace": 64,
+      "shooting": 92,
+      "passing": 83,
+      "dribbling": 82,
+      "defending": 48,
+      "physical": 82,
+      "position": "ST",
+      "club": "FC Bayern München",
+      "league": "Bundesliga",
+      "age": 32,
+      "photo_url": "https://cdn.sofifa.net/players/202/126/26_120.png"
+     }
+    },
+    "lamine yamal": {
+     "tier": "exact",
+     "row": {
+      "name": "Lamine Yamal",
+      "overall": 89,
+      "pace": 85,
+      "shooting": 81,
+      "passing": 86,
+      "dribbling": 90,
+      "defending": 23,
+      "physical": 53,
+      "position": "RM",
+      "club": "FC Barcelona",
+      "league": "LALIGA EA SPORTS",
+      "age": 18,
+      "photo_url": "https://cdn.sofifa.net/players/277/643/26_120.png"
+     }
+    },
+    "lionel messi": {
+     "tier": "exact",
+     "row": {
+      "name": "Lionel Messi",
+      "overall": 86,
+      "pace": 78,
+      "shooting": 85,
+      "passing": 85,
+      "dribbling": 90,
+      "defending": 33,
+      "physical": 64,
+      "position": "RW",
+      "club": "Inter Miami CF",
+      "league": "MLS",
+      "age": 38,
+      "photo_url": "https://cdn.sofifa.net/players/158/023/26_120.png"
+     }
+    },
+    "cristiano ronaldo": {
+     "tier": "exact",
+     "row": {
+      "name": "Cristiano Ronaldo",
+      "overall": 85,
+      "pace": 76,
+      "shooting": 88,
+      "passing": 76,
+      "dribbling": 80,
+      "defending": 34,
+      "physical": 76,
+      "position": "ST",
+      "club": "Al Nassr",
+      "league": "ROSHN Saudi League",
+      "age": 41,
+      "photo_url": "https://cdn.sofifa.net/players/020/801/26_120.png"
+     }
+    },
+    "luka modrić": {
+     "tier": "exact",
+     "row": {
+      "name": "Luka Modrić",
+      "overall": 83,
+      "pace": 68,
+      "shooting": 74,
+      "passing": 86,
+      "dribbling": 86,
+      "defending": 70,
+      "physical": 62,
+      "position": "CM",
+      "club": "AC Milan",
+      "league": "Serie A Enilive",
+      "age": 40,
+      "photo_url": "https://cdn.sofifa.net/players/177/003/26_120.png"
+     }
+    },
+    "florian wirtz": {
+     "tier": "exact",
+     "row": {
+      "name": "Florian Wirtz",
+      "overall": 89,
+      "pace": 80,
+      "shooting": 82,
+      "passing": 88,
+      "dribbling": 90,
+      "defending": 54,
+      "physical": 67,
+      "position": "CAM",
+      "club": "Liverpool",
+      "league": "Premier League",
+      "age": 22,
+      "photo_url": "https://cdn.sofifa.net/players/256/630/26_120.png"
+     }
+    },
+    "jamal musiala": {
+     "tier": "exact",
+     "row": {
+      "name": "Jamal Musiala",
+      "overall": 88,
+      "pace": 80,
+      "shooting": 82,
+      "passing": 80,
+      "dribbling": 90,
+      "defending": 66,
+      "physical": 65,
+      "position": "CAM",
+      "club": "FC Bayern München",
+      "league": "Bundesliga",
+      "age": 23,
+      "photo_url": "https://cdn.sofifa.net/players/256/790/26_120.png"
+     }
+    },
+    "erling haaland": {
+     "tier": "exact",
+     "row": {
+      "name": "Erling Haaland",
+      "overall": 90,
+      "pace": 86,
+      "shooting": 91,
+      "passing": 70,
+      "dribbling": 80,
+      "defending": 45,
+      "physical": 88,
+      "position": "ST",
+      "club": "Manchester City",
+      "league": "Premier League",
+      "age": 25,
+      "photo_url": "https://cdn.sofifa.net/players/239/085/26_120.png"
+     }
+    }
+   }
+  },
+  "82": {
+   "slug": "rising-stars-scouts-world-cup",
+   "frozen_at": "2026-09-29",
+   "dataset": "fc26-kaggle-2025-09",
+   "cards": {
+    "lamine yamal": {
+     "tier": "exact",
+     "row": {
+      "name": "Lamine Yamal",
+      "overall": 89,
+      "pace": 85,
+      "shooting": 81,
+      "passing": 86,
+      "dribbling": 90,
+      "defending": 23,
+      "physical": 53,
+      "position": "RM",
+      "club": "FC Barcelona",
+      "league": "LALIGA EA SPORTS",
+      "age": 18,
+      "photo_url": "https://cdn.sofifa.net/players/277/643/26_120.png"
+     }
+    },
+    "ibrahim mbaye": {
+     "tier": "exact",
+     "row": {
+      "name": "Ibrahim Mbaye",
+      "overall": 66,
+      "pace": 77,
+      "shooting": 59,
+      "passing": 59,
+      "dribbling": 70,
+      "defending": 25,
+      "physical": 45,
+      "position": "RW",
+      "club": "Paris SG",
+      "league": "Ligue 1 McDonald's",
+      "age": 18,
+      "photo_url": "https://cdn.sofifa.net/players/074/449/26_120.png"
+     }
+    },
+    "kenan yıldız": {
+     "tier": "exact",
+     "row": {
+      "name": "Kenan Yıldız",
+      "overall": 79,
+      "pace": 84,
+      "shooting": 78,
+      "passing": 74,
+      "dribbling": 83,
+      "defending": 35,
+      "physical": 66,
+      "position": "CAM",
+      "club": "Juventus",
+      "league": "Serie A Enilive",
+      "age": 20,
+      "photo_url": "https://cdn.sofifa.net/players/277/954/26_120.png"
+     }
+    },
+    "arda güler": {
+     "tier": "exact",
+     "row": {
+      "name": "Arda Güler",
+      "overall": 81,
+      "pace": 70,
+      "shooting": 77,
+      "passing": 83,
+      "dribbling": 83,
+      "defending": 52,
+      "physical": 50,
+      "position": "RM",
+      "club": "Real Madrid",
+      "league": "LALIGA EA SPORTS",
+      "age": 21,
+      "photo_url": "https://cdn.sofifa.net/players/264/309/26_120.png"
+     }
+    },
+    "endrick": {
+     "tier": "exact",
+     "row": {
+      "name": "Endrick",
+      "overall": 77,
+      "pace": 87,
+      "shooting": 77,
+      "passing": 62,
+      "dribbling": 78,
+      "defending": 30,
+      "physical": 68,
+      "position": "ST",
+      "club": "Real Madrid",
+      "league": "LALIGA EA SPORTS",
+      "age": 19,
+      "photo_url": "https://cdn.sofifa.net/players/272/505/26_120.png"
+     }
+    },
+    "joão neves": {
+     "tier": "exact",
+     "row": {
+      "name": "João Neves",
+      "overall": 85,
+      "pace": 74,
+      "shooting": 69,
+      "passing": 80,
+      "dribbling": 84,
+      "defending": 82,
+      "physical": 83,
+      "position": "CM",
+      "club": "Paris SG",
+      "league": "Ligue 1 McDonald's",
+      "age": 21,
+      "photo_url": "https://cdn.sofifa.net/players/272/834/26_120.png"
+     }
+    },
+    "kobbie mainoo": {
+     "tier": "exact",
+     "row": {
+      "name": "Kobbie Mainoo",
+      "overall": 77,
+      "pace": 68,
+      "shooting": 69,
+      "passing": 74,
+      "dribbling": 81,
+      "defending": 73,
+      "physical": 74,
+      "position": "CM",
+      "club": "Man Utd",
+      "league": "Premier League",
+      "age": 20,
+      "photo_url": "https://cdn.sofifa.net/players/269/136/26_120.png"
+     }
+    },
+    "désiré doué": {
+     "tier": "exact",
+     "row": {
+      "name": "Désiré Doué",
+      "overall": 85,
+      "pace": 83,
+      "shooting": 80,
+      "passing": 77,
+      "dribbling": 90,
+      "defending": 55,
+      "physical": 74,
+      "position": "RW",
+      "club": "Paris SG",
+      "league": "Ligue 1 McDonald's",
+      "age": 20,
+      "photo_url": "https://cdn.sofifa.net/players/271/421/26_120.png"
+     }
+    },
+    "lucas bergvall": {
+     "tier": "exact",
+     "row": {
+      "name": "Lucas Bergvall",
+      "overall": 77,
+      "pace": 75,
+      "shooting": 63,
+      "passing": 76,
+      "dribbling": 77,
+      "defending": 71,
+      "physical": 73,
+      "position": "CM",
+      "club": "Spurs",
+      "league": "Premier League",
+      "age": 20,
+      "photo_url": "https://cdn.sofifa.net/players/272/926/26_120.png"
+     }
+    }
+   }
+  },
+  "83": {
+   "slug": "world-cup-breakout-stars-elite-transfer-targets",
+   "frozen_at": "2026-09-29",
+   "dataset": "fc26-kaggle-2025-09",
+   "cards": {
+    "julián alvarez": {
+     "tier": "exact",
+     "row": {
+      "name": "Julián Alvarez",
+      "overall": 87,
+      "pace": 85,
+      "shooting": 87,
+      "passing": 81,
+      "dribbling": 87,
+      "defending": 57,
+      "physical": 79,
+      "position": "ST",
+      "club": "Atlético de Madrid",
+      "league": "LALIGA EA SPORTS",
+      "age": 26,
+      "photo_url": "https://cdn.sofifa.net/players/246/191/26_120.png"
+     }
+    },
+    "elliot anderson": {
+     "tier": "exact",
+     "row": {
+      "name": "Elliot Anderson",
+      "overall": 80,
+      "pace": 71,
+      "shooting": 68,
+      "passing": 79,
+      "dribbling": 81,
+      "defending": 77,
+      "physical": 78,
+      "position": "CDM",
+      "club": "Nott'm Forest",
+      "league": "Premier League",
+      "age": 23,
+      "photo_url": "https://cdn.sofifa.net/players/254/243/26_120.png"
+     }
+    },
+    "yan diomande": {
+     "tier": "exact",
+     "row": {
+      "name": "Yan Diomande",
+      "overall": 66,
+      "pace": 71,
+      "shooting": 61,
+      "passing": 62,
+      "dribbling": 64,
+      "defending": 25,
+      "physical": 49,
+      "position": "LM",
+      "club": "RB Leipzig",
+      "league": "Bundesliga",
+      "age": 19,
+      "photo_url": "https://cdn.sofifa.net/players/078/012/26_120.png"
+     }
+    },
+    "enzo fernández": {
+     "tier": "exact",
+     "row": {
+      "name": "Enzo Fernández",
+      "overall": 84,
+      "pace": 68,
+      "shooting": 75,
+      "passing": 85,
+      "dribbling": 81,
+      "defending": 73,
+      "physical": 75,
+      "position": "CM",
+      "club": "Chelsea",
+      "league": "Premier League",
+      "age": 25,
+      "photo_url": "https://cdn.sofifa.net/players/247/090/26_120.png"
+     }
+    },
+    "morgan rogers": {
+     "tier": "exact",
+     "row": {
+      "name": "Morgan Rogers",
+      "overall": 82,
+      "pace": 77,
+      "shooting": 77,
+      "passing": 79,
+      "dribbling": 84,
+      "defending": 67,
+      "physical": 79,
+      "position": "CAM",
+      "club": "Aston Villa",
+      "league": "Premier League",
+      "age": 23,
+      "photo_url": "https://cdn.sofifa.net/players/260/247/26_120.png"
+     }
+    }
+   }
+  },
+  "85": {
+   "slug": "argentina-fluid-front-three-tactics",
+   "frozen_at": "2026-09-29",
+   "dataset": "fc26-kaggle-2025-09",
+   "cards": {
+    "lionel messi": {
+     "tier": "exact",
+     "row": {
+      "name": "Lionel Messi",
+      "overall": 86,
+      "pace": 78,
+      "shooting": 85,
+      "passing": 85,
+      "dribbling": 90,
+      "defending": 33,
+      "physical": 64,
+      "position": "RW",
+      "club": "Inter Miami CF",
+      "league": "MLS",
+      "age": 38,
+      "photo_url": "https://cdn.sofifa.net/players/158/023/26_120.png"
+     }
+    },
+    "julián álvarez": {
+     "tier": "last",
+     "row": {
+      "name": "Edson Álvarez",
+      "overall": 78,
+      "pace": 65,
+      "shooting": 58,
+      "passing": 69,
+      "dribbling": 72,
+      "defending": 78,
+      "physical": 79,
+      "position": "CDM",
+      "club": "Fenerbahçe",
+      "league": "Trendyol Süper Lig",
+      "age": 28,
+      "photo_url": "https://cdn.sofifa.net/players/235/844/26_120.png"
+     }
+    },
+    "lautaro martínez": {
+     "tier": "exact",
+     "row": {
+      "name": "Lautaro Martínez",
+      "overall": 88,
+      "pace": 81,
+      "shooting": 88,
+      "passing": 75,
+      "dribbling": 84,
+      "defending": 51,
+      "physical": 83,
+      "position": "ST",
+      "club": "Inter",
+      "league": "Serie A Enilive",
+      "age": 28,
+      "photo_url": "https://cdn.sofifa.net/players/231/478/26_120.png"
+     }
+    }
+   }
+  },
+  "87": {
+   "slug": "austria-world-cup-squad-analysis",
+   "frozen_at": "2026-09-29",
+   "dataset": "fc26-kaggle-2025-09",
+   "cards": {
+    "carney chukwuemeka": {
+     "tier": "exact",
+     "row": {
+      "name": "Carney Chukwuemeka",
+      "overall": 76,
+      "pace": 74,
+      "shooting": 66,
+      "passing": 74,
+      "dribbling": 79,
+      "defending": 57,
+      "physical": 66,
+      "position": "CAM",
+      "club": "Borussia Dortmund",
+      "league": "Bundesliga",
+      "age": 22,
+      "photo_url": "https://cdn.sofifa.net/players/259/356/26_120.png"
+     }
+    },
+    "paul wanner": {
+     "tier": "exact",
+     "row": {
+      "name": "Paul Wanner",
+      "overall": 72,
+      "pace": 75,
+      "shooting": 61,
+      "passing": 71,
+      "dribbling": 74,
+      "defending": 44,
+      "physical": 50,
+      "position": "CAM",
+      "club": "PSV",
+      "league": "Eredivisie",
+      "age": 20,
+      "photo_url": "https://cdn.sofifa.net/players/266/237/26_120.png"
+     }
+    }
+   }
+  },
+  "89": {
+   "slug": "mexico-south-africa-match-preview-lineups",
+   "frozen_at": "2026-09-29",
+   "dataset": "fc26-kaggle-2025-09",
+   "cards": {
+    "raul jimenez": {
+     "tier": "last",
+     "row": {
+      "name": "Stiven Jimenez",
+      "overall": 49,
+      "pace": 57,
+      "shooting": 34,
+      "passing": 45,
+      "dribbling": 50,
+      "defending": 48,
+      "physical": 43,
+      "position": "CDM",
+      "club": "FC Cincinnati",
+      "league": "MLS",
+      "age": 18,
+      "photo_url": "https://cdn.sofifa.net/players/274/542/26_120.png"
+     }
+    },
+    "guillermo ochoa": {
+     "tier": "last",
+     "row": {
+      "name": "Aarón Ochoa",
+      "overall": 65,
+      "pace": 66,
+      "shooting": 60,
+      "passing": 62,
+      "dribbling": 67,
+      "defending": 40,
+      "physical": 51,
+      "position": "CAM",
+      "club": "Málaga CF",
+      "league": "LALIGA HYPERMOTION",
+      "age": 18,
+      "photo_url": "https://cdn.sofifa.net/players/074/555/26_120.png"
+     }
+    },
+    "raúl jiménez": {
+     "tier": "exact",
+     "row": {
+      "name": "Raúl Jiménez",
+      "overall": 77,
+      "pace": 57,
+      "shooting": 79,
+      "passing": 74,
+      "dribbling": 75,
+      "defending": 46,
+      "physical": 79,
+      "position": "ST",
+      "club": "Fulham",
+      "league": "Premier League",
+      "age": 34,
+      "photo_url": "https://cdn.sofifa.net/players/204/838/26_120.png"
+     }
+    },
+    "lyle foster": {
+     "tier": "exact",
+     "row": {
+      "name": "Lyle Foster",
+      "overall": 72,
+      "pace": 81,
+      "shooting": 72,
+      "passing": 61,
+      "dribbling": 69,
+      "defending": 36,
+      "physical": 73,
+      "position": "ST",
+      "club": "Burnley",
+      "league": "Premier League",
+      "age": 25,
+      "photo_url": "https://cdn.sofifa.net/players/241/173/26_120.png"
+     }
+    },
+    "ronwen williams": {
+     "tier": "last",
+     "row": {
+      "name": "Nico Williams",
+      "overall": 86,
+      "pace": 93,
+      "shooting": 76,
+      "passing": 80,
+      "dribbling": 87,
+      "defending": 36,
+      "physical": 66,
+      "position": "LM",
+      "club": "Athletic Club",
+      "league": "LALIGA EA SPORTS",
+      "age": 23,
+      "photo_url": "https://cdn.sofifa.net/players/256/516/26_120.png"
+     }
+    }
+   }
+  },
+  "91": {
+   "slug": "south-korea-czechia-world-cup-transfer-stage",
+   "frozen_at": "2026-09-29",
+   "dataset": "fc26-kaggle-2025-09",
+   "cards": {
+    "son heung-min": null,
+    "patrik schick": {
+     "tier": "exact",
+     "row": {
+      "name": "Patrik Schick",
+      "overall": 85,
+      "pace": 72,
+      "shooting": 83,
+      "passing": 71,
+      "dribbling": 81,
+      "defending": 38,
+      "physical": 77,
+      "position": "ST",
+      "club": "Leverkusen",
+      "league": "Bundesliga",
+      "age": 30,
+      "photo_url": "https://cdn.sofifa.net/players/234/236/26_120.png"
+     }
+    },
+    "jae-sung lee": null
+   }
+  },
+  "94": {
+   "slug": "hidden-gems-shine-tournament-world-cup-2026",
+   "frozen_at": "2026-09-29",
+   "dataset": "fc26-kaggle-2025-09",
+   "cards": {
+    "ibrahim maza": {
+     "tier": "exact",
+     "row": {
+      "name": "Ibrahim Maza",
+      "overall": 71,
+      "pace": 75,
+      "shooting": 66,
+      "passing": 66,
+      "dribbling": 79,
+      "defending": 40,
+      "physical": 62,
+      "position": "CAM",
+      "club": "Leverkusen",
+      "league": "Bundesliga",
+      "age": 20,
+      "photo_url": "https://cdn.sofifa.net/players/275/029/26_120.png"
+     }
+    },
+    "yan diomande": {
+     "tier": "exact",
+     "row": {
+      "name": "Yan Diomande",
+      "overall": 66,
+      "pace": 71,
+      "shooting": 61,
+      "passing": 62,
+      "dribbling": 64,
+      "defending": 25,
+      "physical": 49,
+      "position": "LM",
+      "club": "RB Leipzig",
+      "league": "Bundesliga",
+      "age": 19,
+      "photo_url": "https://cdn.sofifa.net/players/078/012/26_120.png"
+     }
+    },
+    "hamza abdelkarim": null,
+    "luka vušković": {
+     "tier": "exact",
+     "row": {
+      "name": "Luka Vušković",
+      "overall": 72,
+      "pace": 58,
+      "shooting": 59,
+      "passing": 57,
+      "dribbling": 58,
+      "defending": 70,
+      "physical": 77,
+      "position": "CB",
+      "club": "Hamburger SV",
+      "league": "Bundesliga",
+      "age": 19,
+      "photo_url": "https://cdn.sofifa.net/players/275/192/26_120.png"
+     }
+    }
+   }
+  },
+  "95": {
+   "slug": "senesi-van-de-ven-partnership-analysis",
+   "frozen_at": "2026-09-29",
+   "dataset": "fc26-kaggle-2025-09",
+   "cards": {
+    "marcos senesi": {
+     "tier": "exact",
+     "row": {
+      "name": "Marcos Senesi",
+      "overall": 78,
+      "pace": 56,
+      "shooting": 42,
+      "passing": 70,
+      "dribbling": 72,
+      "defending": 79,
+      "physical": 75,
+      "position": "CB",
+      "club": "AFC Bournemouth",
+      "league": "Premier League",
+      "age": 28,
+      "photo_url": "https://cdn.sofifa.net/players/236/506/26_120.png"
+     }
+    },
+    "micky van de ven": {
+     "tier": "exact",
+     "row": {
+      "name": "Micky van de Ven",
+      "overall": 82,
+      "pace": 90,
+      "shooting": 49,
+      "passing": 64,
+      "dribbling": 72,
+      "defending": 82,
+      "physical": 80,
+      "position": "CB",
+      "club": "Spurs",
+      "league": "Premier League",
+      "age": 24,
+      "photo_url": "https://cdn.sofifa.net/players/264/453/26_120.png"
+     }
+    },
+    "multiple opposition threats": null,
+    "partnership integration": null
+   }
+  },
+  "96": {
+   "slug": "world-cup-2026-usa-political-tensions-football",
+   "frozen_at": "2026-09-29",
+   "dataset": "fc26-kaggle-2025-09",
+   "cards": {
+    "ehsan hajsafi": null
+   }
+  },
+  "97": {
+   "slug": "barcelona-egypt-striker-world-cup-prospect",
+   "frozen_at": "2026-09-29",
+   "dataset": "fc26-kaggle-2025-09",
+   "cards": {
+    "hamza abdelkarim": null
+   }
+  },
+  "99": {
+   "slug": "mourinho-real-madrid-second-spell-tactics",
+   "frozen_at": "2026-09-29",
+   "dataset": "fc26-kaggle-2025-09",
+   "cards": {
+    "kylian mbappé": {
+     "tier": "exact",
+     "row": {
+      "name": "Kylian Mbappé",
+      "overall": 91,
+      "pace": 97,
+      "shooting": 90,
+      "passing": 81,
+      "dribbling": 92,
+      "defending": 37,
+      "physical": 76,
+      "position": "ST",
+      "club": "Real Madrid",
+      "league": "LALIGA EA SPORTS",
+      "age": 27,
+      "photo_url": "https://cdn.sofifa.net/players/231/747/26_120.png"
+     }
+    },
+    "aurélien tchouaméni": {
+     "tier": "exact",
+     "row": {
+      "name": "Aurélien Tchouaméni",
+      "overall": 84,
+      "pace": 71,
+      "shooting": 69,
+      "passing": 79,
+      "dribbling": 78,
+      "defending": 81,
+      "physical": 82,
+      "position": "CDM",
+      "club": "Real Madrid",
+      "league": "LALIGA EA SPORTS",
+      "age": 26,
+      "photo_url": "https://cdn.sofifa.net/players/241/637/26_120.png"
+     }
+    },
+    "vinícius jr.": null,
+    "jude bellingham": {
+     "tier": "exact",
+     "row": {
+      "name": "Jude Bellingham",
+      "overall": 90,
+      "pace": 80,
+      "shooting": 86,
+      "passing": 83,
+      "dribbling": 90,
+      "defending": 78,
+      "physical": 85,
+      "position": "CAM",
+      "club": "Real Madrid",
+      "league": "LALIGA EA SPORTS",
+      "age": 22,
+      "photo_url": "https://cdn.sofifa.net/players/252/371/26_120.png"
+     }
+    }
+   }
+  },
+  "100": {
+   "slug": "usa-paraguay-match-analysis-group",
+   "frozen_at": "2026-09-29",
+   "dataset": "fc26-kaggle-2025-09",
+   "cards": {
+    "christian pulisic": {
+     "tier": "exact",
+     "row": {
+      "name": "Christian Pulisic",
+      "overall": 84,
+      "pace": 88,
+      "shooting": 82,
+      "passing": 80,
+      "dribbling": 86,
+      "defending": 46,
+      "physical": 65,
+      "position": "RW",
+      "club": "AC Milan",
+      "league": "Serie A Enilive",
+      "age": 27,
+      "photo_url": "https://cdn.sofifa.net/players/227/796/26_120.png"
+     }
+    }
+   }
+  },
+  "101": {
+   "slug": "qatar-switzerland-world-cup-tactical-analysis",
+   "frozen_at": "2026-09-29",
+   "dataset": "fc26-kaggle-2025-09",
+   "cards": {
+    "akram afif": null,
+    "granit xhaka": {
+     "tier": "exact",
+     "row": {
+      "name": "Granit Xhaka",
+      "overall": 85,
+      "pace": 47,
+      "shooting": 75,
+      "passing": 85,
+      "dribbling": 74,
+      "defending": 78,
+      "physical": 82,
+      "position": "CDM",
+      "club": "Sunderland",
+      "league": "Premier League",
+      "age": 33,
+      "photo_url": "https://cdn.sofifa.net/players/199/503/26_120.png"
+     }
+    },
+    "breel embolo": {
+     "tier": "exact",
+     "row": {
+      "name": "Breel Embolo",
+      "overall": 77,
+      "pace": 78,
+      "shooting": 75,
+      "passing": 70,
+      "dribbling": 75,
+      "defending": 51,
+      "physical": 80,
+      "position": "ST",
+      "club": "Stade Rennais FC",
+      "league": "Ligue 1 McDonald's",
+      "age": 29,
+      "photo_url": "https://cdn.sofifa.net/players/222/357/26_120.png"
+     }
+    }
+   }
+  },
+  "102": {
+   "slug": "top-20-all-time-world-cup-goal-scorers-ranking",
+   "frozen_at": "2026-09-29",
+   "dataset": "fc26-kaggle-2025-09",
+   "cards": {
+    "lionel messi": {
+     "tier": "exact",
+     "row": {
+      "name": "Lionel Messi",
+      "overall": 86,
+      "pace": 78,
+      "shooting": 85,
+      "passing": 85,
+      "dribbling": 90,
+      "defending": 33,
+      "physical": 64,
+      "position": "RW",
+      "club": "Inter Miami CF",
+      "league": "MLS",
+      "age": 38,
+      "photo_url": "https://cdn.sofifa.net/players/158/023/26_120.png"
+     }
+    },
+    "kylian mbappé": {
+     "tier": "exact",
+     "row": {
+      "name": "Kylian Mbappé",
+      "overall": 91,
+      "pace": 97,
+      "shooting": 90,
+      "passing": 81,
+      "dribbling": 92,
+      "defending": 37,
+      "physical": 76,
+      "position": "ST",
+      "club": "Real Madrid",
+      "league": "LALIGA EA SPORTS",
+      "age": 27,
+      "photo_url": "https://cdn.sofifa.net/players/231/747/26_120.png"
+     }
+    }
+   }
+  },
+  "103": {
+   "slug": "brazil-morocco-wc-2026-tactical-preview",
+   "frozen_at": "2026-09-29",
+   "dataset": "fc26-kaggle-2025-09",
+   "cards": {
+    "raphinha": {
+     "tier": "exact",
+     "row": {
+      "name": "Raphinha",
+      "overall": 89,
+      "pace": 91,
+      "shooting": 84,
+      "passing": 85,
+      "dribbling": 87,
+      "defending": 53,
+      "physical": 75,
+      "position": "LM",
+      "club": "FC Barcelona",
+      "league": "LALIGA EA SPORTS",
+      "age": 29,
+      "photo_url": "https://cdn.sofifa.net/players/233/419/26_120.png"
+     }
+    },
+    "achraf hakimi": {
+     "tier": "exact",
+     "row": {
+      "name": "Achraf Hakimi",
+      "overall": 89,
+      "pace": 92,
+      "shooting": 79,
+      "passing": 82,
+      "dribbling": 83,
+      "defending": 82,
+      "physical": 79,
+      "position": "RB",
+      "club": "Paris SG",
+      "league": "Ligue 1 McDonald's",
+      "age": 27,
+      "photo_url": "https://cdn.sofifa.net/players/235/212/26_120.png"
+     }
+    }
+   }
+  },
+  "104": {
+   "slug": "haiti-scotland-world-cup-underdog-analysis",
+   "frozen_at": "2026-09-29",
+   "dataset": "fc26-kaggle-2025-09",
+   "cards": {
+    "wilson isidor": {
+     "tier": "exact",
+     "row": {
+      "name": "Wilson Isidor",
+      "overall": 72,
+      "pace": 81,
+      "shooting": 71,
+      "passing": 60,
+      "dribbling": 70,
+      "defending": 31,
+      "physical": 72,
+      "position": "ST",
+      "club": "Sunderland",
+      "league": "Premier League",
+      "age": 25,
+      "photo_url": "https://cdn.sofifa.net/players/247/335/26_120.png"
+     }
+    },
+    "scott mctominay": {
+     "tier": "exact",
+     "row": {
+      "name": "Scott McTominay",
+      "overall": 85,
+      "pace": 76,
+      "shooting": 82,
+      "passing": 77,
+      "dribbling": 80,
+      "defending": 80,
+      "physical": 85,
+      "position": "CM",
+      "club": "SSC Napoli",
+      "league": "Serie A Enilive",
+      "age": 29,
+      "photo_url": "https://cdn.sofifa.net/players/237/238/26_120.png"
+     }
+    }
+   }
+  },
+  "105": {
+   "slug": "australia-turkey-world-cup-tactics",
+   "frozen_at": "2026-09-29",
+   "dataset": "fc26-kaggle-2025-09",
+   "cards": {
+    "arda güler": {
+     "tier": "exact",
+     "row": {
+      "name": "Arda Güler",
+      "overall": 81,
+      "pace": 70,
+      "shooting": 77,
+      "passing": 83,
+      "dribbling": 83,
+      "defending": 52,
+      "physical": 50,
+      "position": "RM",
+      "club": "Real Madrid",
+      "league": "LALIGA EA SPORTS",
+      "age": 21,
+      "photo_url": "https://cdn.sofifa.net/players/264/309/26_120.png"
+     }
+    },
+    "jackson irvine": {
+     "tier": "exact",
+     "row": {
+      "name": "Jackson Irvine",
+      "overall": 75,
+      "pace": 67,
+      "shooting": 68,
+      "passing": 71,
+      "dribbling": 70,
+      "defending": 72,
+      "physical": 80,
+      "position": "CM",
+      "club": "FC St. Pauli",
+      "league": "Bundesliga",
+      "age": 33,
+      "photo_url": "https://cdn.sofifa.net/players/211/378/26_120.png"
+     }
+    }
+   }
+  },
+  "106": {
+   "slug": "under-20-players-2026-world-cup",
+   "frozen_at": "2026-09-29",
+   "dataset": "fc26-kaggle-2025-09",
+   "cards": {
+    "endrick": {
+     "tier": "exact",
+     "row": {
+      "name": "Endrick",
+      "overall": 77,
+      "pace": 87,
+      "shooting": 77,
+      "passing": 62,
+      "dribbling": 78,
+      "defending": 30,
+      "physical": 68,
+      "position": "ST",
+      "club": "Real Madrid",
+      "league": "LALIGA EA SPORTS",
+      "age": 19,
+      "photo_url": "https://cdn.sofifa.net/players/272/505/26_120.png"
+     }
+    },
+    "pau cubarsí": {
+     "tier": "exact",
+     "row": {
+      "name": "Pau Cubarsí",
+      "overall": 82,
+      "pace": 70,
+      "shooting": 42,
+      "passing": 66,
+      "dribbling": 77,
+      "defending": 84,
+      "physical": 76,
+      "position": "CB",
+      "club": "FC Barcelona",
+      "league": "LALIGA EA SPORTS",
+      "age": 19,
+      "photo_url": "https://cdn.sofifa.net/players/278/046/26_120.png"
+     }
+    },
+    "warren zaïre-emery": {
+     "tier": "exact",
+     "row": {
+      "name": "Warren Zaïre-Emery",
+      "overall": 80,
+      "pace": 79,
+      "shooting": 68,
+      "passing": 76,
+      "dribbling": 79,
+      "defending": 75,
+      "physical": 79,
+      "position": "CM",
+      "club": "Paris SG",
+      "league": "Ligue 1 McDonald's",
+      "age": 20,
+      "photo_url": "https://cdn.sofifa.net/players/270/673/26_120.png"
+     }
+    },
+    "lamine camara": {
+     "tier": "exact",
+     "row": {
+      "name": "Lamine Camara",
+      "overall": 77,
+      "pace": 79,
+      "shooting": 66,
+      "passing": 78,
+      "dribbling": 77,
+      "defending": 71,
+      "physical": 69,
+      "position": "CM",
+      "club": "AS Monaco",
+      "league": "Ligue 1 McDonald's",
+      "age": 22,
+      "photo_url": "https://cdn.sofifa.net/players/275/138/26_120.png"
+     }
+    }
+   }
+  },
+  "107": {
+   "slug": "konat-real-madrid-mourinho-transfer",
+   "frozen_at": "2026-09-29",
+   "dataset": "fc26-kaggle-2025-09",
+   "cards": {
+    "ibrahima konaté": {
+     "tier": "exact",
+     "row": {
+      "name": "Ibrahima Konaté",
+      "overall": 86,
+      "pace": 77,
+      "shooting": 34,
+      "passing": 63,
+      "dribbling": 69,
+      "defending": 86,
+      "physical": 85,
+      "position": "CB",
+      "club": "Liverpool",
+      "league": "Premier League",
+      "age": 26,
+      "photo_url": "https://cdn.sofifa.net/players/237/678/26_120.png"
+     }
+    }
+   }
+  },
+  "108": {
+   "slug": "porro-untouchable-tottenham-2031-contract",
+   "frozen_at": "2026-09-29",
+   "dataset": "fc26-kaggle-2025-09",
+   "cards": {
+    "pedro porro": {
+     "tier": "exact",
+     "row": {
+      "name": "Pedro Porro",
+      "overall": 82,
+      "pace": 78,
+      "shooting": 73,
+      "passing": 81,
+      "dribbling": 80,
+      "defending": 77,
+      "physical": 76,
+      "position": "RB",
+      "club": "Spurs",
+      "league": "Premier League",
+      "age": 26,
+      "photo_url": "https://cdn.sofifa.net/players/243/576/26_120.png"
+     }
+    }
+   }
+  },
+  "109": {
+   "slug": "group-f-sweden-tunisia-knockout-race",
+   "frozen_at": "2026-09-29",
+   "dataset": "fc26-kaggle-2025-09",
+   "cards": {
+    "viktor gyökeres": {
+     "tier": "exact",
+     "row": {
+      "name": "Viktor Gyökeres",
+      "overall": 87,
+      "pace": 90,
+      "shooting": 86,
+      "passing": 73,
+      "dribbling": 81,
+      "defending": 36,
+      "physical": 91,
+      "position": "ST",
+      "club": "Arsenal",
+      "league": "Premier League",
+      "age": 27,
+      "photo_url": "https://cdn.sofifa.net/players/241/651/26_120.png"
+     }
+    },
+    "alexander isak": {
+     "tier": "exact",
+     "row": {
+      "name": "Alexander Isak",
+      "overall": 88,
+      "pace": 83,
+      "shooting": 89,
+      "passing": 73,
+      "dribbling": 85,
+      "defending": 39,
+      "physical": 76,
+      "position": "ST",
+      "club": "Liverpool",
+      "league": "Premier League",
+      "age": 26,
+      "photo_url": "https://cdn.sofifa.net/players/233/731/26_120.png"
+     }
+    },
+    "ellyes skhiri": {
+     "tier": "exact",
+     "row": {
+      "name": "Ellyes Skhiri",
+      "overall": 80,
+      "pace": 64,
+      "shooting": 73,
+      "passing": 74,
+      "dribbling": 75,
+      "defending": 80,
+      "physical": 74,
+      "position": "CDM",
+      "club": "Frankfurt",
+      "league": "Bundesliga",
+      "age": 30,
+      "photo_url": "https://cdn.sofifa.net/players/225/126/26_120.png"
+     }
+    }
+   }
+  },
+  "110": {
+   "slug": "spain-vs-cape-verde-world-cup-2026-atlanta",
+   "frozen_at": "2026-09-29",
+   "dataset": "fc26-kaggle-2025-09",
+   "cards": {
+    "lamine yamal": {
+     "tier": "exact",
+     "row": {
+      "name": "Lamine Yamal",
+      "overall": 89,
+      "pace": 85,
+      "shooting": 81,
+      "passing": 86,
+      "dribbling": 90,
+      "defending": 23,
+      "physical": 53,
+      "position": "RM",
+      "club": "FC Barcelona",
+      "league": "LALIGA EA SPORTS",
+      "age": 18,
+      "photo_url": "https://cdn.sofifa.net/players/277/643/26_120.png"
+     }
+    },
+    "dailon livramento": {
+     "tier": "exact",
+     "row": {
+      "name": "Dailon Livramento",
+      "overall": 70,
+      "pace": 82,
+      "shooting": 71,
+      "passing": 56,
+      "dribbling": 68,
+      "defending": 34,
+      "physical": 64,
+      "position": "ST",
+      "club": "Casa Pia AC",
+      "league": "Liga Portugal",
+      "age": 24,
+      "photo_url": "https://cdn.sofifa.net/players/073/853/26_120.png"
+     }
+    }
+   }
+  },
+  "111": {
+   "slug": "real-madrid-summer-transfers-cucurella-mourinho",
+   "frozen_at": "2026-09-29",
+   "dataset": "fc26-kaggle-2025-09",
+   "cards": {
+    "marc cucurella": {
+     "tier": "exact",
+     "row": {
+      "name": "Marc Cucurella",
+      "overall": 84,
+      "pace": 75,
+      "shooting": 64,
+      "passing": 79,
+      "dribbling": 80,
+      "defending": 82,
+      "physical": 79,
+      "position": "LB",
+      "club": "Chelsea",
+      "league": "Premier League",
+      "age": 27,
+      "photo_url": "https://cdn.sofifa.net/players/239/231/26_120.png"
+     }
+    },
+    "bernardo silva": {
+     "tier": "exact",
+     "row": {
+      "name": "Bernardo Silva",
+      "overall": 84,
+      "pace": 61,
+      "shooting": 78,
+      "passing": 83,
+      "dribbling": 89,
+      "defending": 71,
+      "physical": 65,
+      "position": "CM",
+      "club": "Manchester City",
+      "league": "Premier League",
+      "age": 31,
+      "photo_url": "https://cdn.sofifa.net/players/218/667/26_120.png"
+     }
+    },
+    "josé mourinho": null
+   }
+  },
+  "114": {
+   "slug": "mbappe-dembele-olise-senegal-defense",
+   "frozen_at": "2026-09-29",
+   "dataset": "fc26-kaggle-2025-09",
+   "cards": {
+    "kylian mbappé": {
+     "tier": "exact",
+     "row": {
+      "name": "Kylian Mbappé",
+      "overall": 91,
+      "pace": 97,
+      "shooting": 90,
+      "passing": 81,
+      "dribbling": 92,
+      "defending": 37,
+      "physical": 76,
+      "position": "ST",
+      "club": "Real Madrid",
+      "league": "LALIGA EA SPORTS",
+      "age": 27,
+      "photo_url": "https://cdn.sofifa.net/players/231/747/26_120.png"
+     }
+    },
+    "michael olise": {
+     "tier": "exact",
+     "row": {
+      "name": "Michael Olise",
+      "overall": 86,
+      "pace": 78,
+      "shooting": 80,
+      "passing": 84,
+      "dribbling": 87,
+      "defending": 50,
+      "physical": 66,
+      "position": "RM",
+      "club": "FC Bayern München",
+      "league": "Bundesliga",
+      "age": 24,
+      "photo_url": "https://cdn.sofifa.net/players/247/827/26_120.png"
+     }
+    },
+    "kalidou koulibaly": {
+     "tier": "exact",
+     "row": {
+      "name": "Kalidou Koulibaly",
+      "overall": 82,
+      "pace": 74,
+      "shooting": 48,
+      "passing": 62,
+      "dribbling": 65,
+      "defending": 82,
+      "physical": 84,
+      "position": "CB",
+      "club": "Al Hilal",
+      "league": "ROSHN Saudi League",
+      "age": 34,
+      "photo_url": "https://cdn.sofifa.net/players/201/024/26_120.png"
+     }
+    },
+    "ousmane dembélé": {
+     "tier": "exact",
+     "row": {
+      "name": "Ousmane Dembélé",
+      "overall": 90,
+      "pace": 91,
+      "shooting": 88,
+      "passing": 83,
+      "dribbling": 93,
+      "defending": 50,
+      "physical": 69,
+      "position": "ST",
+      "club": "Paris SG",
+      "league": "Ligue 1 McDonald's",
+      "age": 28,
+      "photo_url": "https://cdn.sofifa.net/players/231/443/26_120.png"
+     }
+    }
+   }
+  },
+  "115": {
+   "slug": "amorim-pressing-system-ac-milan-tactics",
+   "frozen_at": "2026-09-29",
+   "dataset": "fc26-kaggle-2025-09",
+   "cards": {
+    "christian pulisic": {
+     "tier": "exact",
+     "row": {
+      "name": "Christian Pulisic",
+      "overall": 84,
+      "pace": 88,
+      "shooting": 82,
+      "passing": 80,
+      "dribbling": 86,
+      "defending": 46,
+      "physical": 65,
+      "position": "RW",
+      "club": "AC Milan",
+      "league": "Serie A Enilive",
+      "age": 27,
+      "photo_url": "https://cdn.sofifa.net/players/227/796/26_120.png"
+     }
+    }
+   }
+  },
+  "116": {
+   "slug": "nico-paz-thiago-almada-world-cup-breakout",
+   "frozen_at": "2026-09-29",
+   "dataset": "fc26-kaggle-2025-09",
+   "cards": {
+    "nico paz": {
+     "tier": "exact",
+     "row": {
+      "name": "Nico Paz",
+      "overall": 79,
+      "pace": 78,
+      "shooting": 71,
+      "passing": 77,
+      "dribbling": 82,
+      "defending": 51,
+      "physical": 64,
+      "position": "CAM",
+      "club": "Como",
+      "league": "Serie A Enilive",
+      "age": 21,
+      "photo_url": "https://cdn.sofifa.net/players/277/846/26_120.png"
+     }
+    },
+    "thiago almada": {
+     "tier": "exact",
+     "row": {
+      "name": "Thiago Almada",
+      "overall": 79,
+      "pace": 79,
+      "shooting": 74,
+      "passing": 79,
+      "dribbling": 83,
+      "defending": 51,
+      "physical": 58,
+      "position": "CAM",
+      "club": "Atlético de Madrid",
+      "league": "LALIGA EA SPORTS",
+      "age": 24,
+      "photo_url": "https://cdn.sofifa.net/players/245/371/26_120.png"
+     }
+    }
+   }
+  },
+  "117": {
+   "slug": "panama-world-cup-squad-2026-analysis",
+   "frozen_at": "2026-09-29",
+   "dataset": "fc26-kaggle-2025-09",
+   "cards": {
+    "adalberto carrasquilla": null,
+    "ismael díaz": {
+     "tier": "last",
+     "row": {
+      "name": "Luis Díaz",
+      "overall": 85,
+      "pace": 88,
+      "shooting": 81,
+      "passing": 76,
+      "dribbling": 87,
+      "defending": 45,
+      "physical": 75,
+      "position": "LM",
+      "club": "FC Bayern München",
+      "league": "Bundesliga",
+      "age": 29,
+      "photo_url": "https://cdn.sofifa.net/players/241/084/26_120.png"
+     }
+    }
+   }
+  },
+  "118": {
+   "slug": "ghana-world-cup-squad-2026-inaki-williams",
+   "frozen_at": "2026-09-29",
+   "dataset": "fc26-kaggle-2025-09",
+   "cards": {
+    "iñaki williams": {
+     "tier": "exact",
+     "row": {
+      "name": "Iñaki Williams",
+      "overall": 83,
+      "pace": 94,
+      "shooting": 81,
+      "passing": 74,
+      "dribbling": 80,
+      "defending": 45,
+      "physical": 84,
+      "position": "RM",
+      "club": "Athletic Club",
+      "league": "LALIGA EA SPORTS",
+      "age": 31,
+      "photo_url": "https://cdn.sofifa.net/players/216/201/26_120.png"
+     }
+    }
+   }
+  },
+  "119": {
+   "slug": "dr-congo-world-cup-group-prediction",
+   "frozen_at": "2026-09-29",
+   "dataset": "fc26-kaggle-2025-09",
+   "cards": {
+    "yoane wissa": {
+     "tier": "exact",
+     "row": {
+      "name": "Yoane Wissa",
+      "overall": 82,
+      "pace": 85,
+      "shooting": 82,
+      "passing": 70,
+      "dribbling": 80,
+      "defending": 31,
+      "physical": 71,
+      "position": "ST",
+      "club": "Newcastle Utd",
+      "league": "Premier League",
+      "age": 29,
+      "photo_url": "https://cdn.sofifa.net/players/234/824/26_120.png"
+     }
+    },
+    "cédric bakambu": {
+     "tier": "exact",
+     "row": {
+      "name": "Cédric Bakambu",
+      "overall": 77,
+      "pace": 78,
+      "shooting": 78,
+      "passing": 68,
+      "dribbling": 72,
+      "defending": 40,
+      "physical": 68,
+      "position": "ST",
+      "club": "Real Betis",
+      "league": "LALIGA EA SPORTS",
+      "age": 34,
+      "photo_url": "https://cdn.sofifa.net/players/198/951/26_120.png"
+     }
+    }
+   }
+  },
+  "120": {
+   "slug": "wc-2026-round-one-standout-player-performances",
+   "frozen_at": "2026-09-29",
+   "dataset": "fc26-kaggle-2025-09",
+   "cards": {
+    "lionel messi": {
+     "tier": "exact",
+     "row": {
+      "name": "Lionel Messi",
+      "overall": 86,
+      "pace": 78,
+      "shooting": 85,
+      "passing": 85,
+      "dribbling": 90,
+      "defending": 33,
+      "physical": 64,
+      "position": "RW",
+      "club": "Inter Miami CF",
+      "league": "MLS",
+      "age": 38,
+      "photo_url": "https://cdn.sofifa.net/players/158/023/26_120.png"
+     }
+    },
+    "kylian mbappé": {
+     "tier": "exact",
+     "row": {
+      "name": "Kylian Mbappé",
+      "overall": 91,
+      "pace": 97,
+      "shooting": 90,
+      "passing": 81,
+      "dribbling": 92,
+      "defending": 37,
+      "physical": 76,
+      "position": "ST",
+      "club": "Real Madrid",
+      "league": "LALIGA EA SPORTS",
+      "age": 27,
+      "photo_url": "https://cdn.sofifa.net/players/231/747/26_120.png"
+     }
+    },
+    "erling haaland": {
+     "tier": "exact",
+     "row": {
+      "name": "Erling Haaland",
+      "overall": 90,
+      "pace": 86,
+      "shooting": 91,
+      "passing": 70,
+      "dribbling": 80,
+      "defending": 45,
+      "physical": 88,
+      "position": "ST",
+      "club": "Manchester City",
+      "league": "Premier League",
+      "age": 25,
+      "photo_url": "https://cdn.sofifa.net/players/239/085/26_120.png"
+     }
+    },
+    "vozinha": null
+   }
+  },
+  "121": {
+   "slug": "young-talents-world-cup-round-1",
+   "frozen_at": "2026-09-29",
+   "dataset": "fc26-kaggle-2025-09",
+   "cards": {
+    "ayyoub bouaddi": {
+     "tier": "exact",
+     "row": {
+      "name": "Ayyoub Bouaddi",
+      "overall": 75,
+      "pace": 75,
+      "shooting": 58,
+      "passing": 72,
+      "dribbling": 75,
+      "defending": 67,
+      "physical": 71,
+      "position": "CM",
+      "club": "LOSC Lille",
+      "league": "Ligue 1 McDonald's",
+      "age": 18,
+      "photo_url": "https://cdn.sofifa.net/players/278/901/26_120.png"
+     }
+    },
+    "yan diomande": {
+     "tier": "exact",
+     "row": {
+      "name": "Yan Diomande",
+      "overall": 66,
+      "pace": 71,
+      "shooting": 61,
+      "passing": 62,
+      "dribbling": 64,
+      "defending": 25,
+      "physical": 49,
+      "position": "LM",
+      "club": "RB Leipzig",
+      "league": "Bundesliga",
+      "age": 19,
+      "photo_url": "https://cdn.sofifa.net/players/078/012/26_120.png"
+     }
+    },
+    "nathaniel brown": {
+     "tier": "exact",
+     "row": {
+      "name": "Nathaniel Brown",
+      "overall": 77,
+      "pace": 83,
+      "shooting": 53,
+      "passing": 71,
+      "dribbling": 77,
+      "defending": 71,
+      "physical": 51,
+      "position": "LB",
+      "club": "Frankfurt",
+      "league": "Bundesliga",
+      "age": 22,
+      "photo_url": "https://cdn.sofifa.net/players/269/701/26_120.png"
+     }
+    },
+    "nestory irankunda": {
+     "tier": "exact",
+     "row": {
+      "name": "Nestory Irankunda",
+      "overall": 67,
+      "pace": 88,
+      "shooting": 70,
+      "passing": 62,
+      "dribbling": 70,
+      "defending": 43,
+      "physical": 74,
+      "position": "RM",
+      "club": "Watford",
+      "league": "EFL Championship",
+      "age": 20,
+      "photo_url": "https://cdn.sofifa.net/players/266/245/26_120.png"
+     }
+    }
+   }
+  },
+  "122": {
+   "slug": "usa-australia-wc-2026-tactical-breakdown",
+   "frozen_at": "2026-09-29",
+   "dataset": "fc26-kaggle-2025-09",
+   "cards": {
+    "folarin balogun": {
+     "tier": "exact",
+     "row": {
+      "name": "Folarin Balogun",
+      "overall": 77,
+      "pace": 84,
+      "shooting": 77,
+      "passing": 62,
+      "dribbling": 77,
+      "defending": 23,
+      "physical": 68,
+      "position": "ST",
+      "club": "AS Monaco",
+      "league": "Ligue 1 McDonald's",
+      "age": 24,
+      "photo_url": "https://cdn.sofifa.net/players/247/463/26_120.png"
+     }
+    }
+   }
+  },
+  "123": {
+   "slug": "turkiye-midfield-paraguay-counter-world-cup-analysis",
+   "frozen_at": "2026-09-29",
+   "dataset": "fc26-kaggle-2025-09",
+   "cards": {
+    "hakan çalhanoğlu": {
+     "tier": "exact",
+     "row": {
+      "name": "Hakan Çalhanoğlu",
+      "overall": 86,
+      "pace": 71,
+      "shooting": 81,
+      "passing": 87,
+      "dribbling": 82,
+      "defending": 81,
+      "physical": 73,
+      "position": "CDM",
+      "club": "Inter",
+      "league": "Serie A Enilive",
+      "age": 32,
+      "photo_url": "https://cdn.sofifa.net/players/208/128/26_120.png"
+     }
+    },
+    "miguel almiron": null
+   }
+  },
+  "124": {
+   "slug": "next-generation-u21-prospects-europe",
+   "frozen_at": "2026-09-29",
+   "dataset": "fc26-kaggle-2025-09",
+   "cards": {
+    "lamine yamal": {
+     "tier": "exact",
+     "row": {
+      "name": "Lamine Yamal",
+      "overall": 89,
+      "pace": 85,
+      "shooting": 81,
+      "passing": 86,
+      "dribbling": 90,
+      "defending": 23,
+      "physical": 53,
+      "position": "RM",
+      "club": "FC Barcelona",
+      "league": "LALIGA EA SPORTS",
+      "age": 18,
+      "photo_url": "https://cdn.sofifa.net/players/277/643/26_120.png"
+     }
+    },
+    "arda güler": {
+     "tier": "exact",
+     "row": {
+      "name": "Arda Güler",
+      "overall": 81,
+      "pace": 70,
+      "shooting": 77,
+      "passing": 83,
+      "dribbling": 83,
+      "defending": 52,
+      "physical": 50,
+      "position": "RM",
+      "club": "Real Madrid",
+      "league": "LALIGA EA SPORTS",
+      "age": 21,
+      "photo_url": "https://cdn.sofifa.net/players/264/309/26_120.png"
+     }
+    },
+    "désiré doué": {
+     "tier": "exact",
+     "row": {
+      "name": "Désiré Doué",
+      "overall": 85,
+      "pace": 83,
+      "shooting": 80,
+      "passing": 77,
+      "dribbling": 90,
+      "defending": 55,
+      "physical": 74,
+      "position": "RW",
+      "club": "Paris SG",
+      "league": "Ligue 1 McDonald's",
+      "age": 20,
+      "photo_url": "https://cdn.sofifa.net/players/271/421/26_120.png"
+     }
+    },
+    "joão neves": {
+     "tier": "exact",
+     "row": {
+      "name": "João Neves",
+      "overall": 85,
+      "pace": 74,
+      "shooting": 69,
+      "passing": 80,
+      "dribbling": 84,
+      "defending": 82,
+      "physical": 83,
+      "position": "CM",
+      "club": "Paris SG",
+      "league": "Ligue 1 McDonald's",
+      "age": 21,
+      "photo_url": "https://cdn.sofifa.net/players/272/834/26_120.png"
+     }
+    },
+    "warren zaïre-emery": {
+     "tier": "exact",
+     "row": {
+      "name": "Warren Zaïre-Emery",
+      "overall": 80,
+      "pace": 79,
+      "shooting": 68,
+      "passing": 76,
+      "dribbling": 79,
+      "defending": 75,
+      "physical": 79,
+      "position": "CM",
+      "club": "Paris SG",
+      "league": "Ligue 1 McDonald's",
+      "age": 20,
+      "photo_url": "https://cdn.sofifa.net/players/270/673/26_120.png"
+     }
+    },
+    "lennart karl": {
+     "tier": "exact",
+     "row": {
+      "name": "Lennart Karl",
+      "overall": 63,
+      "pace": 69,
+      "shooting": 58,
+      "passing": 60,
+      "dribbling": 69,
+      "defending": 34,
+      "physical": 37,
+      "position": "CAM",
+      "club": "FC Bayern München",
+      "league": "Bundesliga",
+      "age": 18,
+      "photo_url": "https://cdn.sofifa.net/players/078/063/26_120.png"
+     }
+    },
+    "pau cubarsí": {
+     "tier": "exact",
+     "row": {
+      "name": "Pau Cubarsí",
+      "overall": 82,
+      "pace": 70,
+      "shooting": 42,
+      "passing": 66,
+      "dribbling": 77,
+      "defending": 84,
+      "physical": 76,
+      "position": "CB",
+      "club": "FC Barcelona",
+      "league": "LALIGA EA SPORTS",
+      "age": 19,
+      "photo_url": "https://cdn.sofifa.net/players/278/046/26_120.png"
+     }
+    },
+    "franco mastantuono": {
+     "tier": "exact",
+     "row": {
+      "name": "Franco Mastantuono",
+      "overall": 77,
+      "pace": 74,
+      "shooting": 71,
+      "passing": 75,
+      "dribbling": 80,
+      "defending": 50,
+      "physical": 63,
+      "position": "CAM",
+      "club": "Real Madrid",
+      "league": "LALIGA EA SPORTS",
+      "age": 18,
+      "photo_url": "https://cdn.sofifa.net/players/279/173/26_120.png"
+     }
+    },
+    "geovany quenda": {
+     "tier": "exact",
+     "row": {
+      "name": "Geovany Quenda",
+      "overall": 76,
+      "pace": 85,
+      "shooting": 62,
+      "passing": 71,
+      "dribbling": 79,
+      "defending": 41,
+      "physical": 67,
+      "position": "RM",
+      "club": "Sporting CP",
+      "league": "Liga Portugal",
+      "age": 18,
+      "photo_url": "https://cdn.sofifa.net/players/279/044/26_120.png"
+     }
+    },
+    "ethan nwaneri": {
+     "tier": "exact",
+     "row": {
+      "name": "Ethan Nwaneri",
+      "overall": 76,
+      "pace": 82,
+      "shooting": 70,
+      "passing": 74,
+      "dribbling": 78,
+      "defending": 50,
+      "physical": 54,
+      "position": "RW",
+      "club": "Arsenal",
+      "league": "Premier League",
+      "age": 18,
+      "photo_url": "https://cdn.sofifa.net/players/271/807/26_120.png"
+     }
+    },
+    "hugo larsson": {
+     "tier": "exact",
+     "row": {
+      "name": "Hugo Larsson",
+      "overall": 78,
+      "pace": 77,
+      "shooting": 73,
+      "passing": 71,
+      "dribbling": 78,
+      "defending": 71,
+      "physical": 77,
+      "position": "CM",
+      "club": "Frankfurt",
+      "league": "Bundesliga",
+      "age": 21,
+      "photo_url": "https://cdn.sofifa.net/players/268/896/26_120.png"
+     }
+    },
+    "gilberto mora": {
+     "tier": "last",
+     "row": {
+      "name": "Morata",
+      "overall": 81,
+      "pace": 78,
+      "shooting": 81,
+      "passing": 74,
+      "dribbling": 80,
+      "defending": 31,
+      "physical": 78,
+      "position": "ST",
+      "club": "Como",
+      "league": "Serie A Enilive",
+      "age": 33,
+      "photo_url": "https://cdn.sofifa.net/players/201/153/26_120.png"
+     }
+    }
+   }
+  },
+  "125": {
+   "slug": "argentina-austria-world-cup-tactical-breakdown",
+   "frozen_at": "2026-09-29",
+   "dataset": "fc26-kaggle-2025-09",
+   "cards": {
+    "lionel messi": {
+     "tier": "exact",
+     "row": {
+      "name": "Lionel Messi",
+      "overall": 86,
+      "pace": 78,
+      "shooting": 85,
+      "passing": 85,
+      "dribbling": 90,
+      "defending": 33,
+      "physical": 64,
+      "position": "RW",
+      "club": "Inter Miami CF",
+      "league": "MLS",
+      "age": 38,
+      "photo_url": "https://cdn.sofifa.net/players/158/023/26_120.png"
+     }
+    },
+    "marcel sabitzer": {
+     "tier": "exact",
+     "row": {
+      "name": "Marcel Sabitzer",
+      "overall": 80,
+      "pace": 74,
+      "shooting": 80,
+      "passing": 80,
+      "dribbling": 80,
+      "defending": 76,
+      "physical": 76,
+      "position": "CDM",
+      "club": "Borussia Dortmund",
+      "league": "Bundesliga",
+      "age": 32,
+      "photo_url": "https://cdn.sofifa.net/players/204/923/26_120.png"
+     }
+    }
+   }
+  },
+  "126": {
+   "slug": "piero-hincapie-arsenal-signing-analysis",
+   "frozen_at": "2026-09-29",
+   "dataset": "fc26-kaggle-2025-09",
+   "cards": {
+    "piero hincapié": {
+     "tier": "exact",
+     "row": {
+      "name": "Piero Hincapié",
+      "overall": 83,
+      "pace": 84,
+      "shooting": 41,
+      "passing": 65,
+      "dribbling": 72,
+      "defending": 84,
+      "physical": 82,
+      "position": "CB",
+      "club": "Arsenal",
+      "league": "Premier League",
+      "age": 24,
+      "photo_url": "https://cdn.sofifa.net/players/256/197/26_120.png"
+     }
+    }
+   }
+  },
+  "127": {
+   "slug": "onana-second-loan-trabzonspor-man-utd",
+   "frozen_at": "2026-09-29",
+   "dataset": "fc26-kaggle-2025-09",
+   "cards": {
+    "andré onana": {
+     "tier": "exact",
+     "row": {
+      "name": "André Onana",
+      "overall": 80,
+      "pace": 0,
+      "shooting": 0,
+      "passing": 0,
+      "dribbling": 0,
+      "defending": 0,
+      "physical": 0,
+      "position": "GK",
+      "club": "Man Utd",
+      "league": "Premier League",
+      "age": 29,
+      "photo_url": null
+     }
+    }
+   }
+  },
+  "129": {
+   "slug": "beyond-endrick-and-yamal-the-underrated-teenagers-changing-the-world-cup-narrati",
+   "frozen_at": "2026-09-29",
+   "dataset": "fc26-kaggle-2025-09",
+   "cards": {
+    "gilberto mora": {
+     "tier": "last",
+     "row": {
+      "name": "Morata",
+      "overall": 81,
+      "pace": 78,
+      "shooting": 81,
+      "passing": 74,
+      "dribbling": 80,
+      "defending": 31,
+      "physical": 78,
+      "position": "ST",
+      "club": "Como",
+      "league": "Serie A Enilive",
+      "age": 33,
+      "photo_url": "https://cdn.sofifa.net/players/201/153/26_120.png"
+     }
+    },
+    "ayyoub bouaddi": {
+     "tier": "exact",
+     "row": {
+      "name": "Ayyoub Bouaddi",
+      "overall": 75,
+      "pace": 75,
+      "shooting": 58,
+      "passing": 72,
+      "dribbling": 75,
+      "defending": 67,
+      "physical": 71,
+      "position": "CM",
+      "club": "LOSC Lille",
+      "league": "Ligue 1 McDonald's",
+      "age": 18,
+      "photo_url": "https://cdn.sofifa.net/players/278/901/26_120.png"
+     }
+    },
+    "johan diomandé": {
+     "tier": "last",
+     "row": {
+      "name": "Sinaly Diomandé",
+      "overall": 73,
+      "pace": 62,
+      "shooting": 50,
+      "passing": 61,
+      "dribbling": 58,
+      "defending": 73,
+      "physical": 75,
+      "position": "CB",
+      "club": "AJ Auxerre",
+      "league": "Ligue 1 McDonald's",
+      "age": 24,
+      "photo_url": "https://cdn.sofifa.net/players/257/204/26_120.png"
+     }
+    },
+    "rayan": {
+     "tier": "two",
+     "row": {
+      "name": "Rayan Cherki",
+      "overall": 81,
+      "pace": 75,
+      "shooting": 75,
+      "passing": 80,
+      "dribbling": 88,
+      "defending": 21,
+      "physical": 65,
+      "position": "RW",
+      "club": "Manchester City",
+      "league": "Premier League",
+      "age": 22,
+      "photo_url": "https://cdn.sofifa.net/players/251/570/26_120.png"
+     }
+    },
+    "luka vuskovic": null
+   }
+  },
+  "130": {
+   "slug": "nico-paz-to-stay-at-como-inside-real-madrid-s-60m-buy-back-masterstroke",
+   "frozen_at": "2026-09-29",
+   "dataset": "fc26-kaggle-2025-09",
+   "cards": {
+    "nico paz": {
+     "tier": "exact",
+     "row": {
+      "name": "Nico Paz",
+      "overall": 79,
+      "pace": 78,
+      "shooting": 71,
+      "passing": 77,
+      "dribbling": 82,
+      "defending": 51,
+      "physical": 64,
+      "position": "CAM",
+      "club": "Como",
+      "league": "Serie A Enilive",
+      "age": 21,
+      "photo_url": "https://cdn.sofifa.net/players/277/846/26_120.png"
+     }
+    }
+   }
+  },
+  "131": {
+   "slug": "argentina-s-next-messi-the-real-contenders-to-inherit-the-no-10",
+   "frozen_at": "2026-09-29",
+   "dataset": "fc26-kaggle-2025-09",
+   "cards": {
+    "claudio echeverri": {
+     "tier": "exact",
+     "row": {
+      "name": "Claudio Echeverri",
+      "overall": 74,
+      "pace": 84,
+      "shooting": 66,
+      "passing": 71,
+      "dribbling": 80,
+      "defending": 38,
+      "physical": 47,
+      "position": "CAM",
+      "club": "Leverkusen",
+      "league": "Bundesliga",
+      "age": 20,
+      "photo_url": "https://cdn.sofifa.net/players/276/528/26_120.png"
+     }
+    },
+    "franco mastantuono": {
+     "tier": "exact",
+     "row": {
+      "name": "Franco Mastantuono",
+      "overall": 77,
+      "pace": 74,
+      "shooting": 71,
+      "passing": 75,
+      "dribbling": 80,
+      "defending": 50,
+      "physical": 63,
+      "position": "CAM",
+      "club": "Real Madrid",
+      "league": "LALIGA EA SPORTS",
+      "age": 18,
+      "photo_url": "https://cdn.sofifa.net/players/279/173/26_120.png"
+     }
+    },
+    "nico paz": {
+     "tier": "exact",
+     "row": {
+      "name": "Nico Paz",
+      "overall": 79,
+      "pace": 78,
+      "shooting": 71,
+      "passing": 77,
+      "dribbling": 82,
+      "defending": 51,
+      "physical": 64,
+      "position": "CAM",
+      "club": "Como",
+      "league": "Serie A Enilive",
+      "age": 21,
+      "photo_url": "https://cdn.sofifa.net/players/277/846/26_120.png"
+     }
+    }
+   }
+  },
+  "132": {
+   "slug": "ea-fc-26-vs-reality-rating-argentina-s-wonderkids",
+   "frozen_at": "2026-09-29",
+   "dataset": "fc26-kaggle-2025-09",
+   "cards": {
+    "franco mastantuono": {
+     "tier": "exact",
+     "row": {
+      "name": "Franco Mastantuono",
+      "overall": 77,
+      "pace": 74,
+      "shooting": 71,
+      "passing": 75,
+      "dribbling": 80,
+      "defending": 50,
+      "physical": 63,
+      "position": "CAM",
+      "club": "Real Madrid",
+      "league": "LALIGA EA SPORTS",
+      "age": 18,
+      "photo_url": "https://cdn.sofifa.net/players/279/173/26_120.png"
+     }
+    },
+    "claudio echeverri": {
+     "tier": "exact",
+     "row": {
+      "name": "Claudio Echeverri",
+      "overall": 74,
+      "pace": 84,
+      "shooting": 66,
+      "passing": 71,
+      "dribbling": 80,
+      "defending": 38,
+      "physical": 47,
+      "position": "CAM",
+      "club": "Leverkusen",
+      "league": "Bundesliga",
+      "age": 20,
+      "photo_url": "https://cdn.sofifa.net/players/276/528/26_120.png"
+     }
+    },
+    "ian subiabre": {
+     "tier": "exact",
+     "row": {
+      "name": "Ian Subiabre",
+      "overall": 69,
+      "pace": 85,
+      "shooting": 65,
+      "passing": 58,
+      "dribbling": 75,
+      "defending": 32,
+      "physical": 60,
+      "position": "LW",
+      "club": "River Plate",
+      "league": "LPF",
+      "age": 19,
+      "photo_url": "https://cdn.sofifa.net/players/279/934/26_120.png"
+     }
+    },
+    "julio soler": {
+     "tier": "exact",
+     "row": {
+      "name": "Julio Soler",
+      "overall": 68,
+      "pace": 75,
+      "shooting": 46,
+      "passing": 60,
+      "dribbling": 67,
+      "defending": 65,
+      "physical": 60,
+      "position": "LB",
+      "club": "AFC Bournemouth",
+      "league": "Premier League",
+      "age": 21,
+      "photo_url": "https://cdn.sofifa.net/players/269/796/26_120.png"
+     }
+    },
+    "máximo perrone": {
+     "tier": "exact",
+     "row": {
+      "name": "Máximo Perrone",
+      "overall": 73,
+      "pace": 72,
+      "shooting": 55,
+      "passing": 70,
+      "dribbling": 76,
+      "defending": 68,
+      "physical": 66,
+      "position": "CDM",
+      "club": "Como",
+      "league": "Serie A Enilive",
+      "age": 23,
+      "photo_url": "https://cdn.sofifa.net/players/267/991/26_120.png"
+     }
+    }
+   }
+  },
+  "133": {
+   "slug": "germany-s-best-young-footballers-the-next-generation-taking-over",
+   "frozen_at": "2026-09-29",
+   "dataset": "fc26-kaggle-2025-09",
+   "cards": {
+    "florian wirtz": {
+     "tier": "exact",
+     "row": {
+      "name": "Florian Wirtz",
+      "overall": 89,
+      "pace": 80,
+      "shooting": 82,
+      "passing": 88,
+      "dribbling": 90,
+      "defending": 54,
+      "physical": 67,
+      "position": "CAM",
+      "club": "Liverpool",
+      "league": "Premier League",
+      "age": 22,
+      "photo_url": "https://cdn.sofifa.net/players/256/630/26_120.png"
+     }
+    },
+    "jamal musiala": {
+     "tier": "exact",
+     "row": {
+      "name": "Jamal Musiala",
+      "overall": 88,
+      "pace": 80,
+      "shooting": 82,
+      "passing": 80,
+      "dribbling": 90,
+      "defending": 66,
+      "physical": 65,
+      "position": "CAM",
+      "club": "FC Bayern München",
+      "league": "Bundesliga",
+      "age": 23,
+      "photo_url": "https://cdn.sofifa.net/players/256/790/26_120.png"
+     }
+    },
+    "lennart karl": {
+     "tier": "exact",
+     "row": {
+      "name": "Lennart Karl",
+      "overall": 63,
+      "pace": 69,
+      "shooting": 58,
+      "passing": 60,
+      "dribbling": 69,
+      "defending": 34,
+      "physical": 37,
+      "position": "CAM",
+      "club": "FC Bayern München",
+      "league": "Bundesliga",
+      "age": 18,
+      "photo_url": "https://cdn.sofifa.net/players/078/063/26_120.png"
+     }
+    },
+    "aleksandar pavlovic": null,
+    "nick woltemade": {
+     "tier": "exact",
+     "row": {
+      "name": "Nick Woltemade",
+      "overall": 79,
+      "pace": 67,
+      "shooting": 78,
+      "passing": 65,
+      "dribbling": 79,
+      "defending": 41,
+      "physical": 74,
+      "position": "ST",
+      "club": "Newcastle Utd",
+      "league": "Premier League",
+      "age": 24,
+      "photo_url": "https://cdn.sofifa.net/players/254/022/26_120.png"
+     }
+    }
+   }
+  },
+  "134": {
+   "slug": "the-best-young-players-in-the-premier-league-right-now",
+   "frozen_at": "2026-09-29",
+   "dataset": "fc26-kaggle-2025-09",
+   "cards": {
+    "junior kroupi": {
+     "tier": "two",
+     "row": {
+      "name": "Eli Junior Kroupi",
+      "overall": 74,
+      "pace": 80,
+      "shooting": 74,
+      "passing": 68,
+      "dribbling": 78,
+      "defending": 47,
+      "physical": 57,
+      "position": "ST",
+      "club": "AFC Bournemouth",
+      "league": "Premier League",
+      "age": 19,
+      "photo_url": "https://cdn.sofifa.net/players/277/909/26_120.png"
+     }
+    },
+    "rayan cherki": {
+     "tier": "exact",
+     "row": {
+      "name": "Rayan Cherki",
+      "overall": 81,
+      "pace": 75,
+      "shooting": 75,
+      "passing": 80,
+      "dribbling": 88,
+      "defending": 21,
+      "physical": 65,
+      "position": "RW",
+      "club": "Manchester City",
+      "league": "Premier League",
+      "age": 22,
+      "photo_url": "https://cdn.sofifa.net/players/251/570/26_120.png"
+     }
+    },
+    "nico o'reilly": {
+     "tier": "exact",
+     "row": {
+      "name": "Nico O'Reilly",
+      "overall": 73,
+      "pace": 73,
+      "shooting": 66,
+      "passing": 72,
+      "dribbling": 73,
+      "defending": 69,
+      "physical": 70,
+      "position": "LB",
+      "club": "Manchester City",
+      "league": "Premier League",
+      "age": 20,
+      "photo_url": "https://cdn.sofifa.net/players/277/427/26_120.png"
+     }
+    },
+    "max dowman": null,
+    "tom watson": {
+     "tier": "exact",
+     "row": {
+      "name": "Tom Watson",
+      "overall": 68,
+      "pace": 79,
+      "shooting": 65,
+      "passing": 62,
+      "dribbling": 69,
+      "defending": 29,
+      "physical": 57,
+      "position": "LM",
+      "club": "Brighton",
+      "league": "Premier League",
+      "age": 19,
+      "photo_url": "https://cdn.sofifa.net/players/275/246/26_120.png"
+     }
+    }
+   }
+  },
+  "135": {
+   "slug": "brazil-s-best-young-players-the-wonderkids-and-the-deep-cut-to-watch",
+   "frozen_at": "2026-09-29",
+   "dataset": "fc26-kaggle-2025-09",
+   "cards": {
+    "estêvão": {
+     "tier": "exact",
+     "row": {
+      "name": "Estêvão",
+      "overall": 78,
+      "pace": 90,
+      "shooting": 74,
+      "passing": 73,
+      "dribbling": 82,
+      "defending": 33,
+      "physical": 57,
+      "position": "RM",
+      "club": "Chelsea",
+      "league": "Premier League",
+      "age": 18,
+      "photo_url": "https://cdn.sofifa.net/players/076/687/26_120.png"
+     }
+    },
+    "ryan roberto": {
+     "tier": "last",
+     "row": {
+      "name": "Sergi Roberto",
+      "overall": 77,
+      "pace": 69,
+      "shooting": 63,
+      "passing": 78,
+      "dribbling": 75,
+      "defending": 74,
+      "physical": 65,
+      "position": "CDM",
+      "club": "Como",
+      "league": "Serie A Enilive",
+      "age": 34,
+      "photo_url": "https://cdn.sofifa.net/players/199/564/26_120.png"
+     }
+    },
+    "endrick": {
+     "tier": "exact",
+     "row": {
+      "name": "Endrick",
+      "overall": 77,
+      "pace": 87,
+      "shooting": 77,
+      "passing": 62,
+      "dribbling": 78,
+      "defending": 30,
+      "physical": 68,
+      "position": "ST",
+      "club": "Real Madrid",
+      "league": "LALIGA EA SPORTS",
+      "age": 19,
+      "photo_url": "https://cdn.sofifa.net/players/272/505/26_120.png"
+     }
+    },
+    "andrey santos": {
+     "tier": "exact",
+     "row": {
+      "name": "Andrey Santos",
+      "overall": 80,
+      "pace": 74,
+      "shooting": 69,
+      "passing": 74,
+      "dribbling": 78,
+      "defending": 77,
+      "physical": 80,
+      "position": "CM",
+      "club": "Chelsea",
+      "league": "Premier League",
+      "age": 21,
+      "photo_url": "https://cdn.sofifa.net/players/273/018/26_120.png"
+     }
+    },
+    "vitor roque": {
+     "tier": "last",
+     "row": {
+      "name": "Roque Santa Cruz",
+      "overall": 69,
+      "pace": 31,
+      "shooting": 74,
+      "passing": 60,
+      "dribbling": 61,
+      "defending": 36,
+      "physical": 63,
+      "position": "ST",
+      "club": "Libertad",
+      "league": "Libertadores",
+      "age": 44,
+      "photo_url": "https://cdn.sofifa.net/players/025/798/26_120.png"
+     }
+    },
+    "luis guilherme": {
+     "tier": "exact",
+     "row": {
+      "name": "Luis Guilherme",
+      "overall": 71,
+      "pace": 76,
+      "shooting": 62,
+      "passing": 64,
+      "dribbling": 75,
+      "defending": 33,
+      "physical": 58,
+      "position": "RM",
+      "club": "West Ham",
+      "league": "Premier League",
+      "age": 20,
+      "photo_url": "https://cdn.sofifa.net/players/072/754/26_120.png"
+     }
+    },
+    "denner evangelista": null
+   }
+  },
+  "136": {
+   "slug": "the-best-young-centre-backs-in-world-football-right-now",
+   "frozen_at": "2026-09-29",
+   "dataset": "fc26-kaggle-2025-09",
+   "cards": {
+    "pau cubarsí": {
+     "tier": "exact",
+     "row": {
+      "name": "Pau Cubarsí",
+      "overall": 82,
+      "pace": 70,
+      "shooting": 42,
+      "passing": 66,
+      "dribbling": 77,
+      "defending": 84,
+      "physical": 76,
+      "position": "CB",
+      "club": "FC Barcelona",
+      "league": "LALIGA EA SPORTS",
+      "age": 19,
+      "photo_url": "https://cdn.sofifa.net/players/278/046/26_120.png"
+     }
+    },
+    "giovanni leoni": {
+     "tier": "exact",
+     "row": {
+      "name": "Giovanni Leoni",
+      "overall": 69,
+      "pace": 53,
+      "shooting": 27,
+      "passing": 42,
+      "dribbling": 52,
+      "defending": 71,
+      "physical": 68,
+      "position": "CB",
+      "club": "Liverpool",
+      "league": "Premier League",
+      "age": 19,
+      "photo_url": "https://cdn.sofifa.net/players/070/824/26_120.png"
+     }
+    },
+    "dean huijsen": {
+     "tier": "exact",
+     "row": {
+      "name": "Dean Huijsen",
+      "overall": 82,
+      "pace": 71,
+      "shooting": 55,
+      "passing": 73,
+      "dribbling": 74,
+      "defending": 82,
+      "physical": 76,
+      "position": "CB",
+      "club": "Real Madrid",
+      "league": "LALIGA EA SPORTS",
+      "age": 20,
+      "photo_url": "https://cdn.sofifa.net/players/278/349/26_120.png"
+     }
+    },
+    "leny yoro": {
+     "tier": "exact",
+     "row": {
+      "name": "Leny Yoro",
+      "overall": 78,
+      "pace": 69,
+      "shooting": 41,
+      "passing": 60,
+      "dribbling": 64,
+      "defending": 79,
+      "physical": 73,
+      "position": "CB",
+      "club": "Man Utd",
+      "league": "Premier League",
+      "age": 20,
+      "photo_url": "https://cdn.sofifa.net/players/269/087/26_120.png"
+     }
+    },
+    "castello lukeba": {
+     "tier": "exact",
+     "row": {
+      "name": "Castello Lukeba",
+      "overall": 80,
+      "pace": 72,
+      "shooting": 43,
+      "passing": 68,
+      "dribbling": 73,
+      "defending": 81,
+      "physical": 75,
+      "position": "CB",
+      "club": "RB Leipzig",
+      "league": "Bundesliga",
+      "age": 23,
+      "photo_url": "https://cdn.sofifa.net/players/262/138/26_120.png"
+     }
+    },
+    "yarek gasiorowski": null,
+    "jérémy jacquet": {
+     "tier": "exact",
+     "row": {
+      "name": "Jérémy Jacquet",
+      "overall": 75,
+      "pace": 64,
+      "shooting": 38,
+      "passing": 57,
+      "dribbling": 61,
+      "defending": 75,
+      "physical": 76,
+      "position": "CB",
+      "club": "Stade Rennais FC",
+      "league": "Ligue 1 McDonald's",
+      "age": 20,
+      "photo_url": "https://cdn.sofifa.net/players/278/903/26_120.png"
+     }
+    }
+   }
+  },
+  "137": {
+   "slug": "andrey-santos-manchester-united-50m-transfer-analysis",
+   "frozen_at": "2026-09-29",
+   "dataset": "fc26-kaggle-2025-09",
+   "cards": {
+    "andrey santos": {
+     "tier": "exact",
+     "row": {
+      "name": "Andrey Santos",
+      "overall": 80,
+      "pace": 74,
+      "shooting": 69,
+      "passing": 74,
+      "dribbling": 78,
+      "defending": 77,
+      "physical": 80,
+      "position": "CM",
+      "club": "Chelsea",
+      "league": "Premier League",
+      "age": 21,
+      "photo_url": "https://cdn.sofifa.net/players/273/018/26_120.png"
+     }
+    }
+   }
+  },
+  "138": {
+   "slug": "the-young-midfielders-ea-fc-26-still-underrates",
+   "frozen_at": "2026-09-29",
+   "dataset": "fc26-kaggle-2025-09",
+   "cards": {
+    "ayyoub bouaddi": {
+     "tier": "exact",
+     "row": {
+      "name": "Ayyoub Bouaddi",
+      "overall": 75,
+      "pace": 75,
+      "shooting": 58,
+      "passing": 72,
+      "dribbling": 75,
+      "defending": 67,
+      "physical": 71,
+      "position": "CM",
+      "club": "LOSC Lille",
+      "league": "Ligue 1 McDonald's",
+      "age": 18,
+      "photo_url": "https://cdn.sofifa.net/players/278/901/26_120.png"
+     }
+    },
+    "kees smit": {
+     "tier": "exact",
+     "row": {
+      "name": "Kees Smit",
+      "overall": 72,
+      "pace": 61,
+      "shooting": 60,
+      "passing": 71,
+      "dribbling": 77,
+      "defending": 60,
+      "physical": 65,
+      "position": "CAM",
+      "club": "AZ",
+      "league": "Eredivisie",
+      "age": 20,
+      "photo_url": "https://cdn.sofifa.net/players/071/532/26_120.png"
+     }
+    },
+    "christ inao oulaï": {
+     "tier": "last",
+     "row": {
+      "name": "Christ Ravynel Inao Oulaï",
+      "overall": 64,
+      "pace": 74,
+      "shooting": 50,
+      "passing": 61,
+      "dribbling": 69,
+      "defending": 58,
+      "physical": 49,
+      "position": "CAM",
+      "club": "Trabzonspor",
+      "league": "Trendyol Süper Lig",
+      "age": 19,
+      "photo_url": "https://cdn.sofifa.net/players/074/735/26_120.png"
+     }
+    },
+    "caleb yirenkyi": {
+     "tier": "exact",
+     "row": {
+      "name": "Caleb Yirenkyi",
+      "overall": 67,
+      "pace": 66,
+      "shooting": 59,
+      "passing": 59,
+      "dribbling": 67,
+      "defending": 63,
+      "physical": 70,
+      "position": "CM",
+      "club": "FC Nordsjælland",
+      "league": "3F Superliga",
+      "age": 20,
+      "photo_url": "https://cdn.sofifa.net/players/073/638/26_120.png"
+     }
+    },
+    "johan manzambi": {
+     "tier": "exact",
+     "row": {
+      "name": "Johan Manzambi",
+      "overall": 67,
+      "pace": 75,
+      "shooting": 61,
+      "passing": 59,
+      "dribbling": 72,
+      "defending": 56,
+      "physical": 62,
+      "position": "CAM",
+      "club": "SC Freiburg",
+      "league": "Bundesliga",
+      "age": 20,
+      "photo_url": "https://cdn.sofifa.net/players/276/694/26_120.png"
+     }
+    },
+    "jorthy mokio": {
+     "tier": "exact",
+     "row": {
+      "name": "Jorthy Mokio",
+      "overall": 70,
+      "pace": 70,
+      "shooting": 51,
+      "passing": 64,
+      "dribbling": 72,
+      "defending": 69,
+      "physical": 66,
+      "position": "CDM",
+      "club": "Ajax",
+      "league": "Eredivisie",
+      "age": 18,
+      "photo_url": "https://cdn.sofifa.net/players/071/351/26_120.png"
+     }
+    }
+   }
+  },
+  "139": {
+   "slug": "dominating-while-walking-a-tribute-to-messi-at-his-sixth-world-cup",
+   "frozen_at": "2026-09-29",
+   "dataset": "fc26-kaggle-2025-09",
+   "cards": {
+    "lionel messi": {
+     "tier": "exact",
+     "row": {
+      "name": "Lionel Messi",
+      "overall": 86,
+      "pace": 78,
+      "shooting": 85,
+      "passing": 85,
+      "dribbling": 90,
+      "defending": 33,
+      "physical": 64,
+      "position": "RW",
+      "club": "Inter Miami CF",
+      "league": "MLS",
+      "age": 38,
+      "photo_url": "https://cdn.sofifa.net/players/158/023/26_120.png"
+     }
+    }
+   }
+  },
+  "140": {
+   "slug": "proof-not-projection-2026-world-cup-breakout-young-players",
+   "frozen_at": "2026-09-29",
+   "dataset": "fc26-kaggle-2025-09",
+   "cards": {
+    "lamine yamal": {
+     "tier": "exact",
+     "row": {
+      "name": "Lamine Yamal",
+      "overall": 89,
+      "pace": 85,
+      "shooting": 81,
+      "passing": 86,
+      "dribbling": 90,
+      "defending": 23,
+      "physical": 53,
+      "position": "RM",
+      "club": "FC Barcelona",
+      "league": "LALIGA EA SPORTS",
+      "age": 18,
+      "photo_url": "https://cdn.sofifa.net/players/277/643/26_120.png"
+     }
+    },
+    "gilberto mora": {
+     "tier": "last",
+     "row": {
+      "name": "Morata",
+      "overall": 81,
+      "pace": 78,
+      "shooting": 81,
+      "passing": 74,
+      "dribbling": 80,
+      "defending": 31,
+      "physical": 78,
+      "position": "ST",
+      "club": "Como",
+      "league": "Serie A Enilive",
+      "age": 33,
+      "photo_url": "https://cdn.sofifa.net/players/201/153/26_120.png"
+     }
+    },
+    "pau cubarsí": {
+     "tier": "exact",
+     "row": {
+      "name": "Pau Cubarsí",
+      "overall": 82,
+      "pace": 70,
+      "shooting": 42,
+      "passing": 66,
+      "dribbling": 77,
+      "defending": 84,
+      "physical": 76,
+      "position": "CB",
+      "club": "FC Barcelona",
+      "league": "LALIGA EA SPORTS",
+      "age": 19,
+      "photo_url": "https://cdn.sofifa.net/players/278/046/26_120.png"
+     }
+    },
+    "ayyoub bouaddi": {
+     "tier": "exact",
+     "row": {
+      "name": "Ayyoub Bouaddi",
+      "overall": 75,
+      "pace": 75,
+      "shooting": 58,
+      "passing": 72,
+      "dribbling": 75,
+      "defending": 67,
+      "physical": 71,
+      "position": "CM",
+      "club": "LOSC Lille",
+      "league": "Ligue 1 McDonald's",
+      "age": 18,
+      "photo_url": "https://cdn.sofifa.net/players/278/901/26_120.png"
+     }
+    },
+    "désiré doué": {
+     "tier": "exact",
+     "row": {
+      "name": "Désiré Doué",
+      "overall": 85,
+      "pace": 83,
+      "shooting": 80,
+      "passing": 77,
+      "dribbling": 90,
+      "defending": 55,
+      "physical": 74,
+      "position": "RW",
+      "club": "Paris SG",
+      "league": "Ligue 1 McDonald's",
+      "age": 20,
+      "photo_url": "https://cdn.sofifa.net/players/271/421/26_120.png"
+     }
+    },
+    "nico o'reilly": {
+     "tier": "exact",
+     "row": {
+      "name": "Nico O'Reilly",
+      "overall": 73,
+      "pace": 73,
+      "shooting": 66,
+      "passing": 72,
+      "dribbling": 73,
+      "defending": 69,
+      "physical": 70,
+      "position": "LB",
+      "club": "Manchester City",
+      "league": "Premier League",
+      "age": 20,
+      "photo_url": "https://cdn.sofifa.net/players/277/427/26_120.png"
+     }
+    },
+    "ibrahim mbaye": {
+     "tier": "exact",
+     "row": {
+      "name": "Ibrahim Mbaye",
+      "overall": 66,
+      "pace": 77,
+      "shooting": 59,
+      "passing": 59,
+      "dribbling": 70,
+      "defending": 25,
+      "physical": 45,
+      "position": "RW",
+      "club": "Paris SG",
+      "league": "Ligue 1 McDonald's",
+      "age": 18,
+      "photo_url": "https://cdn.sofifa.net/players/074/449/26_120.png"
+     }
+    }
+   }
+  },
+  "141": {
+   "slug": "japan-s-best-young-footballers-the-deepest-generation-yet",
+   "frozen_at": "2026-09-29",
+   "dataset": "fc26-kaggle-2025-09",
+   "cards": {
+    "zion suzuki": {
+     "tier": "exact",
+     "row": {
+      "name": "Zion Suzuki",
+      "overall": 74,
+      "pace": 0,
+      "shooting": 0,
+      "passing": 0,
+      "dribbling": 0,
+      "defending": 0,
+      "physical": 0,
+      "position": "GK",
+      "club": "Parma",
+      "league": "Serie A Enilive",
+      "age": 23,
+      "photo_url": null
+     }
+    },
+    "sora hiraga": null,
+    "kota takai": {
+     "tier": "exact",
+     "row": {
+      "name": "Kota Takai",
+      "overall": 72,
+      "pace": 66,
+      "shooting": 32,
+      "passing": 55,
+      "dribbling": 62,
+      "defending": 72,
+      "physical": 69,
+      "position": "CB",
+      "club": "Spurs",
+      "league": "Premier League",
+      "age": 21,
+      "photo_url": "https://cdn.sofifa.net/players/264/702/26_120.png"
+     }
+    },
+    "taichi fukui": {
+     "tier": "exact",
+     "row": {
+      "name": "Taichi Fukui",
+      "overall": 69,
+      "pace": 76,
+      "shooting": 52,
+      "passing": 68,
+      "dribbling": 75,
+      "defending": 55,
+      "physical": 46,
+      "position": "CM",
+      "club": "Arouca",
+      "league": "Liga Portugal",
+      "age": 21,
+      "photo_url": "https://cdn.sofifa.net/players/264/188/26_120.png"
+     }
+    },
+    "rion ichihara": null,
+    "shunsuke saito": null
+   }
+  },
+  "142": {
+   "slug": "france-s-best-young-footballers-the-depth-no-other-nation-has",
+   "frozen_at": "2026-09-29",
+   "dataset": "fc26-kaggle-2025-09",
+   "cards": {
+    "désiré doué": {
+     "tier": "exact",
+     "row": {
+      "name": "Désiré Doué",
+      "overall": 85,
+      "pace": 83,
+      "shooting": 80,
+      "passing": 77,
+      "dribbling": 90,
+      "defending": 55,
+      "physical": 74,
+      "position": "RW",
+      "club": "Paris SG",
+      "league": "Ligue 1 McDonald's",
+      "age": 20,
+      "photo_url": "https://cdn.sofifa.net/players/271/421/26_120.png"
+     }
+    },
+    "quentin ndjantou": null,
+    "warren zaïre-emery": {
+     "tier": "exact",
+     "row": {
+      "name": "Warren Zaïre-Emery",
+      "overall": 80,
+      "pace": 79,
+      "shooting": 68,
+      "passing": 76,
+      "dribbling": 79,
+      "defending": 75,
+      "physical": 79,
+      "position": "CM",
+      "club": "Paris SG",
+      "league": "Ligue 1 McDonald's",
+      "age": 20,
+      "photo_url": "https://cdn.sofifa.net/players/270/673/26_120.png"
+     }
+    },
+    "rayan cherki": {
+     "tier": "exact",
+     "row": {
+      "name": "Rayan Cherki",
+      "overall": 81,
+      "pace": 75,
+      "shooting": 75,
+      "passing": 80,
+      "dribbling": 88,
+      "defending": 21,
+      "physical": 65,
+      "position": "RW",
+      "club": "Manchester City",
+      "league": "Premier League",
+      "age": 22,
+      "photo_url": "https://cdn.sofifa.net/players/251/570/26_120.png"
+     }
+    },
+    "leny yoro": {
+     "tier": "exact",
+     "row": {
+      "name": "Leny Yoro",
+      "overall": 78,
+      "pace": 69,
+      "shooting": 41,
+      "passing": 60,
+      "dribbling": 64,
+      "defending": 79,
+      "physical": 73,
+      "position": "CB",
+      "club": "Man Utd",
+      "league": "Premier League",
+      "age": 20,
+      "photo_url": "https://cdn.sofifa.net/players/269/087/26_120.png"
+     }
+    },
+    "senny mayulu": {
+     "tier": "exact",
+     "row": {
+      "name": "Senny Mayulu",
+      "overall": 75,
+      "pace": 75,
+      "shooting": 68,
+      "passing": 73,
+      "dribbling": 78,
+      "defending": 57,
+      "physical": 55,
+      "position": "CM",
+      "club": "Paris SG",
+      "league": "Ligue 1 McDonald's",
+      "age": 19,
+      "photo_url": "https://cdn.sofifa.net/players/070/004/26_120.png"
+     }
+    },
+    "robinio vaz": {
+     "tier": "exact",
+     "row": {
+      "name": "Robinio Vaz",
+      "overall": 63,
+      "pace": 79,
+      "shooting": 60,
+      "passing": 54,
+      "dribbling": 64,
+      "defending": 28,
+      "physical": 55,
+      "position": "ST",
+      "club": "OM",
+      "league": "Ligue 1 McDonald's",
+      "age": 19,
+      "photo_url": "https://cdn.sofifa.net/players/076/410/26_120.png"
+     }
+    }
+   }
+  },
+  "144": {
+   "slug": "spain-s-best-young-footballers-the-ones-you-have-not-heard-of-yet",
+   "frozen_at": "2026-09-29",
+   "dataset": "fc26-kaggle-2025-09",
+   "cards": {
+    "samu aghehowa": null,
+    "mella": {
+     "tier": "exact",
+     "row": {
+      "name": "Mella",
+      "overall": 71,
+      "pace": 92,
+      "shooting": 65,
+      "passing": 63,
+      "dribbling": 72,
+      "defending": 25,
+      "physical": 54,
+      "position": "RM",
+      "club": "RC Deportivo",
+      "league": "LALIGA HYPERMOTION",
+      "age": 20,
+      "photo_url": "https://cdn.sofifa.net/players/278/035/26_120.png"
+     }
+    },
+    "samu": {
+     "tier": "exact",
+     "row": {
+      "name": "Samu",
+      "overall": 79,
+      "pace": 79,
+      "shooting": 79,
+      "passing": 58,
+      "dribbling": 68,
+      "defending": 36,
+      "physical": 83,
+      "position": "ST",
+      "club": "FC Porto",
+      "league": "Liga Portugal",
+      "age": 21,
+      "photo_url": "https://cdn.sofifa.net/players/223/302/26_120.png"
+     }
+    },
+    "fer lópez": {
+     "tier": "exact",
+     "row": {
+      "name": "Fer López",
+      "overall": 73,
+      "pace": 66,
+      "shooting": 68,
+      "passing": 73,
+      "dribbling": 74,
+      "defending": 39,
+      "physical": 52,
+      "position": "RW",
+      "club": "Wolves",
+      "league": "Premier League",
+      "age": 21,
+      "photo_url": "https://cdn.sofifa.net/players/075/628/26_120.png"
+     }
+    },
+    "jesús rodríguez": {
+     "tier": "exact",
+     "row": {
+      "name": "Jesús Rodríguez",
+      "overall": 74,
+      "pace": 80,
+      "shooting": 68,
+      "passing": 69,
+      "dribbling": 77,
+      "defending": 32,
+      "physical": 54,
+      "position": "LM",
+      "club": "Como",
+      "league": "Serie A Enilive",
+      "age": 20,
+      "photo_url": "https://cdn.sofifa.net/players/075/055/26_120.png"
+     }
+    },
+    "marc bernal": {
+     "tier": "exact",
+     "row": {
+      "name": "Marc Bernal",
+      "overall": 73,
+      "pace": 61,
+      "shooting": 53,
+      "passing": 71,
+      "dribbling": 74,
+      "defending": 70,
+      "physical": 63,
+      "position": "CDM",
+      "club": "FC Barcelona",
+      "league": "LALIGA EA SPORTS",
+      "age": 18,
+      "photo_url": "https://cdn.sofifa.net/players/074/463/26_120.png"
+     }
+    },
+    "fresneda": {
+     "tier": "exact",
+     "row": {
+      "name": "Fresneda",
+      "overall": 74,
+      "pace": 79,
+      "shooting": 51,
+      "passing": 60,
+      "dribbling": 74,
+      "defending": 72,
+      "physical": 70,
+      "position": "RB",
+      "club": "Sporting CP",
+      "league": "Liga Portugal",
+      "age": 21,
+      "photo_url": "https://cdn.sofifa.net/players/266/253/26_120.png"
+     }
+    },
+    "antoñito cordero": {
+     "tier": "exact",
+     "row": {
+      "name": "Antoñito Cordero",
+      "overall": 69,
+      "pace": 78,
+      "shooting": 64,
+      "passing": 63,
+      "dribbling": 71,
+      "defending": 32,
+      "physical": 58,
+      "position": "LW",
+      "club": "KVC Westerlo",
+      "league": "1A Pro League",
+      "age": 19,
+      "photo_url": "https://cdn.sofifa.net/players/074/209/26_120.png"
+     }
+    }
+   }
+  },
+  "145": {
+   "slug": "the-best-young-strikers-in-world-football-right-now",
+   "frozen_at": "2026-09-29",
+   "dataset": "fc26-kaggle-2025-09",
+   "cards": {
+    "samu aghehowa": null,
+    "charalampos kostoulas": {
+     "tier": "exact",
+     "row": {
+      "name": "Charalampos Kostoulas",
+      "overall": 72,
+      "pace": 86,
+      "shooting": 68,
+      "passing": 61,
+      "dribbling": 71,
+      "defending": 41,
+      "physical": 77,
+      "position": "ST",
+      "club": "Brighton",
+      "league": "Premier League",
+      "age": 18,
+      "photo_url": "https://cdn.sofifa.net/players/073/885/26_120.png"
+     }
+    },
+    "samu": {
+     "tier": "exact",
+     "row": {
+      "name": "Samu",
+      "overall": 79,
+      "pace": 79,
+      "shooting": 79,
+      "passing": 58,
+      "dribbling": 68,
+      "defending": 36,
+      "physical": 83,
+      "position": "ST",
+      "club": "FC Porto",
+      "league": "Liga Portugal",
+      "age": 21,
+      "photo_url": "https://cdn.sofifa.net/players/223/302/26_120.png"
+     }
+    },
+    "endrick": {
+     "tier": "exact",
+     "row": {
+      "name": "Endrick",
+      "overall": 77,
+      "pace": 87,
+      "shooting": 77,
+      "passing": 62,
+      "dribbling": 78,
+      "defending": 30,
+      "physical": 68,
+      "position": "ST",
+      "club": "Real Madrid",
+      "league": "LALIGA EA SPORTS",
+      "age": 19,
+      "photo_url": "https://cdn.sofifa.net/players/272/505/26_120.png"
+     }
+    },
+    "francesco pio esposito": {
+     "tier": "exact",
+     "row": {
+      "name": "Francesco Pio Esposito",
+      "overall": 71,
+      "pace": 64,
+      "shooting": 71,
+      "passing": 60,
+      "dribbling": 68,
+      "defending": 34,
+      "physical": 68,
+      "position": "ST",
+      "club": "Inter",
+      "league": "Serie A Enilive",
+      "age": 20,
+      "photo_url": "https://cdn.sofifa.net/players/277/327/26_120.png"
+     }
+    },
+    "santiago castro": {
+     "tier": "exact",
+     "row": {
+      "name": "Santiago Castro",
+      "overall": 76,
+      "pace": 79,
+      "shooting": 75,
+      "passing": 62,
+      "dribbling": 75,
+      "defending": 40,
+      "physical": 68,
+      "position": "ST",
+      "club": "Bologna",
+      "league": "Serie A Enilive",
+      "age": 21,
+      "photo_url": "https://cdn.sofifa.net/players/267/861/26_120.png"
+     }
+    },
+    "mathys tel": {
+     "tier": "exact",
+     "row": {
+      "name": "Mathys Tel",
+      "overall": 77,
+      "pace": 86,
+      "shooting": 80,
+      "passing": 67,
+      "dribbling": 78,
+      "defending": 29,
+      "physical": 64,
+      "position": "ST",
+      "club": "Spurs",
+      "league": "Premier League",
+      "age": 20,
+      "photo_url": "https://cdn.sofifa.net/players/268/421/26_120.png"
+     }
+    },
+    "conrad harder": {
+     "tier": "exact",
+     "row": {
+      "name": "Conrad Harder",
+      "overall": 74,
+      "pace": 75,
+      "shooting": 76,
+      "passing": 66,
+      "dribbling": 71,
+      "defending": 28,
+      "physical": 76,
+      "position": "ST",
+      "club": "RB Leipzig",
+      "league": "Bundesliga",
+      "age": 20,
+      "photo_url": "https://cdn.sofifa.net/players/277/689/26_120.png"
+     }
+    },
+    "kauã elias": {
+     "tier": "exact",
+     "row": {
+      "name": "Kauã Elias",
+      "overall": 71,
+      "pace": 80,
+      "shooting": 67,
+      "passing": 63,
+      "dribbling": 74,
+      "defending": 39,
+      "physical": 72,
+      "position": "ST",
+      "club": "Shakhtar Donetsk",
+      "league": "Ukrayina Liha",
+      "age": 19,
+      "photo_url": "https://cdn.sofifa.net/players/077/760/26_120.png"
+     }
+    }
+   }
+  },
+  "146": {
+   "slug": "the-best-young-full-backs-in-world-football-right-now",
+   "frozen_at": "2026-09-29",
+   "dataset": "fc26-kaggle-2025-09",
+   "cards": {
+    "lewis hall": {
+     "tier": "exact",
+     "row": {
+      "name": "Lewis Hall",
+      "overall": 80,
+      "pace": 77,
+      "shooting": 62,
+      "passing": 78,
+      "dribbling": 79,
+      "defending": 77,
+      "physical": 64,
+      "position": "LB",
+      "club": "Newcastle Utd",
+      "league": "Premier League",
+      "age": 21,
+      "photo_url": "https://cdn.sofifa.net/players/266/127/26_120.png"
+     }
+    },
+    "keita kosugi": {
+     "tier": "exact",
+     "row": {
+      "name": "Keita Kosugi",
+      "overall": 70,
+      "pace": 85,
+      "shooting": 35,
+      "passing": 53,
+      "dribbling": 67,
+      "defending": 64,
+      "physical": 64,
+      "position": "LB",
+      "club": "Djurgårdens IF",
+      "league": "Allsvenskan",
+      "age": 20,
+      "photo_url": "https://cdn.sofifa.net/players/071/672/26_120.png"
+     }
+    },
+    "jorrel hato": {
+     "tier": "exact",
+     "row": {
+      "name": "Jorrel Hato",
+      "overall": 78,
+      "pace": 85,
+      "shooting": 41,
+      "passing": 70,
+      "dribbling": 74,
+      "defending": 75,
+      "physical": 73,
+      "position": "LB",
+      "club": "Chelsea",
+      "league": "Premier League",
+      "age": 20,
+      "photo_url": "https://cdn.sofifa.net/players/272/978/26_120.png"
+     }
+    },
+    "rico lewis": {
+     "tier": "exact",
+     "row": {
+      "name": "Rico Lewis",
+      "overall": 77,
+      "pace": 76,
+      "shooting": 54,
+      "passing": 74,
+      "dribbling": 79,
+      "defending": 73,
+      "physical": 58,
+      "position": "RB",
+      "club": "Manchester City",
+      "league": "Premier League",
+      "age": 21,
+      "photo_url": "https://cdn.sofifa.net/players/271/574/26_120.png"
+     }
+    },
+    "martim fernandes": {
+     "tier": "exact",
+     "row": {
+      "name": "Martim Fernandes",
+      "overall": 75,
+      "pace": 81,
+      "shooting": 51,
+      "passing": 70,
+      "dribbling": 74,
+      "defending": 69,
+      "physical": 65,
+      "position": "RB",
+      "club": "FC Porto",
+      "league": "Liga Portugal",
+      "age": 20,
+      "photo_url": "https://cdn.sofifa.net/players/072/093/26_120.png"
+     }
+    },
+    "givairo read": {
+     "tier": "exact",
+     "row": {
+      "name": "Givairo Read",
+      "overall": 75,
+      "pace": 81,
+      "shooting": 54,
+      "passing": 69,
+      "dribbling": 71,
+      "defending": 69,
+      "physical": 76,
+      "position": "RB",
+      "club": "Feyenoord",
+      "league": "Eredivisie",
+      "age": 19,
+      "photo_url": "https://cdn.sofifa.net/players/271/266/26_120.png"
+     }
+    },
+    "valentín barco": {
+     "tier": "exact",
+     "row": {
+      "name": "Valentín Barco",
+      "overall": 75,
+      "pace": 76,
+      "shooting": 50,
+      "passing": 75,
+      "dribbling": 78,
+      "defending": 68,
+      "physical": 61,
+      "position": "LB",
+      "club": "Strasbourg",
+      "league": "Ligue 1 McDonald's",
+      "age": 21,
+      "photo_url": "https://cdn.sofifa.net/players/263/370/26_120.png"
+     }
+    }
+   }
+  },
+  "148": {
+   "slug": "nico-paz-the-60m-number-10-real-madrid-sold-twice",
+   "frozen_at": "2026-09-29",
+   "dataset": "fc26-kaggle-2025-09",
+   "cards": {
+    "nico paz": {
+     "tier": "exact",
+     "row": {
+      "name": "Nico Paz",
+      "overall": 79,
+      "pace": 78,
+      "shooting": 71,
+      "passing": 77,
+      "dribbling": 82,
+      "defending": 51,
+      "physical": 64,
+      "position": "CAM",
+      "club": "Como",
+      "league": "Serie A Enilive",
+      "age": 21,
+      "photo_url": "https://cdn.sofifa.net/players/277/846/26_120.png"
+     }
+    }
+   }
+  },
+  "149": {
+   "slug": "rio-ngumoha-liverpool-s-youngest-scorer-and-the-card-that-doesn-t-believe-him",
+   "frozen_at": "2026-09-29",
+   "dataset": "fc26-kaggle-2025-09",
+   "cards": {
+    "rio ngumoha": {
+     "tier": "exact",
+     "row": {
+      "name": "Rio Ngumoha",
+      "overall": 68,
+      "pace": 90,
+      "shooting": 64,
+      "passing": 59,
+      "dribbling": 72,
+      "defending": 35,
+      "physical": 53,
+      "position": "LM",
+      "club": "Liverpool",
+      "league": "Premier League",
+      "age": 17,
+      "photo_url": "https://cdn.sofifa.net/players/080/376/26_120.png"
+     }
+    }
+   }
+  },
+  "150": {
+   "slug": "the-young-wingers-the-market-just-paid-for-and-you-haven-t-watched",
+   "frozen_at": "2026-09-29",
+   "dataset": "fc26-kaggle-2025-09",
+   "cards": {
+    "mika godts": {
+     "tier": "exact",
+     "row": {
+      "name": "Mika Godts",
+      "overall": 74,
+      "pace": 81,
+      "shooting": 64,
+      "passing": 68,
+      "dribbling": 81,
+      "defending": 39,
+      "physical": 61,
+      "position": "LW",
+      "club": "Ajax",
+      "league": "Eredivisie",
+      "age": 20,
+      "photo_url": "https://cdn.sofifa.net/players/258/378/26_120.png"
+     }
+    },
+    "leo sauer": {
+     "tier": "exact",
+     "row": {
+      "name": "Leo Sauer",
+      "overall": 72,
+      "pace": 88,
+      "shooting": 63,
+      "passing": 64,
+      "dribbling": 76,
+      "defending": 39,
+      "physical": 60,
+      "position": "LW",
+      "club": "Feyenoord",
+      "league": "Eredivisie",
+      "age": 20,
+      "photo_url": "https://cdn.sofifa.net/players/277/482/26_120.png"
+     }
+    },
+    "malick fofana": {
+     "tier": "exact",
+     "row": {
+      "name": "Malick Fofana",
+      "overall": 78,
+      "pace": 86,
+      "shooting": 69,
+      "passing": 70,
+      "dribbling": 82,
+      "defending": 40,
+      "physical": 48,
+      "position": "LM",
+      "club": "OL",
+      "league": "Ligue 1 McDonald's",
+      "age": 20,
+      "photo_url": "https://cdn.sofifa.net/players/256/420/26_120.png"
+     }
+    },
+    "jamie gittens": {
+     "tier": "exact",
+     "row": {
+      "name": "Jamie Gittens",
+      "overall": 78,
+      "pace": 92,
+      "shooting": 73,
+      "passing": 66,
+      "dribbling": 84,
+      "defending": 27,
+      "physical": 59,
+      "position": "LM",
+      "club": "Chelsea",
+      "league": "Premier League",
+      "age": 21,
+      "photo_url": "https://cdn.sofifa.net/players/266/032/26_120.png"
+     }
+    },
+    "antonio nusa": {
+     "tier": "exact",
+     "row": {
+      "name": "Antonio Nusa",
+      "overall": 76,
+      "pace": 89,
+      "shooting": 72,
+      "passing": 68,
+      "dribbling": 81,
+      "defending": 41,
+      "physical": 63,
+      "position": "LM",
+      "club": "RB Leipzig",
+      "league": "Bundesliga",
+      "age": 20,
+      "photo_url": "https://cdn.sofifa.net/players/262/863/26_120.png"
+     }
+    },
+    "assane diao": {
+     "tier": "exact",
+     "row": {
+      "name": "Assane Diao",
+      "overall": 76,
+      "pace": 90,
+      "shooting": 74,
+      "passing": 67,
+      "dribbling": 77,
+      "defending": 36,
+      "physical": 60,
+      "position": "LM",
+      "club": "Como",
+      "league": "Serie A Enilive",
+      "age": 20,
+      "photo_url": "https://cdn.sofifa.net/players/275/324/26_120.png"
+     }
+    },
+    "maher carrizo": {
+     "tier": "exact",
+     "row": {
+      "name": "Maher Carrizo",
+      "overall": 71,
+      "pace": 87,
+      "shooting": 70,
+      "passing": 60,
+      "dribbling": 74,
+      "defending": 29,
+      "physical": 68,
+      "position": "RM",
+      "club": "Vélez Sarsfield",
+      "league": "LPF",
+      "age": 20,
+      "photo_url": "https://cdn.sofifa.net/players/279/841/26_120.png"
+     }
+    }
+   }
+  },
+  "151": {
+   "slug": "scouting-strasbourg-europe-s-youngest-squad-and-who-really-owns-it",
+   "frozen_at": "2026-09-29",
+   "dataset": "fc26-kaggle-2025-09",
+   "cards": {
+    "dário essugo": {
+     "tier": "exact",
+     "row": {
+      "name": "Dário Essugo",
+      "overall": 75,
+      "pace": 76,
+      "shooting": 58,
+      "passing": 64,
+      "dribbling": 73,
+      "defending": 74,
+      "physical": 81,
+      "position": "CDM",
+      "club": "Chelsea",
+      "league": "Premier League",
+      "age": 21,
+      "photo_url": "https://cdn.sofifa.net/players/261/530/26_120.png"
+     }
+    },
+    "conrad harder": {
+     "tier": "exact",
+     "row": {
+      "name": "Conrad Harder",
+      "overall": 74,
+      "pace": 75,
+      "shooting": 76,
+      "passing": 66,
+      "dribbling": 71,
+      "defending": 28,
+      "physical": 76,
+      "position": "ST",
+      "club": "RB Leipzig",
+      "league": "Bundesliga",
+      "age": 20,
+      "photo_url": "https://cdn.sofifa.net/players/277/689/26_120.png"
+     }
+    }
+   }
+  },
+  "152": {
+   "slug": "the-best-young-ball-playing-centre-backs-in-world-football",
+   "frozen_at": "2026-09-29",
+   "dataset": "fc26-kaggle-2025-09",
+   "cards": {
+    "dean huijsen": {
+     "tier": "exact",
+     "row": {
+      "name": "Dean Huijsen",
+      "overall": 82,
+      "pace": 71,
+      "shooting": 55,
+      "passing": 73,
+      "dribbling": 74,
+      "defending": 82,
+      "physical": 76,
+      "position": "CB",
+      "club": "Real Madrid",
+      "league": "LALIGA EA SPORTS",
+      "age": 20,
+      "photo_url": "https://cdn.sofifa.net/players/278/349/26_120.png"
+     }
+    },
+    "pau cubarsí": {
+     "tier": "exact",
+     "row": {
+      "name": "Pau Cubarsí",
+      "overall": 82,
+      "pace": 70,
+      "shooting": 42,
+      "passing": 66,
+      "dribbling": 77,
+      "defending": 84,
+      "physical": 76,
+      "position": "CB",
+      "club": "FC Barcelona",
+      "league": "LALIGA EA SPORTS",
+      "age": 19,
+      "photo_url": "https://cdn.sofifa.net/players/278/046/26_120.png"
+     }
+    },
+    "yarek": {
+     "tier": "exact",
+     "row": {
+      "name": "Yarek",
+      "overall": 73,
+      "pace": 64,
+      "shooting": 52,
+      "passing": 64,
+      "dribbling": 67,
+      "defending": 75,
+      "physical": 66,
+      "position": "CB",
+      "club": "PSV",
+      "league": "Eredivisie",
+      "age": 21,
+      "photo_url": "https://cdn.sofifa.net/players/278/661/26_120.png"
+     }
+    },
+    "jeanuël belocian": {
+     "tier": "exact",
+     "row": {
+      "name": "Jeanuël Belocian",
+      "overall": 70,
+      "pace": 67,
+      "shooting": 41,
+      "passing": 64,
+      "dribbling": 65,
+      "defending": 70,
+      "physical": 67,
+      "position": "CB",
+      "club": "Leverkusen",
+      "league": "Bundesliga",
+      "age": 21,
+      "photo_url": "https://cdn.sofifa.net/players/268/622/26_120.png"
+     }
+    },
+    "marvin young": {
+     "tier": "exact",
+     "row": {
+      "name": "Marvin Young",
+      "overall": 69,
+      "pace": 69,
+      "shooting": 33,
+      "passing": 60,
+      "dribbling": 66,
+      "defending": 69,
+      "physical": 71,
+      "position": "CB",
+      "club": "Sparta Rotterdam",
+      "league": "Eredivisie",
+      "age": 20,
+      "photo_url": "https://cdn.sofifa.net/players/074/344/26_120.png"
+     }
+    },
+    "taras mykhavko": {
+     "tier": "exact",
+     "row": {
+      "name": "Taras Mykhavko",
+      "overall": 70,
+      "pace": 67,
+      "shooting": 39,
+      "passing": 59,
+      "dribbling": 60,
+      "defending": 70,
+      "physical": 68,
+      "position": "CB",
+      "club": "Dynamo Kyiv",
+      "league": "Ukrayina Liha",
+      "age": 20,
+      "photo_url": "https://cdn.sofifa.net/players/071/330/26_120.png"
+     }
+    }
+   }
+  },
+  "154": {
+   "slug": "the-best-young-central-midfielders-in-world-football-right-now",
+   "frozen_at": "2026-09-29",
+   "dataset": "fc26-kaggle-2025-09",
+   "cards": {
+    "aleksandar pavlović": {
+     "tier": "exact",
+     "row": {
+      "name": "Aleksandar Pavlović",
+      "overall": 79,
+      "pace": 62,
+      "shooting": 64,
+      "passing": 79,
+      "dribbling": 78,
+      "defending": 76,
+      "physical": 71,
+      "position": "CDM",
+      "club": "FC Bayern München",
+      "league": "Bundesliga",
+      "age": 21,
+      "photo_url": "https://cdn.sofifa.net/players/275/298/26_120.png"
+     }
+    },
+    "ayyoub bouaddi": {
+     "tier": "exact",
+     "row": {
+      "name": "Ayyoub Bouaddi",
+      "overall": 75,
+      "pace": 75,
+      "shooting": 58,
+      "passing": 72,
+      "dribbling": 75,
+      "defending": 67,
+      "physical": 71,
+      "position": "CM",
+      "club": "LOSC Lille",
+      "league": "Ligue 1 McDonald's",
+      "age": 18,
+      "photo_url": "https://cdn.sofifa.net/players/278/901/26_120.png"
+     }
+    },
+    "ngal'ayel mukau": {
+     "tier": "exact",
+     "row": {
+      "name": "Ngal'ayel Mukau",
+      "overall": 74,
+      "pace": 69,
+      "shooting": 57,
+      "passing": 65,
+      "dribbling": 71,
+      "defending": 70,
+      "physical": 75,
+      "position": "CDM",
+      "club": "LOSC Lille",
+      "league": "Ligue 1 McDonald's",
+      "age": 21,
+      "photo_url": "https://cdn.sofifa.net/players/274/447/26_120.png"
+     }
+    },
+    "lucas bergvall": {
+     "tier": "exact",
+     "row": {
+      "name": "Lucas Bergvall",
+      "overall": 77,
+      "pace": 75,
+      "shooting": 63,
+      "passing": 76,
+      "dribbling": 77,
+      "defending": 71,
+      "physical": 73,
+      "position": "CM",
+      "club": "Spurs",
+      "league": "Premier League",
+      "age": 20,
+      "photo_url": "https://cdn.sofifa.net/players/272/926/26_120.png"
+     }
+    },
+    "tom bischof": {
+     "tier": "exact",
+     "row": {
+      "name": "Tom Bischof",
+      "overall": 76,
+      "pace": 58,
+      "shooting": 67,
+      "passing": 79,
+      "dribbling": 79,
+      "defending": 60,
+      "physical": 60,
+      "position": "CM",
+      "club": "FC Bayern München",
+      "league": "Bundesliga",
+      "age": 20,
+      "photo_url": "https://cdn.sofifa.net/players/263/765/26_120.png"
+     }
+    },
+    "senny mayulu": {
+     "tier": "exact",
+     "row": {
+      "name": "Senny Mayulu",
+      "overall": 75,
+      "pace": 75,
+      "shooting": 68,
+      "passing": 73,
+      "dribbling": 78,
+      "defending": 57,
+      "physical": 55,
+      "position": "CM",
+      "club": "Paris SG",
+      "league": "Ligue 1 McDonald's",
+      "age": 19,
+      "photo_url": "https://cdn.sofifa.net/players/070/004/26_120.png"
+     }
+    },
+    "antoni milambo": {
+     "tier": "exact",
+     "row": {
+      "name": "Antoni Milambo",
+      "overall": 73,
+      "pace": 74,
+      "shooting": 67,
+      "passing": 70,
+      "dribbling": 76,
+      "defending": 60,
+      "physical": 63,
+      "position": "CM",
+      "club": "Brentford",
+      "league": "Premier League",
+      "age": 20,
+      "photo_url": "https://cdn.sofifa.net/players/263/640/26_120.png"
+     }
+    },
+    "noah sadiki": {
+     "tier": "exact",
+     "row": {
+      "name": "Noah Sadiki",
+      "overall": 74,
+      "pace": 77,
+      "shooting": 65,
+      "passing": 68,
+      "dribbling": 76,
+      "defending": 68,
+      "physical": 76,
+      "position": "CM",
+      "club": "Sunderland",
+      "league": "Premier League",
+      "age": 21,
+      "photo_url": "https://cdn.sofifa.net/players/269/230/26_120.png"
+     }
+    }
+   }
+  }
+ }
+}

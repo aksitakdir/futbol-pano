@@ -10,13 +10,16 @@ import { resolvePlayer } from "@/lib/player-resolver";
  * Returns PlayerCardData or 404. Auto-caches results from API tiers.
  */
 export async function GET(req: Request) {
-  const name = new URL(req.url).searchParams.get("name");
+  const params = new URL(req.url).searchParams;
+  const name = params.get("name");
+  // skipFc=1: the article froze this player as "no EA FC card" (lib/card-snapshot.ts)
+  const skipFc = params.get("skipFc") === "1";
   if (!name?.trim()) {
     return NextResponse.json({ error: "Missing 'name' parameter" }, { status: 400 });
   }
 
   try {
-    const card = await resolvePlayer(name.trim(), true);
+    const card = await resolvePlayer(name.trim(), true, skipFc);
     if (!card) {
       return NextResponse.json(
         { error: "Player not found in any source", name: name.trim() },

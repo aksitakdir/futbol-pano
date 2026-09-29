@@ -14,6 +14,8 @@ import ArticleHtmlWithPlayerEmbeds from "../../components/article-html-with-play
 import SectionsJsonBody from "../../components/sections-json-body";
 import { tocFromSections, type SectionBlock } from "@/lib/section-blocks";
 import { normalizeYoutubeId } from "@/lib/youtube-id";
+import { frozenRow, type FrozenFcRow } from "@/lib/card-snapshot";
+import { useCardSnapshot } from "../../components/card-snapshot-context";
 
 type ContentRow = {
   id: string; title: string; title_en?: string;
@@ -113,14 +115,27 @@ function PlayerInfo({ player, rank, accent, hasStats }: { player: PlayerWithStat
   );
 }
 
+/** A frozen row in the shape the live select returns: no name, no nulls. */
+function stripNulls(row: FrozenFcRow): Partial<PlayerWithStats> {
+  return Object.fromEntries(
+    Object.entries(row).filter(([k, v]) => k !== "name" && v != null),
+  ) as Partial<PlayerWithStats>;
+}
+
 function usePlayersWithStats(players: PlayerJsonEntry[]) {
   const [enriched, setEnriched] = useState<PlayerWithStats[]>(players.map(p => ({ ...p })));
+  const snapshot = useCardSnapshot();
   useEffect(() => {
     if (!players.length) return;
     let cancelled = false;
     async function fetchAll() {
       const out: PlayerWithStats[] = [];
       for (const p of players) {
+        // Frozen card (lib/card-snapshot.ts). This lookup stops at first-two-words,
+        // so a card frozen through the last-name tier counts as none here.
+        const frozen = frozenRow(snapshot, p.name, "two");
+        if (frozen) { out.push({ ...p, ...stripNulls(frozen) }); continue; }
+        if (frozen === null) { out.push(p); continue; }
         const { data: exact } = await supabase.from("fc_players").select("overall,pace,shooting,passing,dribbling,defending,physical,photo_url,position,club,league,age").ilike("name", p.name).limit(1).maybeSingle();
         if (exact?.overall) { out.push({ ...p, ...exact }); continue; }
         const two = p.name.split(" ").slice(0, 2).join(" ");
@@ -131,7 +146,7 @@ function usePlayersWithStats(players: PlayerJsonEntry[]) {
     }
     fetchAll();
     return () => { cancelled = true; };
-  }, [players]);
+  }, [players, snapshot]);
   return enriched;
 }
 

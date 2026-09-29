@@ -373,13 +373,18 @@ export async function resolvePlayer(
   name: string,
   /** Set false to skip API calls (client-side usage) */
   allowApiFetch = true,
+  /** Set true when a frozen article snapshot says this player had no
+   *  fc_players card (lib/card-snapshot.ts) — a later dataset must not add one. */
+  skipFc = false,
 ): Promise<PlayerCardData | null> {
   const trimmed = name.trim();
   if (!trimmed) return null;
 
   // Tier 1: EA FC database
-  const fc = await searchFcPlayers(trimmed);
-  if (fc) return fc;
+  if (!skipFc) {
+    const fc = await searchFcPlayers(trimmed);
+    if (fc) return fc;
+  }
 
   // Tier 2: Previously cached
   try {

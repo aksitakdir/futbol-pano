@@ -6,6 +6,8 @@ import ArticleIndexLinks from "@/app/components/article-index-links";
 import { articleMetadata } from "@/lib/article-metadata";
 import { categoryArticlePath } from "@/lib/category-config";
 import { articleJsonLd } from "@/lib/article-jsonld";
+import { cardSnapshotFor } from "@/lib/card-snapshot-server";
+import { CardSnapshotProvider } from "@/app/components/card-snapshot-context";
 import HubArticleDetailClient from "@/app/components/hub-article-detail-client";
 
 type Props = { params: Promise<{ slug: string }> };
@@ -55,7 +57,9 @@ export default async function TransferHubArticlePage({ params }: Props) {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
-      <HubArticleDetailClient slug={slug} hubId="transfer" article={data} />
+      <CardSnapshotProvider snapshot={cardSnapshotFor(data.id)}>
+        <HubArticleDetailClient slug={slug} hubId="transfer" article={data} />
+      </CardSnapshotProvider>
       {/* No segment layout here, unlike /radar and /lists — without this an
           article in this section links to no sibling at all. */}
       <ArticleIndexLinks category="transfer" basePath="/transfers" heading="All Transfer Analysis" />

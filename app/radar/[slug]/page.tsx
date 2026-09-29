@@ -5,6 +5,9 @@ import { createClient } from "@/lib/supabase";
 import { articleMetadata } from "@/lib/article-metadata";
 import { categoryArticlePath } from "@/lib/category-config";
 import { articleJsonLd } from "@/lib/article-jsonld";
+import { cardSnapshotFor } from "@/lib/card-snapshot-server";
+import { CardSnapshotProvider } from "@/app/components/card-snapshot-context";
+import { frozenRow } from "@/lib/card-snapshot";
 import RadarDetailClient from "./client";
 import type { PlayerCardData } from "@/app/components/player-card";
 
@@ -58,10 +61,17 @@ export default async function RadarDetailPage({ params }: Props) {
     redirect(categoryArticlePath(data.category, data.slug));
   }
 
+  const cardSnapshot = cardSnapshotFor(data.id);
+
   let playerCard: PlayerCardData | null = null;
   if (data.player_name) {
     const hasStored = !!(data.stat_overall || data.stat_pace);
-    const fcRow = await lookupFcPlayer(data.player_name);
+    // A frozen card wins over the live table (lib/card-snapshot.ts); this lookup
+    // stops at first-two-words, so a last-name freeze counts as none.
+    const frozen = frozenRow(cardSnapshot, data.player_name, "two");
+    const fcRow = frozen === undefined
+      ? await lookupFcPlayer(data.player_name)
+      : (frozen as Partial<PlayerCardData> | null);
     const stats = hasStored
       ? { overall: data.stat_overall, pace: data.stat_pace, shooting: data.stat_shooting, passing: data.stat_passing, dribbling: data.stat_dribbling, defending: data.stat_defending, physical: data.stat_physical, club: fcRow?.club, league: fcRow?.league, position: fcRow?.position, age: fcRow?.age, photo_url: fcRow?.photo_url }
       : fcRow;
@@ -87,11 +97,13 @@ export default async function RadarDetailPage({ params }: Props) {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
-      <RadarDetailClient
-        slug={slug}
-        article={data}
-        playerCard={playerCard}
-      />
+      <CardSnapshotProvider snapshot={cardSnapshot}>
+        <RadarDetailClient
+          slug={slug}
+          article={data}
+          playerCard={playerCard}
+        />
+      </CardSnapshotProvider>
     </>
   );
 }

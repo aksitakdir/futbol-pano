@@ -5,6 +5,8 @@ import { createClient } from "@/lib/supabase";
 import { articleMetadata } from "@/lib/article-metadata";
 import { categoryArticlePath } from "@/lib/category-config";
 import { articleJsonLd } from "@/lib/article-jsonld";
+import { cardSnapshotFor } from "@/lib/card-snapshot-server";
+import { CardSnapshotProvider } from "@/app/components/card-snapshot-context";
 import ListDetailClient from "./client";
 
 type Props = { params: Promise<{ slug: string }> };
@@ -54,7 +56,9 @@ export default async function ListDetailPage({ params }: Props) {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
-      <ListDetailClient slug={slug} article={data} />
+      <CardSnapshotProvider snapshot={cardSnapshotFor(data.id)}>
+        <ListDetailClient slug={slug} article={data} />
+      </CardSnapshotProvider>
     </>
   );
 }

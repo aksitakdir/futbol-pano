@@ -4,6 +4,8 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { supabase } from "@/lib/supabase";
 import PlayerCard, { type PlayerCardData } from "./player-card";
+import { useCardSnapshot } from "./card-snapshot-context";
+import { frozenRow, type ArticleCardSnapshot } from "@/lib/card-snapshot";
 
 const STAT_LABELS = ["PAC", "SHO", "PAS", "DRI", "DEF", "PHY"] as const;
 const STAT_KEYS = ["pace", "shooting", "passing", "dribbling", "defending", "physical"] as const;
@@ -15,13 +17,13 @@ function statColor(val?: number) {
   return "var(--sg-text-muted)";
 }
 
-async function fetchPlayerStats(name: string): Promise<Partial<PlayerCardData> | null> {
-  const cols = "overall,pace,shooting,passing,dribbling,defending,physical,position,club,league,age,photo_url";
+const FC_COLS = "overall,pace,shooting,passing,dribbling,defending,physical,position,club,league,age,photo_url";
 
+async function fetchFcPlayer(name: string): Promise<Partial<PlayerCardData> | null> {
   // Tier 1: fc_players — exact
   const { data: exact } = await supabase
     .from("fc_players")
-    .select(cols)
+    .select(FC_COLS)
     .ilike("name", name)
     .limit(1)
     .maybeSingle();
@@ -31,7 +33,7 @@ async function fetchPlayerStats(name: string): Promise<Partial<PlayerCardData> |
   const two = name.split(" ").slice(0, 2).join(" ");
   const { data: fuzzy } = await supabase
     .from("fc_players")
-    .select(cols)
+    .select(FC_COLS)
     .ilike("name", `%${two}%`)
     .order("overall", { ascending: false })
     .limit(1)
@@ -45,7 +47,7 @@ async function fetchPlayerStats(name: string): Promise<Partial<PlayerCardData> |
     if (lastName.length >= 4) {
       const { data: lastNameMatch } = await supabase
         .from("fc_players")
-        .select(cols)
+        .select(FC_COLS)
         .ilike("name", `%${lastName}%`)
         .order("overall", { ascending: false })
         .limit(1)
@@ -53,6 +55,23 @@ async function fetchPlayerStats(name: string): Promise<Partial<PlayerCardData> |
       if (lastNameMatch?.overall) return lastNameMatch;
     }
   }
+  return null;
+}
+
+async function fetchPlayerStats(
+  name: string,
+  snapshot: ArticleCardSnapshot | null,
+): Promise<Partial<PlayerCardData> | null> {
+  // A frozen card is what this article showed when it was frozen
+  // (lib/card-snapshot.ts). Null means "no fc_players card then" — skip tier 1.
+  const frozen = frozenRow(snapshot, name);
+  if (frozen) return frozen as Partial<PlayerCardData>;
+  if (frozen === undefined) {
+    const fc = await fetchFcPlayer(name);
+    if (fc) return fc;
+  }
+
+  const two = name.split(" ").slice(0, 2).join(" ");
 
   // Tier 2: player_cache — exact
   const cacheCols = "overall,pace,shooting,passing,dribbling,defending,physical,position,club,league,age";
@@ -76,7 +95,8 @@ async function fetchPlayerStats(name: string): Promise<Partial<PlayerCardData> |
 
   // Tier 3: server-side resolve (BSD + API-Football) via API
   try {
-    const res = await fetch(`/api/players/resolve?name=${encodeURIComponent(name)}`);
+    const skipFc = frozen === null ? "&skipFc=1" : "";
+    const res = await fetch(`/api/players/resolve?name=${encodeURIComponent(name)}${skipFc}`);
     if (res.ok) {
       const data = await res.json();
       if (data?.overall) return data;
@@ -93,12 +113,13 @@ export default function ArticlePlayerEmbed({
 }) {
   const [card, setCard] = useState<PlayerCardData | null>(null);
   const [loading, setLoading] = useState(true);
+  const snapshot = useCardSnapshot();
 
   useEffect(() => {
     let cancelled = false;
     (async () => {
       setLoading(true);
-      const stats = await fetchPlayerStats(playerName.trim());
+      const stats = await fetchPlayerStats(playerName.trim(), snapshot);
       if (cancelled) return;
       if (stats?.overall) {
         setCard({
@@ -122,7 +143,7 @@ export default function ArticlePlayerEmbed({
       setLoading(false);
     })();
     return () => { cancelled = true; };
-  }, [playerName]);
+  }, [playerName, snapshot]);
 
   const tmBase = "https://www.transfermarkt.com/schnellsuche/ergebnis/schnellsuche?query=";
   const gq = " footballer";
