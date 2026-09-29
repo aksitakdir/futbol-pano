@@ -109,8 +109,8 @@ işe yaramadan kapatmanın en hızlı yolu.
 tarihli yazıyoruz. Bankadakiler: Bouaddi (12 Tem), Robinio Vaz, Ngumoha (20 Eyl).
 
 > **Düzeltme (2026-09-26).** Eski notlarda bu ayak *"kart yanlış / lig yok / yaş yok"*
-> diye kuruluydu. **"Lig yok" yanlıştı.** MLS, EA FC'de lisanslı; bizim Kaggle veri
-> setimizde 0 MLS oyuncusu olması setin eksikliği, oyunun değil. "Yaş yok" doğru —
+> diye kuruluydu. **"Lig yok" yanlıştı.** MLS, EA FC'de lisanslı (tablomuzda da
+> 770 MLS oyuncusu var; eski "0 MLS" notu yanlış bir sayımdı). "Yaş yok" doğru —
 > EA 17 yaş altını oyuna almıyor (Dowman). Bkz. §10.
 
 ---
@@ -259,8 +259,8 @@ ya da o hafta bulunmuş bir kaynaktan gelir.**
 
 Bu kural 2026-09-26'da bir hatadan doğdu: #157 Sullivan yazısı *"EA FC 26 MLS'i
 taşımıyor, lisanssız"* dedi. Yanlıştı — MLS oyunda; Sullivan'ın FC 26'da olmamasının
-sebebi yaş kuralıydı. Hata, veri setimizdeki 0 MLS oyuncusunun **oyunun kendisi**
-sanılmasından çıktı ve yayın kapısı bunu göremedi, çünkü kartı olmayan oyuncular
+sebebi yaş kuralıydı. Hata, bir oyuncunun tablomuzda bulunamamasının **"oyunda yok"**
+diye okunmasından çıktı ve yayın kapısı bunu göremedi, çünkü kartı olmayan oyuncular
 hakkındaki iddiaları denetlemiyor (Chilwell vakasıyla aynı kör nokta).
 
 Sosyal medyada bu tür bir hata, tam da güvenilirlik kazanmaya çalıştığımız yerde —

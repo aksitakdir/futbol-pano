@@ -18,8 +18,10 @@ Yazının tezi: *"EA FC 26 MLS'i taşımıyor, lig lisanssız; Sullivan'ın kart
 **Yanlış.** MLS EA FC'de lisanslı — Quinn Sullivan'ın (Philadelphia Union) resmi
 FC 26 reyting sayfası var. Cavan'ın FC 26'da olmamasının sebebi büyük ihtimalle
 **yaş kuralı** (EA 17 yaş altını almıyor — Dowman'la aynı). Ve FC 27'de artık
-**67'lik kartı var** (EA resmi sayfa). Hata, Kaggle setimizdeki 0 MLS oyuncusunun
-oyunun kendisi sanılmasından çıktı; yayın kapısı kartsız oyuncu iddialarını göremiyor.
+**67'lik kartı var** (EA resmi sayfa). Hatanın kökü: tabloda Sullivan'ı bulamamak
+"oyunda MLS yok"a çevrildi; yayın kapısı kartsız oyuncu iddialarını göremiyor.
+*(2026-09-30 düzeltmesi: burada daha önce "setimizde 0 MLS oyuncusu var" yazıyordu —
+**yanlıştı.** Tabloda 770 MLS oyuncusu var. Yayındaki hiçbir metne girmedi.)*
 
 - [x] **#157 yerinde düzeltildi (2026-09-26).** Dört blok değişti (giriş, MLS callout'u,
       SSS, kapanış), stat bloğuna FC 27 kartı (67) eklendi, sona tarihli bir düzeltme notu
@@ -33,11 +35,12 @@ oyunun kendisi sanılmasından çıktı; yayın kapısı kartsız oyuncu iddiala
       birlikte güncellendi. Düzeltme notu yok — hiç yayına girmedi.
 - [ ] **Sakin, acil değil — havuz sayıları.** #152 (*"424 centre-backs aged 21 or under in
       EA FC 26"*) ve #154 (*"593 central midfielders… in EA FC 26"*) veri setimizin sayısını
-      oyunun sayısı gibi yazıyor. Set MLS'i içermiyor, başka ligleri de eksik olabilir —
-      gerçek sayı büyük ihtimalle daha yüksek. Oyuncu reytingleri doğru; sorun sadece "oyunda
+      oyunun sayısı gibi yazıyor. Tablo FC 26'nın 16.228 oyuncusunu içeriyor; EA'in
+      FC 27'de 17.849 erkek oyuncusu var, sayılar birebir oyununki değil. Oyuncu reytingleri doğru; sorun sadece "oyunda
       toplam şu kadar" cümleleri. FC 27 importunda (~6 Ekim) setin kapsamı kontrol edilip bu
       cümleler "in the FC 26 database we use" gibi yeniden yazılmalı.
-- [x] `fc_players` notu düzeltildi (hafıza): "0 MLS" veri setinin özelliği, oyunun değil.
+- [x] `fc_players` notu düzeltildi (hafıza). *(2026-09-30: "0 MLS" bilgisinin kendisi de
+      yanlıştı — tabloda 770 MLS oyuncusu var.)*
 
 ---
 
@@ -49,7 +52,7 @@ Oyun 25 Eylül'de çıktı ama lansman ile verinin oturması arasında zaman ge�
 (ilk günlerde reyting düzeltmeleri, eksik oyuncular, veri setlerinin güncellenmesi).
 **~10 gün beklenip 6 Ekim civarı çekilecek.** Acele yok.
 
-`fc_players` 16.228 satır, EA FC 26 verisi (Eylül 2025). 0 MLS oyuncusu,
+`fc_players` 16.228 satır, EA FC 26 verisi (Eylül 2025). 770 MLS oyuncusu,
 15-16 yaş yok (taban 17, 52 oyuncu), `created_at` yok. Erken erişim 18 Eylül'de
 başladı, veri seti çıkmış olabilir.
 
