@@ -46,37 +46,33 @@ FC 26 reyting sayfası var. Cavan'ın FC 26'da olmamasının sebebi büyük ihti
 
 ## 🔴 Takvimli
 
-### FC 27 verisi — hedef ~6 Ekim (karar: 2026-09-26)
+### FC 27 verisi — ✅ IMPORT EDİLDİ (2026-09-30)
 
-Oyun 25 Eylül'de çıktı ama lansman ile verinin oturması arasında zaman geçiyor
-(ilk günlerde reyting düzeltmeleri, eksik oyuncular, veri setlerinin güncellenmesi).
-**~10 gün beklenip 6 Ekim civarı çekilecek.** Acele yok.
+Plan ~6 Ekim'di; 30 Eylül'de EA'in kendi reyting sayfasından çekildi (Kaggle'ın 12 Eylül
+kopyası lansman öncesiydi ve fotoğrafsızdı). **Tuzak:** EA'in bilinen API'si
+(`drop-api.ea.com/rating/ea-sports-fc`) hâlâ FC 26 dönüyor — `scripts/fetch-ea-ratings.mjs`
+bu yüzden ratings sayfasının kendisini okur ve sürümü Cavan Sullivan'la doğrular.
 
-`fc_players` 16.228 satır, EA FC 26 verisi (Eylül 2025). 770 MLS oyuncusu,
-15-16 yaş yok (taban 17, 52 oyuncu), `created_at` yok. Erken erişim 18 Eylül'de
-başladı, veri seti çıkmış olabilir.
+`fc_players` artık **17.849 satır, EA FC 27** (erkek). Eskinin %33'ü farklı kulüpteydi;
+5.249 reyting yükseldi, 3.326 düştü. 17 yaşında 150 oyuncu (eskiden 52), 806 MLS.
+Yedek: `backups/fc_players-2026-09-30.json` (16.228 satır, id'leriyle).
 
-- [ ] **ÖNCE dondurma. Sıra yanlış olursa 15 yazı kendiyle çelişir.**
-      82 yazıda oyuncu kartı var; 15'i **hem** metinde EA FC 26 reytingi anıyor
-      **hem** canlı kart render ediyor. Import edildiği an metin 68 derken kart
-      74 gösterir.
-
-      | # | yazı | kart | reyting anması |
-      |---|---|---|---|
-      | 145 | Strikers | 8 | 12 |
-      | 146 | Full-Backs | 7 | 12 |
-      | 136 | **Centre-Backs** — sitenin en çok tıklanan sayfası (28 günde 356 tık) | 7 | 9 |
-      | 152 | Ball-Playing CBs | 6 | 9 |
-      | 138 | *"The Midfielders EA FC 26 Still Underrates"* — çelişki **başlıkta** | 6 | 8 |
-
-      Çözüm: yayın anında kart verisini bloğa göm, renderer önce onu kullansın,
-      yoksa aramaya düşsün. Tarihli bir scouting yazısının kartı zaten bir
-      fotoğraf olmalı. **Ek fayda:** bugün canlı sorgu olan her kart statikleşir.
-- [ ] Kaggle CSV indir → yolunu ver → import script'i. `--dry` önce kaç kulübün
-      değiştiğini gösterir; o sayı, verinin ne kadar bayatladığının tek cümlelik cevabı.
-- [ ] Yedek al
-- [ ] `fix_fc_players_club_names.sql` yeniden uygula
-- [ ] `created_at` / `dataset_version` kolonları ekle — bu sefer tarih bilinsin
+- [x] **Dondurma** — `data/card-snapshots.json`: 90 yayındaki yazının 316 kartı FC 26
+      haliyle donduruldu, canlıda doğrulandı (Ngumoha yazısı 68, tablo 75; Centre-Backs
+      import öncesiyle birebir). **Her importtan önce:** `node scripts/freeze-cards.mjs
+      --dataset <etiket>` → commit → deploy → sonra import.
+- [x] Çekme (`fetch-ea-ratings.mjs`) → `--dry` rapor → yedek → import (`import-fc-players.mjs
+      --write`: önce ekler, sonra eskiyi siler; site boş tablo görmez)
+- [x] Takma kulüp adları import içinde düzeltiliyor (Lombardia FC→Inter, Milano FC→AC Milan,
+      Bergamo Calcio→Atalanta). Lazio FC 27'de lisanslı ("SS Lazio").
+- [ ] **Senin adımın:** `supabase/migrations/fc_players_dataset_version.sql`'i Supabase SQL
+      editöründe çalıştır (`created_at` + `dataset_version`). DDL'i ben çalıştıramıyorum.
+      Sonra import script'i satırlara sürümü kendisi yazsın.
+- [ ] **Bekleyen üç yazı FC 26 ile yazıldı** — #153 England, #155 Portugal, #158 Dowman.
+      Yayından önce metindeki reytingler FC 27'ye güncellenmeli (dondurulmadılar; kartları
+      zaten FC 27 gösterecek).
+- [ ] Yeni yazılarda Scout Gamer Read satırı artık **EA FC 27** yazar.
+- [ ] EA'in ilk canlı reyting güncellemesinde (Ekim–Kasım) yeniden çek: aynı üç komut.
 
 ---
 
