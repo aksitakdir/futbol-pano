@@ -25,7 +25,10 @@
  *   clubs here (formerly supabase/fix_fc_players_club_names.sql, run by hand).
  *
  *   node scripts/import-fc-players.mjs --from <download.json> --dry
- *   node scripts/import-fc-players.mjs --from <download.json> --write
+ *   node scripts/import-fc-players.mjs --from <download.json> --write --dataset fc27-ea-2026-12-01
+ *
+ * --dataset labels every new row (fc_players.dataset_version) so the table's
+ * age is always visible.
  */
 import fs from "node:fs";
 import path from "node:path";
@@ -36,8 +39,9 @@ const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const args = process.argv.slice(2);
 const from = args.includes("--from") ? args[args.indexOf("--from") + 1] : null;
 const write = args.includes("--write");
-if (!from || args.includes("--dry") === write) {
-  console.error("Usage: node scripts/import-fc-players.mjs --from <download.json> (--dry | --write)");
+const dataset = args.includes("--dataset") ? args[args.indexOf("--dataset") + 1] : null;
+if (!from || args.includes("--dry") === write || (write && !dataset)) {
+  console.error("Usage: node scripts/import-fc-players.mjs --from <download.json> (--dry | --write --dataset <label>)");
   process.exit(1);
 }
 
@@ -90,6 +94,7 @@ function toRow(it) {
     defending: gk ? 0 : v(it, "def"),
     physical: gk ? 0 : v(it, "phy"),
     photo_url: it.avatarUrl ?? null,
+    ...(write ? { dataset_version: dataset } : {}),
   };
 }
 
