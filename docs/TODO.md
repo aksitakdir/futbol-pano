@@ -95,13 +95,14 @@ Yedek: `backups/fc_players-2026-09-30.json` (16.228 satır, id'leriyle).
 
 ## 🟠 Yayın kuyruğu
 
-**Üç yazı `pending`, üçü de FC 27'ye göre hazır (2026-09-30).** #156 ve #157 yayında.
+**Dört yazı `pending`, hepsi FC 27'ye göre hazır (2026-09-30).** #156 ve #157 yayında.
 
 | # | Başlık | Not |
 |---|---|---|
 | 153 | England's Best Young Footballers | FC 27'ye güncellendi: 10 Read satırı + FC 27'nin yanlışladığı 3 cümle (Ngumoha "en düşük", George "Chelsea", Moore "Rangers") |
 | 155 | Portugal's Best Young Footballers: **Seven of the Nine** Have Already Left | **Yeniden yazıldı; Gustavo Sá + Mateus Mané eklendi.** Mora 19 Ağu'da Roma'ya gitmişti; eski tez ("Porto'nun tuttuğu") yanlıştı. Yeni slug (hiç yayınlanmadı, link yok). Simões sakatlığı, M. Fernandes baldır eklendi; Roger F. kaynaksız istatistikler çıkarıldı. Not: FC 27'de Mathias de Amorim (73, Famalicão — evde) da Simões'ten yüksek; listede değil. |
 | 158 | Max Dowman | Zaten FC 27'ye göre düzeltilmişti · #157'ye link veriyor |
+| 159 | The Best Young Goalkeepers in World Football Right Now | **Yeni (2026-09-30), toplu oturum #1.** 10 kaleci, FC 27. Kanca: Risser/Beltrán/Motta +10. Derin keşifler: Domchak, Motta. |
 
 Kapak görseli yayının şartı değil; kart varyantları görselsiz çalışıyor.
 
