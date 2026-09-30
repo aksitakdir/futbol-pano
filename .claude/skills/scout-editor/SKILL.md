@@ -309,7 +309,7 @@ how early you are."
 
 **The Scout Gamer Read — a signature line on every player.** After each player's analysis, add
 one bold, consistent line fusing the game rating with a real-level read and a tier:
-`**Scout Gamer Read** — EA FC 26: 82 (DEF 84). Real-level: <one clause>. **Tier: <label>.**`
+`**Scout Gamer Read** — EA FC 27: 82 (DEF 84). Real-level: <one clause>. **Tier: <label>.**`
 Tiers (fixed set): Generational · Elite Now · Elite-in-Waiting · Ready Now · Watchlist · Raw Gem.
 This is the distinctive touch competitors don't have (game-vs-reality + a branded tier) and it
 uses our unique `fc_players` data. Keep it lightweight — one line, every player.
@@ -385,7 +385,7 @@ When a brief is a gaming-lens piece:
   from fc_players where name ilike '%<name>%'`). 16K+ players are already loaded.
 - **Web-search the real, current stats** as always, then **bridge the two**: where the game
   rating and reality diverge is the story.
-  - Real → Game: "EA FC 26 rates him 75, but his real numbers say elite — the card is wrong."
+  - Real → Game: "EA FC 27 rates him 75, but his real numbers say elite — the card is wrong."
   - Game → Real: "The FC 26 meta wonderkid who's even better in real life."
 - **Verdict framing:** Underrated / Fair / Overrated. A `@vs:` block (real stats | game rating)
   or a `@stat:` group works well until a dedicated rating-check block exists.
