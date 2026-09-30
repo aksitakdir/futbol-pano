@@ -103,7 +103,7 @@ Yedek: `backups/fc_players-2026-09-30.json` (16.228 satır, id'leriyle).
 | 155 | Portugal's Best Young Footballers: **Seven of the Nine** Have Already Left | **Yeniden yazıldı; Gustavo Sá + Mateus Mané eklendi.** Mora 19 Ağu'da Roma'ya gitmişti; eski tez ("Porto'nun tuttuğu") yanlıştı. Yeni slug (hiç yayınlanmadı, link yok). Simões sakatlığı, M. Fernandes baldır eklendi; Roger F. kaynaksız istatistikler çıkarıldı. Not: FC 27'de Mathias de Amorim (73, Famalicão — evde) da Simões'ten yüksek; listede değil. |
 | 158 | Max Dowman | Zaten FC 27'ye göre düzeltilmişti · #157'ye link veriyor |
 | 159 | The Best Young Goalkeepers in World Football Right Now | **Yeni (2026-09-30), toplu oturum #1.** 10 kaleci, FC 27. Kanca: Risser/Beltrán/Motta +10. Derin keşifler: Domchak, Motta. |
-| 160 | The Best Young Attacking Midfielders in World Football Right Now | **Yeni (2026-09-30), toplu oturum #2.** 7 + 2 derin keşif (Montoro, Páez). Güler/Yıldız girişte kıyas; Mastantuono ve Karetsas "kartı 10, kulübü kanat" olarak açıkça. |
+| 160 | The Best Young Number 10s in World Football — and Why There Are So Few of Them | **Yeniden kuruldu (2026-09-30).** Tez: 10 numara nadir ve zor tanımlanıyor (Yıldız solda, Güler ancak bu yıl 10). İki bölüm: "Playing the Ten" (Uzun, Maza, Wanner, King, G. Mora, **Batrakov**, Montoro) / "Tens by Card, Not by Job" (Karetsas, Mastantuono) + Páez. Batrakov FC 27'de yok → kart bloğu konmadı (aşağıdaki yedek-kart sorunu). |
 
 Kapak görseli yayının şartı değil; kart varyantları görselsiz çalışıyor.
 
@@ -125,6 +125,16 @@ every week"* diyor ve bu vaat tutulmuyor → aşağıdaki Görev A/B.
       **B'yi (radar gerçekten haftalık) yaparsak A'ya (metinden kaldırmak) gerek yok.**
 
 ---
+
+## 🟡 Yedek kaynak kartları oyun reytingi gibi görünüyor (2026-09-30)
+
+Oyunda olmayan bir oyuncu için kart; `fc_players` → `player_cache` → BSD → API-Football
+zincirinden gelen bir "OVR" gösteriyor (Batrakov: 68, BSD'den). Kart, EA reytingiyle aynı
+görünüyor. "Oyunda yok" diyen bir yazının altında bu bir çelişki; genel olarak da okura
+oyun reytingi sanılacak bir sayı veriyor.
+- [ ] Karar: yedek kaynaktan gelen kartlar (a) "not in EA FC" etiketiyle ayrı görünsün, ya da
+      (b) makale içinde hiç gösterilmesin, "Uncharted / No rating yet" yer tutucusu çıksın.
+      Öneri (b) + `@player:` bloğunda isteğe bağlı `uncharted` bayrağı.
 
 ## 🟢 Planda
 
