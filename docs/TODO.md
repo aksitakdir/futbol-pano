@@ -100,7 +100,7 @@ Yedek: `backups/fc_players-2026-09-30.json` (16.228 satır, id'leriyle).
 | # | Başlık | Not |
 |---|---|---|
 | 153 | England's Best Young Footballers | FC 27'ye güncellendi: 10 Read satırı + FC 27'nin yanlışladığı 3 cümle (Ngumoha "en düşük", George "Chelsea", Moore "Rangers") |
-| 155 | Portugal's Best Young Footballers: **Five** of the Seven Have Already Left | **Yeniden yazıldı.** Mora 19 Ağu'da Roma'ya gitmişti; eski tez ("Porto'nun tuttuğu") yanlıştı. Yeni slug (hiç yayınlanmadı, link yok). Simões sakatlığı, M. Fernandes baldır eklendi; Roger F. kaynaksız istatistikler çıkarıldı. **Açık karar:** FC 27'de Gustavo Sá (76, Olympiacos) ve Mateus Mané (74, Wolves) listedeki bazılarından yüksek — kadroya girsinler mi? |
+| 155 | Portugal's Best Young Footballers: **Seven of the Nine** Have Already Left | **Yeniden yazıldı; Gustavo Sá + Mateus Mané eklendi.** Mora 19 Ağu'da Roma'ya gitmişti; eski tez ("Porto'nun tuttuğu") yanlıştı. Yeni slug (hiç yayınlanmadı, link yok). Simões sakatlığı, M. Fernandes baldır eklendi; Roger F. kaynaksız istatistikler çıkarıldı. Not: FC 27'de Mathias de Amorim (73, Famalicão — evde) da Simões'ten yüksek; listede değil. |
 | 158 | Max Dowman | Zaten FC 27'ye göre düzeltilmişti · #157'ye link veriyor |
 
 Kapak görseli yayının şartı değil; kart varyantları görselsiz çalışıyor.
