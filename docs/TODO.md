@@ -95,7 +95,7 @@ Yedek: `backups/fc_players-2026-09-30.json` (16.228 satır, id'leriyle).
 
 ## 🟠 Yayın kuyruğu
 
-**Beş yazı `pending`, hepsi FC 27'ye göre hazır (2026-09-30).** #156 ve #157 yayında.
+**Altı yazı `pending`, hepsi FC 27'ye göre hazır (2026-09-30).** #156 ve #157 yayında.
 
 | # | Başlık | Not |
 |---|---|---|
@@ -104,6 +104,7 @@ Yedek: `backups/fc_players-2026-09-30.json` (16.228 satır, id'leriyle).
 | 158 | Max Dowman | Zaten FC 27'ye göre düzeltilmişti · #157'ye link veriyor |
 | 159 | The Best Young Goalkeepers in World Football Right Now | **Yeni (2026-09-30), toplu oturum #1.** 10 kaleci, FC 27. Kanca: Risser/Beltrán/Motta +10. Derin keşifler: Domchak, Motta. |
 | 160 | The Best Young Number 10s in World Football — and Why There Are So Few of Them | **Yeniden kuruldu (2026-09-30).** Tez: 10 numara nadir ve zor tanımlanıyor (Yıldız solda, Güler ancak bu yıl 10). İki bölüm: "Playing the Ten" (Uzun, Maza, Wanner, King, G. Mora, **Batrakov**, Montoro) / "Tens by Card, Not by Job" (Karetsas, Mastantuono) + Páez. Batrakov kartsız ve oyun verisinden hiç söz edilmeden anlatılıyor (kullanıcı kararı: sonradan güncelleme riski). |
+| 161 | The Netherlands' Best Young Footballers: Six of the Ten Are Still at Home | **Yeni (2026-09-30), toplu oturum #3.** Düz ülke listesi (bek açısı reddedildi: mevki havuzu geniş). Banzuzi (DR Kongo), Ouaissa (2 Eki'de 22), Addai (sakat) dışarıda; SSS'te Banzuzi açıklaması. |
 
 Kapak görseli yayının şartı değil; kart varyantları görselsiz çalışıyor.
 
