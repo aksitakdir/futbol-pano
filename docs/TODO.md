@@ -95,18 +95,15 @@ Yedek: `backups/fc_players-2026-09-30.json` (16.228 satır, id'leriyle).
 
 ## 🟠 Yayın kuyruğu
 
-**Beş yazı `pending`.** Hepsi kapak görseli bekliyor — ama **kapak artık yayına
-girmenin şartı değil.** Kart varyantları (stat/contrast/verdict/list) görselsiz
-çalışıyor; bir yazı bugün yayına alınıp bugün dağıtılabilir. Kapak yalnızca
-Style A kartını açıyor.
+**Üç yazı `pending`, üçü de FC 27'ye göre hazır (2026-09-30).** #156 ve #157 yayında.
 
 | # | Başlık | Not |
 |---|---|---|
-| 153 | England's Best Young Footballers | |
-| 155 | Portugal's Best Young Footballers | |
-| 156 | Brazil Got 4.4 Years Younger | |
-| 157 | Cavan Sullivan | **önce bu** |
-| 158 | Max Dowman | #157'ye link veriyor · rekabet riski flag'li |
+| 153 | England's Best Young Footballers | FC 27'ye güncellendi: 10 Read satırı + FC 27'nin yanlışladığı 3 cümle (Ngumoha "en düşük", George "Chelsea", Moore "Rangers") |
+| 155 | Portugal's Best Young Footballers: **Five** of the Seven Have Already Left | **Yeniden yazıldı.** Mora 19 Ağu'da Roma'ya gitmişti; eski tez ("Porto'nun tuttuğu") yanlıştı. Yeni slug (hiç yayınlanmadı, link yok). Simões sakatlığı, M. Fernandes baldır eklendi; Roger F. kaynaksız istatistikler çıkarıldı. **Açık karar:** FC 27'de Gustavo Sá (76, Olympiacos) ve Mateus Mané (74, Wolves) listedeki bazılarından yüksek — kadroya girsinler mi? |
+| 158 | Max Dowman | Zaten FC 27'ye göre düzeltilmişti · #157'ye link veriyor |
+
+Kapak görseli yayının şartı değil; kart varyantları görselsiz çalışıyor.
 
 Yayın sonrası her biri için:
 `node scripts/post-publish.mjs <slug>` · `node scripts/social-pack.mjs <slug>`
