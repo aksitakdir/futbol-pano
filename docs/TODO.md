@@ -107,7 +107,7 @@ yazılar eski görünüyordu (#153/#155: "September", ana sayfada eski yazılar�
 
 ## 🟠 Yayın kuyruğu
 
-**Beş yazı `pending` (#158–#161, #163); #153 ve #155 yayında (6 Eki).** #156 ve #157 yayında.
+**Altı yazı `pending` (#158–#161, #163, #164); #153 ve #155 yayında (6 Eki).** #156 ve #157 yayında.
 
 | # | Başlık | Not |
 |---|---|---|
@@ -118,6 +118,7 @@ yazılar eski görünüyordu (#153/#155: "September", ana sayfada eski yazılar�
 | 160 | The Best Young Number 10s in World Football — and Why There Are So Few of Them | **Yeniden kuruldu (2026-09-30).** Tez: 10 numara nadir ve zor tanımlanıyor (Yıldız solda, Güler ancak bu yıl 10). İki bölüm: "Playing the Ten" (Uzun, Maza, Wanner, King, G. Mora, **Batrakov**, Montoro) / "Tens by Card, Not by Job" (Karetsas, Mastantuono) + Páez. Batrakov kartsız ve oyun verisinden hiç söz edilmeden anlatılıyor (kullanıcı kararı: sonradan güncelleme riski). |
 | 161 | The Netherlands' Best Young Footballers: Six of the Ten Are Still at Home | **Yeni (2026-09-30), toplu oturum #3.** Düz ülke listesi (bek açısı reddedildi: mevki havuzu geniş). Banzuzi (DR Kongo), Ouaissa (2 Eki'de 22), Addai (sakat) dışarıda; SSS'te Banzuzi açıklaması. |
 | 163 | Italy's Best Young Footballers: The Talent Is There. The Minutes Are Not. | **Yeni (2026-10-06), toplu oturum #4.** Tez: on oyuncunun bu sezonki lig dakikası toplamı 1.242 (Palestra ve Leoni 0). Sayılar metinde "as of 6 October 2026" diye tarihli; yayın gecikse de doğru kalır. |
+| 164 | The Best FC 27 Wonderkids — and What the Game Gets Wrong About Them | **Yeni (2026-10-06), FC 27 dalgası — öncelikli yayın.** 13 oyuncu ≥81; 6 "adil" (tablo + kutu), 7 uzun bölüm (cömert: Doué, Diomande · yanlış mevki: Yıldız, Zaïre-Emery, Güler · düşük: Froholdt, Mainoo) + Cissè/Palestra. Pending yazılara link verilmedi. |
 
 Kapak görseli yayının şartı değil; kart varyantları görselsiz çalışıyor.
 
@@ -149,6 +150,14 @@ oyun reytingi sanılacak bir sayı veriyor.
 - [ ] Karar: yedek kaynaktan gelen kartlar (a) "not in EA FC" etiketiyle ayrı görünsün, ya da
       (b) makale içinde hiç gösterilmesin, "Uncharted / No rating yet" yer tutucusu çıksın.
       Öneri (b) + `@player:` bloğunda isteğe bağlı `uncharted` bayrağı.
+
+## 🟢 Sıradaki yazı adayları (2026-10-06)
+
+- [ ] **FC 27'nin en büyük genç reyting sıçramaları** — veri hazır: Kim Min Su +20 (Girona), Diomande +18,
+      Palestra +17, Gozo +16, Matondo/Detourbet/Salinas +15, Karl/Methalie/A. Ibrahimović +14.
+- [ ] Best Young Defensive Midfielders (6'lar) — CDM etiketine değil sahadaki role göre seç.
+- [ ] Lig listesi: Best Young Players in La Liga (ya da Serie A / Ligue 1); alternatif USA / Morocco.
+- [ ] En çok tıklanan sayfaların (Centre-Backs, Strikers, Full-Backs) FC 27 güncellemesi — aynı URL, karar bekliyor.
 
 ## 🟢 Planda
 
