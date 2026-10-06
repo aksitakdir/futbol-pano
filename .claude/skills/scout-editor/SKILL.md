@@ -94,6 +94,14 @@ schema, same rendering — zero spend.
    Typical length: 900–1500 words. The only near-constant is a `@lead:` opener — everything
    else is chosen to fit the piece. Every number in any block must come from your web search.
 
+   **Date the figures, not the article.** Pieces are written in batches and published days
+   later, so "this season", "this month" and "at the end of September" go wrong on the day
+   they publish. When a piece quotes season stats (minutes, goals, starts, appearances), end
+   the `@lead:` with `*(Figures as of <D Month YYYY>.)*` using the day you verified them, put
+   the same date in any `@stat:` note or `@table:` caption that holds those numbers, and write
+   months by name ("in September"), never "this month". Added 2026-10-06 after five pending
+   pieces were found carrying undated season numbers.
+
 4. **Preview with a dry run** before publishing:
    ```bash
    node scripts/scout-publish.mjs <brief.json> --dry

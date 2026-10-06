@@ -101,6 +101,10 @@ yazılar eski görünüyordu (#153/#155: "September", ana sayfada eski yazılar�
 - [x] SQL çalıştırıldı. Test: pending satır tarihini korudu → published olunca bugüne atladı →
       yayındaki yazıyı yeniden kaydetmek tarihi değiştirmedi. Test satırı (#162) silindi.
 
+**Tarih notu (2026-10-06):** #158–#161 ve #163'ün girişlerine verinin tarihi eklendi ("Figures as of …"),
+"this month / end of September" ifadeleri ay adına çevrildi. Dowman yeniden doğrulandı: hâlâ 9 PL dakikası
+(tek maç 19 Eylül) — #158'in başlığı geçerli. Kural scout-editor skill'ine eklendi.
+
 ## 🟠 Yayın kuyruğu
 
 **Beş yazı `pending` (#158–#161, #163); #153 ve #155 yayında (6 Eki).** #156 ve #157 yayında.
@@ -113,7 +117,7 @@ yazılar eski görünüyordu (#153/#155: "September", ana sayfada eski yazılar�
 | 159 | The Best Young Goalkeepers in World Football Right Now | **Yeni (2026-09-30), toplu oturum #1.** 10 kaleci, FC 27. Kanca: Risser/Beltrán/Motta +10. Derin keşifler: Domchak, Motta. |
 | 160 | The Best Young Number 10s in World Football — and Why There Are So Few of Them | **Yeniden kuruldu (2026-09-30).** Tez: 10 numara nadir ve zor tanımlanıyor (Yıldız solda, Güler ancak bu yıl 10). İki bölüm: "Playing the Ten" (Uzun, Maza, Wanner, King, G. Mora, **Batrakov**, Montoro) / "Tens by Card, Not by Job" (Karetsas, Mastantuono) + Páez. Batrakov kartsız ve oyun verisinden hiç söz edilmeden anlatılıyor (kullanıcı kararı: sonradan güncelleme riski). |
 | 161 | The Netherlands' Best Young Footballers: Six of the Ten Are Still at Home | **Yeni (2026-09-30), toplu oturum #3.** Düz ülke listesi (bek açısı reddedildi: mevki havuzu geniş). Banzuzi (DR Kongo), Ouaissa (2 Eki'de 22), Addai (sakat) dışarıda; SSS'te Banzuzi açıklaması. |
-| 163 | Italy's Best Young Footballers: The Talent Is There. The Minutes Are Not. | **Yeni (2026-10-06), toplu oturum #4.** Tez: on oyuncunun bu sezonki lig dakikası toplamı 1.242 (Palestra ve Leoni 0). Dakikalar 6 Ekim itibarıyla — **yayın gecikirse tablo ve sayılar güncellenmeli.** |
+| 163 | Italy's Best Young Footballers: The Talent Is There. The Minutes Are Not. | **Yeni (2026-10-06), toplu oturum #4.** Tez: on oyuncunun bu sezonki lig dakikası toplamı 1.242 (Palestra ve Leoni 0). Sayılar metinde "as of 6 October 2026" diye tarihli; yayın gecikse de doğru kalır. |
 
 Kapak görseli yayının şartı değil; kart varyantları görselsiz çalışıyor.
 
