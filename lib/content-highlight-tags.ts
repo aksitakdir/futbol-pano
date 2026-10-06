@@ -240,6 +240,35 @@ function tokensFromTitleHint(title: string, seen: Set<string>, maxAdd: number): 
   return result;
 }
 
+/**
+ * Player names from section headings — the first choice for card pills.
+ *
+ * Our section headings read "Player Name — what the section argues" (or "The First
+ * Deep Cut — Player Name"). The generic extractor below only takes headings under
+ * 31 characters, so since the headings grew a second half it skipped them all and
+ * the pills fell back to bold text: "Tier: Watchlist" on every list card (2026-10-06).
+ * Only headings with a dash separator count, so a plain heading such as "What He Has
+ * Already Done" never becomes a pill. Reads HTML (<h2>/<h3>) and the block markup
+ * the publishing script stores (`@section:` lines).
+ */
+function headingNames(raw: string): string[] {
+  const headings: string[] = [];
+  for (const m of raw.matchAll(/<h[23]\b[^>]*>([\s\S]*?)<\/h[23]>/gi)) headings.push(cleanSnippet(m[1] ?? ""));
+  for (const m of raw.matchAll(/^@section:\s*(.+)$/gm)) headings.push(cleanSnippet(m[1] ?? ""));
+
+  const names: string[] = [];
+  for (const h of headings) {
+    const parts = h.split(/\s+[—–]\s+/);
+    if (parts.length < 2) continue;
+    // "The First Deep Cut — João Simões": the name is the second half
+    const name = (/deep cut/i.test(parts[0]) ? parts[1] : parts[0]).trim();
+    const words = name.split(/\s+/).filter(Boolean);
+    if (!name || name.length > MAX_TAG_CHARS || words.length > 4 || /[?!.]$/.test(name)) continue;
+    if (!names.some((n) => n.toLowerCase() === name.toLowerCase())) names.push(name);
+  }
+  return names;
+}
+
 export type ArticleHighlightOptions = ExtractHighlightOptions & {
   /** If the body yields too few pills, derive phrases from the title */
   titleHint?: string;
@@ -252,11 +281,15 @@ export function extractArticleHighlights(raw: string | undefined | null, opts: A
   const max = Math.min(opts.max ?? 4, 4);
   const seed = opts.seed ?? "";
 
+  // Player names from headings first, in the order the article presents them.
+  const names = headingNames(raw ?? "").slice(0, max);
+  if (names.length >= max) return names;
+
   const structuredRaw = extractHighlightTags(raw, { max: max + 8, seed });
   const structured = mergeCompoundTags(structuredRaw).filter(isUsableTag);
 
-  const seen = new Set<string>();
-  const out: string[] = [];
+  const seen = new Set<string>(names.map((n) => n.toLowerCase()));
+  const out: string[] = [...names];
   for (const t of structured) {
     const k = t.toLowerCase();
     if (seen.has(k)) continue;
