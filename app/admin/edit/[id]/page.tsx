@@ -21,6 +21,7 @@ import {
 import { fetchCoverStoryPinsFromApi, saveCoverStoryPinsViaApi } from "@/lib/cover-story-admin";
 import { updateContent } from "../../content-actions";
 import SocialCardsPanel from "../../components/social-cards-panel";
+import { sectionsToHtml } from "@/lib/sections-to-html.mjs";
 
 const PLACEHOLDER_HTML = "<p></p>";
 
@@ -341,7 +342,10 @@ export default function DuzenlePage() {
       slug: slugTrim,
       category: saveCategory,
       content: usingBlocks ? PLACEHOLDER_HTML : content.trim(),
-      content_en: usingBlocks ? PLACEHOLDER_HTML : contentEn.trim() || null,
+      // Block articles render from sections_json; content_en keeps a text copy of the
+      // blocks because every card snippet, card pill and the RSS feed read it
+      // (lib/sections-to-html.mjs).
+      content_en: usingBlocks ? sectionsToHtml(sectionsBlocks) || PLACEHOLDER_HTML : contentEn.trim() || null,
       youtube_id: youtubeId.trim(),
       cover_image: coverImage.trim(),
       youtube_query_1: youtubeQuery1.trim(),

@@ -19,6 +19,7 @@ import {
 } from "@/lib/cover-story";
 import { saveCoverStoryPinsViaApi } from "@/lib/cover-story-admin";
 import { createContent } from "../content-actions";
+import { sectionsToHtml } from "@/lib/sections-to-html.mjs";
 
 function isContentEmpty(html: string): boolean {
   if (!html?.trim()) return true;
@@ -185,7 +186,8 @@ function NewArticleForm() {
       slug: slug.trim(),
       category: saveCategory,
       content: bodyHtml,
-      content_en: bodyHtml,
+      // Text copy of the blocks for card snippets, pills and RSS (lib/sections-to-html.mjs).
+      content_en: usingBlocks ? sectionsToHtml(sectionsBlocks) || PLACEHOLDER_HTML : bodyHtml,
       youtube_id: youtubeId.trim(),
       cover_image: coverImage.trim(),
       youtube_query_1: youtubeQuery1.trim(),
