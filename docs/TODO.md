@@ -105,6 +105,16 @@ yazılar eski görünüyordu (#153/#155: "September", ana sayfada eski yazılar�
 "this month / end of September" ifadeleri ay adına çevrildi. Dowman yeniden doğrulandı: hâlâ 9 PL dakikası
 (tek maç 19 Eylül) — #158'in başlığı geçerli. Kural scout-editor skill'ine eklendi.
 
+## ✅ Kart etiketleri ve özetleri (2026-10-06)
+
+Admin, blok yazılarda `content_en`'e `<p></p>` yazıyordu → 124 yayındaki yazının 88'inde kartta "FROM CONTENT"
+etiketi ve kart özeti yoktu, RSS açıklaması boştu. Admin artık blokların metin kopyasını yazıyor
+(`lib/sections-to-html.mjs`); 88 yazı `scripts/backfill-content-en.mjs --write` ile dolduruldu
+(yedek: `backups/content_en-before-backfill-2026-10-06.json`). Sayfaların görünen metni değişmedi.
+Aynı gün: etiketler "TİER" (Türkçe büyük harf) gösteriyordu → `lib/highlight-pill-text.ts` en-US'e çekildi.
+- [ ] Bazı otomatik etiketler zayıf ("$5m", "one sixteen-year-old England") — etiket üreticisinin
+      kalitesi ayrı bir iş; istenirse yazı başına elle etiket alanı.
+
 ## 🟠 Yayın kuyruğu
 
 **Altı yazı `pending` (#158–#161, #163, #164); #153 ve #155 yayında (6 Eki).** #156 ve #157 yayında.
