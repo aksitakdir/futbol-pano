@@ -93,6 +93,15 @@ Yedek: `backups/fc_players-2026-09-30.json` (16.228 satır, id'leriyle).
 
 ---
 
+## 🔴 Senin adımın — yayın tarihi tetikleyicisi (2026-10-06)
+
+Site her yazıyı `created_at` ile tarihliyor ve sıralıyor; toplu yazılıp günler sonra yayınlanan
+yazılar eski görünüyordu (#153/#155: "September", ana sayfada eski yazıların altında,
+`datePublished` 20 Eylül). #153 ve #155 elle 6 Ekim'e çekildi, canlıda doğrulandı.
+- [ ] `supabase/migrations/contents_publish_date_trigger.sql`'i Supabase SQL editöründe çalıştır.
+      Bundan sonra bir yazı `published` olduğu an tarihi o güne çekilir. **#158–#161'i bu
+      çalışmadan yayınlarsan tarihleri yine Eylül görünür.**
+
 ## 🟠 Yayın kuyruğu
 
 **Altı yazı `pending`, hepsi FC 27'ye göre hazır (2026-09-30).** #156 ve #157 yayında.
