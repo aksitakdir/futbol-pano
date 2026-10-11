@@ -43,3 +43,6 @@ backups/
 *.tsbuildinfo
 next-env.d.ts
 Archive.zip
+
+# Highlightly API responses (scripts/highlightly.mjs)
+data/highlightly-cache/
