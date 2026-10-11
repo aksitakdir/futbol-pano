@@ -97,6 +97,11 @@ export function pickPlayer(name, list) {
     return n[n.length - 1] === surname && n[0]?.[0] === initial;
   });
   if (initialMatch.length === 1) return initialMatch[0];
+  // Two "N. Sadiki"s: the one whose full name carries the searched first name
+  const byFirst = initialMatch.filter((p) => norm(p.fullName).split(/\s+/).includes(parts[0]));
+  if (byFirst.length === 1) return byFirst[0];
+  const anyFirst = list.filter((p) => norm(p.name).split(/\s+/).pop() === surname && norm(p.fullName).split(/\s+/).includes(parts[0]));
+  if (anyFirst.length === 1) return anyFirst[0];
   const surnameOnly = list.filter((p) => norm(p.name).split(/\s+/).pop() === surname);
   return surnameOnly.length === 1 ? surnameOnly[0] : null;
 }
@@ -112,6 +117,100 @@ export async function playerSeason(name, season) {
   const row = Array.isArray(stats) ? stats[0] : stats;
   const per = (row?.perCompetition ?? []).filter((c) => !season || String(c.season).includes(String(season)));
   return { name, matches: list.map((p) => `${p.name} (#${p.id})`), picked: pick, perCompetition: per };
+}
+
+/**
+ * Where a player actually lined up, from the formation rows Highlightly returns
+ * ([[GK], [defence…], [midfield…], …, [attack…]]). The game's position label is
+ * the least reliable field we have (the 10s piece, 2026-09-30); this reads it off
+ * the team sheet instead. Middle-of-row is direction-independent, so "the middle
+ * of a three" and "a double pivot" are safe to name; left/right is not.
+ */
+export function roleFromLineup(lines, playerId) {
+  for (let li = 0; li < lines.length; li++) {
+    const row = lines[li];
+    const pi = row.findIndex((p) => p.id === playerId);
+    if (pi < 0) continue;
+    const last = lines.length - 1;
+    const size = row.length;
+    const middle = size % 2 === 1 ? pi === (size - 1) / 2 : pi === size / 2 - 1 || pi === size / 2;
+    const edge = pi === 0 || pi === size - 1;
+    if (li === 0) return "goalkeeper";
+    if (li === 1) return edge && size >= 4 ? "full-back" : "centre-back";
+    if (li === last) return "forward";
+    const deepest = li === 2;
+    const moreMidLinesAhead = last - li > 1;
+    if (deepest) {
+      if (size === 1) return "single pivot (6)";
+      if (size === 2) return "double pivot (6/8)";
+      if (size === 3) return middle ? (moreMidLinesAhead ? "deepest of a three" : "base of a three (6)") : "8 in a three";
+      if (size >= 4) return middle ? "central pair" : "wide / wing-back";
+    }
+    return edge && size >= 3 ? "wide midfield" : "advanced midfield (8/10)";
+  }
+  return null;
+}
+
+/** Find a team by name, trying the forms clubs are written in ("FC Barcelona" → "Barcelona"). */
+export async function findTeam(club) {
+  const base = String(club).trim();
+  const variants = [
+    base,
+    base.replace(/^(FC|AFC|CF|SC|AC|AS|SS|SSC|RC|RCD|CA|SK|1\.)\s+/i, ""),
+    base.replace(/\s+(FC|CF|AFC|SC|SCO|Milan|Enschede|Rotterdam|1912)$/i, ""),
+    base.replace(/^(FC|AFC|CF|SC|AC|AS|SS|SSC|RC|RCD|CA|SK|1\.)\s+/i, "").replace(/\s+(FC|CF|AFC|SC|SCO)$/i, ""),
+  ].filter((v, i, a) => v && a.indexOf(v) === i);
+  for (const v of variants) {
+    // Men's first teams only — "Stuttgart" also matches the women's side (Chema, 2026-10-12)
+    const teams = ((await hl("/teams", { name: v, limit: 10 }))?.data ?? []).filter(
+      (t) => !/\b(women|femen|féminin|ladies|frauen|u\d{2}|ii|b)\b/i.test(t.name),
+    );
+    const hit = teams.find((t) => t.name.toLowerCase() === base.toLowerCase()) ?? teams.find((t) => t.name.toLowerCase() === v.toLowerCase()) ?? teams[0];
+    if (hit) return hit;
+  }
+  return null;
+}
+
+/**
+ * The player's roles in his club's last few finished matches (cached; ~5 requests cold).
+ * opts.club: find the player on that club's team sheets by name — no search, no
+ * ambiguity ("Lucas Silva" has ten namesakes; River Plate has one).
+ */
+export async function recentRoles(name, max = 3, opts = {}) {
+  let picked = null;
+  let club = opts.club ?? "";
+  if (!club) {
+    const r = await playerSeason(name, "");
+    if (!r.picked) return { name, error: r.matches?.length ? "ambiguous — pass --club" : "not found", matches: r.matches };
+    picked = r.picked;
+    const cur = (r.perCompetition ?? []).filter((c) => /^(26\/27|2026)$/.test(String(c.season)) && (c.gamesPlayed ?? 0) > 0);
+    const european = cur.filter((c) => String(c.season) === "26/27");
+    club = (european.length ? european : cur).sort((a, b) => (b.minutesPlayed ?? 0) - (a.minutesPlayed ?? 0))[0]?.club ?? "";
+    if (!club) return { name, picked, error: "no appearances this season (injured or not registered?)" };
+  }
+  const team = await findTeam(club);
+  if (!team) return { name, club, error: "team not found" };
+  const games = (await hl("/last-five-games", { teamId: team.id })) ?? [];
+  const out = [];
+  for (const g of games.filter((x) => /finished/i.test(x.state?.description ?? "")).slice(0, max)) {
+    const lu = await hl(`/lineups/${g.id}`);
+    const side = lu?.homeTeam?.id === team.id ? lu.homeTeam : lu?.awayTeam;
+    if (!side) continue;
+    if (!picked) {
+      const everyone = [...(side.initialLineup ?? []).flat(), ...(side.substitutes ?? [])];
+      picked = pickPlayer(name, everyone) ?? null;
+    }
+    const role = picked ? roleFromLineup(side.initialLineup ?? [], picked.id) : null;
+    const benched = picked ? (side.substitutes ?? []).some((p) => p.id === picked.id) : false;
+    out.push({
+      date: g.date?.slice(0, 10),
+      match: `${g.homeTeam?.name} v ${g.awayTeam?.name}`,
+      competition: g.league?.name,
+      formation: side.formation,
+      role: role ?? (benched ? "bench" : "not in squad"),
+    });
+  }
+  return { name, picked, club, team: team.name, games: out };
 }
 
 function printSeason(r) {
@@ -145,6 +244,14 @@ if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) 
       console.log(`${b.count}/${CAP} requests used on ${b.date}`);
     } else if (cmd === "player" && args[0]) {
       printSeason(await playerSeason(args.join(" "), season));
+      console.log(`\nbudget: ${budget().count}/${CAP} today`);
+    } else if (cmd === "roles" && args[0]) {
+      const ci = args.indexOf("--club");
+      const clubHint = ci >= 0 ? args[ci + 1] : "";
+      const nm = (ci >= 0 ? args.slice(0, ci) : args).join(" ");
+      const r = await recentRoles(nm, 3, { club: clubHint });
+      console.log(`\n${r.name}${r.club ? ` — ${r.team ?? r.club}` : ""}${r.error ? `: ${r.error}` : ""}`);
+      for (const g of r.games ?? []) console.log(`  ${g.date} ${g.competition.padEnd(22)} ${g.formation.padEnd(8)} ${g.role.padEnd(22)} ${g.match}`);
       console.log(`\nbudget: ${budget().count}/${CAP} today`);
     } else if (cmd === "test") {
       for (const n of ["Pietro Comuzzo", "Zavier Gozo", "Gilberto Mora"]) printSeason(await playerSeason(n, season));
