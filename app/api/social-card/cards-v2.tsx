@@ -455,20 +455,31 @@ export function ContrastBody({ L, left, right, rows }: { L: Layout; left: string
 }
 
 /** The Scout Gamer Read: one player, the game's card against the football. */
+/** "Serie A|26/27|4|4|335|1|0|2026-10-12" → the season strip on the player card. */
+function parseSeason(raw: string) {
+  const [competition, season, apps, starts, minutes, goals, assists, asOf] = (raw ?? "").split("|");
+  if (!competition || !apps) return null;
+  const d = asOf ? new Date(asOf) : null;
+  const when = d && !isNaN(+d) ? d.toLocaleDateString("en-GB", { day: "numeric", month: "short", timeZone: "UTC" }) : "";
+  return { competition, season, apps, starts, minutes, goals, assists, when };
+}
+
 export function PlayerBody({
-  L, name, meta, ovr, edition, stats, line, real, tier,
+  L, name, meta, ovr, edition, stats, line, real, tier, season,
 }: {
-  L: Layout; name: string; meta: string; ovr: string; edition: string; stats: string[]; line: string; real: string; tier: string;
+  L: Layout; name: string; meta: string; ovr: string; edition: string; stats: string[]; line: string; real: string; tier: string; season?: string;
 }) {
+  const sz = parseSeason(season ?? "");
   const { width, height } = L.content;
   const tierColor = TIER_COLOR[tier.toLowerCase()] ?? MINT;
   const big = L.fmt !== "x";
   const roomy = height > 800; // no art: almost twice the room, so everything grows
   const cap = (s: string) => (s ? s.charAt(0).toUpperCase() + s.slice(1) : s);
   const nameSize = fit(name, width, height * (big ? 0.22 : 0.2), roomy ? 136 : big ? 104 : 62, 34, 1.02, 0.58);
-  const badge = Math.min(height * (big ? 0.24 : 0.3), roomy ? 250 : big ? 190 : 132);
+  const badge = Math.min(height * (big ? (sz ? 0.2 : 0.24) : sz ? 0.24 : 0.3), roomy ? 250 : big ? (sz ? 160 : 190) : sz ? 104 : 132);
   const chip = Math.max(18, badge * (big ? 0.17 : 0.16));
-  const textSize = fit(`${line} ${real}`, width, height * 0.2, roomy ? 46 : big ? 36 : 24, 16, 1.3, 0.5);
+  const textSize = fit(`${line} ${real}`, width, height * (sz ? 0.15 : 0.2), roomy ? 46 : big ? 36 : 24, 16, 1.3, 0.5);
+  const cell = roomy ? 44 : big ? 36 : 24;
   const metaSize = roomy ? 30 : big ? 25 : 17;
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: height * (roomy ? 0.03 : 0.028) }}>
@@ -508,6 +519,32 @@ export function PlayerBody({
           })}
         </div>
       </div>
+      {sz ? (
+        <div
+          style={{
+            display: "flex", flexDirection: "column", gap: cell * 0.3,
+            padding: `${cell * 0.45}px ${cell * 0.6}px`, borderRadius: cell * 0.3,
+            background: "rgba(146,190,220,0.08)", border: "1.5px solid rgba(146,190,220,0.18)",
+          }}
+        >
+          <span style={{ fontSize: cell * 0.42, color: MUTED, fontFamily: "Space Mono", fontWeight: 700, letterSpacing: "0.12em" }}>
+            {`THIS SEASON · ${sz.competition.toUpperCase()}${sz.when ? ` · AS OF ${sz.when.toUpperCase()}` : ""}`}
+          </span>
+          <div style={{ display: "flex", gap: cell * 1.1 }}>
+            {[
+              [sz.starts, sz.starts === "1" ? "START" : "STARTS"],
+              [sz.minutes, "MIN"],
+              [sz.goals, sz.goals === "1" ? "GOAL" : "GOALS"],
+              [sz.assists, sz.assists === "1" ? "ASSIST" : "ASSISTS"],
+            ].map(([v, k], i) => (
+              <div key={i} style={{ display: "flex", alignItems: "baseline", gap: cell * 0.22 }}>
+                <span style={{ fontSize: cell, color: "#ffffff", fontWeight: 700, lineHeight: 1 }}>{v}</span>
+                <span style={{ fontSize: cell * 0.36, color: MUTED, fontFamily: "Space Mono", fontWeight: 700 }}>{k}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      ) : null}
       {line || real ? (
         <div style={{ display: "flex", flexDirection: "column", gap: textSize * 0.35 }}>
           {line ? <span style={{ fontSize: textSize, color: INK, fontWeight: 500, lineHeight: 1.3 }}>{cap(line)}</span> : null}

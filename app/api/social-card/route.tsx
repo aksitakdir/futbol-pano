@@ -37,7 +37,8 @@ import {
  *   verdict:   quote
  *   list:      items — semicolon-separated, e.g. "Mora;Quenda;Simões"; heading (optional)
  *   headline:  dek (optional standfirst)
- *   player:    name, meta, ovr, edition, stats ("PAC 85;DRI 79"), line, real, tier
+ *   player:    name, meta, ovr, edition, stats ("PAC 85;DRI 79"), line, real, tier,
+ *              season ("Serie A|26/27|apps|starts|min|goals|assists|2026-10-12", optional)
  */
 
 // Node, not Edge: Next 16.3 deprecates the Edge Runtime and warns on every
@@ -218,6 +219,7 @@ export async function GET(req: Request) {
             line={p("line")}
             real={p("real")}
             tier={p("tier")}
+            season={p("season")}
           />
         );
         break;

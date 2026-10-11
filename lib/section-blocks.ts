@@ -13,7 +13,15 @@ export type SectionBlock =
   | { type: "pullquote"; text: string }
   | { type: "callout"; html: string }
   | { type: "youtube"; url: string }
-  | { type: "player"; name: string }
+  /** `season` is written by scripts/season-snapshot.mjs for the social player card; the page ignores it. */
+  | {
+      type: "player";
+      name: string;
+      season?: {
+        competition: string; season: string; apps: number; starts: number;
+        minutes: number; goals: number; assists: number; asOf: string; source: string;
+      };
+    }
   | { type: "image"; src: string; alt: string; caption?: string }
   | { type: "list"; style: "ul" | "ol"; items: string[] }
   | { type: "vs"; leftName: string; rightName: string; left: VsSide; right: VsSide }
