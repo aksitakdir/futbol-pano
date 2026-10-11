@@ -111,7 +111,7 @@ function printSeason(r) {
 const [cmd, ...rest] = process.argv.slice(2);
 const seasonFlag = rest.indexOf("--season");
 const season = seasonFlag >= 0 ? rest[seasonFlag + 1] : "";
-const args = rest.filter((_, i) => i !== seasonFlag && i !== seasonFlag + 1);
+const args = seasonFlag >= 0 ? rest.filter((_, i) => i !== seasonFlag && i !== seasonFlag + 1) : rest;
 
 try {
   if (cmd === "budget") {
