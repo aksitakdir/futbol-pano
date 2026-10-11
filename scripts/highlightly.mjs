@@ -25,7 +25,7 @@
  */
 import fs from "node:fs";
 import path from "node:path";
-import { fileURLToPath } from "node:url";
+import { fileURLToPath, pathToFileURL } from "node:url";
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const CACHE = path.join(ROOT, "data", "highlightly-cache");
@@ -77,13 +77,37 @@ export async function hl(pathname, params = {}) {
   return data;
 }
 
+/**
+ * Choose the searched player from the results — never by position in the list.
+ * Search returns short forms ("G. Mora") next to unrelated players ("Gilberto");
+ * taking the first hit picked a Brazilian Gilberto for Gilberto Mora (2026-10-12).
+ * Order: exact name/fullName → first initial + surname → unique surname. Anything
+ * less certain returns null and the caller lists the candidates instead.
+ */
+export function pickPlayer(name, list) {
+  const norm = (s) => String(s ?? "").normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().replace(/[^a-z .'-]/g, "").trim();
+  const q = norm(name);
+  const parts = q.split(/\s+/);
+  const surname = parts[parts.length - 1];
+  const initial = parts[0]?.[0];
+  const exact = list.find((p) => norm(p.name) === q || norm(p.fullName) === q);
+  if (exact) return exact;
+  const initialMatch = list.filter((p) => {
+    const n = norm(p.name).split(/\s+/);
+    return n[n.length - 1] === surname && n[0]?.[0] === initial;
+  });
+  if (initialMatch.length === 1) return initialMatch[0];
+  const surnameOnly = list.filter((p) => norm(p.name).split(/\s+/).pop() === surname);
+  return surnameOnly.length === 1 ? surnameOnly[0] : null;
+}
+
 /** Search a player and return their per-competition stats (2 requests, cached). */
 export async function playerSeason(name, season) {
   const found = await hl("/players", { name, limit: 5 });
   const list = found?.data ?? [];
   if (!list.length) return { name, matches: [], stats: null };
-  const exact = list.find((p) => p.name?.toLowerCase() === name.toLowerCase() || p.fullName?.toLowerCase() === name.toLowerCase());
-  const pick = exact ?? list[0];
+  const pick = pickPlayer(name, list);
+  if (!pick) return { name, matches: list.map((p) => `${p.name} (#${p.id})`), picked: null, perCompetition: [] };
   const stats = await hl(`/players/${pick.id}/statistics`);
   const row = Array.isArray(stats) ? stats[0] : stats;
   const per = (row?.perCompetition ?? []).filter((c) => !season || String(c.season).includes(String(season)));
@@ -93,7 +117,7 @@ export async function playerSeason(name, season) {
 function printSeason(r) {
   console.log(`\n${r.name}`);
   if (!r.picked) {
-    console.log("  — no player found");
+    console.log(r.matches.length ? `  — not sure which one; candidates: ${r.matches.join(", ")}` : "  — no player found");
     return;
   }
   if (r.matches.length > 1) console.log(`  search matches: ${r.matches.join(", ")}`);
@@ -108,25 +132,28 @@ function printSeason(r) {
   }
 }
 
-const [cmd, ...rest] = process.argv.slice(2);
-const seasonFlag = rest.indexOf("--season");
-const season = seasonFlag >= 0 ? rest[seasonFlag + 1] : "";
-const args = seasonFlag >= 0 ? rest.filter((_, i) => i !== seasonFlag && i !== seasonFlag + 1) : rest;
+// CLI only when run directly — other scripts import hl() / playerSeason() without side effects.
+if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {
+  const [cmd, ...rest] = process.argv.slice(2);
+  const seasonFlag = rest.indexOf("--season");
+  const season = seasonFlag >= 0 ? rest[seasonFlag + 1] : "";
+  const args = seasonFlag >= 0 ? rest.filter((_, i) => i !== seasonFlag && i !== seasonFlag + 1) : rest;
 
-try {
-  if (cmd === "budget") {
-    const b = budget();
-    console.log(`${b.count}/${CAP} requests used on ${b.date}`);
-  } else if (cmd === "player" && args[0]) {
-    printSeason(await playerSeason(args.join(" "), season));
-    console.log(`\nbudget: ${budget().count}/${CAP} today`);
-  } else if (cmd === "test") {
-    for (const n of ["Pietro Comuzzo", "Zavier Gozo", "Gilberto Mora"]) printSeason(await playerSeason(n, season));
-    console.log(`\nbudget: ${budget().count}/${CAP} today`);
-  } else {
-    console.log('Usage: node scripts/highlightly.mjs (player "Name" [--season 2026] | test | budget)');
+  try {
+    if (cmd === "budget") {
+      const b = budget();
+      console.log(`${b.count}/${CAP} requests used on ${b.date}`);
+    } else if (cmd === "player" && args[0]) {
+      printSeason(await playerSeason(args.join(" "), season));
+      console.log(`\nbudget: ${budget().count}/${CAP} today`);
+    } else if (cmd === "test") {
+      for (const n of ["Pietro Comuzzo", "Zavier Gozo", "Gilberto Mora"]) printSeason(await playerSeason(n, season));
+      console.log(`\nbudget: ${budget().count}/${CAP} today`);
+    } else {
+      console.log('Usage: node scripts/highlightly.mjs (player "Name" [--season 2026] | test | budget)');
+    }
+  } catch (e) {
+    console.error(`error: ${e.message}`);
+    process.exitCode = 1;
   }
-} catch (e) {
-  console.error(`error: ${e.message}`);
-  process.exitCode = 1;
 }
