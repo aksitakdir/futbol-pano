@@ -31,10 +31,10 @@ const FORMATS: Format[] = [
 ];
 
 /**
- * Style A remains the house card and the default. The four below carry the
- * material from inside the article — a number, a contrast, the closing verdict,
- * the list of names — instead of the headline, and none of them needs a cover
- * image. Style A is untouched; these sit beside it.
+ * Second-generation cards (app/api/social-card/cards-v2.tsx): headline, one
+ * player card per Scout Gamer Read, stats, contrast, verdict and the full list.
+ * Each carries the article's cover art, uncropped, when there is one. Style A,
+ * the classic cover card, stays available at the end of the list.
  */
 type CardOption = { key: string; label: string; hint: string; url: string; needsCover: boolean };
 
@@ -82,21 +82,24 @@ export default function SocialCardsPanel({ title, category, coverImage, slug, pu
   const cardOptions: CardOption[] = useMemo(() => {
     const styleA: CardOption = {
       key: "cover",
-      label: "Cover (Style A)",
+      label: "Cover (classic)",
       hint: "the house card — title over the cover image",
       url: buildStyleAUrl({ title, category, coverImage, slug, publicUrl }, "x"),
       needsCover: true,
     };
-    return [
-      styleA,
-      ...derived.cards.map((c) => ({
-        key: c.variant,
-        label: c.variant.charAt(0).toUpperCase() + c.variant.slice(1),
-        hint: c.label.replace(/^[a-z]+ — /, ""),
-        url: c.url,
-        needsCover: false,
-      })),
-    ];
+    const named = derived.cards.map((c, i) => ({
+      key: `${c.variant}-${i}`,
+      label:
+        c.variant === "player"
+          ? c.label.replace(/^player — /, "")
+          : c.variant === "stat"
+            ? `Stat ${c.label.replace(/^stat — /, "")}`
+            : c.variant.charAt(0).toUpperCase() + c.variant.slice(1),
+      hint: c.label.replace(/^[a-z]+ — /, ""),
+      url: c.url,
+      needsCover: false,
+    }));
+    return [...named, { ...styleA, label: "Cover (classic)" }];
   }, [derived.cards, title, category, coverImage, slug, publicUrl]);
 
   const active = cardOptions[Math.min(activeCard, cardOptions.length - 1)];

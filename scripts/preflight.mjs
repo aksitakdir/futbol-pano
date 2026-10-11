@@ -388,6 +388,23 @@ export async function runPreflight({ brief, sectionsJson, supabase, today = new 
     }
   }
 
+  // A @vs block is "@vs: Left | Right", then "Left sub | Right sub", then
+  // "- left | right" rows. Written any other way the parser copies every line
+  // into BOTH columns and the comparison shows the same text twice (#159, #160,
+  // found 2026-10-12 when the social contrast card rendered them).
+  for (const b of blocks) {
+    if (b.type !== "vs") continue;
+    const l = b.left?.items ?? [];
+    const r = b.right?.items ?? [];
+    const mirrored = l.length > 0 && l.length === r.length && l.every((x, i) => x === r[i]);
+    if (!String(b.leftName ?? "").trim() || !String(b.rightName ?? "").trim() || mirrored) {
+      blockers.push(
+        `vs block "${b.leftName ?? ""}" is malformed — write "@vs: Left | Right", then ` +
+          `"Left subtitle | Right subtitle", then one "- left | right" line per row.`,
+      );
+    }
+  }
+
   const pullquotes = blocks.filter((b) => b.type === "pullquote").length;
   if (pullquotes > 1) blockers.push(`${pullquotes} pull quotes — the house rule is one.`);
 
