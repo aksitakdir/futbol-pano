@@ -129,6 +129,7 @@ Aynı gün: etiketler "TİER" (Türkçe büyük harf) gösteriyordu → `lib/hig
 | 161 | The Netherlands' Best Young Footballers: Six of the Ten Are Still at Home | **Yeni (2026-09-30), toplu oturum #3.** Düz ülke listesi (bek açısı reddedildi: mevki havuzu geniş). Banzuzi (DR Kongo), Ouaissa (2 Eki'de 22), Addai (sakat) dışarıda; SSS'te Banzuzi açıklaması. |
 | 163 | Italy's Best Young Footballers: The Talent Is There. The Minutes Are Not. | **Yeni (2026-10-06), toplu oturum #4.** Tez: on oyuncunun bu sezonki lig dakikası toplamı 1.242 (Palestra ve Leoni 0). Sayılar metinde "as of 6 October 2026" diye tarihli; yayın gecikse de doğru kalır. |
 | 164 | The Best FC 27 Wonderkids — and What the Game Gets Wrong About Them | **Yeni (2026-10-06), FC 27 dalgası — öncelikli yayın.** 13 oyuncu ≥81; 6 "adil" (tablo + kutu), 7 uzun bölüm (cömert: Doué, Diomande · yanlış mevki: Yıldız, Zaïre-Emery, Güler · düşük: Froholdt, Mainoo) + Cissè/Palestra. Pending yazılara link verilmedi. |
+| 165 | FC 27's Biggest Rating Jumps: The Young Players the Game Upgraded Most | **Yeni (2026-10-12), FC 27 dalgası.** 9 oyuncu (Gozo +16 … Manzambi +13); Diomande/Palestra/Mané diğer yazılarda (Italy/Portugal'a link). Gözlem: 6'sı kulüp değiştirdi, yalnız Salinas 300+ dk. Kim Min Su (+20) isim çakışması → çıkarıldı. |
 
 Kapak görseli yayının şartı değil; kart varyantları görselsiz çalışıyor.
 
@@ -163,7 +164,7 @@ oyun reytingi sanılacak bir sayı veriyor.
 
 ## 🟢 Sıradaki yazı adayları (2026-10-06)
 
-- [ ] **FC 27'nin en büyük genç reyting sıçramaları** — veri hazır: Kim Min Su +20 (Girona), Diomande +18,
+- [x] **FC 27'nin en büyük genç reyting sıçramaları** — #165 olarak yazıldı. Veri: Kim Min Su +20 (Girona), Diomande +18,
       Palestra +17, Gozo +16, Matondo/Detourbet/Salinas +15, Karl/Methalie/A. Ibrahimović +14.
 - [ ] Best Young Defensive Midfielders (6'lar) — CDM etiketine değil sahadaki role göre seç.
 - [ ] Lig listesi: Best Young Players in La Liga (ya da Serie A / Ligue 1); alternatif USA / Morocco.
