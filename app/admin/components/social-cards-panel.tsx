@@ -1,15 +1,8 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import {
-  extract,
-  buildCards,
-  buildReplyLines,
-  buildTweet,
-  buildInstagram,
-  gapsOf,
-  X_LIMIT,
-} from "@/lib/social-extract.mjs";
+import { extract, buildCards, gapsOf } from "@/lib/social-extract.mjs";
+import { buildPlatformPack, platformToText, packToMarkdown, articleUrl, STAGES } from "@/lib/social-copy.mjs";
 
 type Props = {
   title: string;
@@ -20,6 +13,23 @@ type Props = {
   publicUrl: string;
   /** Live block editor contents — the source for every card and every line below. */
   sections?: unknown[];
+  /** "published" | "pending" | … — an unpublished link 404s, and the panel says so. */
+  status?: string;
+  /** When the article went live; old pieces get a re-verify warning (§6.6). */
+  publishedAt?: string;
+  /** The article's featured player — a hashtag subject when there is no vs block. */
+  playerName?: string;
+};
+
+type PlatformPost = { label: string; text: string; limit: number; count: number; over: boolean; note: string };
+type Platform = {
+  key: string;
+  name: string;
+  role: string;
+  inPlan: boolean;
+  card: { variant: string; format: string } | null;
+  posts: PlatformPost[];
+  replies?: string[];
 };
 
 type Format = { key: string; label: string; w: number; h: number };
@@ -55,29 +65,39 @@ function withFormat(url: string, format: string): string {
   return `${path}?${params.toString()}`;
 }
 
-export default function SocialCardsPanel({ title, category, coverImage, slug, publicUrl, sections }: Props) {
+export default function SocialCardsPanel({ title, category, coverImage, slug, publicUrl, sections, status, publishedAt, playerName }: Props) {
   const [open, setOpen] = useState(false);
   const [activeFormat, setActiveFormat] = useState<Format>(FORMATS[0]);
   const [activeCard, setActiveCard] = useState(0);
   const [copied, setCopied] = useState<string | null>(null);
-  const [showCopy, setShowCopy] = useState(false);
+  const [activePlatform, setActivePlatform] = useState("x");
+  const [stage, setStage] = useState(1);
 
-  const shareLink = `https://scoutgamer.com${publicUrl}`;
+  // The canonical host: the bare domain answers with a 308 to www.
+  const shareLink = articleUrl({ category, slug: slug.trim() }) || `https://www.scoutgamer.com${publicUrl}`;
 
   // Everything the panel offers is derived from the blocks in the editor. No
   // network call, no API spend, and it works before the article is ever saved.
   const derived = useMemo(() => {
-    const row = { title, category, slug, cover_image: coverImage, status: "" };
+    const row = { title, category, slug: slug.trim(), cover_image: coverImage, status: status ?? "", player_name: playerName ?? "" };
     const material = extract(sections ?? []);
+    const pack = buildPlatformPack(row, material, {
+      stage,
+      publishedAt: status === "published" ? publishedAt : undefined,
+      today: new Date().toISOString(),
+    }) as { stage: number; url: string; platforms: Platform[]; lint: string[] };
     return {
       material,
+      row,
+      pack,
+      markdown: packToMarkdown(row, pack) as string,
       cards: buildCards(row, material, "") as { variant: string; label: string; url: string }[],
-      replies: buildReplyLines(material) as string[],
-      tweet: buildTweet(row, material, shareLink) as string,
-      instagram: buildInstagram(row, material) as string,
-      gaps: gapsOf(row, material) as string[],
+      // The pack's lint covers the status warning, so the old gap line for it would repeat.
+      gaps: (gapsOf({ ...row, status: "" }, material) as string[]),
     };
-  }, [title, category, slug, coverImage, sections, shareLink]);
+  }, [title, category, slug, coverImage, sections, status, publishedAt, playerName, stage]);
+
+  const platform = derived.pack.platforms.find((p) => p.key === activePlatform) ?? derived.pack.platforms[0];
 
   const cardOptions: CardOption[] = useMemo(() => {
     const styleA: CardOption = {
@@ -113,6 +133,26 @@ export default function SocialCardsPanel({ title, category, coverImage, slug, pu
     } catch {
       /* ignore */
     }
+  }
+
+  /** Jump the preview to the card and size a platform is meant to carry. */
+  function showCardFor(p: Platform) {
+    if (!p.card) return;
+    const i = cardOptions.findIndex((c) => c.key.startsWith(`${p.card!.variant}-`));
+    if (i >= 0) setActiveCard(i);
+    const f = FORMATS.find((x) => x.key === p.card!.format);
+    if (f) setActiveFormat(f);
+  }
+
+  function downloadPack() {
+    const blob = new Blob([derived.markdown], { type: "text/markdown" });
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(blob);
+    a.download = `${slug || "scoutgamer"}-social-copy.md`;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    URL.revokeObjectURL(a.href);
   }
 
   async function downloadCard() {
@@ -236,86 +276,146 @@ export default function SocialCardsPanel({ title, category, coverImage, slug, pu
         </button>
       </div>
 
-      {/* Post copy — derived, not generated */}
-      <div className="space-y-3">
-        <button
-          type="button"
-          onClick={() => setShowCopy((v) => !v)}
-          className="rounded-lg border border-emerald-600/50 bg-emerald-500/10 px-4 py-2 text-xs font-semibold text-emerald-300 transition hover:bg-emerald-500/20"
-        >
-          {showCopy ? "▾ Post copy" : "▸ Post copy"}
-        </button>
+      {/* Platform copy — one tab per platform, every post ready to paste */}
+      <div className="space-y-3 rounded-lg border border-emerald-600/30 bg-emerald-500/5 p-3">
+        <div className="flex flex-wrap items-center gap-2">
+          <h4 className="text-xs font-bold text-emerald-200">Post copy, by platform</h4>
+          <select
+            value={stage}
+            onChange={(e) => setStage(Number(e.target.value))}
+            className="ml-auto rounded border border-slate-700/80 bg-slate-800/70 px-2 py-1 text-[11px] text-slate-200"
+            title="The call to action follows the stage (docs/SOCIAL-STRATEGY.md §10.3)"
+          >
+            {Object.entries(STAGES as Record<string, string>).map(([k, v]) => (
+              <option key={k} value={k}>
+                {v}
+              </option>
+            ))}
+          </select>
+          <button
+            type="button"
+            onClick={() => copy(derived.markdown, "all")}
+            className="rounded bg-slate-700/60 px-2 py-1 text-[10px] font-semibold text-slate-200 transition hover:bg-slate-600"
+          >
+            {copied === "all" ? "Copied!" : "Copy every platform"}
+          </button>
+          <button
+            type="button"
+            onClick={downloadPack}
+            className="rounded bg-slate-700/60 px-2 py-1 text-[10px] font-semibold text-slate-200 transition hover:bg-slate-600"
+          >
+            ⬇ .md
+          </button>
+        </div>
 
-        {showCopy ? (
-          <div className="space-y-4">
-            <div className="space-y-1">
-              <div className="flex items-center justify-between">
-                <label className="text-[10px] font-semibold uppercase tracking-wider text-slate-400">
-                  X / Twitter — the one post with the link
-                </label>
-                <button
-                  type="button"
-                  onClick={() => copy(derived.tweet, "tweet")}
-                  className="text-[10px] font-semibold text-cyan-400 hover:text-cyan-200"
-                >
-                  {copied === "tweet" ? "Copied!" : "Copy"}
-                </button>
-              </div>
-              <textarea
-                readOnly
-                value={derived.tweet}
-                rows={4}
-                className="w-full resize-y rounded-lg border border-slate-700/80 bg-slate-800/70 px-3 py-2 text-sm text-slate-100 outline-none focus:border-cyan-500/60"
-              />
-              <p className="text-right text-[10px] text-slate-500">
-                {derived.tweet.length} / {X_LIMIT}
+        {derived.pack.lint.length > 0 ? (
+          <div className="space-y-1 rounded-lg border border-amber-600/30 bg-amber-500/5 px-3 py-2">
+            <p className="text-[10px] font-semibold uppercase tracking-wider text-amber-300">Check before posting</p>
+            {derived.pack.lint.map((l, i) => (
+              <p key={i} className="text-[11px] text-amber-200/80">
+                · {l}
               </p>
-            </div>
-
-            <div className="space-y-1.5">
-              <label className="text-[10px] font-semibold uppercase tracking-wider text-slate-400">
-                Reply lines — no links, by design
-              </label>
-              {derived.replies.length === 0 ? (
-                <p className="text-[11px] text-slate-500">
-                  Nothing short and self-contained in this piece. Write these by hand.
-                </p>
-              ) : (
-                derived.replies.map((r, i) => (
-                  <div key={i} className="flex items-start gap-2 rounded-lg border border-slate-700/60 bg-slate-900/40 px-3 py-2">
-                    <span className="whitespace-pre-wrap text-[12px] leading-snug text-slate-200">{r}</span>
-                    <button
-                      type="button"
-                      onClick={() => copy(r, `r${i}`)}
-                      className="ml-auto shrink-0 rounded bg-slate-700/60 px-2 py-1 text-[10px] font-semibold text-slate-200 transition hover:bg-slate-600"
-                    >
-                      {copied === `r${i}` ? "✓" : "Copy"}
-                    </button>
-                  </div>
-                ))
-              )}
-            </div>
-
-            <div className="space-y-1">
-              <div className="flex items-center justify-between">
-                <label className="text-[10px] font-semibold uppercase tracking-wider text-slate-400">Instagram</label>
-                <button
-                  type="button"
-                  onClick={() => copy(derived.instagram, "ig")}
-                  className="text-[10px] font-semibold text-cyan-400 hover:text-cyan-200"
-                >
-                  {copied === "ig" ? "Copied!" : "Copy"}
-                </button>
-              </div>
-              <textarea
-                readOnly
-                value={derived.instagram}
-                rows={7}
-                className="w-full resize-y rounded-lg border border-slate-700/80 bg-slate-800/70 px-3 py-2 text-sm text-slate-100 outline-none focus:border-cyan-500/60"
-              />
-            </div>
+            ))}
           </div>
         ) : null}
+
+        <div className="flex flex-wrap gap-1.5">
+          {derived.pack.platforms.map((p) => (
+            <button
+              key={p.key}
+              type="button"
+              onClick={() => setActivePlatform(p.key)}
+              title={p.role}
+              className={[
+                "rounded-lg border px-2.5 py-1 text-[11px] font-semibold transition",
+                p.key === platform.key
+                  ? "border-emerald-500/60 bg-emerald-500/15 text-emerald-200"
+                  : p.inPlan
+                    ? "border-slate-700/80 text-slate-300 hover:text-slate-100"
+                    : "border-dashed border-slate-700/80 text-slate-500 hover:text-slate-300",
+              ].join(" ")}
+            >
+              {p.name}
+            </button>
+          ))}
+        </div>
+
+        <div className="flex flex-wrap items-center gap-2">
+          <p className="text-[11px] text-slate-400">
+            {platform.role}
+            {platform.inPlan ? "" : " · outside the current plan, ready for when it opens"}
+          </p>
+          <div className="ml-auto flex gap-2">
+            {platform.card ? (
+              <button
+                type="button"
+                onClick={() => showCardFor(platform)}
+                className="rounded bg-slate-700/60 px-2 py-1 text-[10px] font-semibold text-slate-200 transition hover:bg-slate-600"
+              >
+                Show its card ({platform.card.variant}, {platform.card.format})
+              </button>
+            ) : null}
+            <button
+              type="button"
+              onClick={() => copy(platformToText(platform), `all-${platform.key}`)}
+              className="rounded bg-emerald-600/70 px-2 py-1 text-[10px] font-semibold text-white transition hover:bg-emerald-500"
+            >
+              {copied === `all-${platform.key}` ? "Copied!" : `Copy all ${platform.name}`}
+            </button>
+          </div>
+        </div>
+
+        <div className="space-y-3">
+          {platform.posts.map((ps, i) => {
+            const key = `${platform.key}-${i}`;
+            return (
+              <div key={key} className="space-y-1">
+                <div className="flex items-center gap-2">
+                  <label className="text-[10px] font-semibold uppercase tracking-wider text-slate-400">{ps.label}</label>
+                  {ps.limit ? (
+                    <span className={`text-[10px] ${ps.over ? "font-bold text-rose-400" : "text-slate-500"}`}>
+                      {ps.count} / {ps.limit}
+                    </span>
+                  ) : null}
+                  <button
+                    type="button"
+                    onClick={() => copy(ps.text, key)}
+                    className="ml-auto text-[10px] font-semibold text-cyan-400 hover:text-cyan-200"
+                  >
+                    {copied === key ? "Copied!" : "Copy"}
+                  </button>
+                </div>
+                <textarea
+                  readOnly
+                  value={ps.text}
+                  rows={Math.min(14, Math.max(2, ps.text.split("\n").length + 1))}
+                  className="w-full resize-y rounded-lg border border-slate-700/80 bg-slate-800/70 px-3 py-2 text-[13px] leading-snug text-slate-100 outline-none focus:border-cyan-500/60"
+                />
+                {ps.note ? <p className="text-[10px] text-slate-500">{ps.note}</p> : null}
+              </div>
+            );
+          })}
+
+          {platform.replies && platform.replies.length > 0 ? (
+            <div className="space-y-1.5">
+              <label className="text-[10px] font-semibold uppercase tracking-wider text-slate-400">
+                Reply lines — for other people&apos;s threads, no links (§7.4)
+              </label>
+              {platform.replies.map((r, i) => (
+                <div key={i} className="flex items-start gap-2 rounded-lg border border-slate-700/60 bg-slate-900/40 px-3 py-2">
+                  <span className="whitespace-pre-wrap text-[12px] leading-snug text-slate-200">{r}</span>
+                  <button
+                    type="button"
+                    onClick={() => copy(r, `r${i}`)}
+                    className="ml-auto shrink-0 rounded bg-slate-700/60 px-2 py-1 text-[10px] font-semibold text-slate-200 transition hover:bg-slate-600"
+                  >
+                    {copied === `r${i}` ? "✓" : "Copy"}
+                  </button>
+                </div>
+              ))}
+            </div>
+          ) : null}
+        </div>
       </div>
 
       {/* What the piece cannot supply, named rather than filled in */}

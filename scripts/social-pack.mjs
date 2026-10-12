@@ -2,7 +2,7 @@
 /**
  * Scout Gamer — social pack generator.
  *
- *   node scripts/social-pack.mjs <slug|id> [<slug|id> ...] [--out <file.md>]
+ *   node scripts/social-pack.mjs <slug|id> [<slug|id> ...] [--stage 1|2|3] [--out <file.md>]
  *
  * Why this exists
  * ---------------
@@ -32,16 +32,8 @@
 
 import { createClient } from "@supabase/supabase-js";
 import { readFileSync, writeFileSync } from "fs";
-import {
-  X_LIMIT,
-  CATEGORY_PATHS as PATHS,
-  extract,
-  sentences,
-  buildCards,
-  routeSubs,
-  haystackOf,
-  gapsOf,
-} from "../lib/social-extract.mjs";
+import { extract, buildCards, gapsOf } from "../lib/social-extract.mjs";
+import { buildPlatformPack, packToMarkdown, articleUrl } from "../lib/social-copy.mjs";
 
 const env = Object.fromEntries(
   readFileSync(new URL("../.env.local", import.meta.url), "utf8")
@@ -54,8 +46,6 @@ const env = Object.fromEntries(
 );
 
 const BASE = "https://www.scoutgamer.com";
-
-const fits = (s) => `${s.length > X_LIMIT ? "OVER" : "ok"} ${String(s.length).padStart(3)}`;
 
 // ---- pack builders ------------------------------------------------------
 
@@ -73,187 +63,26 @@ function buildCardSection(cards) {
   return out.join("\n");
 }
 
-function buildReddit(row, url, m, haystack) {
-  const out = [];
-  const subs = routeSubs(haystack);
-
-  out.push("## 1. Reddit — the lane that can return traffic this week\n");
-  out.push("Interest graph, not follower graph, and indexed. Value first; a link only where");
-  out.push("the sub's own rules allow one. Read those rules before every first post.\n");
-  out.push("**Candidate subs**\n");
-  for (const s of subs) out.push(`- \`${s.sub}\`${s.note ? ` — ${s.note}` : ""}`);
-  out.push("");
-
-  // The angle: the sharpest thing in the piece is almost always a callout or the closer.
-  const angle = m.callouts[0] || m.pullquotes[0] || m.lead;
-  out.push("**Title draft** (no clickbait, Reddit punishes it)\n");
-  out.push("```");
-  out.push(row.title);
-  out.push("```\n");
-
-  out.push("**Comment / text-post body** — every line below is quoted from the article\n");
-  out.push("```");
-  if (angle) out.push(angle);
-  if (m.stats.length) {
-    out.push("");
-    for (const s of m.stats.slice(0, 4)) {
-      out.push(`${s.value} — ${s.label}${s.note ? ` (${s.note})` : ""}`);
-    }
-  }
-  const c = m.contrasts[0];
-  if (c?.rows.length) {
-    out.push("");
-    out.push(`${c.left} vs ${c.right}:`);
-    for (const [l, r] of c.rows.slice(0, 4)) out.push(`- ${l} / ${r}`);
-  }
-  if (m.pullquotes[0] && m.pullquotes[0] !== angle) {
-    out.push("");
-    out.push(m.pullquotes[0]);
-  }
-  out.push("```\n");
-  out.push(`Link, only where permitted: ${url}\n`);
-  return out.join("\n");
-}
-
-function buildX(row, url, m) {
-  const out = [];
-  out.push("## 2. X — replies carry, posts do not\n");
-  out.push("At zero followers a link post reaches nobody; the reply inside somebody else's");
-  out.push("thread is the entire mechanism. Target 5–10 a day. None of the reply lines below");
-  out.push("contain a link, by design.\n");
-
-  out.push("**Reply lines** (drop into a relevant thread, unprompted links kill reach)\n");
-  const lines = [];
-  for (const s of m.stats) {
-    const t = `${s.value} — ${s.label}.${s.note ? ` ${s.note}.` : ""}`;
-    if (t.length <= X_LIMIT) lines.push(t);
-  }
-  for (const c of m.contrasts) {
-    for (const [l, r] of c.rows.slice(0, 3)) {
-      if (!l || !r) continue;
-      const t = `${c.left}: ${l}\n${c.right}: ${r}`;
-      if (t.length <= X_LIMIT) lines.push(t);
-    }
-  }
-  for (const f of m.faqs) {
-    const t = `${f.q} ${f.a}`;
-    if (t.length <= X_LIMIT) lines.push(t);
-  }
-  for (const s of m.sections) {
-    if (s.deck && s.deck.length <= X_LIMIT && s.deck.length > 40) lines.push(s.deck);
-  }
-
-  const seen = new Set();
-  const unique = lines.filter((l) => !seen.has(l) && seen.add(l));
-  if (unique.length === 0) {
-    out.push("_Nothing short and self-contained in this piece. Write these by hand._\n");
-  } else {
-    for (const l of unique.slice(0, 10)) {
-      out.push("```");
-      out.push(l);
-      out.push("```");
-      out.push(`\`${fits(l)} chars\`\n`);
-    }
-  }
-
-  out.push("**The 20% — one post with the link**\n");
-  const hookSource = m.pullquotes[0] || m.callouts[0] || m.lead;
-  const hook = sentences(hookSource)[0] ?? row.title;
-  const post = `${hook}\n\n${url}`;
-  out.push("```");
-  out.push(post);
-  out.push("```");
-  out.push(`\`${fits(post)} chars\`\n`);
-  return out.join("\n");
-}
-
-function buildCarousel(row, m) {
-  const out = [];
-  out.push("## 3. Instagram carousel — no video needed\n");
-
-  const slides = [];
-  slides.push({ label: "Cover", text: row.title });
-  for (const s of m.stats.slice(0, 3)) {
-    slides.push({ label: s.label || "Stat", text: `${s.value}\n${s.label}${s.note ? `\n${s.note}` : ""}` });
-  }
-  for (const p of m.players.slice(0, 7)) {
-    const sec = m.sections.find((x) => x.heading.includes(p) || x.body.includes(p));
-    slides.push({ label: p, text: sec?.deck ? `${p}\n${sec.deck}` : p });
-  }
-  if (m.players.length === 0) {
-    for (const s of m.sections.slice(0, 5)) {
-      if (s.heading && s.deck) slides.push({ label: s.heading, text: `${s.heading}\n${s.deck}` });
-    }
-  }
-  const closer = m.pullquotes[m.pullquotes.length - 1] || m.callouts[m.callouts.length - 1];
-  if (closer) slides.push({ label: "Closer", text: closer });
-
-  if (slides.length < 3) {
-    out.push("_Too little structure to slice into slides. This piece is prose-led._\n");
-    return out.join("\n");
-  }
-  slides.forEach((s, i) => {
-    out.push(`**Slide ${i + 1} — ${s.label}**\n`);
-    out.push("```");
-    out.push(s.text);
-    out.push("```\n");
-  });
-  out.push("Card format: keep the existing Social Card Studio layout. The player-card");
-  out.push("variant is an addition, never a replacement.\n");
-  return out.join("\n");
-}
-
-function buildVideo(row, m) {
-  const out = [];
-  out.push("## 4. Short video — 8–16 seconds, one cut\n");
-  out.push("One video, three surfaces: TikTok + Reels + Shorts. The only lane that grows a");
-  out.push("follower count from zero.\n");
-
-  // The house formats. Pick the one the material actually supports rather than
-  // printing all three and leaving the choice to a tired evening.
-  const hasCardGap = /no player card|not in the (game|database)|no card|zero .* players|age floor/i.test(
-    [m.lead, ...m.callouts].join(" "),
-  );
-  const format = hasCardGap ? "the game is wrong" : m.players.length >= 5 ? "deep cut" : "the receipt";
-  out.push(`**Format:** ${format}\n`);
-
-  const beats = [];
-  const opener = sentences(m.lead)[0];
-  if (opener) beats.push(["0–3s", opener]);
-  if (m.stats[0]) beats.push(["3–7s", `${m.stats[0].value} — ${m.stats[0].label}`]);
-  if (m.stats[1]) beats.push(["7–11s", `${m.stats[1].value} — ${m.stats[1].label}`]);
-  const last = m.pullquotes[m.pullquotes.length - 1] || m.callouts[m.callouts.length - 1];
-  if (last) beats.push(["11–16s", sentences(last).slice(-1)[0] ?? last]);
-
-  if (beats.length < 2) {
-    out.push("_Not enough countable material for a 16-second cut. Skip video for this one._\n");
-    return out.join("\n");
-  }
-  out.push("```");
-  for (const [t, line] of beats) out.push(`${t.padEnd(8)} ${line}`);
-  out.push("```\n");
-  out.push("Open decision from August, still open: silent with text on screen, or voiced?");
-  out.push("It decides how dense these cards can be.\n");
-  return out.join("\n");
-}
-
 // ---- main ---------------------------------------------------------------
 
-async function packFor(supabase, key) {
+async function packFor(supabase, key, stage) {
   const isId = /^\d+$/.test(key);
   const { data: row } = await supabase
     .from("contents")
-    .select("id,slug,title,category,status,cover_image,player_name,sections_json")
+    .select("id,slug,title,category,status,cover_image,player_name,created_at,sections_json")
     .eq(isId ? "id" : "slug", isId ? Number(key) : key)
     .maybeSingle();
 
   if (!row) return { error: `No article with ${isId ? "id" : "slug"} "${key}".` };
 
-  const path = PATHS[row.category] ?? "/radar";
-  const url = `${BASE}${path}/${row.slug}`;
+  const url = articleUrl(row);
   const m = extract(row.sections_json);
-  const haystack = haystackOf(row, m);
-  const gaps = gapsOf(row, m);
+  const gaps = gapsOf({ ...row, status: "" }, m); // the pack's own checks cover the status
+  const pack = buildPlatformPack(row, m, {
+    stage,
+    publishedAt: row.status === "published" ? row.created_at : undefined,
+    today: new Date().toISOString(),
+  });
 
   const head = [
     `# Social pack — ${row.title}`,
@@ -278,13 +107,8 @@ async function packFor(supabase, key) {
       head,
       buildCardSection(buildCards(row, m, BASE)),
       "---\n",
-      buildReddit(row, url, m, haystack),
-      "---\n",
-      buildX(row, url, m),
-      "---\n",
-      buildCarousel(row, m),
-      "---\n",
-      buildVideo(row, m),
+      // The same copy the admin panel shows — one builder, lib/social-copy.mjs.
+      packToMarkdown(row, pack).replace(/^# .*\n/, ""),
       tail,
     ].join("\n"),
   };
@@ -294,8 +118,10 @@ async function main() {
   const args = process.argv.slice(2);
   const outIdx = args.indexOf("--out");
   const outFile = outIdx >= 0 ? args[outIdx + 1] : null;
+  const stageIdx = args.indexOf("--stage");
+  const stage = stageIdx >= 0 ? Number(args[stageIdx + 1]) || 1 : 1;
   const keys = args.filter(
-    (a, i) => !a.startsWith("--") && !(outIdx >= 0 && i === outIdx + 1),
+    (a, i) => !a.startsWith("--") && !(outIdx >= 0 && i === outIdx + 1) && !(stageIdx >= 0 && i === stageIdx + 1),
   );
 
   if (keys.length === 0) {
@@ -311,7 +137,7 @@ async function main() {
   const parts = [];
   let failed = false;
   for (const key of keys) {
-    const res = await packFor(supabase, key);
+    const res = await packFor(supabase, key, stage);
     if (res.error) {
       console.error(res.error);
       failed = true;

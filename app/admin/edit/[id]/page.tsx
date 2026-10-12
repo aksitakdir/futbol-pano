@@ -102,6 +102,9 @@ export default function DuzenlePage() {
   const [youtubeQuery1, setYoutubeQuery1] = useState("");
   const [youtubeQuery2, setYoutubeQuery2] = useState("");
   const [newsQuery, setNewsQuery] = useState("");
+  // For the social panel: an unpublished link 404s, and an old piece needs its facts re-checked.
+  const [status, setStatus] = useState("");
+  const [publishedAt, setPublishedAt] = useState("");
   const [playerName, setPlayerName] = useState("");
 
   // Stat fields
@@ -171,6 +174,8 @@ export default function DuzenlePage() {
       setYoutubeQuery1(data.youtube_query_1 ?? "");
       setYoutubeQuery2(data.youtube_query_2 ?? "");
       setNewsQuery(data.news_query ?? "");
+      setStatus(data.status ?? "");
+      setPublishedAt(data.created_at ?? "");
       setPlayerName(data.player_name ?? "");
       setPlayerSearch(data.player_name ?? "");
 
@@ -441,6 +446,9 @@ export default function DuzenlePage() {
             // and copy from the live editor — no fetch, no API spend, and it works
             // on an unsaved draft.
             sections={sectionsBlocks}
+            status={status}
+            publishedAt={publishedAt}
+            playerName={playerName}
           />
         </div>
 
