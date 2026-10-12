@@ -206,8 +206,17 @@ işletim kılavuzu taslağı — strateji tamamlanınca ona göre yeniden yazıl
 
 **Strateji tamamlandı (12/12, 2026-09-26). Sıradaki:**
 - [ ] §11.9'daki açık kararlar (sen)
-- [ ] **Aşama 0 — BEKLEMEDE (karar: 2026-09-27).** Paylaşım, FC 27 verisi çekilip
-      değerlendirilene kadar (~6 Ekim) başlamaz. O zamana kadar: görsel ve metin çalışması ↓
+- [x] ~~**Aşama 0 — BEKLEMEDE**~~ FC 27 verisi geldi (6 Eki) → **Aşama 0 başladı, 12 Eki.**
+- [ ] **Hafta 1 paylaşım kiti (13–19 Eki)** — [kit](https://claude.ai/artifact/SnbyaWKAE2A6W8hFz5L5tr):
+      36 gönderi + 50 yanıt satırı + 3 Reels. 5 yazı (#163, #158, #153, #155, #164) ajanlarla
+      tazelendi → yazıldı → çürütmeye çalışılarak doğrulandı; 86 öğe mekanik kontrolden geçti.
+      Dosyalar `social-out/<slug>/` (gitignore'da). Paylaşımı **sen** yaparsın (§5.5).
+- [ ] **Hafta 2 kiti** — aynı akış; Cuma'ya kadar hafta 1'in sayıları (§2.5) ile.
+- [ ] **Yayındaki yazılarda bayat/yanlış satırlar (12 Eki taraması)** — #158 Sullivan "16" (28 Eyl'de
+      17 oldu), #155 Sá "Şampiyonlar Ligi" (Olympiacos elendi) + Roger Fernandes ön çapraz bağ, #153
+      Moore "asist" (kendi kale golü), #163 Palestra kartı "debut bekliyor". Düzeltmeler iki bağımsız
+      doğrulamadan geçti → 35 kesin düzeltme. #164'ün 5'i uygulandı (pending). Yayındaki 4 yazının
+      30'u **onayını bekliyor**: `node scripts/patch-article-text.mjs data/corrections/2026-10-12-published.json --write --published`
 
 **Görsel ve metin çalışması — FC 27 verisine kadar**
 
@@ -234,15 +243,20 @@ işletim kılavuzu taslağı — strateji tamamlanınca ona göre yeniden yazıl
 - [ ] b. Kartta oyun sürümü damgası (*EA FC 26* / *EA FC 27*)
 - [ ] c. Etiket ayağı söylesin (*THE LIST · CARD VS REALITY · THE RECEIPT · ONE TO WATCH*) — §8.5
 - [ ] d. Makbuz kartında tarih
-- [ ] e. Carousel seti — kapak + oyuncu başına slayt + kapanış
+- [x] e. Carousel seti — `node scripts/social-video.mjs <id> [--feature "Ad"]` → `social-out/<slug>/carousel/`
+      (başlık → öne çıkan oyuncu → diğerleri → liste, en fazla 10) (12 Eki)
 - [ ] f. "Scout Gamer Read" kartı — Style A'nın yanına, yerine değil
-- [ ] g. Alt text üretimi
+- [x] g. Alt text üretimi — panelde ve kopya paketinde, kart sırasıyla (12 Eki)
 
 *Metinler*
-- [ ] h. `social-pack.mjs` → stratejiye göre metin: ilk satırda anahtar kelime (§9.3), ses
-      kuralları (§4.3), hashtag seti (§9.4), CTA dili (§10.5), UTM (§10.6 c)
-- [ ] i. Sosyal metin kapısı — yasak kalıplar (§4.3), havuz sayısı (§6.6), sürüm/hashtag
-      uyuşmazlığı (§9.4), reşit olmayan oyuncu etiketi (§7.4) — `preflight.mjs` gibi reddeder
+- [x] h. Mecra metinleri — `lib/social-copy.mjs` (panel + `social-pack.mjs` ortak): X ana gönderi
+      (linksiz) + ilk yanıtta link + tek sayılı gönderiler + anket + thread + yanıt bankası; IG
+      carousel / tek görsel / alt text / story; Reels · TikTok · Shorts; Reddit; Threads · Bluesky ·
+      LinkedIn · Facebook (plan dışı, hazır). Aşama seçici (§10.3), UTM (§10.6 c), hashtag (§9.4),
+      www alan adı (12 Eki)
+- [~] i. Sosyal metin kontrolü — panelde "Check before posting": yasak kalıplar, sürüm/hashtag,
+      18 yaş altı, yayınlanmamış link, 14 günden eski yazı (§6.6), karakter sınırı. Henüz
+      reddetmiyor, uyarıyor; havuz sayısı kontrolü yok.
 - [ ] j. Yanıt bankası üreteci — §7.5'teki dört tür
 - [ ] k. Bio metinleri — §4.5 (hesap adı kararıyla birlikte)
 - [ ] l. `SOCIAL-PLAYBOOK.md`'yi stratejiye göre Aşama 0 kılavuzu olarak yeniden yaz
@@ -267,9 +281,14 @@ Açık kararlar: (1) bu çizgi, (2) X API aylık tavanı, (3) IG profesyonel hes
 - [ ] **Reddit hesabı — erken aç** (sen). Hafta 3'te katılım başlayacaksa şimdiden yaşlanmalı.
 - [ ] TikTok + YouTube hesapları — hafta 3'e kadar (sen). Hesap adı kararıyla birlikte (§4.5).
 
+**Video (12 Eki):** `node scripts/social-video.mjs <id> [--reel "headline,stat:0,player:Ad,verdict"]`
+→ 9:16 MP4 (H.264, 30 fps, ~6 Mbps), kartlar yavaş zoom + geçişle. Swift/AVFoundation
+(`scripts/video/reel.swift`) — ffmpeg yok, indirme yok, API maliyeti yok. **Sessiz** üretilir;
+müzik paylaşırken uygulamanın lisanslı kütüphanesinden eklenir (§11.9 #6'ya önerim: sessiz +
+ekran metni + uygulama içi ses).
+
 **Beklemede — strateji bitince**
 - Oyun kitabındaki FC 27 kampanyası ve araç listesi (UTM, yanıt bankası, player card)
-- Video kararı: sessiz + ekran metni mi, seslendirme mi
 
 ---
 
