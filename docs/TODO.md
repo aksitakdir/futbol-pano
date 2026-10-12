@@ -212,11 +212,11 @@ işletim kılavuzu taslağı — strateji tamamlanınca ona göre yeniden yazıl
       tazelendi → yazıldı → çürütmeye çalışılarak doğrulandı; 86 öğe mekanik kontrolden geçti.
       Dosyalar `social-out/<slug>/` (gitignore'da). Paylaşımı **sen** yaparsın (§5.5).
 - [ ] **Hafta 2 kiti** — aynı akış; Cuma'ya kadar hafta 1'in sayıları (§2.5) ile.
-- [ ] **Yayındaki yazılarda bayat/yanlış satırlar (12 Eki taraması)** — #158 Sullivan "16" (28 Eyl'de
+- [x] **Yayındaki yazılarda bayat/yanlış satırlar (12 Eki taraması)** — #158 Sullivan "16" (28 Eyl'de
       17 oldu), #155 Sá "Şampiyonlar Ligi" (Olympiacos elendi) + Roger Fernandes ön çapraz bağ, #153
-      Moore "asist" (kendi kale golü), #163 Palestra kartı "debut bekliyor". Düzeltmeler iki bağımsız
-      doğrulamadan geçti → 35 kesin düzeltme. #164'ün 5'i uygulandı (pending). Yayındaki 4 yazının
-      30'u **onayını bekliyor**: `node scripts/patch-article-text.mjs data/corrections/2026-10-12-published.json --write --published`
+      Moore "asist" (kendi kale golü), #163 Palestra kartı "debut bekliyor". İki bağımsız doğrulama →
+      **31 düzeltme canlıda (12 Eki, onayınla)** + #164'te 5. Ham HTML'de Googlebot olarak doğrulandı.
+      Metinler `data/corrections/`, orijinaller `backups/`. Araç: `scripts/patch-article-text.mjs`.
 
 **Görsel ve metin çalışması — FC 27 verisine kadar**
 
