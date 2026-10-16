@@ -4,13 +4,18 @@ import { createClient } from "@/lib/supabase";
 const base = "https://www.scoutgamer.com";
 
 /**
- * Regenerate hourly. Without this the sitemap is built once at deploy time and
- * then frozen, so an article published from the admin panel stays out of it until
- * the next deploy — which is exactly what happened to the strikers piece: live and
- * returning 200, but absent from the sitemap while an article published before the
- * last build sat in it. Articles are published far more often than we deploy.
+ * Rendered on every request. A sitemap frozen at deploy time keeps a newly
+ * published article out of it until the next deploy — that is what happened to
+ * the strikers piece.
+ *
+ * `revalidate = 3600` was the first fix, and the build did mark the route ISR,
+ * but on Vercel it never refreshed: on 16 Oct 2026 the live sitemap was 12.4
+ * hours old (age 44711, x-vercel-cache HIT), two articles published that evening
+ * were missing, and revalidatePath("/sitemap.xml") changed nothing. Googlebot
+ * fetches this file a few times a day; two Supabase queries per fetch cost
+ * nothing next to a sitemap that silently stops listing new work.
  */
-export const revalidate = 3600;
+export const dynamic = "force-dynamic";
 
 const staticEntries = [
   { url: "",                          priority: 1.0 },
