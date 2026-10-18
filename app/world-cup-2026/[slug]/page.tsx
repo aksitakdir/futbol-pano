@@ -3,6 +3,7 @@ import { notFound, redirect } from "next/navigation";
 import { draftMode } from "next/headers";
 import { createClient } from "@/lib/supabase";
 import ArticleIndexLinks from "@/app/components/article-index-links";
+import FooterOwner from "@/app/components/footer-owner";
 import { articleMetadata } from "@/lib/article-metadata";
 import { categoryArticlePath } from "@/lib/category-config";
 import { articleJsonLd } from "@/lib/article-jsonld";
@@ -51,8 +52,10 @@ export default async function WcHubArticlePage({ params }: Props) {
 
   const jsonLd = articleJsonLd(data, `/world-cup-2026/${slug}`);
 
+  // No segment layout here, unlike /radar and /lists: without this index an
+  // article in this section links to no sibling at all.
   return (
-    <>
+    <FooterOwner index={<ArticleIndexLinks category="wc-2026" basePath="/world-cup-2026" heading="All World Cup 2026 Coverage" />}>
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
@@ -60,9 +63,6 @@ export default async function WcHubArticlePage({ params }: Props) {
       <CardSnapshotProvider snapshot={cardSnapshotFor(data.id)}>
         <HubArticleDetailClient slug={slug} hubId="wc-2026" article={data} />
       </CardSnapshotProvider>
-      {/* No segment layout here, unlike /radar and /lists — without this an
-          article in this section links to no sibling at all. */}
-      <ArticleIndexLinks category="wc-2026" basePath="/world-cup-2026" heading="All World Cup 2026 Coverage" />
-    </>
+    </FooterOwner>
   );
 }

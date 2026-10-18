@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import ArticleIndexLinks from "../components/article-index-links";
+import FooterOwner from "../components/footer-owner";
 
 export const metadata: Metadata = {
   title: "Tactics Lab | Scout Gamer",
@@ -9,9 +10,9 @@ export const metadata: Metadata = {
 
 export default function TaktikLabLayout({ children }: { children: React.ReactNode }) {
   return (
-    <>
+    // The section's article index, server-rendered inside the footer (see FooterOwner).
+    <FooterOwner index={<ArticleIndexLinks category="tactics-lab" basePath="/tactics-lab" heading="All Tactics Lab Analyses" />}>
       {children}
-      <ArticleIndexLinks category="tactics-lab" basePath="/tactics-lab" heading="All Tactics Lab Analyses" />
-    </>
+    </FooterOwner>
   );
 }

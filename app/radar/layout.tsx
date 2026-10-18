@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import ArticleIndexLinks from "../components/article-index-links";
+import FooterOwner from "../components/footer-owner";
 
 export const metadata: Metadata = {
   title: "Radar | Scout Gamer",
@@ -9,10 +10,9 @@ export const metadata: Metadata = {
 
 export default function RadarLayout({ children }: { children: React.ReactNode }) {
   return (
-    <>
+    // The section's article index, server-rendered inside the footer (see FooterOwner).
+    <FooterOwner index={<ArticleIndexLinks category="radar" basePath="/radar" heading="All Radar Reports" />}>
       {children}
-      {/* Server-rendered crawl path — the page itself lists articles client-side only */}
-      <ArticleIndexLinks category="radar" basePath="/radar" heading="All Radar Reports" />
-    </>
+    </FooterOwner>
   );
 }

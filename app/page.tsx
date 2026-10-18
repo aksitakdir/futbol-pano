@@ -1,5 +1,6 @@
 import HomeClient from "./home-client";
-import ArticleIndexLinks from "./components/article-index-links";
+import { ArticleIndexColumns } from "./components/article-index-links";
+import FooterOwner from "./components/footer-owner";
 
 /**
  * The homepage, as a server component wrapping the interactive one.
@@ -19,7 +20,7 @@ import ArticleIndexLinks from "./components/article-index-links";
  * The fix is the one the category pages already use — ArticleIndexLinks fetches
  * on the server so the links are in the raw HTML — applied here by making the
  * route a server component and rendering the interactive homepage inside it.
- * The archive sits after the footer, which is where the category layouts put it.
+ * The index sits inside the site footer, above its columns (see FooterOwner).
  */
 
 // Hourly: the point of these blocks is freshness, and a piece published this
@@ -28,11 +29,18 @@ export const revalidate = 3600;
 
 export default function HomePage() {
   return (
-    <>
+    <FooterOwner
+      index={
+        <ArticleIndexColumns
+          columns={[
+            { category: "lists", basePath: "/lists", heading: "Lists" },
+            { category: "radar", basePath: "/radar", heading: "Radar" },
+            { category: "tactics-lab", basePath: "/tactics-lab", heading: "Tactics Lab" },
+          ]}
+        />
+      }
+    >
       <HomeClient />
-      <ArticleIndexLinks category="lists" basePath="/lists" heading="Latest Lists" limit={15} />
-      <ArticleIndexLinks category="radar" basePath="/radar" heading="Latest Radar Reports" limit={15} />
-      <ArticleIndexLinks category="tactics-lab" basePath="/tactics-lab" heading="Latest from the Tactics Lab" limit={15} />
-    </>
+    </FooterOwner>
   );
 }

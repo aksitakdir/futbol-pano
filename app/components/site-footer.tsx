@@ -1,9 +1,14 @@
 "use client";
 
-import { useState } from "react";
+import { useContext, useState } from "react";
 import Link from "next/link";
+import { LayoutOwnsFooter } from "./footer-context";
 
-type Props = { maxWidth?: string; };
+type Props = {
+  maxWidth?: string;
+  /** The section's article index, drawn above the footer columns (see FooterOwner). */
+  index?: React.ReactNode;
+};
 type PolicyKey = "privacy" | "terms" | "contact";
 
 const POLICIES: Record<PolicyKey, { title: string; content: string }> = {
@@ -70,14 +75,17 @@ const NAV_LINKS = [
   { href: "/world-cup-2026", label: "WC 2026" },
 ];
 
-export default function SiteFooter(_props?: Props) {
+export default function SiteFooter({ index }: Props = {}) {
   const [open, setOpen] = useState<PolicyKey | null>(null);
+  const layoutOwnsFooter = useContext(LayoutOwnsFooter);
+  if (layoutOwnsFooter) return null;
   const policy = open ? POLICIES[open] : null;
   const policyKeys: PolicyKey[] = ["privacy", "terms", "contact"];
 
   return (
     <>
       <footer style={{ background: "var(--sg-surface-low)", borderTop: "1px solid var(--sg-border)", marginTop: 80 }}>
+        {index}
         <div className="sg-site-container py-16">
           <div className="grid grid-cols-1 gap-12 md:grid-cols-[2fr_1fr_1fr_1fr]">
 
