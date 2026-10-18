@@ -12,6 +12,7 @@ import { supabase } from "@/lib/supabase";
 import { arenaPath, type ArenaGame } from "@/lib/arena-brackets";
 import HomeRecentCarousel from "./components/home-recent-carousel";
 import HomeHubPromo from "./components/home-hub-promo";
+import type { SpotlightCard } from "@/lib/home-spotlights";
 import { categoryArticlePath } from "@/lib/category-config";
 import { getCategoryImage } from "@/lib/category-images";
 import {
@@ -218,7 +219,7 @@ async function fetchFcPlayer(name: string, club?: string) {
   return null;
 }
 
-export default function HomeClient() {
+export default function HomeClient({ spotlights }: { spotlights: SpotlightCard[] }) {
   const [slides, setSlides] = useState<HeroSlide[]>([]);
   const [activeSlide, setActiveSlide] = useState(0);
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
@@ -229,8 +230,6 @@ export default function HomeClient() {
   const [featuredLoading, setFeaturedLoading] = useState(true);
   const [formPlayers, setFormPlayers] = useState<FormPlayerWithStats[]>([]);
   const [formLoading, setFormLoading] = useState(true);
-  const [wcHubPreview, setWcHubPreview] = useState<{ title: string; title_en?: string; slug: string; category: string }[]>([]);
-  const [transferHubPreview, setTransferHubPreview] = useState<{ title: string; title_en?: string; slug: string; category: string }[]>([]);
 
 
   useEffect(() => {
@@ -311,18 +310,6 @@ export default function HomeClient() {
       setSlides(mergeHeroSlides(buildHeroSlides(filtered, sliderCount, homepageCoverId), arenaGames, heroSettings, customSlideData));
     }
     load();
-  }, []);
-
-  useEffect(() => {
-    void Promise.all([
-      supabase.from("contents").select("title,title_en,slug,category").eq("status", "published").or("category.eq.wc-2026,hub_tags.cs.{wc-2026}").order("created_at", { ascending: false }).limit(3),
-      supabase.from("contents").select("title,title_en,slug,category").eq("status", "published").or("category.eq.transfer,hub_tags.cs.{transfer}").order("created_at", { ascending: false }).limit(3),
-    ]).then(([wcRes, trRes]) => {
-      const mapRow = (rows: { title: string; title_en?: string; slug: string; category: string }[]) =>
-        rows.map((r) => ({ title: r.title_en?.trim() || r.title, slug: r.slug, category: r.category }));
-      if (wcRes.data?.length) setWcHubPreview(mapRow(wcRes.data as { title: string; title_en?: string; slug: string; category: string }[]));
-      if (trRes.data?.length) setTransferHubPreview(mapRow(trRes.data as { title: string; title_en?: string; slug: string; category: string }[]));
-    });
   }, []);
 
   useEffect(() => {
@@ -601,11 +588,8 @@ export default function HomeClient() {
 
       {recentItems.length > 0 && <HomeRecentCarousel items={recentItems} />}
 
-      <HomeHubPromo wcArticles={wcHubPreview} transferArticles={transferHubPreview} />
-
-      {/* WC 2026 demoted post-tournament: the big matches + squad-grid sections are
-          retired; the World Cup now lives only as a compact card in HomeHubPromo
-          above, until the leagues start and we convert it into a proper archive. */}
+      {/* Server-rendered: only contexts that are live right now (lib/home-spotlights.ts). */}
+      <HomeHubPromo spotlights={spotlights} />
 
       {/* ── Radar Player of the Week ── */}
       <section style={{ background: "var(--sg-surface-low)", borderTop: "1px solid var(--sg-border)", borderBottom: "1px solid var(--sg-border)" }}>

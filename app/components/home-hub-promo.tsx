@@ -1,59 +1,31 @@
-"use client";
-
 import Link from "next/link";
-import { categoryArticlePath } from "@/lib/category-config";
+import type { SpotlightCard } from "@/lib/home-spotlights";
 
-type HubArticlePreview = { title: string; slug: string; category: string; };
-
-type Props = {
-  wcArticles: HubArticlePreview[];
-  transferArticles: HubArticlePreview[];
-};
-
-function articleHref(category: string, slug: string): string {
-  return categoryArticlePath(category, slug);
-}
-
-export default function HomeHubPromo({ wcArticles, transferArticles }: Props) {
+/**
+ * The homepage "In focus" block. Which cards appear, and what they link to, is
+ * decided server-side in lib/home-spotlights.ts: only contexts that are live
+ * right now, so a finished tournament or a closed window drops off by itself.
+ */
+export default function HomeHubPromo({ spotlights }: { spotlights: SpotlightCard[] }) {
+  if (spotlights.length === 0) return null;
   return (
     <section style={{ borderTop: "1px solid var(--sg-border)", background: "var(--sg-surface-low)" }}>
       <div className="sg-editorial-shell" style={{ paddingTop: 72, paddingBottom: 72 }}>
-        <div className="eyebrow" style={{ marginBottom: 28 }}>TOURNAMENT & TRANSFERS</div>
-        <div className="grid grid-cols-1 gap-8 lg:grid-cols-2" style={{ alignItems: "stretch" }}>
-          <HubCard
-            accent="var(--amber)"
-            title="World Cup 2026"
-            description="104 matches across USA, Mexico & Canada — June 11 to July 19, 2026. Scout reports, squad analysis, and complete fixture data."
-            hubHref="/world-cup-2026"
-            cta="WC 2026 Hub"
-            articles={wcArticles}
-            extraLinks={[
-              { href: "/world-cup-2026/schedule", label: "Match Schedule" },
-              { href: "/world-cup-2026/squads", label: "48 Team Squads" },
-            ]}
-            stats={[
-              { value: "104", label: "Matches" },
-              { value: "48", label: "Teams" },
-              { value: "16", label: "Venues" },
-            ]}
-          />
-          <HubCard
-            accent="var(--cyan)"
-            title="Transfers"
-            description="Real-time transfer intelligence — verified rumors, confirmed deals, and scout analysis on the most impactful moves shaping football."
-            hubHref="/transfers"
-            cta="Transfer Wire"
-            articles={transferArticles}
-            extraLinks={[
-              { href: "/transfers/radar", label: "Transfer Radar" },
-              { href: "/transfers/lists", label: "Transfer Lists" },
-            ]}
-            stats={[
-              { value: "24/7", label: "Wire Feed" },
-              { value: "5", label: "Leagues" },
-              { value: "∞", label: "Rumors" },
-            ]}
-          />
+        <div className="eyebrow" style={{ marginBottom: 28 }}>IN FOCUS</div>
+        <div className={`grid grid-cols-1 gap-8 ${spotlights.length > 1 ? "lg:grid-cols-2" : ""}`} style={{ alignItems: "stretch" }}>
+          {spotlights.map((s) => (
+            <HubCard
+              key={s.id}
+              accent={s.accent}
+              title={s.title}
+              description={s.description}
+              hubHref={s.cta.href}
+              cta={s.cta.label}
+              articles={s.articles}
+              extraLinks={s.links}
+              stats={s.stats}
+            />
+          ))}
         </div>
       </div>
     </section>
@@ -62,7 +34,7 @@ export default function HomeHubPromo({ wcArticles, transferArticles }: Props) {
 
 function HubCard({ accent, title, description, hubHref, cta, articles, extraLinks, stats }: {
   accent: string; title: string; description: string;
-  hubHref: string; cta: string; articles: HubArticlePreview[];
+  hubHref: string; cta: string; articles: { title: string; href: string }[];
   extraLinks?: { href: string; label: string }[];
   stats?: { value: string; label: string }[];
 }) {
@@ -92,9 +64,9 @@ function HubCard({ accent, title, description, hubHref, cta, articles, extraLink
       {articles.length > 0 ? (
         <ul style={{ listStyle: "none", margin: "0 0 20px", padding: 0 }}>
           {articles.slice(0, 3).map((a, i) => (
-            <li key={`${a.slug}-${i}`} style={{ marginBottom: 10 }}>
-              <Link href={articleHref(a.category, a.slug)} style={{ fontSize: 14, color: "var(--sg-text-primary)", textDecoration: "none" }} className="u-link">
-                <span className="mono" style={{ fontSize: 9, letterSpacing: "0.12em", color: accent, marginRight: 8 }}>Latest</span>
+            <li key={a.href} style={{ marginBottom: 10 }}>
+              <Link href={a.href} style={{ fontSize: 14, color: "var(--sg-text-primary)", textDecoration: "none" }} className="u-link">
+                {i === 0 && <span className="mono" style={{ fontSize: 9, letterSpacing: "0.12em", color: accent, marginRight: 8 }}>Latest</span>}
                 {a.title}
               </Link>
             </li>

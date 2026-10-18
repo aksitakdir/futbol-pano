@@ -1,6 +1,7 @@
 import HomeClient from "./home-client";
 import { ArticleIndexColumns } from "./components/article-index-links";
 import FooterOwner from "./components/footer-owner";
+import { loadHomeSpotlights } from "@/lib/home-spotlights";
 
 /**
  * The homepage, as a server component wrapping the interactive one.
@@ -27,7 +28,8 @@ import FooterOwner from "./components/footer-owner";
 // morning should be linked from here this morning. 24 ISR writes a day.
 export const revalidate = 3600;
 
-export default function HomePage() {
+export default async function HomePage() {
+  const spotlights = await loadHomeSpotlights();
   return (
     <FooterOwner
       index={
@@ -40,7 +42,7 @@ export default function HomePage() {
         />
       }
     >
-      <HomeClient />
+      <HomeClient spotlights={spotlights} />
     </FooterOwner>
   );
 }
