@@ -63,8 +63,8 @@ const NAV_ITEMS = [
   { href: "/radar", label: "RADAR", key: "radar" },
   { href: "/arena", label: "ARENA", key: "arena" },
   { href: "/transfers", label: "TRANSFERS", key: "transfer" },
-  // WC 2026 demoted to last post-tournament (kept for the archive, not a live section)
-  { href: "/world-cup-2026", label: "WC 2026", key: "wc-2026" },
+  // WC 2026 left the navigation on 19 Oct 2026, three months after the final: its
+  // pages stay up as an archive, linked from the footer, not offered as a live section.
 ];
 
 export default function SiteHeader({ activeNav }: Props) {

@@ -72,7 +72,8 @@ const NAV_LINKS = [
   { href: "/lists",           label: "LISTS" },
   { href: "/tactics-lab",    label: "TACTICS LAB" },
   { href: "/arena",          label: "ARENA" },
-  { href: "/world-cup-2026", label: "WC 2026" },
+  // Archive since the tournament ended; no longer in the header navigation.
+  { href: "/world-cup-2026", label: "WC 2026 ARCHIVE" },
 ];
 
 export default function SiteFooter({ index }: Props = {}) {
