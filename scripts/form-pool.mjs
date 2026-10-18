@@ -36,31 +36,39 @@ const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const MAX_AGE_DAYS = 45;
 
 /**
- * Verified by hand on 15 September 2026. `name` must match fc_players exactly —
- * that is what the ratings join on. `position` is the player's current deployment,
- * not the game's label, which drifts badly after a transfer window.
+ * Re-verified on 19 October 2026. Ten entries come from the research behind our own
+ * October pieces (wingers, defenders, Turkey, Kopa: verified 17 Oct), ten from fresh
+ * checks with an adversarial second pass on every change. What changed: Vušković is a
+ * Brighton player (a club-record move from Tottenham in July, not a second Hamburg
+ * loan); El Mala and Manzambi are a year older than this file said (the old dates of
+ * birth were wrong); Delgado is 21; and Diomande, Endrick, Pietuszewski, Kroupi,
+ * Manzambi, Maza and Delgado are listed where they now play, not where they used to.
+ *
+ * `name` must match fc_players exactly — that is what the ratings join on. `position`
+ * is the player's current deployment, not the game's label, which drifts badly after
+ * a transfer window.
  */
 const POOL = [
-  { name: "Lamine Yamal",       club: "FC Barcelona",       league: "La Liga",           position: "RW",  age: "19", as_of: "2026-09-15", source: "Barca Blaugranes, 15 Sep 2026 — vice-captain for 2026-27, 50th Barcelona goal on 1 Sep" },
-  { name: "Eli Junior Kroupi",  club: "AFC Bournemouth",    league: "Premier League",    position: "ST",  age: "20", as_of: "2026-09-15", source: "Yahoo Sports / bet365, Aug 2026 — stays at Bournemouth; metatarsal surgery, out until late October" },
-  { name: "Yan Diomande",       club: "Real Madrid",        league: "La Liga",           position: "LW",  age: "19", as_of: "2026-09-15", source: "Bundesliga.com / Al Jazeera, Jul 2026 — Leipzig to Real Madrid, EUR 125m rising to 140m, No. 25" },
-  { name: "Nico Paz",           club: "Como",               league: "Serie A",           position: "CAM", age: "22", as_of: "2026-09-15", source: "Real Madrid official, 29 Jun 2026 — stays at Como for 2026-27, Madrid keep a 2027-28 buy-back; b. 8 Sep 2004" },
-  { name: "Said El Mala",       club: "1. FC Köln",         league: "Bundesliga",        position: "LW",  age: "19", as_of: "2026-09-15", source: "Yahoo Sports / kicker, summer 2026 — turned down Dortmund, extended to June 2031, wears No. 10" },
-  { name: "Mika Godts",         club: "Paris Saint-Germain", league: "Ligue 1",          position: "LW",  age: "21", as_of: "2026-09-15", source: "psg.fr + english.ajax.nl, Aug 2026 — EUR 55m from Ajax, contract to 2031, No. 22" },
-  { name: "Rayan Cherki",       club: "Manchester City",    league: "Premier League",    position: "CAM", age: "23", as_of: "2026-09-15", source: "LiveScore 26/27 stats — two goals, two assists in the opening three matches; b. 17 Aug 2003" },
-  { name: "Can Uzun",           club: "Eintracht Frankfurt", league: "Bundesliga",       position: "CAM", age: "20", as_of: "2026-09-15", source: "en.eintracht.de squad page 2026/27 — Frankfurt turned down Fenerbahçe's EUR 37m and kept him" },
-  { name: "Luka Vušković",      club: "Hamburger SV",       league: "Bundesliga",        position: "CB",  age: "19", as_of: "2026-09-15", source: "Get German Football News, 2026 — a second Hamburg loan from Tottenham after being named Young Player of the Season" },
-  { name: "Arda Güler",         club: "Real Madrid",        league: "La Liga",           position: "CAM", age: "21", as_of: "2026-09-15", source: "Verified 13 Sep 2026 — playing as the No. 10, not on the wing; b. 25 Feb 2005" },
-  { name: "Johan Manzambi",     club: "Aston Villa",        league: "Premier League",    position: "CM",  age: "20", as_of: "2026-09-15", source: "Bundesliga.com, Jul 2026 — 'Johan Manzambi joins Aston Villa from Freiburg'; b. 30 Dec 2005" },
-  { name: "Victor Froholdt",    club: "FC Porto",           league: "Primeira Liga",     position: "CM",  age: "20", as_of: "2026-09-15", source: "beIN Sports, 1 Aug 2026 — scored the winner in the Portuguese Super Cup; EUR 85m release clause, contract to 2030" },
-  { name: "Oskar Pietuszewski", club: "FC Porto",           league: "Primeira Liga",     position: "CF",  age: "18", as_of: "2026-09-15", source: "zerozero.pt 2026/27 + Wikipedia — signed a five-year deal on 27 May 2026; the game still files him at Jagiellonia" },
-  { name: "Estêvão",            club: "Chelsea",            league: "Premier League",    position: "RW",  age: "19", as_of: "2026-09-15", source: "Wikipedia / FootballTransfers, Sep 2026 — b. 24 Apr 2007; seven years left, seven minutes of league football so far" },
-  { name: "Nico O'Reilly",      club: "Manchester City",    league: "Premier League",    position: "LB",  age: "21", as_of: "2026-09-15", source: "mancity.com / FotMob 26/27 — Maresca uses him at left-back; Premier League Young Player of the Year; b. 21 Mar 2005" },
-  { name: "Mateus Fernandes",   club: "Tottenham Hotspur",  league: "Premier League",    position: "CM",  age: "22", as_of: "2026-09-15", source: "whufc.com club statement + Wikipedia — GBP 85m to Tottenham, July 2026; b. 10 Jul 2004" },
-  { name: "Franco Mastantuono", club: "Fiorentina",         league: "Serie A",           position: "RW",  age: "19", as_of: "2026-09-15", source: "realmadrid.com official, 5 Aug 2026 — season-long loan, no option to buy; hat-trick v Venezia, 11 Sep 2026" },
-  { name: "Milton Delgado",     club: "Boca Juniors",       league: "Liga Profesional",  position: "CDM", age: "20", as_of: "2026-09-15", source: "OneFootball / Sportsboom, 2026 — under contract to December 2029; Boca rejected Trabzonspor's EUR 8m in May" },
-  { name: "Endrick",            club: "Real Madrid",        league: "La Liga",           position: "ST",  age: "20", as_of: "2026-09-15", source: "beIN Sports / Goal, summer 2026 — Lyon loan ended 30 Jun 2026, no second loan; b. 21 Jul 2006" },
-  { name: "Ibrahim Maza",       club: "Bayer Leverkusen",   league: "Bundesliga",        position: "CAM", age: "20", as_of: "2026-09-15", source: "bayer04.de / FotMob 26/27 — a goal and an assist in the opening two matches; b. 24 Nov 2005" },
+  { name: "Lamine Yamal", club: "FC Barcelona", league: "La Liga", position: "RW", age: "19", as_of: "2026-10-17", source: "Scout Gamer wingers + Kopa research: LaLiga.com and FotMob, 17 Oct 2026 — eight league starts from eight, club captain" },
+  { name: "Eli Junior Kroupi", club: "AFC Bournemouth", league: "Premier League", position: "CAM", age: "20", as_of: "2026-10-17", source: "Scout Gamer Kopa research: afcb.co.uk 29 Jul 2026; BBC via Yahoo, 6 Oct 2026" },
+  { name: "Yan Diomande", club: "Real Madrid", league: "La Liga", position: "RW", age: "19", as_of: "2026-10-17", source: "Scout Gamer wingers research: LaLiga.com, 17 Oct 2026 — first Madrid goal v Villarreal, 10 Oct" },
+  { name: "Nico Paz", club: "Como", league: "Serie A", position: "CAM", age: "22", as_of: "2026-10-19", source: "Goal (match report, Fiorentina 1-3 Como), 18 Oct 2026 — started as the No. 10, scored and assisted at Fiorentina; Madrid hold a 2027-28 buy-back" },
+  { name: "Saïd El Mala", club: "1. FC Köln", league: "Bundesliga", position: "LW", age: "20", as_of: "2026-10-19", source: "Scout Gamer wingers research: FotMob, 17 Oct 2026; b. 26 Aug 2006 (Wikipedia, fc.de)" },
+  { name: "Mika Godts", club: "Paris Saint-Germain", league: "Ligue 1", position: "LW", age: "21", as_of: "2026-10-19", source: "Eurosport France (pre-Strasbourg profile), 17 Oct 2026 — EUR 55m from Ajax; one PSG start so far, at left wing" },
+  { name: "Rayan Cherki", club: "Manchester City", league: "Premier League", position: "CAM", age: "23", as_of: "2026-10-19", source: "ESPN match report, Liverpool 0-3 Man City (11 Oct 2026) — the No. 10 in Maresca's 4-2-3-1; scored at Anfield, 11 Oct" },
+  { name: "Can Uzun", club: "Eintracht Frankfurt", league: "Bundesliga", position: "CAM", age: "20", as_of: "2026-10-17", source: "Scout Gamer Turkey research: FotMob and Hessenschau, 15-17 Oct 2026" },
+  { name: "Luka Vušković", club: "Brighton & Hove Albion", league: "Premier League", position: "CB", age: "19", as_of: "2026-10-17", source: "Scout Gamer defenders research: FotMob, 17 Oct 2026; ESPN, 14 Jul 2026 — club-record GBP 46m from Tottenham" },
+  { name: "Arda Güler", club: "Real Madrid", league: "La Liga", position: "CAM", age: "21", as_of: "2026-10-17", source: "Scout Gamer Turkey research: FotMob, 17 Oct 2026 — rotating with Bellingham as the No. 10" },
+  { name: "Johan Manzambi", club: "Aston Villa", league: "Premier League", position: "CAM", age: "21", as_of: "2026-10-19", source: "Scout Gamer Kopa research: AP via SuperSport, 17 Jul 2026; b. 14 Oct 2005 (ESPN)" },
+  { name: "Victor Froholdt", club: "FC Porto", league: "Primeira Liga", position: "CM", age: "20", as_of: "2026-10-19", source: "A Bola, Betis 3-2 FC Porto post-match (14 Oct 2026) — central midfield beside Varela; back from a September concussion" },
+  { name: "Oskar Pietuszewski", club: "FC Porto", league: "Primeira Liga", position: "LW", age: "18", as_of: "2026-10-19", source: "A Bola, 18 Oct 2026 ('FC Porto: duo ganha gas e apresenta a candidatura a Farioli') — a winger on the left of Farioli's front three, not a centre-forward" },
+  { name: "Estêvão", club: "Chelsea", league: "Premier League", position: "RW", age: "19", as_of: "2026-10-19", source: "Gazeta Esportiva and Lance!, 17 Oct 2026 (Everton 0-2 Chelsea) — no Premier League starts under Xabi Alonso" },
+  { name: "Nico O'Reilly", club: "Manchester City", league: "Premier League", position: "LB", age: "21", as_of: "2026-10-17", source: "Scout Gamer defenders research: FotMob and ESPN, 17 Oct 2026; mancity.com, 11 Oct 2026" },
+  { name: "Mateus Fernandes", club: "Tottenham Hotspur", league: "Premier League", position: "CM", age: "22", as_of: "2026-10-19", source: "football.london (Alasdair Gold, syndicated via Yahoo Sports), 16 Oct 2026 — GBP 85m from West Ham, 2 Jul 2026" },
+  { name: "Franco Mastantuono", club: "Fiorentina", league: "Serie A", position: "RW", age: "19", as_of: "2026-10-19", source: "Goal.com Italia match report and ratings, Fiorentina 1-3 Como — season loan from Real Madrid; broke a bone in his left hand at Genoa, 10 Oct" },
+  { name: "Milton Delgado", club: "Boca Juniors", league: "Liga Profesional", position: "CM", age: "21", as_of: "2026-10-19", source: "Infobae, 13 Oct 2026 (Vasco da Gama XI) and 15-16 Oct 2026 (Talleres XI and 2-1 report) — b. 16 Jun 2005; in central midfield while Paredes is injured" },
+  { name: "Endrick", club: "Real Madrid", league: "La Liga", position: "RW", age: "20", as_of: "2026-10-19", source: "EFE via Infobae, 18 Oct 2026 (Real Madrid v Sevilla XI) — Mourinho uses him on the right, with Mbappe through the middle" },
+  { name: "Ibrahim Maza", club: "Bayer Leverkusen", league: "Bundesliga", position: "LW", age: "20", as_of: "2026-10-17", source: "Scout Gamer Kopa research: Opta Analyst, 17 Oct 2026" },
 ];
 
 // The card never renders goals, so carrying a number here would be an unchecked
