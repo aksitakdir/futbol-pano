@@ -128,28 +128,6 @@ function classify(r: Row, basePath: string): { group: string; item: Item } {
 /** A grid track that never outgrows a narrow phone: min(Npx, 100%). */
 const tracks = (px: number) => `repeat(auto-fill, minmax(min(${px}px, 100%), 1fr))`;
 
-const caption: React.CSSProperties = {
-  fontSize: 11,
-  letterSpacing: "0.16em",
-  textTransform: "uppercase",
-  color: "var(--sg-text-muted)",
-  margin: 0,
-};
-
-const chip: React.CSSProperties = {
-  display: "inline-block",
-  padding: "6px 12px",
-  border: "1px solid var(--sg-border)",
-  borderRadius: 999,
-  fontSize: 13,
-  lineHeight: 1.3,
-  color: "var(--sg-text-secondary)",
-  textDecoration: "none",
-  background: "var(--sg-surface)",
-};
-
-const plainLink: React.CSSProperties = { fontSize: 14, color: "var(--sg-text-secondary)", textDecoration: "none" };
-
 async function fetchRows(category: string, limit: number): Promise<Row[]> {
   const supabase = createClient();
   const { data } = await supabase
@@ -162,37 +140,34 @@ async function fetchRows(category: string, limit: number): Promise<Row[]> {
   return (data ?? []) as Row[];
 }
 
-const toItem = (r: Row, basePath: string): Item => ({ href: `${basePath}/${r.slug}`, label: titleOf(r), title: titleOf(r) });
+/** Visible label is the headline before its colon ("Max Dowman", "Nico Paz"); the full title stays in `title`. */
+const toItem = (r: Row, basePath: string): Item => ({ href: `${basePath}/${r.slug}`, label: shortTitle(titleOf(r)), title: titleOf(r) });
+
+/*
+ * Styling lives in globals.css (.sg-index*), so it reads like the footer it sits
+ * in: eyebrow headings, small muted links, one line per link. Links show the
+ * headline before its colon, and anything still too long is cut with an
+ * ellipsis on screen only; the full title is the link's title attribute.
+ */
 
 /** Drawn inside the site footer, above its columns, on the footer's own grid (see FooterOwner). */
-function Shell({ heading, children }: { heading: string; children: React.ReactNode }) {
+function Shell({ label, heading, children }: { label: string; heading?: string; children: React.ReactNode }) {
   return (
     <div className="sg-site-container">
-      <nav aria-label={heading} style={{ padding: "56px 0 48px", borderBottom: "1px solid var(--sg-border)" }}>
-        <h2 className="display" style={{ fontSize: 22, fontWeight: 700, color: "var(--sg-text-primary)", margin: "0 0 28px" }}>
-          {heading}
-        </h2>
+      <nav aria-label={label} className="sg-index">
+        {heading && <h2 className="eyebrow sg-index-heading">{heading}</h2>}
         {children}
       </nav>
     </div>
   );
 }
 
-function LinkList({ items, compact }: { items: Item[]; compact?: boolean }) {
+function LinkList({ items, columns }: { items: Item[]; columns?: boolean }) {
   return (
-    <ul
-      style={{
-        listStyle: "none",
-        margin: 0,
-        padding: 0,
-        display: "grid",
-        gridTemplateColumns: compact ? "1fr" : tracks(280),
-        gap: compact ? 10 : "10px 32px",
-      }}
-    >
+    <ul className="sg-index-list" style={{ gridTemplateColumns: columns ? tracks(240) : "minmax(0, 1fr)" }}>
       {items.map((it) => (
-        <li key={it.href} style={{ lineHeight: 1.45 }}>
-          <Link href={it.href} style={plainLink}>
+        <li key={it.href}>
+          <Link href={it.href} title={it.title} className="sg-index-link">
             {it.label}
           </Link>
         </li>
@@ -201,31 +176,14 @@ function LinkList({ items, compact }: { items: Item[]; compact?: boolean }) {
   );
 }
 
-function Archive({ items, compact, label = "From the archive" }: { items: Item[]; compact?: boolean; label?: string }) {
+function Archive({ items, columns, label = "From the archive" }: { items: Item[]; columns?: boolean; label?: string }) {
   if (items.length === 0) return null;
   return (
-    <details style={{ marginTop: compact ? 16 : 28 }}>
-      <summary className="mono" style={{ ...caption, fontSize: 10, cursor: "pointer" }}>
+    <details className="sg-index-archive">
+      <summary>
         {label} ({items.length})
       </summary>
-      <ul
-        style={{
-          listStyle: "none",
-          margin: "14px 0 0",
-          padding: 0,
-          display: "grid",
-          gridTemplateColumns: compact ? "1fr" : tracks(280),
-          gap: compact ? 8 : "8px 32px",
-        }}
-      >
-        {items.map((it) => (
-          <li key={it.href} style={{ lineHeight: 1.45 }}>
-            <Link href={it.href} style={{ ...plainLink, fontSize: 13, color: "var(--sg-text-muted)" }}>
-              {it.title}
-            </Link>
-          </li>
-        ))}
-      </ul>
+      <LinkList items={items} columns={columns} />
     </details>
   );
 }
@@ -237,9 +195,9 @@ export default async function ArticleIndexLinks({ category, basePath, heading, l
   if (mode === "latest") {
     const items = rows.map((r) => toItem(r, basePath));
     return (
-      <Shell heading={heading}>
-        <LinkList items={items.slice(0, show)} />
-        <Archive items={items.slice(show)} />
+      <Shell label={heading} heading={heading}>
+        <LinkList items={items.slice(0, show)} columns />
+        <Archive items={items.slice(show)} columns />
       </Shell>
     );
   }
@@ -254,7 +212,7 @@ export default async function ArticleIndexLinks({ category, basePath, heading, l
     // the archive.
     const key = `${group}:${item.label.toLowerCase()}`;
     if (group === "archive" || seen.has(key)) {
-      archive.push(item);
+      archive.push({ ...item, label: shortTitle(item.title) });
       continue;
     }
     seen.add(key);
@@ -270,17 +228,15 @@ export default async function ArticleIndexLinks({ category, basePath, heading, l
   };
 
   return (
-    <Shell heading={heading}>
-      <div style={{ display: "grid", gridTemplateColumns: tracks(300), gap: "28px 40px" }}>
+    <Shell label={heading} heading={heading}>
+      <div className="sg-index-grid" style={{ gridTemplateColumns: tracks(300) }}>
         {GROUP_ORDER.filter((g) => groups.get(g)?.length).map((g) => (
           <div key={g} style={{ minWidth: 0 }}>
-            <h3 className="mono" style={{ ...caption, fontSize: 10, marginBottom: 12, color: "var(--sg-text-secondary)" }}>
-              {g}
-            </h3>
-            <ul style={{ listStyle: "none", margin: 0, padding: 0, display: "flex", flexWrap: "wrap", gap: 8 }}>
+            <h3 className="sg-index-subheading">{g}</h3>
+            <ul className="sg-index-chips">
               {ordered(g, groups.get(g) ?? []).map((it) => (
                 <li key={it.href}>
-                  <Link href={it.href} title={it.title} style={chip}>
+                  <Link href={it.href} title={it.title} className="sg-index-chip">
                     {it.label}
                   </Link>
                 </li>
@@ -289,7 +245,7 @@ export default async function ArticleIndexLinks({ category, basePath, heading, l
           </div>
         ))}
       </div>
-      <Archive items={archive} />
+      <Archive items={archive} columns />
     </Shell>
   );
 }
@@ -298,26 +254,26 @@ type Column = { category: string; basePath: string; heading: string };
 
 /**
  * The homepage version: one block, a column per section, the newest few in each
- * plus a link to the section and the rest in a per-column disclosure. Replaces
- * three full-width blocks stacked one under another.
+ * plus a link to the section and the rest in a per-column disclosure. The column
+ * headings are the only headings, like the footer columns below them.
  */
-export async function ArticleIndexColumns({ columns, limit = 15, show = 6 }: { columns: Column[]; limit?: number; show?: number }) {
+export async function ArticleIndexColumns({ columns, limit = 15, show = 5 }: { columns: Column[]; limit?: number; show?: number }) {
   const all = await Promise.all(columns.map((c) => fetchRows(c.category, limit)));
   const filled = columns.map((c, i) => ({ ...c, items: all[i].map((r) => toItem(r, c.basePath)) })).filter((c) => c.items.length);
   if (filled.length === 0) return null;
 
   return (
-    <Shell heading="Latest from Scout Gamer">
-      <div style={{ display: "grid", gridTemplateColumns: `repeat(auto-fit, minmax(min(260px, 100%), 1fr))`, gap: "32px 40px" }}>
+    <Shell label="Latest from Scout Gamer">
+      <div className="sg-index-grid" style={{ gridTemplateColumns: `repeat(auto-fit, minmax(min(240px, 100%), 1fr))` }}>
         {filled.map((c) => (
           <section key={c.category} aria-label={c.heading} style={{ minWidth: 0 }}>
-            <h3 className="mono" style={{ ...caption, fontSize: 10, marginBottom: 14, color: "var(--sg-text-secondary)" }}>
-              <Link href={c.basePath} style={{ color: "inherit", textDecoration: "none" }}>
+            <h2 className="eyebrow sg-index-heading">
+              <Link href={c.basePath} className="u-link">
                 {c.heading} →
               </Link>
-            </h3>
-            <LinkList items={c.items.slice(0, show)} compact />
-            <Archive items={c.items.slice(show)} compact label="More" />
+            </h2>
+            <LinkList items={c.items.slice(0, show)} />
+            <Archive items={c.items.slice(show)} label="More" />
           </section>
         ))}
       </div>

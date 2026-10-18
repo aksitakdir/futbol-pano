@@ -173,6 +173,42 @@ button { font-family: inherit; cursor: pointer; }
 }
 .u-link:hover::after { transform: scaleX(1); }
 
+/* ─── Footer article index (app/components/article-index-links.tsx) ─────
+   Sits inside the site footer, so it uses the footer's scale: eyebrow
+   headings, 13px muted links, one line per title (ellipsis on screen only). */
+.sg-index { padding: 40px 0 36px; border-bottom: 1px solid var(--sg-border); }
+.sg-index-heading { margin: 0 0 16px; }
+.sg-index-heading a { color: inherit; text-decoration: none; }
+.sg-index-subheading {
+  margin: 0 0 10px;
+  font-family: var(--font-mono-stack); font-size: 10px; letter-spacing: 0.16em;
+  text-transform: uppercase; font-weight: 400; color: var(--sg-text-muted);
+}
+.sg-index-grid { display: grid; gap: 28px 48px; }
+.sg-index-list { list-style: none; margin: 0; padding: 0; display: grid; gap: 7px 40px; }
+.sg-index-list > li { min-width: 0; }
+.sg-index-link {
+  display: block; overflow: hidden; white-space: nowrap; text-overflow: ellipsis;
+  font-size: 13px; line-height: 1.5; color: var(--sg-text-muted); text-decoration: none;
+  transition: color 0.15s;
+}
+.sg-index-link:hover { color: var(--sg-text-primary); }
+.sg-index-chips { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 6px; }
+.sg-index-chip {
+  display: inline-block; padding: 3px 10px; border: 1px solid var(--sg-border); border-radius: 999px;
+  font-size: 12px; line-height: 1.4; color: var(--sg-text-secondary); text-decoration: none;
+  transition: color 0.15s, border-color 0.15s;
+}
+.sg-index-chip:hover { color: var(--sg-text-primary); border-color: var(--sg-text-muted); }
+.sg-index-archive { margin-top: 18px; }
+.sg-index-archive > summary {
+  cursor: pointer; width: fit-content;
+  font-family: var(--font-mono-stack); font-size: 10px; letter-spacing: 0.16em;
+  text-transform: uppercase; color: var(--sg-text-muted);
+}
+.sg-index-archive > summary:hover { color: var(--sg-text-secondary); }
+.sg-index-archive[open] > .sg-index-list { margin-top: 12px; }
+
 /* ─── Category accent rule ──────────────────────────────────────── */
 .cat-rule { height: 2px; background: var(--accent); }
 
