@@ -15,6 +15,16 @@ const TR_SQUAD_SLUGS: Record<string, string> = {
 };
 
 const nextConfig: NextConfig = {
+  /**
+   * Turbopack's build cache is on by default in Next 16.3, and Vercel restores
+   * .next/cache between deploys. On 2026-10-19 a globals.css change shipped with
+   * the previous deploy's CSS bundle: new markup, three-day-old stylesheet. The
+   * same stale CSS survived a dev-server restart locally until the cache was
+   * cleared. Builds take longer without it; they are also correct.
+   */
+  experimental: {
+    turbopackFileSystemCacheForBuild: false,
+  },
   images: {
     remotePatterns: [
       { protocol: "https", hostname: "images.unsplash.com" },
