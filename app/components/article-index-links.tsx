@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { createClient } from "@/lib/supabase";
+import { groupTopics, shortTitle } from "@/lib/list-topics";
 
 /**
  * Server-rendered archive index for a category.
@@ -47,83 +48,7 @@ type Props = {
 type Row = { id: number; title: string; title_en: string | null; slug: string; created_at: string };
 type Item = { href: string; label: string; title: string };
 
-/** Leagues are named without "the" in some titles ("in La Liga") and with it in others ("in the Premier League"). */
-const LEAGUES = ["Premier League", "La Liga", "LaLiga", "Bundesliga", "Serie A", "Ligue 1", "Eredivisie", "Primeira Liga", "Liga MX", "MLS", "Saudi Pro League", "J1 League"];
-/**
- * Pitch order for the Positions chips, back to front. A label takes the rank of its
- * LONGEST matching keyword, so "attacking midfielder" outranks plain "midfielder".
- * Unknown positions go last.
- */
-const PITCH_RANK: [string, number][] = [
-  ["goalkeeper", 0],
-  ["centre-back", 1],
-  ["center-back", 1],
-  ["defender", 2],
-  ["full-back", 3],
-  ["wing-back", 3],
-  ["defensive midfielder", 4],
-  ["central midfielder", 5],
-  ["midfielder", 5],
-  ["attacking midfielder", 6],
-  ["number 10", 6],
-  ["playmaker", 6],
-  ["winger", 7],
-  ["forward", 8],
-  ["striker", 8],
-];
-/**
- * Lists published before the July rebuild are archive, unless they are a country or
- * league list (those stay current as a topic, e.g. the Argentina piece from April).
- */
-const ARCHIVE_BEFORE = "2026-07-01";
-const GROUP_ORDER = ["Positions", "Countries and leagues", "EA FC", "Features"];
-
 const titleOf = (r: Row) => (r.title_en?.trim() || r.title).trim();
-const shortTitle = (title: string) => title.split(/:| — |, and /)[0].trim();
-const pitchRank = (label: string) => {
-  const l = label.toLowerCase();
-  const hits = PITCH_RANK.filter(([k]) => l.includes(k)).sort((a, b) => b[0].length - a[0].length);
-  return hits[0]?.[1] ?? 99;
-};
-const isLeague = (label: string) => LEAGUES.includes(label);
-
-/**
- * Sort each list into a group and give it a short label. Titles in the lists
- * section follow a few patterns ("The Best Young X in World Football…",
- * "Argentina's Best Young…", "The Best Young Players in La Liga…", "FC 27's…");
- * anything else is a feature, or, if it predates the July rebuild, archive.
- * Countries and leagues are read from the title, not a whitelist, so a new
- * country list lands in its group without a code change.
- */
-function classify(r: Row, basePath: string): { group: string; item: Item } {
-  const title = titleOf(r);
-  const item = (text: string): Item => ({ href: `${basePath}/${r.slug}`, label: text, title });
-
-  const country = title.match(/^(?:The )?([A-Z][A-Za-zÀ-ÿ .-]{1,24}?)(?:['’]s|['’]) Best Young (?:Players|Footballers)\b/)?.[1];
-  if (country) return { group: "Countries and leagues", item: item(country) };
-
-  const league = LEAGUES.find((l) => new RegExp(`Best Young (?:Players|Footballers) in (?:the )?${l}\\b`, "i").test(title));
-  if (league) return { group: "Countries and leagues", item: item(league === "LaLiga" ? "La Liga" : league) };
-
-  if (r.created_at < ARCHIVE_BEFORE) return { group: "archive", item: item(title) };
-
-  const edition = title.match(/\bFC (\d{2})\b/i)?.[1];
-  if (edition || /\bEA FC\b/i.test(title)) {
-    // Short labels only for the two series titles; anything else keeps its own words,
-    // so a one-off FC piece cannot take a series chip and push the real list out.
-    const text = /^FC \d{2}['’]s Biggest Rating Jumps/i.test(title)
-      ? `FC ${edition} rating jumps`
-      : /^The Best FC \d{2} Wonderkids/i.test(title)
-        ? `FC ${edition} wonderkids`
-        : shortTitle(title);
-    return { group: "EA FC", item: item(text) };
-  }
-
-  const position = title.match(/^The Best Young (.+?) in World Football/i)?.[1];
-  if (position) return { group: "Positions", item: item(position) };
-
-  return { group: "Features", item: item(shortTitle(title)) };
-}
 
 /** A grid track that never outgrows a narrow phone: min(Npx, 100%). */
 const tracks = (px: number) => `repeat(auto-fill, minmax(min(${px}px, 100%), 1fr))`;
@@ -206,39 +131,18 @@ export default async function ArticleIndexLinks({ category, basePath, heading, l
     );
   }
 
-  const groups = new Map<string, Item[]>();
-  const archive: Item[] = [];
-  const seen = new Set<string>();
-  for (const r of rows) {
-    const { group, item } = classify(r, basePath);
-    // Two pieces with the same short label (an old and a new list on one country):
-    // rows arrive newest first, so the newest keeps the chip and the older goes to
-    // the archive.
-    const key = `${group}:${item.label.toLowerCase()}`;
-    if (group === "archive" || seen.has(key)) {
-      archive.push({ ...item, label: shortTitle(item.title) });
-      continue;
-    }
-    seen.add(key);
-    groups.set(group, [...(groups.get(group) ?? []), item]);
-  }
-
-  const ordered = (g: string, items: Item[]) => {
-    if (g === "Positions") return [...items].sort((a, b) => pitchRank(a.label) - pitchRank(b.label) || a.label.localeCompare(b.label));
-    if (g === "Countries and leagues") {
-      return [...items].sort((a, b) => Number(isLeague(a.label)) - Number(isLeague(b.label)) || a.label.localeCompare(b.label));
-    }
-    return items; // EA FC and Features stay newest first
-  };
+  const { groups, archive } = groupTopics(
+    rows.map((r) => ({ href: `${basePath}/${r.slug}`, title: titleOf(r), createdAt: r.created_at })),
+  );
 
   return (
     <Shell label={heading} heading={heading}>
       <div className="sg-index-grid" style={{ gridTemplateColumns: tracks(300) }}>
-        {GROUP_ORDER.filter((g) => groups.get(g)?.length).map((g) => (
+        {groups.map(({ name: g, items }) => (
           <div key={g} style={{ minWidth: 0 }}>
             <h3 className="sg-index-subheading">{g}</h3>
             <ul className="sg-index-chips">
-              {ordered(g, groups.get(g) ?? []).map((it) => (
+              {items.map((it) => (
                 <li key={it.href}>
                   <Link href={it.href} title={it.title} className="sg-index-chip">
                     {it.label}

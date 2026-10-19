@@ -36,7 +36,7 @@ link sayısını düşürmez; footer dizini en son, sayfa sayfa, gövde linkleri
 - [x] **P0 — seo-check v2.** *(2026-10-19: sitemap'ten makale seti, gövde/footer ayrı sayım, hub'ın en yeni yazıyı linklemesi, bölüm başına en yeni/en eski yazı, canonical ve "Not Found" başlık kontrolü; 8 bilinçli bozmanın 8'ini yakaladı. `deploy.sh`: push öncesi `next start` kontrolü, push sonrası Vercel'i bekleyip canlıda kontrol.)* Gövde ve footer linklerini ayrı sayar (bugünkü kontrol footer'ı
       da sayıyor, yanlış geçiyor), makale setini sitemap'ten alır, `/` ve `/articles`'ı da
       kapsar, deploy sonrası canlıya karşı çalışır. `next dev` prod'daki boş sayfayı gizliyor.
-- [ ] **P1 — Hub'lar sunucuda:** /lists, /radar, /tactics-lab, /articles. Prod'da /lists,
+- [x] **P1 — Hub'lar sunucuda:** *(2026-10-19: dört sayfa sunucuda; gövde linkleri /lists 32, /radar 16, /tactics-lab 20, /articles 128; "Load more" yok, /articles'ta 24 kart + eski yazılar düz liste. Bu üç hub'ın footer dizini kalktı (P5a) — yazı sayfaları dizini P2'ye kadar taşıyor. Radar kapak sabitlemesi hiç çalışmıyordu (sayı/metin id) — düzeldi. Açık: Transfers, WC ve Arena başlıkları hâlâ "| Scout Gamer | Scout Gamer" — başlıklara dokunulmaması istendi; kart kapakları tam boy JPEG yüklüyor (eskiden de öyle, ~13 MB /lists) — ayrı performans işi.)* /lists, /radar, /tactics-lab, /articles. Prod'da /lists,
       /radar ve /articles'ın ham HTML'inde `<main>` ve `<h1>` bile yok (useSearchParams +
       fallback'siz Suspense → client render). /lists'e konu çipleri satırı (Positions /
       Countries / EA FC) gövdede kalır. Başlık tekrarı düzelir ("| Scout Gamer | Scout Gamer").

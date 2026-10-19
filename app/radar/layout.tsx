@@ -1,18 +1,20 @@
 import type { Metadata } from "next";
-import ArticleIndexLinks from "../components/article-index-links";
-import FooterOwner from "../components/footer-owner";
 
 export const metadata: Metadata = {
-  title: "Radar | Scout Gamer",
+  // Absolute: the root template would append "| Scout Gamer" a second time. Defining a
+  // title here also resets the template for this section's articles, which keep their
+  // bare headline as before (a sitewide decision, not part of this fix).
+  title: { absolute: "Radar | Scout Gamer" },
   description: "Player-focused scout analysis — young talent profiles, positional breakdowns, and watchlist reports.",
   alternates: { canonical: "https://www.scoutgamer.com/radar" },
 };
 
+/**
+ * Metadata only since 2026-10-19. The section's article index used to wrap every page
+ * here, inside the footer (FooterOwner). The hub now lists every piece in its own
+ * body, so it keeps a standard footer; the article pages still carry the index,
+ * from their own [slug]/page.tsx, until the in-body "More in" block replaces it.
+ */
 export default function RadarLayout({ children }: { children: React.ReactNode }) {
-  return (
-    // The section's article index, server-rendered inside the footer (see FooterOwner).
-    <FooterOwner index={<ArticleIndexLinks category="radar" basePath="/radar" heading="All Radar Reports" />}>
-      {children}
-    </FooterOwner>
-  );
+  return children;
 }

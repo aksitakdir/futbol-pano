@@ -1,5 +1,7 @@
 import { NextResponse } from "next/server";
 import { cookies } from "next/headers";
+import { revalidatePath } from "next/cache";
+import { categoryPublicPath } from "@/lib/category-config";
 import {
   buildCoverStoriesPatch,
   type CoverStoryScope,
@@ -53,6 +55,11 @@ export async function POST(request: Request) {
     const current = await readCoverStoryPins(sb);
     const next = buildCoverStoriesPatch(current, contentId, category, scopes);
     await writeCoverStoryPins(sb, next);
+
+    // The hubs are server-rendered and cached since 2026-10-19 and read the pin on the
+    // server: refresh the pages a pin can lead (the homepage and the piece's own hub).
+    revalidatePath("/");
+    revalidatePath(categoryPublicPath(category));
 
     return NextResponse.json({ ok: true, pins: next });
   } catch (e) {

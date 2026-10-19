@@ -1,86 +1,33 @@
-"use client";
-
-import { Suspense, useEffect, useState, useMemo, useCallback } from "react";
+import type { Metadata } from "next";
 import Link from "next/link";
-import { useSearchParams } from "next/navigation";
 import SiteHeader from "../components/site-header";
 import SiteFooter from "../components/site-footer";
-import { supabase } from "@/lib/supabase";
-import { categoryArticlePath, CAT_LABEL } from "@/lib/category-config";
-import { getCategoryImage } from "@/lib/category-images";
-import { stripHtml } from "@/lib/utils";
-import { extractArticleHighlights, HIGHLIGHT_CARD_ACCENTS_CYCLE } from "@/lib/content-highlight-tags";
-import { ContentHighlightPills } from "../components/content-highlight-pills";
+import HubArticleCard from "../components/hub-article-card";
+import { getHubCards } from "@/lib/hub-cards";
+import { CAT_LABEL } from "@/lib/category-config";
+import { HIGHLIGHT_CARD_ACCENTS_CYCLE } from "@/lib/content-highlight-tags";
 
-type Article = {
-  id: string;
-  title: string;
-  title_en?: string;
-  slug: string;
-  category: string;
-  content: string;
-  content_en?: string;
-  created_at: string;
-  cover_image?: string | null;
+/**
+ * /articles, rendered on the server (2026-10-19). Linked from the homepage, it was a
+ * client page that bailed out of server rendering entirely: Googlebot got an empty
+ * body, no links, no footer and the generic site title. Now the newest pieces are
+ * cards and every older one is a plain link below them, all in the HTML, with no
+ * "Load more" to hide anything behind JavaScript.
+ */
+export const revalidate = 3600;
+
+export const metadata: Metadata = {
+  title: "All Articles",
+  description: "Every Scout Gamer piece in one place: scouting lists, player reports, tactical analysis, transfers and the World Cup 2026 archive.",
+  alternates: { canonical: "https://www.scoutgamer.com/articles" },
 };
 
-const PAGE_SIZE = 12;
+const CARDS = 24;
 
-export default function ArticlesPage() {
-  return <Suspense><ArticlesPageInner /></Suspense>;
-}
-
-function ArticlesPageInner() {
-  const searchParams = useSearchParams();
-  const initialPage = Math.max(1, parseInt(searchParams.get("page") ?? "1", 10) || 1);
-  const [page, setPage] = useState(initialPage);
-  const [articles, setArticles] = useState<Article[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [loadingMore, setLoadingMore] = useState(false);
-  const [hasMore, setHasMore] = useState(true);
-
-  const highlightsBySlug = useMemo(() => {
-    const m = new Map<string, string[]>();
-    for (const a of articles) {
-      const body = a.content_en || a.content;
-      const ttl = a.title_en || a.title;
-      m.set(a.slug, extractArticleHighlights(body, { max: 4, seed: a.slug, titleHint: ttl }));
-    }
-    return m;
-  }, [articles]);
-
-  useEffect(() => {
-    const count = initialPage * PAGE_SIZE;
-    supabase
-      .from("contents")
-      .select("id,title,title_en,slug,category,content,content_en,created_at,cover_image")
-      .eq("status", "published")
-      .order("created_at", { ascending: false })
-      .range(0, count - 1)
-      .then(({ data }) => {
-        const items = (data ?? []) as Article[];
-        setArticles(items);
-        setHasMore(items.length === count);
-        setLoading(false);
-      });
-  }, []);
-
-  const handleLoadMore = useCallback(async () => {
-    setLoadingMore(true);
-    const { data } = await supabase
-      .from("contents")
-      .select("id,title,title_en,slug,category,content,content_en,created_at,cover_image")
-      .eq("status", "published")
-      .order("created_at", { ascending: false })
-      .range(articles.length, articles.length + PAGE_SIZE - 1);
-    const items = (data ?? []) as Article[];
-    setArticles((prev) => [...prev, ...items]);
-    const nextPage = page + 1;
-    setPage(nextPage);
-    window.history.replaceState(null, "", nextPage > 1 ? `?page=${nextPage}` : window.location.pathname);
-    setHasMore(items.length === PAGE_SIZE);
-    setLoadingMore(false);
-  }, [articles.length, page]);
+export default async function ArticlesPage() {
+  const all = await getHubCards(null);
+  const cards = all.slice(0, CARDS);
+  const older = all.slice(CARDS);
 
   return (
     <main style={{ background: "var(--sg-bg)", color: "var(--sg-text-primary)", minHeight: "100vh" }}>
@@ -98,64 +45,40 @@ function ArticlesPageInner() {
           </p>
         </div>
 
-        {loading ? (
-          <div style={{ display: "flex", justifyContent: "center", padding: "80px 0" }}>
-            <span className="h-5 w-5 animate-spin rounded-full border-2 border-t-transparent" style={{ borderColor: "var(--accent)", borderTopColor: "transparent" }} />
-          </div>
-        ) : articles.length === 0 ? (
+        {all.length === 0 ? (
           <p className="mono" style={{ fontSize: 12, textAlign: "center", padding: "80px 0", color: "var(--sg-text-muted)" }}>NO ARTICLES PUBLISHED YET.</p>
-        ) : (
-          <>
-            <div className="grid gap-4" style={{ gridTemplateColumns: "repeat(auto-fill, minmax(min(100%, 280px), 1fr))", marginBottom: 48 }}>
-              {articles.map((article, idx) => {
-                const body = article.content_en || article.content;
-                const title = article.title_en || article.title;
-                const accent = HIGHLIGHT_CARD_ACCENTS_CYCLE[idx % HIGHLIGHT_CARD_ACCENTS_CYCLE.length]!;
-                const pills = highlightsBySlug.get(article.slug) ?? [];
-                const label = CAT_LABEL[article.category] ?? article.category;
-                const coverImg = article.cover_image?.trim() || getCategoryImage(article.category, article.slug);
-                return (
-                  <Link key={article.id} href={categoryArticlePath(article.category, article.slug)}
-                    className="lift" style={{ background: "var(--sg-surface)", border: "1px solid var(--sg-border)", borderRadius: 8, overflow: "hidden", display: "flex", flexDirection: "column", textDecoration: "none" }}>
-                    <div style={{ position: "relative", height: 150, overflow: "hidden" }}>
-                      {/* eslint-disable-next-line @next/next/no-img-element */}
-                      <img src={coverImg} alt="" style={{ width: "100%", height: "100%", objectFit: "cover", filter: "brightness(0.65) saturate(0.85)" }} loading="lazy" />
-                      <div style={{ position: "absolute", inset: 0, background: "linear-gradient(to top, var(--sg-surface) 0%, transparent 60%)" }} />
-                    </div>
-                    <div style={{ padding: "14px 20px 20px", flex: 1, display: "flex", flexDirection: "column" }}>
-                      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 10 }}>
-                        <span className="mono" style={{ fontSize: 9, letterSpacing: "0.2em", color: accent }}>{label}</span>
-                        <span className="mono" style={{ fontSize: 9, letterSpacing: "0.14em", color: "var(--sg-text-muted)" }}>
-                          {new Date(article.created_at).toLocaleDateString("en-US", { day: "numeric", month: "short" })}
-                        </span>
-                      </div>
-                      <h2 className="display" style={{ fontSize: 17, fontWeight: 600, lineHeight: 1.2, letterSpacing: "-0.02em", margin: 0, textWrap: "balance", color: "var(--sg-text-primary)", flex: 1 }}>
-                        {title}
-                      </h2>
-                      <div style={{ marginTop: "auto", paddingTop: 14, borderTop: "1px solid var(--sg-border)" }}>
-                        {pills.length > 0 ? <ContentHighlightPills tags={pills.slice(0, 4)} accent={accent} label="HIGHLIGHTS" /> : null}
-                        <span className="mono u-link" style={{ fontSize: 10, letterSpacing: "0.16em", color: accent, display: "block", marginTop: pills.length ? 10 : 0 }}>READ →</span>
-                      </div>
-                    </div>
-                  </Link>
-                );
-              })}
-            </div>
+        ) : null}
 
-            {hasMore && (
-              <div style={{ display: "flex", justifyContent: "center", marginTop: 8, marginBottom: 32 }}>
-                <a
-                  href={`?page=${page + 1}`}
-                  onClick={(e) => { e.preventDefault(); handleLoadMore(); }}
-                  className="btn"
-                  style={{ pointerEvents: loadingMore ? "none" : undefined, opacity: loadingMore ? 0.6 : undefined }}
-                >
-                  {loadingMore ? "Loading..." : "LOAD MORE →"}
-                </a>
-              </div>
-            )}
-          </>
-        )}
+        {cards.length > 0 ? <h2 className="eyebrow" style={{ margin: "0 0 20px", fontWeight: 400 }}>LATEST</h2> : null}
+        <div className="grid gap-4" style={{ gridTemplateColumns: "repeat(auto-fill, minmax(min(100%, 280px), 1fr))", marginBottom: 56 }}>
+          {cards.map((card, idx) => (
+            <HubArticleCard
+              key={card.id}
+              card={card}
+              variant="browse"
+              label={(CAT_LABEL[card.category] ?? card.category).toUpperCase()}
+              accent={HIGHLIGHT_CARD_ACCENTS_CYCLE[idx % HIGHLIGHT_CARD_ACCENTS_CYCLE.length]!}
+            />
+          ))}
+        </div>
+
+        {older.length > 0 ? (
+          <section aria-label="Older articles">
+            <h2 className="eyebrow" style={{ margin: "0 0 20px", fontWeight: 400 }}>OLDER ARTICLES</h2>
+            <ul style={{ listStyle: "none", margin: 0, padding: 0, display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(min(100%, 340px), 1fr))", gap: "14px 40px" }}>
+              {older.map((card) => (
+                <li key={card.id} style={{ minWidth: 0, borderTop: "1px solid var(--sg-border)", paddingTop: 12 }}>
+                  <div className="mono" style={{ fontSize: 9, letterSpacing: "0.16em", color: "var(--sg-text-muted)", marginBottom: 4 }}>
+                    {(CAT_LABEL[card.category] ?? card.category).toUpperCase()} · {card.dateLong}
+                  </div>
+                  <Link href={card.href} className="u-link" style={{ fontSize: 15, lineHeight: 1.4, color: "var(--sg-text-secondary)", textDecoration: "none" }}>
+                    {card.title}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </section>
+        ) : null}
       </div>
 
       <SiteFooter maxWidth="max-w-7xl" />

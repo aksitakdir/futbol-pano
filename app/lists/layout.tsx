@@ -1,18 +1,20 @@
 import type { Metadata } from "next";
-import ArticleIndexLinks from "../components/article-index-links";
-import FooterOwner from "../components/footer-owner";
 
 export const metadata: Metadata = {
-  title: "Scouting Lists | Scout Gamer",
+  // Absolute: the root template would append "| Scout Gamer" a second time. Defining a
+  // title here also resets the template for this section's articles, which keep their
+  // bare headline as before (a sitewide decision, not part of this fix).
+  title: { absolute: "Scouting Lists | Scout Gamer" },
   description: "Curated scouting lists — best XI picks, position rankings, and transfer target shortlists.",
   alternates: { canonical: "https://www.scoutgamer.com/lists" },
 };
 
+/**
+ * Metadata only since 2026-10-19. The section's article index used to wrap every page
+ * here, inside the footer (FooterOwner). The hub now lists every piece in its own
+ * body, so it keeps a standard footer; the article pages still carry the index,
+ * from their own [slug]/page.tsx, until the in-body "More in" block replaces it.
+ */
 export default function ListelerLayout({ children }: { children: React.ReactNode }) {
-  return (
-    // The section's article index, server-rendered inside the footer (see FooterOwner).
-    <FooterOwner index={<ArticleIndexLinks category="lists" basePath="/lists" heading="All Lists" mode="topics" />}>
-      {children}
-    </FooterOwner>
-  );
+  return children;
 }

@@ -7,6 +7,8 @@ import { categoryArticlePath } from "@/lib/category-config";
 import { articleJsonLd } from "@/lib/article-jsonld";
 import { cardSnapshotFor } from "@/lib/card-snapshot-server";
 import { CardSnapshotProvider } from "@/app/components/card-snapshot-context";
+import ArticleIndexLinks from "@/app/components/article-index-links";
+import FooterOwner from "@/app/components/footer-owner";
 import ListDetailClient from "./client";
 
 type Props = { params: Promise<{ slug: string }> };
@@ -55,8 +57,10 @@ export default async function ListDetailPage({ params }: Props) {
 
   const jsonLd = articleJsonLd(data, `/lists/${slug}`);
 
+  // The section index in the footer gives every article a link to each sibling until
+  // the in-body "More in" block lands (docs/TODO.md, P2).
   return (
-    <>
+    <FooterOwner index={<ArticleIndexLinks category="lists" basePath="/lists" heading="All Lists" mode="topics" />}>
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
@@ -64,6 +68,6 @@ export default async function ListDetailPage({ params }: Props) {
       <CardSnapshotProvider snapshot={cardSnapshotFor(data.id)}>
         <ListDetailClient slug={slug} article={data} />
       </CardSnapshotProvider>
-    </>
+    </FooterOwner>
   );
 }

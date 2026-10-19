@@ -48,21 +48,21 @@ const FRESH_GRACE_MS = 15 * 60_000;
 
 /**
  * The floor for each route, as measured on 2026-10-19 (commit 61b6752).
- *   body  — unique article links in the page body (outside <footer>), at least
- *   total — body + footer, at least; "all" = every sitemap article of `section`
+ *   body  — unique article links in the page body (outside <footer>), at least; "all" as below
+ *   total — body + footer, at least; "all" = every sitemap article of `section` ("*": all sections)
  *   require.h1 / require.main — switched on by the phase that server-renders the route
  */
 const ROUTES = [
   // Body: the "In focus" spotlights (2-6 links, data-driven). Total: the footer index, 3 × 15.
   { path: "/", body: 1, total: 45, fresh: ["lists", "radar", "tactics-lab"] },
-  { path: "/lists", section: "lists", body: 0, total: "all" },
-  { path: "/radar", section: "radar", body: 0, total: "all" },
-  // Body: the six archetype cards, the only server-rendered cards on any hub today.
-  { path: "/tactics-lab", section: "tactics-lab", body: 6, total: "all", require: { h1: true, main: true } },
+  // P1 (2026-10-19): the section hubs render every piece in the page body.
+  { path: "/lists", section: "lists", body: "all", total: "all", require: { h1: true, main: true } },
+  { path: "/radar", section: "radar", body: "all", total: "all", require: { h1: true, main: true } },
+  { path: "/tactics-lab", section: "tactics-lab", body: "all", total: "all", require: { h1: true, main: true } },
   { path: "/transfers", section: "transfers", body: 0, total: "all" },
   { path: "/world-cup-2026", section: "world-cup-2026", body: 0, total: "all" },
-  // Linked from the homepage, and empty for Googlebot today. Report only until P1.
-  { path: "/articles", body: 0, total: 0 },
+  // Every published piece: the newest as cards, the rest as plain links.
+  { path: "/articles", section: "*", body: "all", total: "all", require: { h1: true, main: true }, fresh: SECTIONS },
 ];
 /** Sibling links an article must carry (body + footer today; body once P2 lands). */
 const ARTICLE_SIBLINGS = { body: 0, total: 6 };
@@ -140,7 +140,7 @@ if (articles.size === 0) {
   process.exit(1);
 }
 const articleSet = new Set(articles.keys());
-const bySection = (s) => [...articles].filter(([, a]) => a.section === s).sort((a, b) => b[1].lastmod - a[1].lastmod);
+const bySection = (s) => [...articles].filter(([, a]) => s === "*" || a.section === s).sort((a, b) => b[1].lastmod - a[1].lastmod);
 const newest = (s) => bySection(s).find(([, a]) => Date.now() - a.lastmod > FRESH_GRACE_MS)?.[0];
 
 // ── Hubs and the homepage ─────────────────────────────────────────────────────
@@ -159,12 +159,16 @@ for (const r of ROUTES) {
     const body = articleLinks(p.pageHrefs, articleSet, r.path);
     const all = new Set([...body, ...articleLinks(p.footerHrefs, articleSet, r.path)]);
     const want = r.total === "all" ? bySection(r.section).length : r.total;
+    const wantBody = r.body === "all" ? bySection(r.section).length : r.body;
     const facts = `body ${body.size}, footer+body ${all.size}, main ${p.main}, h1 ${p.h1}${p.bailouts ? `, ${p.bailouts} client bailout(s)` : ""}${cache ? ` [${cache}]` : ""}`;
     record.push({ path: r.path, body: body.size, total: all.size, main: p.main, h1: p.h1, bailouts: p.bailouts });
     if (RECORD) { console.log(`  ·     ${r.path} — ${facts}`); continue; }
 
     const problems = [];
-    if (body.size < r.body) problems.push(`body has ${body.size} article links, floor is ${r.body}`);
+    if (body.size < wantBody) {
+      const missing = r.body === "all" ? bySection(r.section).map(([path]) => path).filter((path) => !body.has(path)) : [];
+      problems.push(`body has ${body.size} article links, floor is ${r.body === "all" ? `all ${wantBody}` : wantBody}${missing.length ? ` — missing ${missing.slice(0, 3).join(", ")}${missing.length > 3 ? ` +${missing.length - 3}` : ""}` : ""}`);
+    }
     if (all.size < want) {
       const missing = r.total === "all" ? bySection(r.section).map(([path]) => path).filter((path) => !all.has(path)) : [];
       problems.push(`${all.size} article links in all, expected ${r.total === "all" ? `all ${want}` : `>= ${want}`}${missing.length ? ` — missing ${missing.slice(0, 3).join(", ")}${missing.length > 3 ? ` +${missing.length - 3}` : ""}` : ""}`);

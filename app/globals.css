@@ -1079,6 +1079,19 @@ button { font-family: inherit; cursor: pointer; }
   padding-top: clamp(40px, 5.5vw, 72px);
   padding-bottom: clamp(56px, 7vw, 96px);
 }
+/* Section hub heroes (/lists, /radar, /tactics-lab): headline and intro side by
+   side from 768px, stacked on phones. Replaces an inline 2fr/1fr grid that
+   squeezed the h1 on small screens. */
+.sg-hub-hero { display: grid; grid-template-columns: 1fr; gap: 16px; align-items: end; }
+@media (min-width: 768px) { .sg-hub-hero { grid-template-columns: 2fr 1fr; gap: 32px; } }
+/* Tactics Lab archetypes: six cards, so 1, 2 or 3 columns, never 4 + 2. */
+.sg-archetype-grid { display: grid; grid-template-columns: 1fr; gap: 16px; }
+@media (min-width: 640px) { .sg-archetype-grid { grid-template-columns: repeat(2, 1fr); } }
+@media (min-width: 1024px) { .sg-archetype-grid { grid-template-columns: repeat(3, 1fr); } }
+/* "Browse by topic" chips in the /lists body. */
+.sg-topic-row { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 300px), 1fr)); gap: 20px 40px; margin-bottom: 48px; }
+.sg-topic-row .sg-index-chip { font-size: 13px; padding: 5px 12px; }
+
 .sg-page-header-grid {
   display: grid;
   grid-template-columns: 1fr;

@@ -1,94 +1,35 @@
-"use client";
-
-import { Suspense, useEffect, useState, useMemo, useCallback } from "react";
 import Link from "next/link";
-import { useSearchParams } from "next/navigation";
 import SiteHeader from "../components/site-header";
 import SiteFooter from "../components/site-footer";
+import HubArticleCard from "../components/hub-article-card";
 import { ContentHighlightPills } from "../components/content-highlight-pills";
-import { supabase } from "@/lib/supabase";
-import { extractArticleHighlights, HIGHLIGHT_CARD_ACCENTS_CYCLE } from "@/lib/content-highlight-tags";
-import { getCategoryImage } from "@/lib/category-images";
-import { articleExcerpt } from "@/lib/article-excerpt";
+import { getHubCards } from "@/lib/hub-cards";
+import { groupTopics } from "@/lib/list-topics";
+import { HIGHLIGHT_CARD_ACCENTS_CYCLE } from "@/lib/content-highlight-tags";
 
-
-type Content = {
-  id: string; title: string; title_en?: string; slug: string;
-  content?: string; content_en?: string; created_at: string;
-  cover_image?: string | null;
-};
-
-const PAGE_SIZE = 9;
+/**
+ * /lists, rendered on the server (2026-10-19). It used to be a client page whose
+ * useSearchParams bailed the whole page out of server rendering: Googlebot got no
+ * <main>, no <h1> and no card. Every published list is now in the HTML, with a
+ * "Browse by topic" row between the cover list and the grid. The old "Load more" button is gone: the
+ * section is small enough to show in full, and paging would hide links again.
+ * Fresh after a publish through lib/revalidate-content.ts; hourly as a fallback.
+ */
+export const revalidate = 3600;
 
 const LIST_COVER_ACCENT = "var(--emerald)";
 
-function listSummary(item: Content, max = 200): string {
-  const body = item.content_en || item.content || "";
-  return articleExcerpt(body, { max });
-}
-
-export default function ListelerPage() {
-  return <Suspense><ListelerPageInner /></Suspense>;
-}
-
-function ListelerPageInner() {
-  const searchParams = useSearchParams();
-  const initialPage = Math.max(1, parseInt(searchParams.get("page") ?? "1", 10) || 1);
-  const [page, setPage] = useState(initialPage);
-  const [dbLists, setDbLists] = useState<Content[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [loadingMore, setLoadingMore] = useState(false);
-  const [hasMore, setHasMore] = useState(true);
-
-  const highlightsBySlug = useMemo(() => {
-    const m = new Map<string, string[]>();
-    for (const item of dbLists) {
-      const body = item.content_en || item.content || "";
-      const ttl = item.title_en || item.title;
-      m.set(item.slug, extractArticleHighlights(body, { max: 4, seed: item.slug, titleHint: ttl }));
-    }
-    return m;
-  }, [dbLists]);
-
-  useEffect(() => {
-    const count = initialPage * PAGE_SIZE;
-    supabase.from("contents")
-      .select("id,title,title_en,slug,content,content_en,created_at,cover_image")
-      .eq("status", "published").eq("category", "lists")
-      .order("created_at", { ascending: false }).range(0, count - 1)
-      .then(({ data }) => {
-        const items = data ?? [];
-        setDbLists(items); setHasMore(items.length === count); setLoading(false);
-      });
-  }, []);
-
-  const handleLoadMore = useCallback(async () => {
-    setLoadingMore(true);
-    const { data } = await supabase.from("contents")
-      .select("id,title,title_en,slug,content,content_en,created_at,cover_image")
-      .eq("status", "published").eq("category", "lists")
-      .order("created_at", { ascending: false })
-      .range(dbLists.length, dbLists.length + PAGE_SIZE - 1);
-    const items = data ?? [];
-    setDbLists(prev => [...prev, ...items]);
-    const nextPage = page + 1;
-    setPage(nextPage);
-    window.history.replaceState(null, "", nextPage > 1 ? `?page=${nextPage}` : window.location.pathname);
-    setHasMore(items.length === PAGE_SIZE);
-    setLoadingMore(false);
-  }, [dbLists.length, page]);
-
-  const featured = dbLists[0];
-  const recentDbLists = dbLists.slice(1);
-  const featuredHighlights = featured ? highlightsBySlug.get(featured.slug) : undefined;
-  const featuredTitle = featured ? featured.title_en || featured.title : "";
+export default async function ListsPage() {
+  const cards = await getHubCards("lists");
+  const [featured, ...rest] = cards;
+  const { groups } = groupTopics(cards.map((c) => ({ href: c.href, title: c.title, createdAt: c.createdAt })));
 
   return (
     <main style={{ background: "var(--sg-bg)", color: "var(--sg-text-primary)", minHeight: "100vh" }}>
       <SiteHeader activeNav="lists" />
       <div style={{ paddingTop: "68px" }} />
 
-      <div className="sg-hero-text-block sg-page-shell--hero" style={{ display: "grid", gridTemplateColumns: "2fr 1fr", gap: 32, alignItems: "end" }}>
+      <div className="sg-hero-text-block sg-page-shell--hero sg-hub-hero">
         <div>
           <div className="eyebrow" style={{ color: "var(--emerald)" }}>ARCHIVE</div>
           <h1 className="display" style={{ fontSize: "clamp(56px, 7vw, 84px)", fontWeight: 700, letterSpacing: "-0.04em", lineHeight: 0.9, margin: "8px 0 0" }}>
@@ -101,23 +42,17 @@ function ListelerPageInner() {
       </div>
 
       <div className="sg-page-shell" style={{ paddingBottom: 80 }}>
-        {loading ? (
-          <div style={{ display: "flex", justifyContent: "center", padding: "48px 0 8px" }}>
-            <span className="h-5 w-5 animate-spin rounded-full border-2 border-t-transparent" style={{ borderColor: "var(--emerald)", borderTopColor: "transparent" }} />
-          </div>
-        ) : null}
-
-        {!loading && dbLists.length === 0 ? (
+        {cards.length === 0 ? (
           <p className="mono" style={{ fontSize: 12, textAlign: "center", padding: "40px 0", color: "var(--sg-text-muted)" }}>NO PUBLISHED LISTS YET.</p>
         ) : null}
 
-        {!loading && featured ? (
-          <Link href={`/lists/${featured.slug}`} className="lift" style={{ display: "block", position: "relative", overflow: "hidden", background: "linear-gradient(135deg, oklch(0.17 0.04 155) 0%, oklch(0.12 0.018 200) 72%)", border: "1px solid var(--sg-border)", borderRadius: 16, marginBottom: recentDbLists.length > 0 ? 48 : hasMore ? 36 : 48, minHeight: 320, textDecoration: "none" }}>
+        {featured ? (
+          <Link href={featured.href} className="lift" style={{ display: "block", position: "relative", overflow: "hidden", background: "linear-gradient(135deg, oklch(0.17 0.04 155) 0%, oklch(0.12 0.018 200) 72%)", border: "1px solid var(--sg-border)", borderRadius: 16, marginBottom: 48, minHeight: 320, textDecoration: "none" }}>
             <div style={{ position: "absolute", top: 0, left: 0, right: 0, height: 3, background: LIST_COVER_ACCENT }} />
-            {featured.cover_image?.trim() ? (
+            {featured.cover ? (
               <>
                 {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src={featured.cover_image} alt="" style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover", filter: "brightness(0.38) saturate(0.9)" }} />
+                <img src={featured.cover} alt="" style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover", filter: "brightness(0.38) saturate(0.9)" }} />
                 <div style={{ position: "absolute", inset: 0, background: "linear-gradient(to right, rgba(13,18,30,0.94) 0%, rgba(13,18,30,0.72) 55%, rgba(13,18,30,0.45) 100%)" }} />
                 <div style={{ position: "absolute", inset: 0, background: "linear-gradient(to top, rgba(13,18,30,0.85) 0%, transparent 50%)" }} />
               </>
@@ -138,20 +73,18 @@ function ListelerPageInner() {
                 </svg>
               </>
             )}
-            <div style={{ position: "relative", padding: "48px", maxWidth: 760 }}>
+            <div style={{ position: "relative", padding: "clamp(24px, 5vw, 48px)", maxWidth: 760 }}>
               <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 24 }}>
                 <span className="chip solid" style={{ background: LIST_COVER_ACCENT, borderColor: LIST_COVER_ACCENT, color: "var(--ink-900)", fontSize: 10 }}>COVER LIST</span>
-                <span className="mono" style={{ fontSize: 10, letterSpacing: "0.18em", color: "var(--sg-text-muted)" }}>
-                  LISTS · {new Date(featured.created_at).toLocaleDateString("en-US", { day: "numeric", month: "short", year: "numeric" })}
-                </span>
+                <span className="mono" style={{ fontSize: 10, letterSpacing: "0.18em", color: "var(--sg-text-muted)" }}>LISTS · {featured.dateLong}</span>
               </div>
               <h2 className="display" style={{ fontSize: "clamp(32px, 4.4vw, 56px)", fontWeight: 700, letterSpacing: "-0.04em", margin: 0, lineHeight: 0.95, textWrap: "balance", color: "var(--sg-text-primary)" }}>
-                <span className="grad-text">{featuredTitle}</span>
+                <span className="grad-text">{featured.title}</span>
               </h2>
-              <p style={{ fontSize: 16, color: "var(--sg-text-secondary)", lineHeight: 1.55, marginTop: 18, maxWidth: 580 }}>{listSummary(featured)}</p>
-              {featuredHighlights?.length ? (
+              <p style={{ fontSize: 16, color: "var(--sg-text-secondary)", lineHeight: 1.55, marginTop: 18, maxWidth: 580 }}>{featured.excerpt}</p>
+              {featured.pills.length ? (
                 <div style={{ marginTop: 22 }}>
-                  <ContentHighlightPills tags={featuredHighlights.slice(0, 4)} accent={LIST_COVER_ACCENT} label="HIGHLIGHTS" />
+                  <ContentHighlightPills tags={featured.pills.slice(0, 4)} accent={LIST_COVER_ACCENT} label="HIGHLIGHTS" />
                 </div>
               ) : null}
               <div style={{ marginTop: 24 }}>
@@ -161,62 +94,33 @@ function ListelerPageInner() {
           </Link>
         ) : null}
 
-        {!loading && dbLists.length > 0 && (
-          <section style={{ marginBottom: 64 }}>
-            {recentDbLists.length > 0 ? (
-              <>
-                <div className="eyebrow" style={{ color: "var(--emerald)", marginBottom: 20 }}>LATEST LISTS</div>
-                <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(min(100%, 260px), 1fr))", gap: 16 }}>
-                  {recentDbLists.map((item, idx) => {
-                    const accent = HIGHLIGHT_CARD_ACCENTS_CYCLE[(idx + 1) % HIGHLIGHT_CARD_ACCENTS_CYCLE.length]!;
-                    const pills = highlightsBySlug.get(item.slug) ?? [];
-                    const coverImg = item.cover_image?.trim() || getCategoryImage("lists", item.slug);
-                    return (
-                      <Link key={item.id} href={`/lists/${item.slug}`}
-                        className="lift" style={{ background: "var(--sg-surface)", border: "1px solid var(--sg-border)", borderRadius: 12, overflow: "hidden", cursor: "pointer", textDecoration: "none", display: "flex", flexDirection: "column" }}>
-                        <div style={{ position: "relative", height: 140, overflow: "hidden" }}>
-                          {/* eslint-disable-next-line @next/next/no-img-element */}
-                          <img src={coverImg} alt="" style={{ width: "100%", height: "100%", objectFit: "cover", filter: "brightness(0.65) saturate(0.85)" }} loading="lazy" />
-                          <div style={{ position: "absolute", inset: 0, background: "linear-gradient(to top, var(--sg-surface) 0%, transparent 60%)" }} />
-                        </div>
-                        <div style={{ padding: "16px 20px 24px", flex: 1, display: "flex", flexDirection: "column" }}>
-                          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 14 }}>
-                            <span className="mono" style={{ fontSize: 9, letterSpacing: "0.2em", color: accent }}>
-                              LIST{!item.title_en ? " · DRAFT" : ""}
-                            </span>
-                            <span className="mono" style={{ fontSize: 9, letterSpacing: "0.14em", color: "var(--sg-text-muted)" }}>
-                              {new Date(item.created_at).toLocaleDateString("en-US", { day: "numeric", month: "short" })}
-                            </span>
-                          </div>
-                          <h3 className="display" style={{ fontSize: 18, fontWeight: 600, lineHeight: 1.2, letterSpacing: "-0.02em", margin: 0, textWrap: "balance", color: "var(--sg-text-primary)", flex: 1 }}>
-                            {item.title_en || item.title}
-                          </h3>
-                          <div style={{ marginTop: "auto", paddingTop: 16, borderTop: "1px solid var(--sg-border)" }}>
-                            {pills.length > 0 ? <ContentHighlightPills tags={pills} accent={accent} label="HIGHLIGHTS" /> : null}
-                            <span className="mono u-link" style={{ fontSize: 11, letterSpacing: "0.16em", color: accent, display: "block", marginTop: pills.length ? 12 : 0 }}>READ →</span>
-                          </div>
-                        </div>
-                      </Link>
-                    );
-                  })}
-                </div>
-              </>
-            ) : null}
-            {hasMore && (
-              <div style={{ marginTop: recentDbLists.length > 0 ? 36 : 0, marginBottom: 32, display: "flex", justifyContent: "center" }}>
-                <a
-                  href={`?page=${page + 1}`}
-                  onClick={(e) => { e.preventDefault(); handleLoadMore(); }}
-                  className="btn"
-                  style={{ borderColor: "var(--emerald)", color: "var(--emerald)", pointerEvents: loadingMore ? "none" : undefined, opacity: loadingMore ? 0.6 : undefined }}
-                >
-                  {loadingMore ? "Loading..." : "LOAD MORE →"}
-                </a>
+        {groups.length > 0 ? (
+          <nav aria-label="Browse lists by topic" className="sg-topic-row">
+            {groups.map(({ name, items }) => (
+              <div key={name} style={{ minWidth: 0 }}>
+                <h2 className="sg-index-subheading" style={{ marginBottom: 10 }}>{name}</h2>
+                <ul className="sg-index-chips">
+                  {items.map((it) => (
+                    <li key={it.href}>
+                      <Link href={it.href} title={it.title} className="sg-index-chip">{it.label}</Link>
+                    </li>
+                  ))}
+                </ul>
               </div>
-            )}
-          </section>
-        )}
+            ))}
+          </nav>
+        ) : null}
 
+        {rest.length > 0 ? (
+          <section style={{ marginBottom: 64 }}>
+            <h2 className="eyebrow" style={{ color: "var(--emerald)", margin: "0 0 20px", fontWeight: 400 }}>ALL LISTS</h2>
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(min(100%, 260px), 1fr))", gap: 16 }}>
+              {rest.map((card, idx) => (
+                <HubArticleCard key={card.id} card={card} label="LIST" accent={HIGHLIGHT_CARD_ACCENTS_CYCLE[(idx + 1) % HIGHLIGHT_CARD_ACCENTS_CYCLE.length]!} />
+              ))}
+            </div>
+          </section>
+        ) : null}
       </div>
 
       <SiteFooter maxWidth="max-w-7xl" />

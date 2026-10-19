@@ -59,15 +59,20 @@ export function activeCoverScopesForContent(pins: CoverStoriesMap, contentId: st
     .map(([scope]) => scope);
 }
 
-/** Put pinned article first; drops duplicate if already in list. */
-export function orderWithCoverPin<T extends { id: string }>(
+/**
+ * Put pinned article first; drops duplicate if already in list. Ids are compared as
+ * strings: Supabase returns contents.id as a number while the pin is stored as a
+ * string, so a strict comparison never matched and no pin ever took effect (found
+ * 2026-10-19).
+ */
+export function orderWithCoverPin<T extends { id: string | number }>(
   items: T[],
   pinnedContentId: string | undefined,
 ): T[] {
   if (!pinnedContentId) return items;
-  const pinned = items.find((item) => item.id === pinnedContentId);
+  const pinned = items.find((item) => String(item.id) === pinnedContentId);
   if (!pinned) return items;
-  return [pinned, ...items.filter((item) => item.id !== pinnedContentId)];
+  return [pinned, ...items.filter((item) => String(item.id) !== pinnedContentId)];
 }
 
 export function buildCoverStoriesPatch(
@@ -88,7 +93,7 @@ export function buildCoverStoriesPatch(
   return next;
 }
 
-export function prioritizeHeroContent<T extends { id: string }>(
+export function prioritizeHeroContent<T extends { id: string | number }>(
   items: T[],
   pinnedContentId: string | undefined,
 ): T[] {

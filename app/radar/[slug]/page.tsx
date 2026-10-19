@@ -7,6 +7,8 @@ import { categoryArticlePath } from "@/lib/category-config";
 import { articleJsonLd } from "@/lib/article-jsonld";
 import { cardSnapshotFor } from "@/lib/card-snapshot-server";
 import { CardSnapshotProvider } from "@/app/components/card-snapshot-context";
+import ArticleIndexLinks from "@/app/components/article-index-links";
+import FooterOwner from "@/app/components/footer-owner";
 import { frozenRow } from "@/lib/card-snapshot";
 import RadarDetailClient from "./client";
 import type { PlayerCardData } from "@/app/components/player-card";
@@ -96,8 +98,10 @@ export default async function RadarDetailPage({ params }: Props) {
 
   const jsonLd = articleJsonLd(data, `/radar/${slug}`);
 
+  // The section index in the footer gives every article a link to each sibling until
+  // the in-body "More in" block lands (docs/TODO.md, P2).
   return (
-    <>
+    <FooterOwner index={<ArticleIndexLinks category="radar" basePath="/radar" heading="All Radar Reports" />}>
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
@@ -109,6 +113,6 @@ export default async function RadarDetailPage({ params }: Props) {
           playerCard={playerCard}
         />
       </CardSnapshotProvider>
-    </>
+    </FooterOwner>
   );
 }
