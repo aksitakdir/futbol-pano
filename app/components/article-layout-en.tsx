@@ -800,7 +800,8 @@ export default function ArticleLayoutEn({
         </section>
       )}
 
-      {popular.length > 0 && (
+      {/* Below three it is not a ranking (see app/api/popular/route.ts). */}
+      {popular.length >= 3 && (
         <section style={{ borderTop: "1px solid var(--sg-border)", background: "var(--sg-surface-low, var(--sg-bg))" }}>
           <div className="sg-site-container" style={{ padding: "48px 0 56px" }}>
             <div className="mono" style={{ fontSize: 10, letterSpacing: "0.2em", color: "var(--amber)", marginBottom: 24 }}>MOST READ</div>

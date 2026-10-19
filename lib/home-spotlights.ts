@@ -132,12 +132,13 @@ function inWindows(def: SpotlightDef, today: string) {
 /** Server-side: the live spotlights, best first, with their newest articles. */
 export async function loadHomeSpotlights(now = new Date()): Promise<SpotlightCard[]> {
   const supabase = createClient();
-  const { data } = await supabase
+  const { data, error } = await supabase
     .from("contents")
     .select("id,title,title_en,slug,category,hub_tags,created_at")
     .eq("status", "published")
     .order("created_at", { ascending: false })
     .limit(500);
+  if (error) throw error; // never cache an empty block (see article-index-links.tsx)
   const rows = (data ?? []) as Row[];
   const today = now.toISOString().slice(0, 10);
 

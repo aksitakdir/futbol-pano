@@ -347,7 +347,7 @@ const CATEGORY_PATHS = {
  * while Google crawled the version it replaced. Never fail a publish over this: the row
  * is already written, and a stale page is a smaller problem than a confusing exit code.
  */
-async function revalidate(category, slug) {
+async function revalidate(category, slug, previous = []) {
   const folder = CATEGORY_PATHS[category];
   const base = (env.SITE_URL || "https://www.scoutgamer.com").replace(/\/$/, "");
   if (!folder || !env.ADMIN_PASSWORD) {
@@ -362,7 +362,9 @@ async function revalidate(category, slug) {
         "content-type": "application/json",
         authorization: `Basic ${Buffer.from(`scout:${env.ADMIN_PASSWORD}`).toString("base64")}`,
       },
-      body: JSON.stringify({ paths }),
+      // `changes` refreshes the hub, home, /articles and every sibling article page
+      // (lib/revalidate-content.ts); `paths` keeps older deployments working.
+      body: JSON.stringify({ paths, changes: [{ category, slug }, ...previous] }),
     });
     if (res.ok) console.log(`  note     Revalidated ${paths.join(", ")} — the change is live now, not in 24 hours.`);
     else console.log(`  note     Revalidation returned HTTP ${res.status}; the page may serve old HTML for up to a day.`);
@@ -565,7 +567,7 @@ async function main() {
      */
     const { data: current } = await supabase
       .from("contents")
-      .select("status")
+      .select("status, category, slug")
       .eq("id", updateId)
       .maybeSingle();
 
@@ -588,7 +590,12 @@ async function main() {
       console.error("DB update failed:", error.message);
       process.exit(1);
     }
-    if (data.status === "published") await revalidate(category, data.slug);
+    // Taking a piece offline changes the same pages as putting one up. A move to another
+    // section (or a new slug) must also refresh the pages that listed it before.
+    if (data.status === "published" || process.argv.includes("--unpublish")) {
+      const moved = current && (current.category !== category || current.slug !== data.slug);
+      await revalidate(category, data.slug, moved ? [{ category: current.category, slug: current.slug }] : []);
+    }
 
     console.log(JSON.stringify({
       ok: true, updated: true, id: data.id, slug: data.slug,

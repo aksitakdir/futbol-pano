@@ -130,13 +130,17 @@ const tracks = (px: number) => `repeat(auto-fill, minmax(min(${px}px, 100%), 1fr
 
 async function fetchRows(category: string, limit: number): Promise<Row[]> {
   const supabase = createClient();
-  const { data } = await supabase
+  const { data, error } = await supabase
     .from("contents")
     .select("id,title,title_en,slug,created_at")
     .eq("status", "published")
     .eq("category", category)
     .order("created_at", { ascending: false })
     .limit(limit);
+  // Throw rather than render an empty index: an error is never cached as a crawl path
+  // with no links in it (a timed regeneration keeps the last good page; a request
+  // right after an on-demand revalidation gets an uncached error).
+  if (error) throw error;
   return (data ?? []) as Row[];
 }
 

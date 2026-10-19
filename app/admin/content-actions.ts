@@ -1,9 +1,8 @@
 "use server";
 
-import { revalidatePath } from "next/cache";
 import { supabaseAdmin } from "@/lib/supabase-admin";
 import { isAdminRequest } from "@/lib/admin-auth";
-import { categoryArticlePath } from "@/lib/category-config";
+import { revalidateContent, revalidateEverything, type ContentRef } from "@/lib/revalidate-content";
 
 type CreateResult = { ok: boolean; id?: string; error?: string };
 type UpdateResult = { ok: boolean; error?: string };
@@ -43,6 +42,7 @@ export async function createContent(
   if (error || !data?.id) {
     return { ok: false, error: error?.message ?? "No id returned" };
   }
+  if (payload.status === "published") revalidateContent([withHubTags(payload) as ContentRef]);
   return { ok: true, id: data.id as string };
 }
 
@@ -52,19 +52,22 @@ export async function updateContent(
   payload: Record<string, unknown>,
 ): Promise<UpdateResult> {
   if (!(await isAdminRequest())) return { ok: false, error: "Unauthorized" };
-  const { error } = await supabaseAdmin
+  // Read the row first: a changed slug or section must also refresh the pages that
+  // listed it under the old one.
+  const cols = "category,slug,hub_tags,status";
+  const { data: before, error: readErr } = await supabaseAdmin.from("contents").select(cols).eq("id", id).maybeSingle();
+  const { data: after, error } = await supabaseAdmin
     .from("contents")
     .update(withHubTags(payload))
-    .eq("id", id);
+    .eq("id", id)
+    .select(cols)
+    .maybeSingle();
   if (error) return { ok: false, error: error.message };
 
-  const slug = typeof payload.slug === "string" ? payload.slug : undefined;
-  const category = typeof payload.category === "string" ? payload.category : undefined;
-  if (slug && category) {
-    const articlePath = categoryArticlePath(category, slug);
-    revalidatePath(articlePath);
-    revalidatePath("/");
-  }
-
+  // A draft that is not and was not live is on no public page. If the row could not
+  // be read first, the old slug and section are unknown: refresh everything.
+  const rows = [before, after].filter(Boolean) as (ContentRef & { status?: string })[];
+  if (readErr) revalidateEverything();
+  else if (rows.some((r) => r.status === "published")) revalidateContent(rows);
   return { ok: true };
 }

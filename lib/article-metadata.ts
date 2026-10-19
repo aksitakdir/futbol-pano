@@ -38,15 +38,19 @@ export async function articleMetadata(
   slug: string,
   urlPath: string,
 ): Promise<Metadata> {
-  try {
-    const supabase = createClient();
-    const { data } = await supabase
-      .from("contents")
-      .select("title,title_en,content,content_en,sections_json,cover_image,created_at")
-      .eq("slug", slug)
-      .maybeSingle();
+  // Queried outside the try: a database error must fail the render (so it is not
+  // cached as a page titled "Not Found" with no canonical), and only a missing row,
+  // or a duplicate slug (PGRST116), gets the Not Found title.
+  const supabase = createClient();
+  const { data, error } = await supabase
+    .from("contents")
+    .select("title,title_en,content,content_en,sections_json,cover_image,created_at")
+    .eq("slug", slug)
+    .maybeSingle();
+  if (error && error.code !== "PGRST116") throw error;
+  if (!data) return { title: "Not Found" };
 
-    if (!data) return { title: "Not Found" };
+  try {
 
     const title = data.title_en || data.title;
     const raw = data.content_en || data.content || "";

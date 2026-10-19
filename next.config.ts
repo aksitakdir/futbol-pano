@@ -24,6 +24,10 @@ const nextConfig: NextConfig = {
    */
   experimental: {
     turbopackFileSystemCacheForBuild: false,
+    // Pages now throw on a Supabase error instead of caching an empty or 404 page
+    // (2026-10-19), so one network blip during prerender would fail the deploy.
+    // Retry each page a few times, with backoff, before giving up.
+    staticGenerationRetryCount: 3,
   },
   images: {
     remotePatterns: [

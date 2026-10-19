@@ -47,6 +47,31 @@ const supabase = createClient(
   write ? process.env.SUPABASE_SERVICE_ROLE_KEY : process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
 );
 
+/**
+ * A published page is cached for up to a day, so a corrected row is invisible until
+ * the pages that show it are refreshed: the article, its hub, home and its siblings
+ * (lib/revalidate-content.ts, through /api/revalidate). Never fails the patch.
+ */
+async function revalidate(row) {
+  if (!process.env.ADMIN_PASSWORD) {
+    console.log("  note     no ADMIN_PASSWORD in .env.local: the live page may show the old text for up to a day");
+    return;
+  }
+  try {
+    const res = await fetch("https://www.scoutgamer.com/api/revalidate", {
+      method: "POST",
+      headers: {
+        "content-type": "application/json",
+        authorization: `Basic ${Buffer.from(`scout:${process.env.ADMIN_PASSWORD}`).toString("base64")}`,
+      },
+      body: JSON.stringify({ changes: [{ category: row.category, slug: row.slug }] }),
+    });
+    console.log(res.ok ? "  revalidated the article, its hub, home and its siblings" : `  note     revalidation answered ${res.status}`);
+  } catch (err) {
+    console.log(`  note     revalidation failed: ${err.message}`);
+  }
+}
+
 /** Every string inside a block, with a setter, so a match can be replaced in place. */
 function* strings(node, set) {
   if (typeof node === "string") {
@@ -66,7 +91,7 @@ const unbold = (s) => s.replace(/\*\*([^*]+)\*\*/g, "$1").replace(/<\/?strong>/g
 let failed = 0;
 
 for (const batch of batches) {
-  const { data: row, error } = await supabase.from("contents").select("id,slug,status,sections_json").eq("id", batch.article_id).single();
+  const { data: row, error } = await supabase.from("contents").select("id,slug,status,category,sections_json").eq("id", batch.article_id).single();
   if (error || !row) {
     console.log(`#${batch.article_id}: ${error?.message ?? "not found"}`);
     failed++;
@@ -106,6 +131,7 @@ for (const batch of batches) {
     .update({ sections_json: blocks, content_en: sectionsToHtml(blocks) })
     .eq("id", row.id);
   console.log(e2 ? `  ERROR ${e2.message}` : `  written: ${applied} edit(s); backup in backups/`);
+  if (!e2 && row.status === "published") await revalidate(row);
 }
 if (!write) console.log("\n--dry: nothing written. Pass --write (and --published for live pieces) to apply.");
 process.exit(failed ? 2 : 0);

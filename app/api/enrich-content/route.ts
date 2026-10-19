@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { isAdminRequest } from "@/lib/admin-auth";
 import { createClient } from "@supabase/supabase-js";
 import { parseMarkupToBlocks } from "@/lib/parse-blocks";
+import { revalidateContent } from "@/lib/revalidate-content";
 
 export const maxDuration = 60;
 
@@ -151,7 +152,7 @@ export async function POST(request: Request) {
   if (body.bulk) {
     const { data: allArticles } = await supabase
       .from("contents")
-      .select("id,title,title_en,slug,content,content_en,sections_json,category,status")
+      .select("id,title,title_en,slug,content,content_en,sections_json,category,status,hub_tags")
       .eq("category", "tactics-lab")
       .eq("status", "published");
 
@@ -184,7 +185,7 @@ export async function POST(request: Request) {
   // Look up by ID or slug
   const query = supabase
     .from("contents")
-    .select("id,title,title_en,slug,content,content_en,sections_json,category");
+    .select("id,title,title_en,slug,content,content_en,sections_json,category,status,hub_tags");
   if (articleId) query.eq("id", articleId);
   else query.eq("slug", articleSlug!);
 
@@ -304,6 +305,11 @@ async function enrichArticle(
       .eq("id", article.id);
     if (updateErr) throw new Error(`DB save failed: ${updateErr.message}`);
     saved = true;
+    // The Enrich button can publish, and can rewrite a live piece: refresh the pages
+    // that show it (lib/revalidate-content.ts).
+    if (published || article.status === "published") {
+      revalidateContent([{ category: article.category, slug: article.slug, hub_tags: article.hub_tags }]);
+    }
     console.log(`[enrich] Saved "${title}" — ${wordCount} words, published: ${published}`);
   }
 

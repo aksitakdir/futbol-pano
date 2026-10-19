@@ -42,7 +42,12 @@ export default async function ListDetailPage({ params }: Props) {
   if (!isDraft) query = query.eq("status", "published");
   const { data, error } = await query.maybeSingle();
 
-  if (error || !data) notFound();
+  // A query error must throw, never 404: a notFound() here was cached for a day. A
+  // timed regeneration that throws keeps serving the last good page; a request right
+  // after an on-demand revalidation gets an uncached error instead. A duplicate slug
+  // (PGRST116) stays a 404, as before.
+  if (error && error.code !== "PGRST116") throw error;
+  if (!data) notFound();
 
   if (data.category !== "lists") {
     redirect(categoryArticlePath(data.category, data.slug));
