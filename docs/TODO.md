@@ -12,6 +12,51 @@ tekrar eden sorunları görmenin tek yolu.
 
 ---
 
+## 🚨 Doğru çözüm: linkler sayfa gövdesine, footer standarda (plan 2026-10-19)
+
+Footer'daki dizin bir yamaydı: hub'lar ve ana sayfa yazı listelerini tarayıcıda çekiyor,
+Google ilk geçişte gövdede link görmüyor. Plan 5 okuyucu + planlayıcı + eleştirmen ile
+çıkarıldı; tam çıktı oturum kaydında. Kural: hiçbir aşama bir sayfanın ham HTML'indeki
+link sayısını düşürmez; footer dizini en son, sayfa sayfa, gövde linkleri taşıdığında kalkar.
+
+**Önce — acil (Kopa 22 Ekim'den önce):**
+- [x] **MOST READ ölü bağlam gösteriyor.** *(2026-10-19, `61b6752`: son 90 gün + en az 3 yazı; sayaç SQL'i sahibince çalıştırıldı — okunmalar sayılmaya başlayınca blok kendiliğinden döner.)* Her yazının sonunda Mayıs'tan 4 Dünya Kupası
+      yazısı (top, İngiltere kadro açıklaması...). Sebep: `increment_view_count` eski Türkçe
+      `status = 'yayinda'` filtresiyle sayıyor, sayaç Mayıs'tan beri donuk. Hemen: bloğu gizle
+      ya da "Latest"e çevir. Sonra: SQL düzeltmesi (Supabase SQL editor — sen çalıştırırsın).
+- [x] **Admin'den yayın hub'ları yenilemiyor.** *(2026-10-19, `61b6752`: `lib/revalidate-content.ts`, tüm admin yazma yolları + Enrich + script'ler; canlıda doğrulandı — bir liste yazısı yenilenince /lists ve kardeş yazılar REVALIDATED.)* Liste sayfasındaki Publish/toplu butonlar
+      (`app/admin/articles/actions.ts`) ve `createContent` hiçbir sayfayı revalidate etmiyor;
+      /lists, /radar, /tactics-lab tamamen statik → footer dizini bir sonraki deploy'a kadar
+      yeni yazıyı içermiyor. Tek yardımcı: `lib/revalidate-content.ts`, tüm yazma yollarına.
+      Vercel'de revalidatePath'in gerçekten çalıştığı canlıda test edilecek (sitemap'te çalışmamıştı).
+- [x] **Geçici Supabase hatası 24 saatlik 404'e dönüşüyor.** *(2026-10-19, `61b6752`: sayfalar, metadata, footer dizini ve In Focus hata fırlatıyor; build sayfa başına 3 kez yeniden dener.)* Beş `[slug]/page.tsx`
+      `if (error || !data) notFound()` — hata atılmalı, 404 sadece satır yoksa.
+
+**Aşamalar (her biri ayrı deploy):**
+- [x] **P0 — seo-check v2.** *(2026-10-19: sitemap'ten makale seti, gövde/footer ayrı sayım, hub'ın en yeni yazıyı linklemesi, bölüm başına en yeni/en eski yazı, canonical ve "Not Found" başlık kontrolü; 8 bilinçli bozmanın 8'ini yakaladı. `deploy.sh`: push öncesi `next start` kontrolü, push sonrası Vercel'i bekleyip canlıda kontrol.)* Gövde ve footer linklerini ayrı sayar (bugünkü kontrol footer'ı
+      da sayıyor, yanlış geçiyor), makale setini sitemap'ten alır, `/` ve `/articles`'ı da
+      kapsar, deploy sonrası canlıya karşı çalışır. `next dev` prod'daki boş sayfayı gizliyor.
+- [ ] **P1 — Hub'lar sunucuda:** /lists, /radar, /tactics-lab, /articles. Prod'da /lists,
+      /radar ve /articles'ın ham HTML'inde `<main>` ve `<h1>` bile yok (useSearchParams +
+      fallback'siz Suspense → client render). /lists'e konu çipleri satırı (Positions /
+      Countries / EA FC) gövdede kalır. Başlık tekrarı düzelir ("| Scout Gamer | Scout Gamer").
+- [ ] **P2 — Yazı sonuna "More in <bölüm>"** (6 link: ortak oyuncu, önceki/sonraki yazı,
+      en yeni; her yazının en az bir kardeş linki garantili). MOST READ'in yerini alır.
+- [ ] **P3 — Ana sayfa bölümleri sunucuda** (hero, carousel, All Articles, Featured,
+      On Our Radar). "Player of the Week" gerçekten haftalık döner.
+- [ ] **P4 — Transfers ve WC hub'ları sunucuda;** boş /transfers/lists ve /transfers/radar
+      ziyaretçiye "Add hub_tags in admin" gösteriyor → /transfers'a 301.
+- [ ] **P5 — Footer standarda,** sayfa sayfa; tek footer root layout'ta, `<main>` dışında.
+- [ ] **P6 — Temizlik:** ölü kod, CLAUDE.md sapmaları (tek cron var, service-role client var),
+      `/en/radar` çift yönlendirme, tarih formatlarının saat dilimi hatası, çift Andrey Santos satırı.
+
+**Senin kararın:** yazı sayfalarında footer'daki 32 bölüm linki yerine 6 "More in" linki +
+hub linki; hub'larda tüm yazılar mı, "daha fazla" mı; MOST READ gizlensin mi; Player of the
+Week haftalık mı; bekleyen yazıların herkese açık API'den listelenebilmesi (RLS) kapatılsın mı;
+/articles indekslensin mi.
+
+---
+
 ## 🚨 Canlıda yanlış bir iddia — #157 Sullivan (2026-09-26 bulundu)
 
 Yazının tezi: *"EA FC 26 MLS'i taşımıyor, lig lisanssız; Sullivan'ın kartı yok."*
@@ -45,6 +90,11 @@ FC 26 reyting sayfası var. Cavan'ın FC 26'da olmamasının sebebi büyük ihti
 ---
 
 ## 🔴 Takvimli
+
+- [ ] **#167 Kopa Trophy 2026 — en geç 22 Eki yayınla** (tören 26 Eki, Londra, 20:00). Pending, kontrolden
+      geçti. Hüküm: "Yamal muhtemelen kazanır, Cubarsí hak ediyor" (oy pusulamız 5-3-1: Cubarsí,
+      Yamal, Diomande). **26 Eki gecesi:** kazananı ekle → "makbuz" güncellemesi + sosyal paylaşım.
+- [ ] **Golden Boy 2026** — kazanan Kasım'da (25 finalist, 5 Eki). Kopa araştırmasının çoğu ortak.
 
 ### FC 27 verisi — ✅ IMPORT EDİLDİ (2026-09-30)
 
@@ -117,7 +167,13 @@ Aynı gün: etiketler "TİER" (Türkçe büyük harf) gösteriyordu → `lib/hig
 
 ## 🟠 Yayın kuyruğu
 
-**Altı yazı `pending` (#158–#161, #163, #164); #153 ve #155 yayında (6 Eki).** #156 ve #157 yayında.
+**17 Eki durumu:** yayında #153, #155, #158, #159, #163, #165 · pending #160, #161, #164, #166 (Rodri/6'lar), #167 (Kopa),
+#168 (Best Young Wingers — GSC: kanat sorgularında sıfır görünürlük), #169 (Best Young Defenders — GSC: ~420 gösterim/28g, sayfa yoktu).
+Not: Álex Jiménez (Fiorentina) FA soruşturması süren iddialar nedeniyle listelerden bilinçli olarak çıkarıldı.
+#170 (Turkey's Best Young Footballers — açı onaylı: dakika nerede; GSC: "most valuable turkish players" yükselen sorgu).
+**#170 yayına girince:** eski #39 `/lists/turkey-most-valuable-players-arda-kenan` (Mart, zayıf) → #170'e 301 yönlendir
+(next.config.ts redirects; sorgu sinyalini yeni sayfaya taşır) — onayınla.
+Sitemap artık her istekte üretiliyor (`dee43cb`); yeni yayın anında sitemap'e girer.
 
 | # | Başlık | Not |
 |---|---|---|
