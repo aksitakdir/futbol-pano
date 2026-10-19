@@ -38,7 +38,8 @@ Data/maintenance scripts live in `scripts/` (mostly `.mjs`, run with `node`); SQ
 
 ```bash
 node scripts/seo-check.mjs                      # raw-HTML SEO guard (production)
-node scripts/seo-check.mjs http://localhost:3000 # ...or against local dev
+node scripts/seo-check.mjs http://localhost:3001 # ...or against `next build && next start -p 3001`
+bash scripts/deploy.sh "message"                # build → check → push → wait for Vercel → check live
 ```
 
 ## SEO: verify the raw HTML, not the browser
@@ -61,6 +62,13 @@ Rules that follow from it:
 - **Verify with `curl`, not just the preview browser.** After changing any listing, hub, or
   routing code, run `node scripts/seo-check.mjs` (it fetches as Googlebot and asserts article
   links exist without JS). It exits non-zero, so it can gate a deploy.
+- **Never verify against `next dev`.** Dev streams Suspense content that production bails out
+  of: in October 2026 /lists, /radar and /articles had no `<main>` and no `<h1>` in production
+  while dev showed both. Use production or `next build && next start`.
+- **seo-check counts page-body links and footer links separately** and takes the article set
+  from the sitemap. Its `ROUTES` table is the floor; a change that moves a route's links into
+  the body raises that route's `body` number and switches on its `require` flags in the same
+  commit (plan: docs/TODO.md). `--record` prints the current counts.
 - Client-side rendering is fine for interactivity layered *on top of* server-rendered content.
 
 ## Layout
