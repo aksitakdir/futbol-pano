@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import ArticleLayoutEn from "../../components/article-layout-en";
+import type { RelatedLinks } from "@/lib/related-articles";
 import RadarPlayerFocusPanel from "../../components/radar-player-focus-panel";
 import { type PlayerCardData } from "../../components/player-card";
 import { stripHtml } from "@/lib/utils";
@@ -50,9 +51,10 @@ type Props = {
   slug: string;
   article: ContentRow;
   playerCard: PlayerCardData | null;
+  related?: RelatedLinks;
 };
 
-export default function RadarDetailClient({ article, playerCard }: Props) {
+export default function RadarDetailClient({ article, playerCard, related }: Props) {
   const hasEnglish = !!(article.title_en && article.content_en);
   const scoutQuote = firstPullquoteText(article.sections_json);
   const bodyForLede = hasEnglish ? article.content_en! : article.content;
@@ -60,6 +62,7 @@ export default function RadarDetailClient({ article, playerCard }: Props) {
 
   return (
     <ArticleLayoutEn
+      related={related}
       title={article.title_en || article.title}
       content={hasEnglish ? article.content_en! : ""}
       excerptContent={article.content_en || article.content}

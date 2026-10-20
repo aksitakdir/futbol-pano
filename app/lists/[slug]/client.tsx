@@ -16,6 +16,8 @@ import { tocFromSections, type SectionBlock } from "@/lib/section-blocks";
 import { normalizeYoutubeId } from "@/lib/youtube-id";
 import { frozenRow, type FrozenFcRow } from "@/lib/card-snapshot";
 import { useCardSnapshot } from "../../components/card-snapshot-context";
+import MoreInSection from "../../components/more-in-section";
+import type { RelatedLinks } from "@/lib/related-articles";
 
 type ContentRow = {
   id: string; title: string; title_en?: string;
@@ -157,13 +159,12 @@ const ACCENT_CSS: Record<string, string> = {
 
 type YouTubeSearchItem = { videoId: string; title: string; thumbnail: string; channelTitle: string };
 
-function ListLayout({ row }: { row: ContentRow }) {
-  const [similar, setSimilar] = useState<{ id: string; title: string; title_en?: string; slug: string; created_at: string }[]>([]);
+function ListLayout({ row, related }: { row: ContentRow; related?: RelatedLinks }) {
   const [youtubeVideos1, setYoutubeVideos1] = useState<YouTubeSearchItem[] | null>(null);
   const [youtubeVideos2, setYoutubeVideos2] = useState<YouTubeSearchItem[] | null>(null);
 
   useEffect(() => {
-    supabase.from("contents").select("id,title,title_en,slug,category,created_at").eq("status", "published").eq("category", "lists").neq("slug", row.slug).order("created_at", { ascending: false }).limit(4).then(({ data }) => { if (data) setSimilar(data); });
+    // Sibling links come from the server now (`related`); only the view count stays here.
     fetch("/api/view", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ slug: row.slug }) }).catch(() => {});
   }, [row.slug]);
 
@@ -375,13 +376,13 @@ function ListLayout({ row }: { row: ContentRow }) {
               </button>
             </div>
           </div>
-          {similar.length > 0 && (
+          {related && related.items.length > 0 && (
             <div style={{ padding: "20px", background: "var(--sg-surface)", borderRadius: 6, border: "1px solid var(--sg-border)" }}>
               <div className="mono" style={{ fontSize: 9, letterSpacing: "0.2em", color: "var(--sg-text-muted)", marginBottom: 16 }}>MORE LISTS</div>
-              {similar.map((item) => (
-                <Link key={item.id} href={`/lists/${item.slug}`} style={{ padding: "12px 0", borderBottom: "1px solid var(--sg-border)", textDecoration: "none", display: "block" }}>
-                  <div style={{ fontSize: 13, fontWeight: 600, color: "var(--sg-text-primary)", lineHeight: 1.35, marginBottom: 4 }}>{item.title_en || item.title}</div>
-                  <div className="mono" style={{ fontSize: 9, color: "var(--sg-text-muted)", letterSpacing: "0.1em" }}>{new Date(item.created_at).toLocaleDateString("en-GB", { day: "numeric", month: "short" })}</div>
+              {related.items.slice(0, 4).map((item) => (
+                <Link key={item.id} href={item.href} style={{ padding: "12px 0", borderBottom: "1px solid var(--sg-border)", textDecoration: "none", display: "block" }}>
+                  <div style={{ fontSize: 13, fontWeight: 600, color: "var(--sg-text-primary)", lineHeight: 1.35, marginBottom: 4 }}>{item.title}</div>
+                  <div className="mono" style={{ fontSize: 9, color: "var(--sg-text-muted)", letterSpacing: "0.1em" }}>{item.dateShort}</div>
                 </Link>
               ))}
             </div>
@@ -392,6 +393,8 @@ function ListLayout({ row }: { row: ContentRow }) {
         </aside>
       </div>
 
+      {related ? <MoreInSection related={related} accent="var(--emerald)" /> : null}
+
       <SiteFooter maxWidth="max-w-7xl" />
     </main>
   );
@@ -400,8 +403,9 @@ function ListLayout({ row }: { row: ContentRow }) {
 type Props = {
   slug: string;
   article: ContentRow;
+  related?: RelatedLinks;
 };
 
-export default function ListDetailClient({ article }: Props) {
-  return <ListLayout row={article} />;
+export default function ListDetailClient({ article, related }: Props) {
+  return <ListLayout row={article} related={related} />;
 }

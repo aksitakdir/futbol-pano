@@ -1,6 +1,7 @@
 "use client";
 
 import ArticleLayoutEn from "./article-layout-en";
+import type { RelatedLinks } from "@/lib/related-articles";
 import { CATEGORY_ACCENT } from "@/lib/category-config";
 import type { SectionBlock } from "@/lib/section-blocks";
 
@@ -36,10 +37,12 @@ export default function HubArticleDetailClient({
   slug,
   hubId,
   article,
+  related,
 }: {
   slug: string;
   hubId: string;
   article: ContentRow;
+  related?: RelatedLinks;
 }) {
   const config = BACK_CONFIG[hubId] ?? { path: "/", title: "Home", navKey: "radar" as NavKey };
 
@@ -53,6 +56,7 @@ export default function HubArticleDetailClient({
 
   return (
     <ArticleLayoutEn
+      related={related}
       title={title}
       content={article.content_en || article.content}
       excerptContent={article.content_en || article.content}

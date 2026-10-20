@@ -28,6 +28,7 @@
  *   node scripts/seo-check.mjs                         # against production
  *   node scripts/seo-check.mjs http://localhost:3001   # against `next start`
  *   node scripts/seo-check.mjs --record                # print current counts, no verdict
+ *   node scripts/seo-check.mjs --full                  # also crawl every article: none may lack a sibling link
  *
  * Run it against production or `next build && next start`, never `next dev`: dev
  * streams Suspense content that production bails out of, so dev looks healthier
@@ -37,6 +38,7 @@
 const args = process.argv.slice(2);
 const BASE = (args.find((a) => !a.startsWith("--")) || "https://www.scoutgamer.com").replace(/\/$/, "");
 const RECORD = args.includes("--record");
+const FULL = args.includes("--full");
 const UA = "Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)";
 const ORIGINS = ["https://www.scoutgamer.com", "https://scoutgamer.com", BASE];
 
@@ -64,8 +66,13 @@ const ROUTES = [
   // Every published piece: the newest as cards, the rest as plain links.
   { path: "/articles", section: "*", body: "all", total: "all", require: { h1: true, main: true }, fresh: SECTIONS },
 ];
-/** Sibling links an article must carry (body + footer today; body once P2 lands). */
-const ARTICLE_SIBLINGS = { body: 0, total: 6 };
+/**
+ * Sibling links an article must carry. P2 (2026-10-19): the server-rendered "More in"
+ * block puts six in the body; the footer index still adds the rest.
+ */
+const ARTICLE_SIBLINGS = { body: 6, total: 6 };
+/** --full: a piece younger than this may not be linked from its siblings yet. */
+const INDEGREE_GRACE_MS = 60 * 60_000;
 
 let failures = 0;
 let warnings = 0;
@@ -204,7 +211,9 @@ for (const s of SECTIONS) {
       if (RECORD) { console.log(`  ·     ${path} — ${facts}`); continue; }
       const problems = [];
       if (siblings.size < wantSiblings) problems.push(`${siblings.size} links to other ${s} pieces, expected >= ${wantSiblings}`);
-      if (bodySiblings < ARTICLE_SIBLINGS.body) problems.push(`${bodySiblings} sibling links in the body, floor is ${ARTICLE_SIBLINGS.body}`);
+      const wantBody = Math.min(ARTICLE_SIBLINGS.body, list.length - 1);
+      if (bodySiblings < wantBody) problems.push(`${bodySiblings} sibling links in the body, floor is ${wantBody}`);
+      if (wantBody > 0 && !/data-related="section"/.test(html)) problems.push(`no "More in" block (data-related="section")`);
       const canonical = p.canonical && normalize(p.canonical);
       if (!p.canonical) problems.push("no canonical");
       else if (canonical !== path) problems.push(`canonical points at ${p.canonical}`);
@@ -212,6 +221,28 @@ for (const s of SECTIONS) {
       problems.length ? fail(`${path} — ${problems.join("; ")}  (${facts})`) : pass(`${path} — ${facts}`);
     } catch (e) { fail(`${path} — request failed: ${e.message}`); }
   }
+}
+
+// ── --full: every article must be linked from at least one sibling's body ────────
+if (FULL && !RECORD) {
+  console.log(`\nEvery article (${articles.size}): linked from at least one sibling's page body:`);
+  const inDegree = new Map([...articles.keys()].map((p) => [p, 0]));
+  const paths = [...articles.keys()];
+  for (let i = 0; i < paths.length; i += 8) {
+    await Promise.all(paths.slice(i, i + 8).map(async (path) => {
+      try {
+        const { status, html } = await get(path);
+        if (status !== 200) { fail(`${path} returned HTTP ${status}`); return; }
+        const section = articles.get(path).section;
+        for (const h of articleLinks(parse(html).pageHrefs, articleSet, path)) {
+          if (articles.get(h)?.section === section) inDegree.set(h, inDegree.get(h) + 1);
+        }
+      } catch (e) { fail(`${path} — request failed: ${e.message}`); }
+    }));
+  }
+  const orphans = [...inDegree].filter(([p, n]) => n === 0 && bySection(articles.get(p).section).length > 1 && Date.now() - articles.get(p).lastmod > INDEGREE_GRACE_MS);
+  if (orphans.length) fail(`${orphans.length} article(s) linked from no sibling's body: ${orphans.slice(0, 5).map(([p]) => p).join(", ")}${orphans.length > 5 ? ` +${orphans.length - 5}` : ""}`);
+  else pass(`all ${articles.size} articles have at least one in-body link from a sibling (min ${Math.min(...inDegree.values())}, max ${Math.max(...inDegree.values())})`);
 }
 
 if (RECORD) {

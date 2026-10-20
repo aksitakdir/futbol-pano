@@ -1,6 +1,7 @@
 "use client";
 
 import ArticleLayoutEn from "../../components/article-layout-en";
+import type { RelatedLinks } from "@/lib/related-articles";
 import type { SectionBlock } from "@/lib/section-blocks";
 
 type ContentRow = {
@@ -19,13 +20,15 @@ type ContentRow = {
 type Props = {
   slug: string;
   article: ContentRow;
+  related?: RelatedLinks;
 };
 
-export default function TaktikLabDetailClient({ article }: Props) {
+export default function TaktikLabDetailClient({ article, related }: Props) {
   const hasEnglish = !!(article.title_en && article.content_en);
 
   return (
     <ArticleLayoutEn
+      related={related}
       title={article.title_en || article.title}
       content={hasEnglish ? article.content_en! : ""}
       excerptContent={article.content_en || article.content}

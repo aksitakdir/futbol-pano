@@ -40,7 +40,7 @@ link sayısını düşürmez; footer dizini en son, sayfa sayfa, gövde linkleri
       /radar ve /articles'ın ham HTML'inde `<main>` ve `<h1>` bile yok (useSearchParams +
       fallback'siz Suspense → client render). /lists'e konu çipleri satırı (Positions /
       Countries / EA FC) gövdede kalır. Başlık tekrarı düzelir ("| Scout Gamer | Scout Gamer").
-- [ ] **P2 — Yazı sonuna "More in <bölüm>"** (6 link: ortak oyuncu, önceki/sonraki yazı,
+- [x] **P2 — Yazı sonuna "More in <bölüm>"** *(2026-10-20, yerelde: `lib/related-articles.ts` — konu, tarih zincirinde komşular, en yeni; kenar çubuğu da aynı veriden. `seo-check --full`: 128 yazının hepsi gövdeden en az bir kardeş linki alıyor (ilk koşu aynı zaman damgalı 3 tactics yazısını yetim buldu, düzeltildi). Build artık `.next/cache/fetch-cache`'i siliyor: önbellekten eski Supabase verisiyle derlemiyor.)* (6 link: ortak oyuncu, önceki/sonraki yazı,
       en yeni; her yazının en az bir kardeş linki garantili). MOST READ'in yerini alır.
 - [ ] **P3 — Ana sayfa bölümleri sunucuda** (hero, carousel, All Articles, Featured,
       On Our Radar). "Player of the Week" gerçekten haftalık döner.

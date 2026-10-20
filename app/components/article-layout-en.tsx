@@ -16,6 +16,8 @@ import { tocFromSections, type SectionBlock } from "@/lib/section-blocks";
 import type { ContentCategory } from "@/lib/category-config";
 import ArticlePlayerEmbed from "./article-player-embed";
 import HeroPlayerCard from "./hero-player-card";
+import MoreInSection from "./more-in-section";
+import type { RelatedLinks } from "@/lib/related-articles";
 
 type SidebarItem = { id: string; title: string; title_en?: string; slug: string; category: string; created_at: string; };
 export type YouTubeSearchItem = { title: string; thumbnail: string; videoId: string; channelTitle: string; };
@@ -110,6 +112,8 @@ type Props = {
   showNewsSection?: boolean; children?: React.ReactNode;
   excerptContent?: string; isPending?: boolean;
   hubId?: ContentCategory;
+  /** Sibling links chosen on the server (lib/related-articles.ts), so they are in the HTML. */
+  related?: RelatedLinks;
 };
 
 export default function ArticleLayoutEn({
@@ -122,6 +126,7 @@ export default function ArticleLayoutEn({
   heroVariant: heroVariantRaw = "text-only", accentOverride, sectionsJson,
   playersJson,
   hubId,
+  related,
 }: Props) {
   // Backward compat: merge deprecated stat-focus → player-cards
   const heroVariant = heroVariantRaw === "stat-focus" ? "player-cards" : heroVariantRaw;
@@ -147,7 +152,6 @@ export default function ArticleLayoutEn({
     ? <HeroPlayerCard playerName={heroPlayerName} />
     : children;
 
-  const [similar, setSimilar] = useState<SidebarItem[]>([]);
   const [popular, setPopular] = useState<SidebarItem[]>([]);
   const [arenaGame, setArenaGame] = useState<{ slug: string; title_en: string } | null>(null);
   const [youtubeVideos1, setYoutubeVideos1] = useState<YouTubeSearchItem[] | null>(null);
@@ -209,16 +213,11 @@ export default function ArticleLayoutEn({
           eyebrow: "✦ WEEKLY RADAR",
           title: "A new talent every week.",
           description: "Rising talents seen through tactical and gaming-data lenses.",
-          href: "/en/radar",
+          href: "/radar",
           cta: "GO TO RADAR →",
         };
 
   useEffect(() => {
-    supabase.from("contents").select("id,title,title_en,slug,category,created_at")
-      .eq("status", "published").eq("category", category).neq("slug", slug)
-      .order("created_at", { ascending: false }).limit(4)
-      .then(({ data }) => { if (data) setSimilar(data); });
-
     fetch("/api/popular").then((r) => r.json())
       .then((d) => { if (d.articles) setPopular(d.articles.filter((a: SidebarItem) => a.slug !== slug).slice(0, 5)); })
       .catch(() => {});
@@ -698,12 +697,12 @@ export default function ArticleLayoutEn({
             </div>
           </div>
 
-          {similar.length > 0 && (
+          {related && related.items.length > 0 && (
             <div style={{ marginBottom: 32 }}>
               <div className="eyebrow" style={{ marginBottom: 16 }}>RELATED</div>
               <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
-                {similar.map(item => (
-                  <Link key={item.id} href={`${categoryPath(item.category)}/${item.slug}`}
+                {related.items.slice(0, 4).map(item => (
+                  <Link key={item.id} href={item.href}
                     className="lift" style={{
                       background: "var(--sg-surface)", border: "1px solid var(--sg-border)",
                       borderRadius: 4, padding: 16, textDecoration: "none",
@@ -713,10 +712,10 @@ export default function ArticleLayoutEn({
                     <div style={{ flex: 1, minWidth: 0 }}>
                       <div className="display" style={{ fontSize: 14, fontWeight: 600, color: "var(--sg-text-primary)", lineHeight: 1.3,
                         display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden" }}>
-                        {item.title_en || item.title}
+                        {item.title}
                       </div>
                       <div className="mono" style={{ fontSize: 9, letterSpacing: "0.14em", color: "var(--sg-text-muted)", marginTop: 4 }}>
-                        {new Date(item.created_at).toLocaleDateString("en-US", { day: "numeric", month: "short" })}
+                        {item.dateShort}
                       </div>
                     </div>
                   </Link>
@@ -746,37 +745,13 @@ export default function ArticleLayoutEn({
         </aside>
       </div>
 
-      {similar.length > 0 && (
-        <section style={{ borderTop: "1px solid var(--sg-border)", background: "var(--sg-surface-low, var(--sg-bg))" }}>
-          <div className="sg-site-container" style={{ padding: "48px 0 56px" }}>
-            <div className="mono" style={{ fontSize: 10, letterSpacing: "0.2em", color: accent, marginBottom: 24 }}>CONTINUE READING</div>
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(280px, 1fr))", gap: 16 }}>
-              {similar.slice(0, 3).map(item => (
-                <Link key={item.id} href={`${categoryPath(item.category)}/${item.slug}`}
-                  className="lift" style={{
-                    background: "var(--sg-surface)", border: "1px solid var(--sg-border)",
-                    borderRadius: 6, padding: 20, textDecoration: "none", display: "block",
-                  }}>
-                  <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 12 }}>
-                    <span className="chip" style={{ fontSize: 9, borderColor: accent, color: accent }}>{(CATEGORY_LABEL[item.category] ?? item.category).toUpperCase()}</span>
-                    <span className="mono" style={{ fontSize: 9, color: "var(--sg-text-muted)", letterSpacing: "0.1em" }}>
-                      {new Date(item.created_at).toLocaleDateString("en-US", { day: "numeric", month: "short", year: "numeric" })}
-                    </span>
-                  </div>
-                  <div className="display" style={{ fontSize: 16, fontWeight: 600, color: "var(--sg-text-primary)", lineHeight: 1.3,
-                    display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden" }}>
-                    {item.title_en || item.title}
-                  </div>
-                </Link>
-              ))}
-            </div>
-          </div>
-        </section>
-      )}
+      {/* Server-chosen sibling links (lib/related-articles.ts): in the HTML, unlike the
+          client query that filled "Continue reading" before 2026-10-19. */}
+      {related ? <MoreInSection related={related} accent={accent} /> : null}
 
       {arenaGame && (
         <section style={{ borderTop: "1px solid var(--sg-border)", background: "var(--sg-bg)" }}>
-          <div className="sg-site-container" style={{ padding: "40px 0 44px" }}>
+          <div className="sg-site-container" style={{ paddingTop: 40, paddingBottom: 44 }}>
             <Link href={`/arena/${arenaGame.slug}`} className="lift" style={{
               display: "flex", alignItems: "center", justifyContent: "space-between",
               background: "linear-gradient(135deg, oklch(0.18 0.04 280) 0%, oklch(0.13 0.02 200) 100%)",
@@ -803,7 +778,7 @@ export default function ArticleLayoutEn({
       {/* Below three it is not a ranking (see app/api/popular/route.ts). */}
       {popular.length >= 3 && (
         <section style={{ borderTop: "1px solid var(--sg-border)", background: "var(--sg-surface-low, var(--sg-bg))" }}>
-          <div className="sg-site-container" style={{ padding: "48px 0 56px" }}>
+          <div className="sg-site-container" style={{ paddingTop: 48, paddingBottom: 56 }}>
             <div className="mono" style={{ fontSize: 10, letterSpacing: "0.2em", color: "var(--amber)", marginBottom: 24 }}>MOST READ</div>
             <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(280px, 1fr))", gap: 12 }}>
               {popular.map((item, i) => (
