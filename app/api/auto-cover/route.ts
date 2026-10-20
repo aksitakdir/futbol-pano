@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { revalidateContent } from "@/lib/revalidate-content";
 import { isAdminRequest } from "@/lib/admin-auth";
 import { createClient } from "@supabase/supabase-js";
 import { suggestCoverImage } from "@/lib/cover-image-suggest";
@@ -57,6 +58,7 @@ export async function POST(request: Request) {
   );
 
   let updated = 0;
+  const changed: { category: string; slug: string }[] = [];
   for (const article of missing) {
     const title = article.title_en || article.title || "";
     const image = suggestCoverImage(title, article.slug, article.category);
@@ -65,8 +67,10 @@ export async function POST(request: Request) {
       .update({ cover_image: image })
       .eq("id", article.id);
 
-    if (!updateErr) updated++;
+    if (!updateErr) { updated++; changed.push({ category: article.category, slug: article.slug }); }
   }
+  // New covers show on the article, its hub, home and its siblings' cards.
+  if (changed.length) revalidateContent(changed);
 
   return NextResponse.json({
     total: articles?.length ?? 0,

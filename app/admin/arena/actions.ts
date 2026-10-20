@@ -1,5 +1,6 @@
 "use server";
 
+import { revalidatePath } from "next/cache";
 import { supabaseAdmin } from "@/lib/supabase-admin";
 import { isAdminRequest } from "@/lib/admin-auth";
 
@@ -32,7 +33,11 @@ export async function saveArenaGame(
   const { error } = editingId
     ? await supabaseAdmin.from("arena_games").update(payload).eq("id", editingId)
     : await supabaseAdmin.from("arena_games").insert(payload);
-  return error ? { ok: false, error: error.message } : { ok: true };
+  if (error) return { ok: false, error: error.message };
+  // The homepage hero can feature a published game (lib/home-data.ts).
+  revalidatePath("/");
+  revalidatePath("/arena");
+  return { ok: true };
 }
 
 /** Delete an arena game (admin only). */
@@ -41,5 +46,8 @@ export async function deleteArenaGame(id: string): Promise<ActionResult> {
     return { ok: false, error: "Unauthorized" };
   }
   const { error } = await supabaseAdmin.from("arena_games").delete().eq("id", id);
-  return error ? { ok: false, error: error.message } : { ok: true };
+  if (error) return { ok: false, error: error.message };
+  revalidatePath("/");
+  revalidatePath("/arena");
+  return { ok: true };
 }

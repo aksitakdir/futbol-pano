@@ -16,6 +16,11 @@ export const COVER_STORY_SCOPE_LABELS: Record<CoverStoryScope, string> = {
 };
 
 export function normalizeCoverStories(raw: unknown): CoverStoriesMap {
+  // site_settings.value is a text column, so the pins come back as a JSON string;
+  // reading only objects meant every pin was dropped on read (found 2026-10-20).
+  if (typeof raw === "string") {
+    try { raw = JSON.parse(raw); } catch { return {}; }
+  }
   if (!raw || typeof raw !== "object") return {};
   const out: CoverStoriesMap = {};
   for (const [key, value] of Object.entries(raw as Record<string, unknown>)) {

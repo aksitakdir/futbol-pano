@@ -88,7 +88,7 @@ export default function HubEditorialSection({ hubId, accent, category, limit, co
       : { pins: {} };
     const pinnedId = pinsJson.pins?.[hubId as CoverStoryScope];
 
-    const listCount = pinnedId ? articles.filter((a) => a.id !== pinnedId).length : articles.length;
+    const listCount = pinnedId ? articles.filter((a) => String(a.id) !== pinnedId).length : articles.length;
 
     let query = supabase
       .from("contents")

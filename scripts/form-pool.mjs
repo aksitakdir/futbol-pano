@@ -139,3 +139,14 @@ for (const k of ["form_players_pool", "form_players"]) {
   if (upErr) { console.error(`write to ${k} failed:`, upErr.message); process.exit(1); }
   console.log(`wrote ${k}`);
 }
+
+// The homepage renders the pool on the server (lib/home-data.ts): refresh it now
+// rather than within the hour.
+if (e.ADMIN_PASSWORD) {
+  const res = await fetch("https://www.scoutgamer.com/api/revalidate", {
+    method: "POST",
+    headers: { "content-type": "application/json", authorization: `Basic ${Buffer.from(`scout:${e.ADMIN_PASSWORD}`).toString("base64")}` },
+    body: JSON.stringify({ paths: ["/"] }),
+  }).catch((err) => ({ ok: false, status: err.message }));
+  console.log(res.ok ? "refreshed the homepage" : `note: homepage refresh answered ${res.status}; it updates within the hour`);
+}

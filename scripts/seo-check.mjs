@@ -55,8 +55,11 @@ const FRESH_GRACE_MS = 15 * 60_000;
  *   require.h1 / require.main — switched on by the phase that server-renders the route
  */
 const ROUTES = [
-  // Body: the "In focus" spotlights (2-6 links, data-driven). Total: the footer index, 3 × 15.
-  { path: "/", body: 1, total: 45, fresh: ["lists", "radar", "tactics-lab"] },
+  // P3 (2026-10-20): every homepage section renders on the server and the footer index
+  // is gone. Carousel first page + the 12-piece grid: 20 distinct links at the live
+  // recent_count (9), 15 at the smallest admin setting (3), which is the floor. The
+  // newest piece on the site must be among them.
+  { path: "/", body: 15, total: 15, require: { h1: true, main: true }, fresh: ["*"] },
   // P1 (2026-10-19): the section hubs render every piece in the page body.
   { path: "/lists", section: "lists", body: "all", total: "all", require: { h1: true, main: true } },
   { path: "/radar", section: "radar", body: "all", total: "all", require: { h1: true, main: true } },
@@ -185,7 +188,7 @@ for (const r of ROUTES) {
     // The hub (or home) must already link the newest piece: proof that publishing refreshed it.
     for (const s of r.fresh ?? (r.section ? [r.section] : [])) {
       const n = newest(s);
-      if (n && !all.has(n)) problems.push(`does not link the newest ${s} piece ${n} — stale after a publish?`);
+      if (n && !all.has(n)) problems.push(`does not link the newest ${s === "*" ? "" : `${s} `}piece ${n} — stale after a publish?`);
     }
     if (problems.length) fail(`${r.path} — ${problems.join("; ")}  (${facts})`);
     else pass(`${r.path} — ${facts}`);

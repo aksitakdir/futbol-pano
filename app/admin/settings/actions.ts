@@ -1,5 +1,6 @@
 "use server";
 
+import { revalidatePath } from "next/cache";
 import { supabaseAdmin } from "@/lib/supabase-admin";
 import { isAdminRequest } from "@/lib/admin-auth";
 
@@ -24,5 +25,8 @@ export async function saveSiteSettings(payload: SettingsPayload): Promise<Action
     { key: "recent_count", value: { count: payload.recent_count }, updated_at: now },
     { key: "hero_custom_slides", value: payload.hero_custom_slides, updated_at: now },
   ]);
-  return error ? { ok: false, error: error.message } : { ok: true };
+  if (error) return { ok: false, error: error.message };
+  // The homepage reads these on the server since 2026-10-20 (lib/home-data.ts).
+  revalidatePath("/");
+  return { ok: true };
 }

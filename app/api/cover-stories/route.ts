@@ -38,12 +38,13 @@ export async function POST(request: Request) {
     }
 
     const body = (await request.json()) as {
-      contentId?: string;
+      contentId?: string | number;
       category?: string;
       scopes?: CoverStoryScope[];
     };
 
-    const contentId = body.contentId?.trim();
+    // The New Article page sends the new row's id as a number.
+    const contentId = String(body.contentId ?? "").trim();
     const category = body.category?.trim();
     const scopes = Array.isArray(body.scopes) ? body.scopes : [];
 

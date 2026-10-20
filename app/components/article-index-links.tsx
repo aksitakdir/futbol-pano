@@ -27,9 +27,9 @@ import { groupTopics, shortTitle } from "@/lib/list-topics";
  *   - in both, older pieces sit in a "From the archive" <details> disclosure. That
  *     is an accordion a reader opens with one click, not hidden content: the links
  *     are in the raw HTML and followed like any other.
- * `ArticleIndexColumns` is the homepage version: three sections side by side.
- * Both are drawn inside the site footer, above its columns: wrap the route in
- * <FooterOwner index={…}> rather than rendering them after the page.
+ * It is drawn inside the site footer, above its columns: wrap the route in
+ * <FooterOwner index={…}> rather than rendering it after the page. Since P3
+ * (2026-10-20) only the Transfers and World Cup hubs still use it.
  */
 
 type Props = {
@@ -154,37 +154,6 @@ export default async function ArticleIndexLinks({ category, basePath, heading, l
         ))}
       </div>
       <Archive items={archive} columns />
-    </Shell>
-  );
-}
-
-type Column = { category: string; basePath: string; heading: string };
-
-/**
- * The homepage version: one block, a column per section, the newest few in each
- * plus a link to the section and the rest in a per-column disclosure. The column
- * headings are the only headings, like the footer columns below them.
- */
-export async function ArticleIndexColumns({ columns, limit = 15, show = 5 }: { columns: Column[]; limit?: number; show?: number }) {
-  const all = await Promise.all(columns.map((c) => fetchRows(c.category, limit)));
-  const filled = columns.map((c, i) => ({ ...c, items: all[i].map((r) => toItem(r, c.basePath)) })).filter((c) => c.items.length);
-  if (filled.length === 0) return null;
-
-  return (
-    <Shell label="Latest from Scout Gamer">
-      <div className="sg-index-grid" style={{ gridTemplateColumns: `repeat(auto-fit, minmax(min(240px, 100%), 1fr))` }}>
-        {filled.map((c) => (
-          <section key={c.category} aria-label={c.heading} style={{ minWidth: 0 }}>
-            <h2 className="eyebrow sg-index-heading">
-              <Link href={c.basePath} className="u-link">
-                {c.heading} →
-              </Link>
-            </h2>
-            <LinkList items={c.items.slice(0, show)} />
-            <Archive items={c.items.slice(show)} label="More" />
-          </section>
-        ))}
-      </div>
     </Shell>
   );
 }

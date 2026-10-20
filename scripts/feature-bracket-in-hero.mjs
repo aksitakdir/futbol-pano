@@ -41,4 +41,13 @@ const { error } = await sb.from("site_settings").upsert(
   { onConflict: "key" },
 );
 if (error) { console.error("Failed:", error.message); process.exit(1); }
+// The homepage renders the hero on the server (lib/home-data.ts): refresh it now.
+if (env.ADMIN_PASSWORD) {
+  const res = await fetch("https://www.scoutgamer.com/api/revalidate", {
+    method: "POST",
+    headers: { "content-type": "application/json", authorization: `Basic ${Buffer.from(`scout:${env.ADMIN_PASSWORD}`).toString("base64")}` },
+    body: JSON.stringify({ paths: ["/"] }),
+  }).catch((err) => ({ ok: false, status: err.message }));
+  if (!res.ok) console.log(`note: homepage refresh answered ${res.status}; it updates within the hour`);
+}
 console.log(JSON.stringify({ ok: true, key: KEY, totalCustomSlides: next.length, featured: slide.title, href: HREF }, null, 2));

@@ -4,22 +4,14 @@ import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { getCategoryImage } from "@/lib/category-images";
-import { categoryArticlePath } from "@/lib/category-config";
 import { ContentHighlightPills } from "./content-highlight-pills";
-import { extractArticleHighlights } from "@/lib/content-highlight-tags";
+import type { HomeRecent } from "@/lib/home-data";
 
-export type HomeRecentItem = {
-  id: string;
-  title: string;
-  title_en?: string;
-  slug: string;
-  category: string;
-  created_at: string;
-  cover_image?: string;
-  content?: string;
-  content_en?: string;
-};
+/**
+ * "Latest content". Items arrive from the server with their pills and dates already
+ * worked out (lib/home-data.ts), so the first page is in the HTML and no article body
+ * travels to the browser.
+ */
 
 const CAT_LABEL: Record<string, string> = {
   lists: "Scouting Lists",
@@ -40,7 +32,7 @@ const CAT_COLOR: Record<string, string> = {
 
 const PER_PAGE = 8;
 
-export default function HomeRecentCarousel({ items }: { items: HomeRecentItem[] }) {
+export default function HomeRecentCarousel({ items }: { items: HomeRecent[] }) {
   const totalPages = Math.ceil(items.length / PER_PAGE);
   const [page, setPage] = useState(0);
   const [direction, setDirection] = useState(0);
@@ -73,7 +65,7 @@ export default function HomeRecentCarousel({ items }: { items: HomeRecentItem[] 
           <h2 className="display" style={{ fontSize: 36, fontWeight: 700, letterSpacing: "-0.03em", margin: "6px 0 0" }}>Latest Content</h2>
         </div>
         <div style={{ display: "flex", gap: 16, alignItems: "center" }}>
-          <Link href="/world-cup-2026" className="mono u-link" style={{ fontSize: 12, letterSpacing: "0.14em", color: "var(--sg-text-muted)" }}>WORLD CUP 2026 →</Link>
+          <Link href="/lists" className="mono u-link" style={{ fontSize: 12, letterSpacing: "0.14em", color: "var(--sg-text-muted)" }}>SCOUTING LISTS →</Link>
           <Link href="/articles" className="mono u-link" style={{ fontSize: 12, letterSpacing: "0.14em", color: "var(--sg-text-muted)" }}>ALL ARTICLES →</Link>
           {totalPages > 1 && (
             <div style={{ display: "flex", gap: 6, alignItems: "center", marginLeft: 8 }}>
@@ -101,10 +93,10 @@ export default function HomeRecentCarousel({ items }: { items: HomeRecentItem[] 
             {pageItems.map((item) => {
               const accent = CAT_COLOR[item.category] ?? "var(--accent)";
               const label = CAT_LABEL[item.category] ?? item.category;
-              const title = item.title_en || item.title;
-              const coverSrc = item.cover_image || getCategoryImage(item.category, item.slug);
+              const title = item.title;
+              const coverSrc = item.image;
               return (
-                <Link key={item.id} href={categoryArticlePath(item.category, item.slug)}
+                <Link key={item.id} href={item.href}
                   style={{
                     display: "flex",
                     flexDirection: "column",
@@ -122,16 +114,10 @@ export default function HomeRecentCarousel({ items }: { items: HomeRecentItem[] 
                   <div style={{ padding: "16px 20px 20px", flex: 1, display: "flex", flexDirection: "column" }}>
                     <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 8 }}>
                       <span className="mono" style={{ fontSize: 9, letterSpacing: "0.2em", color: accent }}>{label}</span>
-                      <span className="mono" style={{ fontSize: 9, color: "var(--sg-text-muted)" }}>
-                        {new Date(item.created_at).toLocaleDateString("en-US", { day: "numeric", month: "short" })}
-                      </span>
+                      <span className="mono" style={{ fontSize: 9, color: "var(--sg-text-muted)" }}>{item.dateShort}</span>
                     </div>
                     <h3 className="display" style={{ fontSize: 16, fontWeight: 600, lineHeight: 1.2, letterSpacing: "-0.02em", margin: 0, color: "var(--sg-text-primary)" }}>{title}</h3>
-                    {(() => {
-                      const body = item.content_en || item.content || "";
-                      const pills = body ? extractArticleHighlights(body, { max: 3, seed: item.slug, titleHint: title }) : [];
-                      return pills.length ? <div style={{ marginTop: 8 }}><ContentHighlightPills tags={pills} accent={accent} label="FROM CONTENT" /></div> : null;
-                    })()}
+                    {item.pills.length ? <div style={{ marginTop: 8 }}><ContentHighlightPills tags={item.pills} accent={accent} label="FROM CONTENT" /></div> : null}
                     <span className="mono u-link" style={{ fontSize: 10, letterSpacing: "0.16em", color: accent, marginTop: "auto", paddingTop: 12, display: "block" }}>READ →</span>
                   </div>
                 </Link>
