@@ -2,11 +2,10 @@ import type { Metadata } from "next";
 import { notFound, redirect } from "next/navigation";
 import { draftMode } from "next/headers";
 import { createClient } from "@/lib/supabase";
-import ArticleIndexLinks from "@/app/components/article-index-links";
-import FooterOwner from "@/app/components/footer-owner";
 import { articleMetadata } from "@/lib/article-metadata";
 import { categoryArticlePath } from "@/lib/category-config";
 import { articleJsonLd } from "@/lib/article-jsonld";
+import { getMoreInSection } from "@/lib/related-articles";
 import { cardSnapshotFor } from "@/lib/card-snapshot-server";
 import { CardSnapshotProvider } from "@/app/components/card-snapshot-context";
 import HubArticleDetailClient from "@/app/components/hub-article-detail-client";
@@ -56,18 +55,20 @@ export default async function TransferHubArticlePage({ params }: Props) {
   }
 
   const jsonLd = articleJsonLd(data, `/transfers/${slug}`);
+  // Sibling links chosen on the server, so the article body carries them (P2).
+  const related = await getMoreInSection(data);
 
-  // No segment layout here, unlike /radar and /lists: without this index an
-  // article in this section links to no sibling at all.
+  // Siblings are linked from the in-body "More in" block (lib/related-articles.ts); the
+  // section index left this page's footer on 2026-10-20, so the footer is standard.
   return (
-    <FooterOwner index={<ArticleIndexLinks category="transfer" basePath="/transfers" heading="All Transfer Analysis" />}>
+    <>
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
       <CardSnapshotProvider snapshot={cardSnapshotFor(data.id)}>
-        <HubArticleDetailClient slug={slug} hubId="transfer" article={data} />
+        <HubArticleDetailClient slug={slug} hubId="transfer" article={data} related={related} />
       </CardSnapshotProvider>
-    </FooterOwner>
+    </>
   );
 }

@@ -5,10 +5,9 @@ import { createClient } from "@/lib/supabase";
 import { articleMetadata } from "@/lib/article-metadata";
 import { categoryArticlePath } from "@/lib/category-config";
 import { articleJsonLd } from "@/lib/article-jsonld";
+import { getMoreInSection } from "@/lib/related-articles";
 import { cardSnapshotFor } from "@/lib/card-snapshot-server";
 import { CardSnapshotProvider } from "@/app/components/card-snapshot-context";
-import ArticleIndexLinks from "@/app/components/article-index-links";
-import FooterOwner from "@/app/components/footer-owner";
 import { frozenRow } from "@/lib/card-snapshot";
 import RadarDetailClient from "./client";
 import type { PlayerCardData } from "@/app/components/player-card";
@@ -97,11 +96,13 @@ export default async function RadarDetailPage({ params }: Props) {
   }
 
   const jsonLd = articleJsonLd(data, `/radar/${slug}`);
+  // Sibling links chosen on the server, so the article body carries them (P2).
+  const related = await getMoreInSection(data);
 
-  // The section index in the footer gives every article a link to each sibling until
-  // the in-body "More in" block lands (docs/TODO.md, P2).
+  // Siblings are linked from the in-body "More in" block (lib/related-articles.ts); the
+  // section index left this page's footer on 2026-10-20, so the footer is standard.
   return (
-    <FooterOwner index={<ArticleIndexLinks category="radar" basePath="/radar" heading="All Radar Reports" />}>
+    <>
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
@@ -111,8 +112,9 @@ export default async function RadarDetailPage({ params }: Props) {
           slug={slug}
           article={data}
           playerCard={playerCard}
+          related={related}
         />
       </CardSnapshotProvider>
-    </FooterOwner>
+    </>
   );
 }

@@ -12,8 +12,8 @@ export const metadata: Metadata = {
 /**
  * Metadata only since 2026-10-19. The section's article index used to wrap every page
  * here, inside the footer (FooterOwner). The hub now lists every piece in its own
- * body, so it keeps a standard footer; the article pages still carry the index,
- * from their own [slug]/page.tsx, until the in-body "More in" block replaces it.
+ * body, and each article links its siblings from an in-body "More in" block
+ * (lib/related-articles.ts), so every page in the section has a standard footer.
  */
 export default function RadarLayout({ children }: { children: React.ReactNode }) {
   return children;
