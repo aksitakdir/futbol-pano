@@ -1,0 +1,146 @@
+{
+  "template": "Rundown",
+  "slug": "fc-27-s-biggest-rating-jumps-the-young-players-the-game-upgraded-most",
+  "url": "scoutgamer.com/lists/fc-27-s-biggest-rating-jumps-the-young-players-the-game-upgraded-most",
+  "cover": "https://bfjpatsihrzlknrpghvm.supabase.co/storage/v1/object/public/content-images/1792186092575-xkng08nb65.jpeg",
+  "kicker": "FC 27's Biggest Rating Jumps",
+  "subtitle": "The Young Players the Game Upgraded Most",
+  "asOf": "12 October 2026",
+  "quote": "The game rewards a season. Clubs pay for it. Then the new club decides whether to play the player — and that part the rating cannot see.",
+  "turn": "THE READ",
+  "source": "FC 27's Biggest Rating Jumps: The Young Players the Game Upgraded Most — scoutgamer.com, figures as stated in the article",
+  "edition": "27",
+  "mode": "jump",
+  "fromEdition": "26",
+  "countLabel": "PLAYERS",
+  "items": [
+    {
+      "name": "Johan Manzambi",
+      "club": "Aston Villa",
+      "rating": 80,
+      "from": 67,
+      "jump": 13,
+      "details": [
+        {
+          "label": "League minutes this season",
+          "value": "185"
+        }
+      ],
+      "rank": "9"
+    },
+    {
+      "name": "Prosper Peter",
+      "club": "Angers SCO",
+      "rating": 72,
+      "from": 58,
+      "jump": 14,
+      "details": [
+        {
+          "label": "League minutes this season",
+          "value": "220"
+        }
+      ],
+      "rank": "=5"
+    },
+    {
+      "name": "Arijon Ibrahimović",
+      "club": "FC Augsburg",
+      "rating": 75,
+      "from": 61,
+      "jump": 14,
+      "details": [
+        {
+          "label": "League minutes this season",
+          "value": "202"
+        }
+      ],
+      "rank": "=5"
+    },
+    {
+      "name": "Dayann Methalie",
+      "club": "Sunderland",
+      "rating": 75,
+      "from": 61,
+      "jump": 14,
+      "details": [
+        {
+          "label": "League minutes this season",
+          "value": "107"
+        }
+      ],
+      "rank": "=5"
+    },
+    {
+      "name": "Lennart Karl",
+      "club": "FC Bayern München",
+      "rating": 77,
+      "from": 63,
+      "jump": 14,
+      "details": [
+        {
+          "label": "League minutes this season",
+          "value": "131"
+        }
+      ],
+      "rank": "=5"
+    },
+    {
+      "name": "Jorge Salinas",
+      "club": "Racing Santander",
+      "rating": 72,
+      "from": 57,
+      "jump": 15,
+      "details": [
+        {
+          "label": "League minutes this season",
+          "value": "634"
+        }
+      ],
+      "rank": "=2"
+    },
+    {
+      "name": "Mathys Detourbet",
+      "club": "AS Monaco",
+      "rating": 73,
+      "from": 58,
+      "jump": 15,
+      "details": [
+        {
+          "label": "League minutes this season",
+          "value": "109"
+        }
+      ],
+      "rank": "=2"
+    },
+    {
+      "name": "Rudy Matondo",
+      "club": "Paris FC",
+      "rating": 74,
+      "from": 59,
+      "jump": 15,
+      "details": [
+        {
+          "label": "League minutes this season",
+          "value": "174"
+        }
+      ],
+      "rank": "=2"
+    },
+    {
+      "name": "Zavier Gozo",
+      "club": "Crystal Palace",
+      "rating": 71,
+      "from": 55,
+      "jump": 16,
+      "details": [
+        {
+          "label": "League minutes this season",
+          "value": "28"
+        }
+      ],
+      "rank": "1"
+    }
+  ],
+  "ballot": [],
+  "when": ""
+}

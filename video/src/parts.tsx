@@ -1,6 +1,6 @@
 import React from "react";
-import { AbsoluteFill, interpolate, spring, useCurrentFrame, useVideoConfig } from "remotion";
-import { color, fonts, gradient, safe } from "./theme";
+import { AbsoluteFill, Img, interpolate, spring, useCurrentFrame, useVideoConfig } from "remotion";
+import { color, fonts, gradient, gradientText, safe } from "./theme";
 
 /** Film grain over everything, like the site's .grain surfaces. */
 export const Grain: React.FC = () => (
@@ -19,12 +19,37 @@ export const Hatch: React.FC<{ opacity?: number }> = ({ opacity = 0.05 }) => (
   <AbsoluteFill style={{ opacity, backgroundImage: "repeating-linear-gradient(-45deg, rgba(255,255,255,0.6) 0 1px, transparent 1px 22px)" }} />
 );
 
+/** How the backdrop drifts: the objectPosition range in %, and the blur in px. */
+export type BackdropSpec = { pan?: [number, number]; blur?: number };
+
+/**
+ * The article's cover behind every scene: blurred, dimmed and drifting slowly across
+ * the image over the whole video, so each reel sits in its own key visual's colours.
+ * The left side, where the text column runs, is darkened most. render.mjs narrows
+ * the drift (or raises the blur) so no face in the cover sits behind a named player.
+ */
+export const Backdrop: React.FC<{ src: string | null; spec?: BackdropSpec }> = ({ src, spec }) => {
+  const frame = useCurrentFrame();
+  const { durationInFrames } = useVideoConfig();
+  if (!src) return null;
+  const t = frame / durationInFrames;
+  const [from, to] = spec?.pan ?? [18, 82];
+  const dim = (pct: number) => `color-mix(in oklch, ${color.bg} ${pct}%, transparent)`;
+  return (
+    <AbsoluteFill style={{ overflow: "hidden" }}>
+      <Img src={src} style={{ width: "100%", height: "100%", objectFit: "cover", objectPosition: `${from + (to - from) * t}% 50%`, transform: `scale(${1.14 + 0.08 * t})`, filter: `blur(${spec?.blur ?? 9}px) brightness(0.5) saturate(1.15)` }} />
+      <AbsoluteFill style={{ background: `linear-gradient(90deg, ${dim(72)} 0%, ${dim(50)} 70%, ${dim(34)} 100%)` }} />
+      <AbsoluteFill style={{ background: `linear-gradient(to bottom, ${color.bg} 0%, transparent 16%, transparent 78%, ${color.bg} 100%)` }} />
+    </AbsoluteFill>
+  );
+};
+
 /** "SCOUT GAMER" lockup, top-left inside the safe area. */
 export const Brand: React.FC<{ tag?: string }> = ({ tag }) => (
   <div style={{ position: "absolute", top: safe.top - 70, left: safe.x, right: safe.x, display: "flex", justifyContent: "space-between", alignItems: "center" }}>
     <div style={{ display: "flex", alignItems: "center", gap: 18 }}>
       <div style={{ width: 54, height: 54, borderRadius: 12, background: color.surface, border: `1px solid ${color.border}`, display: "flex", alignItems: "center", justifyContent: "center", fontFamily: fonts.display, fontWeight: 700, fontSize: 22 }}>
-        <span style={{ background: gradient, WebkitBackgroundClip: "text", color: "transparent" }}>SG</span>
+        <span style={{ ...gradientText() }}>SG</span>
       </div>
       <div style={{ fontFamily: fonts.display, fontWeight: 700, fontSize: 30, color: color.text, letterSpacing: "-0.02em" }}>Scout Gamer</div>
     </div>
@@ -59,11 +84,13 @@ export const Monogram: React.FC<{ name: string; size?: number; accent?: string }
 };
 
 /** Rating that counts up while its bar fills. The bar runs from `floor` to 99. */
-export const RatingBar: React.FC<{ value: number; delay?: number; floor?: number; accent?: string; label: string }> = ({ value, delay = 0, floor = 60, accent = color.emerald, label }) => {
+export const RatingBar: React.FC<{ value: number; from?: number; delay?: number; floor?: number; accent?: string; label: string }> = ({ value, from, delay = 0, floor = 60, accent = color.emerald, label }) => {
   const frame = useCurrentFrame();
   const t = interpolate(frame - delay, [0, 22], [0, 1], { extrapolateLeft: "clamp", extrapolateRight: "clamp", easing: (x) => 1 - Math.pow(1 - x, 3) });
-  const shown = Math.round(floor + (value - floor) * t);
-  const width = ((value - floor) / (99 - floor)) * 100 * t;
+  // With `from`, the number and the bar start at the old rating and climb to the new one.
+  const start = from ?? floor;
+  const shown = Math.round(start + (value - start) * t);
+  const width = ((start - floor) / (99 - floor)) * 100 + ((value - start) / (99 - floor)) * 100 * t;
   return (
     <div>
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", marginBottom: 18 }}>

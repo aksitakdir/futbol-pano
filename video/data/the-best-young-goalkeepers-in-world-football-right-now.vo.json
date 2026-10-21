@@ -1,0 +1,88 @@
+{
+  "approved": "2026-10-21, owner asked for videos of the latest pieces; lines from the article",
+  "lines": {
+    "hook": "Goalkeepers are supposed to arrive late. Here are the ten best aged twenty-one or under, by their EA FC 27 ratings.",
+    "items": [
+      "Our first deep cut: Nazar Domchak, Slavia Prague. Sixty-seven.",
+      "And our second: Edoardo Motta, Lazio. Sixty-nine, up ten points in a year.",
+      "Ewen Jaouen, Newcastle. Seventy.",
+      "Tommaso Martinelli, Avellino. Seventy.",
+      "Dennis Seimen, Stuttgart. Seventy-two.",
+      "Santiago Beltrán, River Plate. Seventy-three, another ten-point jump.",
+      "Matthieu Epolo, Standard Liège. Seventy-five.",
+      "Mike Penders, Chelsea. Seventy-eight.",
+      "Guillaume Restes, Toulouse. Seventy-eight.",
+      "And the best young goalkeeper in the game: Robin Risser, Lens. Eighty-one, up ten."
+    ],
+    "quote": "A goalkeeper's rating is the last thing in football to believe anyone under twenty-two. This year it believed three of them at once.",
+    "close": "The full list, with where each of them stands this season, is on scoutgamer.com."
+  },
+  "voice": "nPczCjzI2devNBz1zQrb",
+  "clips": [
+    {
+      "scene": "hook",
+      "file": "out/the-best-young-goalkeepers-in-world-football-right-now/vo/hook.mp3",
+      "seconds": 7.184
+    },
+    {
+      "scene": "item-00",
+      "file": "out/the-best-young-goalkeepers-in-world-football-right-now/vo/item-00.mp3",
+      "seconds": 4.127
+    },
+    {
+      "scene": "item-01",
+      "file": "out/the-best-young-goalkeepers-in-world-football-right-now/vo/item-01.mp3",
+      "seconds": 4.859
+    },
+    {
+      "scene": "item-02",
+      "file": "out/the-best-young-goalkeepers-in-world-football-right-now/vo/item-02.mp3",
+      "seconds": 2.403
+    },
+    {
+      "scene": "item-03",
+      "file": "out/the-best-young-goalkeepers-in-world-football-right-now/vo/item-03.mp3",
+      "seconds": 2.691
+    },
+    {
+      "scene": "item-04",
+      "file": "out/the-best-young-goalkeepers-in-world-football-right-now/vo/item-04.mp3",
+      "seconds": 2.508
+    },
+    {
+      "scene": "item-05",
+      "file": "out/the-best-young-goalkeepers-in-world-football-right-now/vo/item-05.mp3",
+      "seconds": 4.911
+    },
+    {
+      "scene": "item-06",
+      "file": "out/the-best-young-goalkeepers-in-world-football-right-now/vo/item-06.mp3",
+      "seconds": 3.187
+    },
+    {
+      "scene": "item-07",
+      "file": "out/the-best-young-goalkeepers-in-world-football-right-now/vo/item-07.mp3",
+      "seconds": 2.456
+    },
+    {
+      "scene": "item-08",
+      "file": "out/the-best-young-goalkeepers-in-world-football-right-now/vo/item-08.mp3",
+      "seconds": 2.638
+    },
+    {
+      "scene": "item-09",
+      "file": "out/the-best-young-goalkeepers-in-world-football-right-now/vo/item-09.mp3",
+      "seconds": 6.269
+    },
+    {
+      "scene": "quote",
+      "file": "out/the-best-young-goalkeepers-in-world-football-right-now/vo/quote.mp3",
+      "seconds": 7.471
+    },
+    {
+      "scene": "close",
+      "file": "out/the-best-young-goalkeepers-in-world-football-right-now/vo/close.mp3",
+      "seconds": 5.016
+    }
+  ]
+}

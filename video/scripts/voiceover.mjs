@@ -4,7 +4,7 @@
  *   node scripts/voiceover.mjs samples "<line>"          # one sample per candidate voice → out/vo-samples/
  *   node scripts/voiceover.mjs <slug> --voice <voice_id>  # one clip per scene → out/<slug>/vo/, timings → data/<slug>.vo.json
  *
- * The lines live in data/<slug>.vo.json ({ voice, lines: { hook, items: [...], quote, ballot, close } }),
+ * The lines live in data/<slug>.vo.json ({ voice, lines: { hook, items|stats: [...], contrast, quote, ballot, close } }),
  * written by hand and approved by the owner before any credits are spent; every
  * number in them must match data/<slug>.json, which comes from the article.
  * The key is read from ../.env.local (ELEVENLABS_API_KEY) and never printed.
@@ -67,7 +67,15 @@ if (cmd === "samples") {
   if (!voice) { console.error("No voice: pass --voice <id> or set \"voice\" in the .vo.json"); process.exit(1); }
   const dir = path.join(ROOT, "out", slug, "vo");
   const clips = [];
-  const scenes = [["hook", spec.lines.hook], ...spec.lines.items.map((t, i) => [`item-${String(i).padStart(2, "0")}`, t]), ["quote", spec.lines.quote], ["ballot", spec.lines.ballot], ["close", spec.lines.close]];
+  // Lines per scene: hook, items[] (Rundown) or stats[] (Profile), contrast, quote, ballot, close.
+  const L = spec.lines;
+  const pad = (i) => String(i).padStart(2, "0");
+  const scenes = [
+    ["hook", L.hook],
+    ...(L.items ?? []).map((t, i) => [`item-${pad(i)}`, t]),
+    ...(L.stats ?? []).map((t, i) => [`stat-${pad(i)}`, t]),
+    ["contrast", L.contrast], ["quote", L.quote], ["ballot", L.ballot], ["close", L.close],
+  ];
   for (const [scene, text] of scenes) {
     if (!text) continue;
     const file = path.join(dir, `${scene}.mp3`);

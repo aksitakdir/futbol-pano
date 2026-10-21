@@ -1,0 +1,140 @@
+{
+  "template": "Rundown",
+  "slug": "the-best-young-goalkeepers-in-world-football-right-now",
+  "url": "scoutgamer.com/lists/the-best-young-goalkeepers-in-world-football-right-now",
+  "cover": "https://bfjpatsihrzlknrpghvm.supabase.co/storage/v1/object/public/content-images/1792186262918-msa06hcsb6.jpeg",
+  "kicker": "The Best Young Goalkeepers in World Football Right Now",
+  "subtitle": "",
+  "asOf": "12 October 2026",
+  "quote": "A goalkeeper's rating is the last thing in football to believe anyone under twenty-two. This year it believed three of them at once.",
+  "turn": "THE READ",
+  "source": "The Best Young Goalkeepers in World Football Right Now — scoutgamer.com, figures as stated in the article",
+  "edition": "27",
+  "mode": "rating",
+  "fromEdition": null,
+  "countLabel": "GOALKEEPERS",
+  "items": [
+    {
+      "name": "Nazar Domchak",
+      "club": "Slavia Praha",
+      "rating": 67,
+      "details": [
+        {
+          "label": "Best facets",
+          "value": "Reflexes 69 · Positioning 66"
+        }
+      ],
+      "rank": "10"
+    },
+    {
+      "name": "Edoardo Motta",
+      "club": "SS Lazio",
+      "rating": 69,
+      "details": [
+        {
+          "label": "Best facets",
+          "value": "Diving 74 · Kicking 68"
+        }
+      ],
+      "rank": "9"
+    },
+    {
+      "name": "Ewen Jaouen",
+      "club": "Newcastle United",
+      "rating": 70,
+      "details": [
+        {
+          "label": "Best facets",
+          "value": "Diving 71 · Handling 70"
+        }
+      ],
+      "rank": "=7"
+    },
+    {
+      "name": "Tommaso Martinelli",
+      "club": "Avellino",
+      "rating": 70,
+      "details": [
+        {
+          "label": "Best facets",
+          "value": "Diving 71 · Reflexes 70"
+        }
+      ],
+      "rank": "=7"
+    },
+    {
+      "name": "Dennis Seimen",
+      "club": "VfB Stuttgart",
+      "rating": 72,
+      "details": [
+        {
+          "label": "Best facets",
+          "value": "Reflexes 76 · Kicking 75"
+        }
+      ],
+      "rank": "6"
+    },
+    {
+      "name": "Santiago Beltrán",
+      "club": "River Plate",
+      "rating": 73,
+      "details": [
+        {
+          "label": "Best facets",
+          "value": "Diving 75 · Reflexes 73"
+        }
+      ],
+      "rank": "5"
+    },
+    {
+      "name": "Matthieu Epolo",
+      "club": "Standard Liège",
+      "rating": 75,
+      "details": [
+        {
+          "label": "Best facets",
+          "value": "Diving 77 · Reflexes 76"
+        }
+      ],
+      "rank": "4"
+    },
+    {
+      "name": "Mike Penders",
+      "club": "Chelsea",
+      "rating": 78,
+      "details": [
+        {
+          "label": "Best facets",
+          "value": "Diving 80 · Kicking 80"
+        }
+      ],
+      "rank": "=2"
+    },
+    {
+      "name": "Guillaume Restes",
+      "club": "Toulouse FC",
+      "rating": 78,
+      "details": [
+        {
+          "label": "Best facets",
+          "value": "Kicking 80 · Reflexes 80"
+        }
+      ],
+      "rank": "=2"
+    },
+    {
+      "name": "Robin Risser",
+      "club": "RC Lens",
+      "rating": 81,
+      "details": [
+        {
+          "label": "Best facets",
+          "value": "Kicking 84 · Reflexes 84"
+        }
+      ],
+      "rank": "1"
+    }
+  ],
+  "ballot": [],
+  "when": ""
+}

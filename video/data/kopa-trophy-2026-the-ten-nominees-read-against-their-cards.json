@@ -1,10 +1,18 @@
 {
+  "template": "Rundown",
   "slug": "kopa-trophy-2026-the-ten-nominees-read-against-their-cards",
   "url": "scoutgamer.com/lists/kopa-trophy-2026-the-ten-nominees-read-against-their-cards",
   "cover": "https://bfjpatsihrzlknrpghvm.supabase.co/storage/v1/object/public/content-images/1792457723731-02ge5iqg91fs.jpeg",
   "kicker": "Kopa Trophy 2026",
   "subtitle": "The Ten Nominees, Read Against Their Cards",
+  "asOf": "17 October 2026",
+  "quote": "Yamal will probably win the Kopa. Cubarsí has already won the World Cup's version of it.",
+  "turn": "BUT THE JURY JUDGES THE SEASON",
+  "source": "Kopa Trophy 2026: The Ten Nominees, Read Against Their Cards — scoutgamer.com, figures as stated in the article",
   "edition": "27",
+  "mode": "rating",
+  "fromEdition": null,
+  "countLabel": "NOMINEES",
   "items": [
     {
       "name": "Kerim Alajbegović",
@@ -167,7 +175,6 @@
       "rank": "1"
     }
   ],
-  "quote": "Yamal will probably win the Kopa. Cubarsí has already won the World Cup's version of it.",
   "ballot": [
     {
       "points": 5,
@@ -185,6 +192,5 @@
       "note": "13 goals, 9 assists and 118 completed dribbles for Leipzig"
     }
   ],
-  "when": "On Monday 26 October 2026, at the Ballon d'Or ceremony at the London Palladium, which starts at 20:00 London time.",
-  "source": "Kopa Trophy 2026: The Ten Nominees, Read Against Their Cards — scoutgamer.com, figures as stated in the article"
+  "when": "On Monday 26 October 2026, at the Ballon d'Or ceremony at the London Palladium, which starts at 20:00 London time."
 }

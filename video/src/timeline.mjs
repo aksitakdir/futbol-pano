@@ -7,17 +7,32 @@
  * starts `lead` seconds into the scene and the cut comes `tail` seconds after it ends.
  */
 export const FPS = 30;
-export const BASE = { hook: 100, item: 66, quote: 120, ballot: 140, close: 110 };
-const LEAD = { hook: 0.5, item: 0.2, quote: 0.35, ballot: 0.35, close: 0.35 };
+export const BASE = { hook: 100, item: 66, stat: 80, contrast: 210, quote: 120, ballot: 140, close: 110 };
+const LEAD = { hook: 0.5, item: 0.2, stat: 0.25, contrast: 0.35, quote: 0.35, ballot: 0.35, close: 0.35 };
 const TAIL = 0.35;
 
-/** @param {{ items: unknown[]; quote: string | null; ballot: unknown[]; vo?: { clips?: { scene: string; seconds: number; file: string }[] } }} p */
+const pad = (i) => String(i).padStart(2, "0");
+
+/**
+ * The scenes a video has, in order. Rundown: hook, one per ranked item, quote,
+ * ballot, close. Profile: hook, one per stat box, the comparison, quote, close.
+ * @param {{ items?: unknown[]; stats?: unknown[]; contrast?: unknown; quote?: string | null; ballot?: unknown[] }} p
+ */
+export function scenesOf(p) {
+  const scenes = [["hook", "hook"]];
+  for (let i = 0; i < (p.items?.length ?? 0); i++) scenes.push([`item-${pad(i)}`, "item"]);
+  for (let i = 0; i < (p.stats?.length ?? 0); i++) scenes.push([`stat-${pad(i)}`, "stat"]);
+  if (p.contrast) scenes.push(["contrast", "contrast"]);
+  if (p.quote) scenes.push(["quote", "quote"]);
+  if (p.ballot?.length) scenes.push(["ballot", "ballot"]);
+  scenes.push(["close", "close"]);
+  return scenes;
+}
+
+/** @param {Parameters<typeof scenesOf>[0] & { vo?: { clips?: { scene: string; seconds: number; file: string }[] } }} p */
 export function timeline(p) {
   const clips = new Map((p.vo?.clips ?? []).map((c) => [c.scene, c]));
-  const scenes = [["hook", "hook"], ...p.items.map((_, i) => [`item-${String(i).padStart(2, "0")}`, "item"])];
-  if (p.quote) scenes.push(["quote", "quote"]);
-  if (p.ballot.length) scenes.push(["ballot", "ballot"]);
-  scenes.push(["close", "close"]);
+  const scenes = scenesOf(p);
   let at = 0;
   return scenes.map(([scene, kind]) => {
     const clip = clips.get(scene);

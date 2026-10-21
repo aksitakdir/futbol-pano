@@ -1,0 +1,82 @@
+{
+  "approved": "2026-10-21, owner asked for videos of the latest pieces; lines from the article",
+  "lines": {
+    "hook": "Nine of the biggest EA FC 27 upgrades among players aged twenty-one or under. And the league minutes their clubs have given them, as of the twelfth of October.",
+    "items": [
+      "Johan Manzambi, Aston Villa. Sixty-seven to eighty. A hundred and eighty-five minutes.",
+      "Prosper Peter, Angers. Plus fourteen. Two hundred and twenty minutes.",
+      "Arijon Ibrahimović, Augsburg. Plus fourteen. Two hundred and two.",
+      "Dayann Methalie, Sunderland. Plus fourteen. A hundred and seven.",
+      "Lennart Karl, Bayern. Plus fourteen. A hundred and thirty-one.",
+      "Jorge Salinas, Racing Santander. Plus fifteen, and six hundred and thirty-four minutes: the only one past three hundred.",
+      "Mathys Detourbet, Monaco. Plus fifteen. A hundred and nine.",
+      "Rudy Matondo, Paris FC. Plus fifteen. A hundred and seventy-four.",
+      "And the biggest jump of all: Zavier Gozo, Crystal Palace. Fifty-five to seventy-one. Twenty-eight league minutes."
+    ],
+    "quote": "The game rewards a season. Clubs pay for it. Then the new club decides whether to play the player, and that part the rating cannot see.",
+    "close": "Six of the nine changed clubs this year. The full read is on scoutgamer.com."
+  },
+  "voice": "nPczCjzI2devNBz1zQrb",
+  "clips": [
+    {
+      "scene": "hook",
+      "file": "out/fc-27-s-biggest-rating-jumps-the-young-players-the-game-upgraded-most/vo/hook.mp3",
+      "seconds": 9.378
+    },
+    {
+      "scene": "item-00",
+      "file": "out/fc-27-s-biggest-rating-jumps-the-young-players-the-game-upgraded-most/vo/item-00.mp3",
+      "seconds": 5.433
+    },
+    {
+      "scene": "item-01",
+      "file": "out/fc-27-s-biggest-rating-jumps-the-young-players-the-game-upgraded-most/vo/item-01.mp3",
+      "seconds": 5.042
+    },
+    {
+      "scene": "item-02",
+      "file": "out/fc-27-s-biggest-rating-jumps-the-young-players-the-game-upgraded-most/vo/item-02.mp3",
+      "seconds": 4.676
+    },
+    {
+      "scene": "item-03",
+      "file": "out/fc-27-s-biggest-rating-jumps-the-young-players-the-game-upgraded-most/vo/item-03.mp3",
+      "seconds": 4.206
+    },
+    {
+      "scene": "item-04",
+      "file": "out/fc-27-s-biggest-rating-jumps-the-young-players-the-game-upgraded-most/vo/item-04.mp3",
+      "seconds": 4.075
+    },
+    {
+      "scene": "item-05",
+      "file": "out/fc-27-s-biggest-rating-jumps-the-young-players-the-game-upgraded-most/vo/item-05.mp3",
+      "seconds": 7.131
+    },
+    {
+      "scene": "item-06",
+      "file": "out/fc-27-s-biggest-rating-jumps-the-young-players-the-game-upgraded-most/vo/item-06.mp3",
+      "seconds": 3.84
+    },
+    {
+      "scene": "item-07",
+      "file": "out/fc-27-s-biggest-rating-jumps-the-young-players-the-game-upgraded-most/vo/item-07.mp3",
+      "seconds": 3.892
+    },
+    {
+      "scene": "item-08",
+      "file": "out/fc-27-s-biggest-rating-jumps-the-young-players-the-game-upgraded-most/vo/item-08.mp3",
+      "seconds": 7.784
+    },
+    {
+      "scene": "quote",
+      "file": "out/fc-27-s-biggest-rating-jumps-the-young-players-the-game-upgraded-most/vo/quote.mp3",
+      "seconds": 7.706
+    },
+    {
+      "scene": "close",
+      "file": "out/fc-27-s-biggest-rating-jumps-the-young-players-the-game-upgraded-most/vo/close.mp3",
+      "seconds": 5.198
+    }
+  ]
+}

@@ -61,6 +61,8 @@ Midjourney promptları (kimliği belirsiz figürler — gerçek oyuncu üretmek 
       (önizleme için sunucu tarafı istemci gerekiyor; ayrı, dikkatli iş).
 - [ ] Senin kararın: Transfers / WC / Arena sayfa başlıklarında "| Scout Gamer | Scout Gamer" tekrarı.
 
+- [ ] **#148 Nico Paz (Radar, 26 Ağu) — doğrula.** Yazı "Madrid geri aldı ve aynı hafta €60m'ye Como'ya geri sattı, yeni geri alım €80m" diyor; 19 Eki oyuncu doğrulaması ise "Como'da kalıyor, Madrid'in 2027-28 için geri alım hakkı var" buldu (#130 de "stays at Como"). Çelişki çözülmeden bu yazıdan video ya da sosyal paylaşım yapılmasın.
+
 **Video altyapısı (2026-10-20/21):** `video/` çalışma alanı (Remotion 4), commit'li. Sıra:
 `node scripts/from-article.mjs <id>` (veri, yazıdan) → seslendirme metni `data/<slug>.vo.json` (sahip onaylar)
 → `node scripts/voiceover.mjs <slug> --voice <id>` (ElevenLabs; Brian = `nPczCjzI2devNBz1zQrb`)

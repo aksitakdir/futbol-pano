@@ -1,3 +1,4 @@
+import type { CSSProperties } from "react";
 import { loadFont as loadDisplay } from "@remotion/google-fonts/SpaceGrotesk";
 import { loadFont as loadBody } from "@remotion/google-fonts/InterTight";
 import { loadFont as loadMono } from "@remotion/google-fonts/IBMPlexMono";
@@ -25,6 +26,15 @@ export const color = {
 };
 
 export const gradient = `linear-gradient(120deg, ${color.emerald} 0%, ${color.cyan} 55%, ${color.sky} 100%)`;
+
+/**
+ * Gradient-filled text. background-clip: text paints only inside the element's box, and
+ * at a tight line-height the descenders hang below it and come out cut off (the g of
+ * "scoutgamer"). The padding extends the painted area; the negative margin keeps the layout.
+ */
+export const gradientText = (background: string = gradient): CSSProperties => ({
+  background, WebkitBackgroundClip: "text", backgroundClip: "text", color: "transparent", paddingBottom: "0.25em", marginBottom: "-0.25em",
+});
 
 /**
  * Reels, TikTok and Shorts lay their own UI over the top ~220px and the bottom
