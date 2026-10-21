@@ -1,6 +1,6 @@
 # Scout Gamer — To-Do
 
-Son güncelleme: 2026-09-26
+Son güncelleme: 2026-10-20
 
 Bu liste sohbette yaşıyordu ve her sorulduğunda yeniden kuruluyordu. İlk repo
 sürümünü bir sohbet **özetinden** kurdum ve dört madde ile birçok gerekçe düştü;
@@ -9,6 +9,65 @@ liste burada yaşar, hafızada değil.
 
 Tamamlananı silmeyin — **Biten** bölümüne taşıyın. Neyin ne zaman çözüldüğü,
 tekrar eden sorunları görmenin tek yolu.
+
+---
+
+## 🔥 Bu hafta — trafik (2026-10-20)
+
+Trafik son dönemde düşüyor. Olası nedenler (veriyle doğrulanacak): Dünya Kupası talebinin
+bitmesi; hub ve ana sayfa linklerinin Google'a görünmemesi (P0–P3 ile 19–20 Eki'de düzeldi,
+etkisi 2–4 haftada gelir); ve **7 hazır yazının yayında olmaması.**
+
+**1. Bekleyen 7 yazıyı yayına al** — tek eksik kapak (Midjourney, sahip üretiyor; 1456×816,
+`--ar 16:9`). Not: kapak yayının teknik şartı değil, kart varyantları görselsiz çalışıyor.
+Yayınlayınca hub, ana sayfa (In Focus, Latest) ve kardeş yazıların "More in" blokları
+kendiliğinden yenilenir.
+
+| Sıra | # | Yazı | Neden şimdi |
+|---|---|---|---|
+| 1 | 164 | The Best FC 27 Wonderkids | "FC 27 wonderkids" aramaları çıkış haftalarında zirve yapar; 6 Eki'den beri bekliyor |
+| 2 | 168 | Best Young Wingers | GSC: kanat sorgularında sıfır görünürlük |
+| 3 | 169 | Best Young Defenders | GSC: sayfa yokken ~420 gösterim/28g |
+| 4 | 170 | Turkey's Best Young Footballers | "most valuable turkish players" yükselen sorgu → yayınlanınca #39'dan 301 |
+| 5 | 166 | Rodri Effect (defansif orta saha) | pozisyon kümesini tamamlar |
+| 6 | 160 | Number 10s | 30 Eyl verisi — yayından önce dakika/sakatlık kontrolü |
+| 7 | 161 | Netherlands | 30 Eyl verisi — yayından önce dakika/sakatlık kontrolü |
+
+Midjourney promptları (kimliği belirsiz figürler — gerçek oyuncu üretmek hukuken riskli):
+- **#164:** `glowing holographic football trading cards floating in a dark void, an anonymous young player emerging from a card, game-culture aesthetic, painterly brush strokes, teal and amber light, editorial illustration, no text, no logos --ar 16:9`
+- **#168:** `anonymous young winger sprinting down the touchline with the ball, motion blur, expressive painterly brush strokes, dark background, splashes of crimson and teal, editorial sports illustration, cinematic lighting, no text, no logos --ar 16:9`
+- **#169:** `anonymous young centre-back mid-tackle, low angle, powerful stance, dark stadium atmosphere, painterly brush texture, deep teal and red accents, editorial sports illustration, no faces in focus, no text, no logos --ar 16:9`
+- **#170:** `silhouette of a young footballer in a red kit walking out of a tunnel into floodlights, crescent-shaped light flare, painterly texture, dark moody palette with red and white accents, editorial illustration, no text, no logos, no flags --ar 16:9`
+- **#166:** `anonymous holding midfielder standing at the centre of the pitch with passing lines radiating around him like a tactics board, dark background, painterly strokes, teal and amber light trails, editorial sports illustration, no text, no logos --ar 16:9`
+- **#160:** `anonymous playmaker receiving the ball between the lines, glowing passing lanes opening ahead of him, dark pitch from above, painterly brush texture, gold and teal accents, editorial sports illustration, no text, no logos --ar 16:9`
+- **#161:** `young footballer in an orange kit silhouetted against a low northern sky, painterly brush texture, orange and deep blue palette, editorial sports illustration, no text, no logos, no flags --ar 16:9`
+
+**2. Kopa (#167, yayında)** — reel hazır (`video/out/kopa-…/reel.mp4`, metinler `copy.md`).
+- [ ] 26 Eki'den önce paylaş (müziği uygulamada ekle, oyuncuları etiketleme).
+- [ ] 26 Eki gecesi: kazananı yazıya güncelleme olarak ekle + ikinci video.
+
+**3. Google Search Console** (sahip, birkaç tık)
+- [ ] Sitemap'i yeniden gönder.
+- [ ] "Dizine eklenmesini iste": `/`, `/lists`, `/radar`, `/articles` (artık linklerini gösteriyorlar).
+- [ ] Teşhis için dışa aktar: GSC Performance son 28 gün vs önceki 28 gün (sayfalar + sorgular),
+      GA4 aynı dönem (Singapur/Çin bot trafiği hariç).
+
+**4. Sonraki 2 hafta**
+- [ ] Trafiğin %97'sini getiren listeleri tazele: Strikers (17 Ağu), Centre-Backs (9 Tem) — güncel sezon verisi.
+- [ ] Golden Boy yazısı (Kasım) · "FC 27 one month in".
+- [ ] Her yeni listeye bir Remotion videosu (şablon: Rundown).
+- [ ] Kart kapak görselleri tam boy JPEG yüklüyor (/lists'te ~13 MB) → küçük önizleme boyutları.
+- [ ] Güvenlik: bekleyen yazılar herkese açık anahtarla tam metinleriyle okunabiliyor → RLS
+      (önizleme için sunucu tarafı istemci gerekiyor; ayrı, dikkatli iş).
+- [ ] Senin kararın: Transfers / WC / Arena sayfa başlıklarında "| Scout Gamer | Scout Gamer" tekrarı.
+
+**Video altyapısı (2026-10-20/21):** `video/` çalışma alanı (Remotion 4), commit'li. Sıra:
+`node scripts/from-article.mjs <id>` (veri, yazıdan) → seslendirme metni `data/<slug>.vo.json` (sahip onaylar)
+→ `node scripts/voiceover.mjs <slug> --voice <id>` (ElevenLabs; Brian = `nPczCjzI2devNBz1zQrb`)
+→ `node scripts/music.mjs <slug> <saniye>` (ElevenLabs Music, sözsüz) → `node scripts/render.mjs <slug>`.
+Sahneler seslendirmeye göre uzar; müzik konuşmada kısılır. macOS 13'te Remotion'un ffmpeg'i çalışmıyor:
+kareleri `frames2mp4.swift`, sesi `mixaudio.swift` (AVFoundation) işliyor. Kopa reel'i: 66,9 sn, ~10 dk render.
+Anahtar `.env.local`'da (`ELEVENLABS_API_KEY`, kısıtlı yetki: seslendirme + müzik).
 
 ---
 

@@ -1,0 +1,94 @@
+{
+  "approved": "2026-10-21, owner: long version",
+  "lines": {
+    "hook": "Ten nominees for the Kopa Trophy. Here's how EA FC 27 rates them, and what they actually did last season.",
+    "items": [
+      "Kerim Alajbegović. Seventy-one. Thirteen goals, four assists.",
+      "Lennart Karl. Seventy-seven. He missed the World Cup injured.",
+      "Ibrahim Maza, eighty. Four World Cup starts.",
+      "Johan Manzambi, eighty. Three goals at the World Cup.",
+      "Eli Junior Kroupi, eighty. Thirteen Premier League goals.",
+      "Ayyoub Bouaddi, eighty. A World Cup quarter-final.",
+      "Warren Zaïre-Emery, eighty-three. A Champions League winner.",
+      "Yan Diomande, eighty-four. Thirteen goals, nine assists.",
+      "Pau Cubarsí, eighty-six. Every minute of a World Cup win.",
+      "And the game's number one: Lamine Yamal. Ninety. Twenty-four goals, seventeen assists."
+    ],
+    "quote": "Yamal will probably win the Kopa. Cubarsí has already won the World Cup's version of it.",
+    "ballot": "Our ballot: five points to Cubarsí, three to Yamal, one to Diomande.",
+    "close": "The winner is announced on the twenty-sixth of October. The full read is on scoutgamer.com."
+  },
+  "voice": "nPczCjzI2devNBz1zQrb",
+  "clips": [
+    {
+      "scene": "hook",
+      "file": "out/kopa-trophy-2026-the-ten-nominees-read-against-their-cards/vo/hook.mp3",
+      "seconds": 6.531
+    },
+    {
+      "scene": "item-00",
+      "file": "out/kopa-trophy-2026-the-ten-nominees-read-against-their-cards/vo/item-00.mp3",
+      "seconds": 4.31
+    },
+    {
+      "scene": "item-01",
+      "file": "out/kopa-trophy-2026-the-ten-nominees-read-against-their-cards/vo/item-01.mp3",
+      "seconds": 3.762
+    },
+    {
+      "scene": "item-02",
+      "file": "out/kopa-trophy-2026-the-ten-nominees-read-against-their-cards/vo/item-02.mp3",
+      "seconds": 2.952
+    },
+    {
+      "scene": "item-03",
+      "file": "out/kopa-trophy-2026-the-ten-nominees-read-against-their-cards/vo/item-03.mp3",
+      "seconds": 3.344
+    },
+    {
+      "scene": "item-04",
+      "file": "out/kopa-trophy-2026-the-ten-nominees-read-against-their-cards/vo/item-04.mp3",
+      "seconds": 3.657
+    },
+    {
+      "scene": "item-05",
+      "file": "out/kopa-trophy-2026-the-ten-nominees-read-against-their-cards/vo/item-05.mp3",
+      "seconds": 2.952
+    },
+    {
+      "scene": "item-06",
+      "file": "out/kopa-trophy-2026-the-ten-nominees-read-against-their-cards/vo/item-06.mp3",
+      "seconds": 3.474
+    },
+    {
+      "scene": "item-07",
+      "file": "out/kopa-trophy-2026-the-ten-nominees-read-against-their-cards/vo/item-07.mp3",
+      "seconds": 3.422
+    },
+    {
+      "scene": "item-08",
+      "file": "out/kopa-trophy-2026-the-ten-nominees-read-against-their-cards/vo/item-08.mp3",
+      "seconds": 3.422
+    },
+    {
+      "scene": "item-09",
+      "file": "out/kopa-trophy-2026-the-ten-nominees-read-against-their-cards/vo/item-09.mp3",
+      "seconds": 5.094
+    },
+    {
+      "scene": "quote",
+      "file": "out/kopa-trophy-2026-the-ten-nominees-read-against-their-cards/vo/quote.mp3",
+      "seconds": 4.676
+    },
+    {
+      "scene": "ballot",
+      "file": "out/kopa-trophy-2026-the-ten-nominees-read-against-their-cards/vo/ballot.mp3",
+      "seconds": 5.016
+    },
+    {
+      "scene": "close",
+      "file": "out/kopa-trophy-2026-the-ten-nominees-read-against-their-cards/vo/close.mp3",
+      "seconds": 5.512
+    }
+  ]
+}

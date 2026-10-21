@@ -1,0 +1,190 @@
+{
+  "slug": "kopa-trophy-2026-the-ten-nominees-read-against-their-cards",
+  "url": "scoutgamer.com/lists/kopa-trophy-2026-the-ten-nominees-read-against-their-cards",
+  "cover": "https://bfjpatsihrzlknrpghvm.supabase.co/storage/v1/object/public/content-images/1792457723731-02ge5iqg91fs.jpeg",
+  "kicker": "Kopa Trophy 2026",
+  "subtitle": "The Ten Nominees, Read Against Their Cards",
+  "edition": "27",
+  "items": [
+    {
+      "name": "Kerim Alajbegović",
+      "club": "Juventus",
+      "rating": 71,
+      "details": [
+        {
+          "label": "2025-26, All Competitions",
+          "value": "13 goals, 4 assists"
+        },
+        {
+          "label": "World Cup",
+          "value": "One goal"
+        }
+      ],
+      "rank": "10"
+    },
+    {
+      "name": "Lennart Karl",
+      "club": "Bayern Munich",
+      "rating": 77,
+      "details": [
+        {
+          "label": "2025-26, All Competitions",
+          "value": "9 goals, 8 assists"
+        },
+        {
+          "label": "World Cup",
+          "value": "Missed it injured"
+        }
+      ],
+      "rank": "9"
+    },
+    {
+      "name": "Ibrahim Maza",
+      "club": "Bayer Leverkusen",
+      "rating": 80,
+      "details": [
+        {
+          "label": "2025-26, All Competitions",
+          "value": "5 goals in 44 games"
+        },
+        {
+          "label": "World Cup",
+          "value": "Four starts"
+        }
+      ],
+      "rank": "=5"
+    },
+    {
+      "name": "Johan Manzambi",
+      "club": "Aston Villa",
+      "rating": 80,
+      "details": [
+        {
+          "label": "2025-26, All Competitions",
+          "value": "7 goals, 6 assists"
+        },
+        {
+          "label": "World Cup",
+          "value": "3 goals, 2 assists"
+        }
+      ],
+      "rank": "=5"
+    },
+    {
+      "name": "Eli Junior Kroupi",
+      "club": "Bournemouth",
+      "rating": 80,
+      "details": [
+        {
+          "label": "2025-26, All Competitions",
+          "value": "13 Premier League goals"
+        },
+        {
+          "label": "World Cup",
+          "value": "Not selected"
+        }
+      ],
+      "rank": "=5"
+    },
+    {
+      "name": "Ayyoub Bouaddi",
+      "club": "Manchester City",
+      "rating": 80,
+      "details": [
+        {
+          "label": "2025-26, All Competitions",
+          "value": "30 Ligue 1 games, 1 assist"
+        },
+        {
+          "label": "World Cup",
+          "value": "Quarter-finals, five starts"
+        }
+      ],
+      "rank": "=5"
+    },
+    {
+      "name": "Warren Zaïre-Emery",
+      "club": "Paris Saint-Germain",
+      "rating": 83,
+      "details": [
+        {
+          "label": "2025-26, All Competitions",
+          "value": "54 games, Champions League winner"
+        },
+        {
+          "label": "World Cup",
+          "value": "Knockout rounds only"
+        }
+      ],
+      "rank": "4"
+    },
+    {
+      "name": "Yan Diomande",
+      "club": "Real Madrid",
+      "rating": 84,
+      "details": [
+        {
+          "label": "2025-26, All Competitions",
+          "value": "13 goals, 9 assists"
+        },
+        {
+          "label": "World Cup",
+          "value": "Four games"
+        }
+      ],
+      "rank": "3"
+    },
+    {
+      "name": "Pau Cubarsí",
+      "club": "Barcelona",
+      "rating": 86,
+      "details": [
+        {
+          "label": "2025-26, All Competitions",
+          "value": "48 games, 45 starts"
+        },
+        {
+          "label": "World Cup",
+          "value": "Winner, every minute"
+        }
+      ],
+      "rank": "2"
+    },
+    {
+      "name": "Lamine Yamal",
+      "club": "Barcelona",
+      "rating": 90,
+      "details": [
+        {
+          "label": "2025-26, All Competitions",
+          "value": "24 goals, 17 assists"
+        },
+        {
+          "label": "World Cup",
+          "value": "Winner"
+        }
+      ],
+      "rank": "1"
+    }
+  ],
+  "quote": "Yamal will probably win the Kopa. Cubarsí has already won the World Cup's version of it.",
+  "ballot": [
+    {
+      "points": 5,
+      "name": "Pau Cubarsí",
+      "note": "Every minute of a World Cup win, and FIFA's Young Player Award"
+    },
+    {
+      "points": 3,
+      "name": "Lamine Yamal",
+      "note": "24 goals and 17 assists before a torn hamstring in April"
+    },
+    {
+      "points": 1,
+      "name": "Yan Diomande",
+      "note": "13 goals, 9 assists and 118 completed dribbles for Leipzig"
+    }
+  ],
+  "when": "On Monday 26 October 2026, at the Ballon d'Or ceremony at the London Palladium, which starts at 20:00 London time.",
+  "source": "Kopa Trophy 2026: The Ten Nominees, Read Against Their Cards — scoutgamer.com, figures as stated in the article"
+}
