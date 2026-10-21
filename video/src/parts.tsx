@@ -1,5 +1,5 @@
 import React from "react";
-import { AbsoluteFill, Img, interpolate, spring, useCurrentFrame, useVideoConfig } from "remotion";
+import { AbsoluteFill, interpolate, spring, useCurrentFrame, useVideoConfig } from "remotion";
 import { color, fonts, gradient, gradientText, safe } from "./theme";
 
 /** Film grain over everything, like the site's .grain surfaces. */
@@ -19,34 +19,9 @@ export const Hatch: React.FC<{ opacity?: number }> = ({ opacity = 0.05 }) => (
   <AbsoluteFill style={{ opacity, backgroundImage: "repeating-linear-gradient(-45deg, rgba(255,255,255,0.6) 0 1px, transparent 1px 22px)" }} />
 );
 
-/** How the backdrop drifts: the objectPosition range in %, and the blur in px. */
-export type BackdropSpec = { pan?: [number, number]; blur?: number };
-
-/**
- * The article's cover behind every scene: blurred, dimmed and drifting slowly across
- * the image over the whole video, so each reel sits in its own key visual's colours.
- * The left side, where the text column runs, is darkened most. render.mjs narrows
- * the drift (or raises the blur) so no face in the cover sits behind a named player.
- */
-export const Backdrop: React.FC<{ src: string | null; spec?: BackdropSpec }> = ({ src, spec }) => {
-  const frame = useCurrentFrame();
-  const { durationInFrames } = useVideoConfig();
-  if (!src) return null;
-  const t = frame / durationInFrames;
-  const [from, to] = spec?.pan ?? [18, 82];
-  const dim = (pct: number) => `color-mix(in oklch, ${color.bg} ${pct}%, transparent)`;
-  return (
-    <AbsoluteFill style={{ overflow: "hidden" }}>
-      <Img src={src} style={{ width: "100%", height: "100%", objectFit: "cover", objectPosition: `${from + (to - from) * t}% 50%`, transform: `scale(${1.14 + 0.08 * t})`, filter: `blur(${spec?.blur ?? 9}px) brightness(0.5) saturate(1.15)` }} />
-      <AbsoluteFill style={{ background: `linear-gradient(90deg, ${dim(72)} 0%, ${dim(50)} 70%, ${dim(34)} 100%)` }} />
-      <AbsoluteFill style={{ background: `linear-gradient(to bottom, ${color.bg} 0%, transparent 16%, transparent 78%, ${color.bg} 100%)` }} />
-    </AbsoluteFill>
-  );
-};
-
-/** "SCOUT GAMER" lockup, top-left inside the safe area. */
-export const Brand: React.FC<{ tag?: string }> = ({ tag }) => (
-  <div style={{ position: "absolute", top: safe.top - 70, left: safe.x, right: safe.x, display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+/** "SCOUT GAMER" lockup, top-left inside the safe area (the vertical one unless told otherwise). */
+export const Brand: React.FC<{ tag?: string; top?: number; x?: number }> = ({ tag, top = safe.top - 70, x = safe.x }) => (
+  <div style={{ position: "absolute", top, left: x, right: x, display: "flex", justifyContent: "space-between", alignItems: "center" }}>
     <div style={{ display: "flex", alignItems: "center", gap: 18 }}>
       <div style={{ width: 54, height: 54, borderRadius: 12, background: color.surface, border: `1px solid ${color.border}`, display: "flex", alignItems: "center", justifyContent: "center", fontFamily: fonts.display, fontWeight: 700, fontSize: 22 }}>
         <span style={{ ...gradientText() }}>SG</span>

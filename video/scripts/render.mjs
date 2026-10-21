@@ -1,10 +1,13 @@
 /**
  * Render an article's video and its cover frame.
  *
- *   node scripts/render.mjs <slug> [--template Rundown]
+ *   node scripts/render.mjs <slug> [--template Rundown] [--format x]
  *     → out/<slug>/reel.mp4 (1080×1920, H.264) and out/<slug>/cover.png. With a
  *       voice-over (data/<slug>.vo.json) and/or music (out/<slug>/music.mp3), reel.mp4
  *       carries the mix and reel-silent.mp4 is kept for in-app music.
+ *     --format x renders the same video at 16:9 (1920×1080) for X, from the template's
+ *       Wide composition, as reel-x.mp4 / reel-x-silent.mp4 / cover-x.png. Same
+ *       timeline, so the same voice-over and music fit it.
  *
  * Run `node scripts/from-article.mjs <id|slug>` first to write data/<slug>.json.
  *
@@ -20,6 +23,7 @@ import { fileURLToPath } from "url";
 import { bundle } from "@remotion/bundler";
 import { renderFrames, renderMedia, renderStill, selectComposition } from "@remotion/renderer";
 import { timeline } from "../src/timeline.mjs";
+import { backdropSpec, blurredSpec } from "../src/cover-window.mjs";
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.join(HERE, "..");
@@ -27,7 +31,14 @@ const slug = process.argv[2];
 if (!slug) { console.error("Usage: node scripts/render.mjs <slug> [--template Rundown]"); process.exit(1); }
 const inputProps = JSON.parse(fs.readFileSync(path.join(ROOT, "data", `${slug}.json`), "utf8"));
 const t = process.argv.indexOf("--template");
-const id = t !== -1 ? process.argv[t + 1] : inputProps.template ?? "Rundown";
+const template = t !== -1 ? process.argv[t + 1] : inputProps.template ?? "Rundown";
+const f = process.argv.indexOf("--format");
+const format = f !== -1 ? process.argv[f + 1] : "vertical";
+if (!["vertical", "x"].includes(format)) { console.error(`Unknown --format ${format}: vertical or x`); process.exit(1); }
+if (format === "x" && template !== "Rundown") { console.error(`No 16:9 ${template} yet: --format x renders Rundown videos`); process.exit(1); }
+const id = format === "x" ? `${template}Wide` : template;
+/** Output names: reel.mp4 for the vertical reel, reel-x.mp4 for X. */
+const suffix = format === "x" ? "-x" : "";
 const outDir = path.join(ROOT, "out", slug);
 fs.mkdirSync(outDir, { recursive: true });
 // Voice-over (scripts/voiceover.mjs) stretches the scenes to fit; music (scripts/music.mjs)
@@ -52,65 +63,53 @@ function swiftTool(name) {
 }
 
 /**
- * The backdrop drifts across the cover behind every card, and a face there reads as the
- * named player's portrait. Find the cover's faces (scripts/faces.swift, macOS Vision) and
- * keep the drift to a stretch of the cover clear of all of them; where no stretch is wide
- * enough, or the check cannot run, blur the cover past recognition instead.
+ * The faces in the cover (scripts/faces.swift, macOS Vision), for the backdrop: it
+ * drifts across the cover behind every card, and a face there reads as the named
+ * player's portrait (src/cover-window.mjs keeps them out of view). null when the
+ * check cannot run.
  */
-async function backdropFor(cover) {
-  if (!cover) return undefined;
-  const BLURRED = { blur: 28 };
-  let found;
+async function coverFaces(cover) {
   try {
     const file = path.join(outDir, ".cover");
     fs.writeFileSync(file, Buffer.from(await (await fetch(cover)).arrayBuffer()));
-    found = JSON.parse(execFileSync(swiftTool("faces"), [file]).toString());
+    const found = JSON.parse(execFileSync(swiftTool("faces"), [file]).toString());
     fs.rmSync(file);
+    return found;
   } catch (e) {
     console.warn(`warn  no face check on the cover (${String(e.message).split("\n")[0]}): backdrop blurred past recognition`);
-    return BLURRED;
+    return null;
   }
-  if (!found.faces.length) return undefined;
-  // Share of the cover's width in view (objectFit cover on a 1080×1920 frame), at the
-  // backdrop's smallest zoom (1.14), so the widest window it ever shows.
-  const aspect = found.width / found.height;
-  const frame = 1080 / 1920;
-  if (aspect <= frame) return BLURRED;
-  const view = frame / aspect;
-  const half = view / 2 / 1.14;
-  const margin = 0.06; // hair, ears and the blur around the face box
-  let clear = [[view / 2, 1 - view / 2]]; // where the window's centre may go
-  for (const f of found.faces) {
-    const [lo, hi] = [f.x - margin - half, f.x + f.w + margin + half];
-    clear = clear.flatMap(([a, b]) => [[a, Math.min(b, lo)], [Math.max(a, hi), b]]).filter(([a, b]) => b > a);
-  }
-  // Window centre → objectPosition %.
-  const pct = (c) => Math.round(((c - view / 2) / (1 - view)) * 1000) / 10;
-  const [best] = clear.map(([a, b]) => [pct(a), pct(b)]).sort((x, y) => (y[1] - y[0]) - (x[1] - x[0]));
-  if (best && best[1] - best[0] >= 15) {
-    console.log(`cover has ${found.faces.length} face(s): backdrop drifts ${best[0]}–${best[1]}% to stay clear of them`);
-    return { pan: best };
-  }
-  console.log(`cover has ${found.faces.length} face(s) and no clear stretch: backdrop blurred past recognition`);
-  return BLURRED;
 }
-inputProps.backdrop = await backdropFor(inputProps.cover);
+const faces = inputProps.cover ? await coverFaces(inputProps.cover) : null;
 
 const serveUrl = await bundle({ entryPoint: path.join(ROOT, "src", "index.ts") });
-const composition = await selectComposition({ serveUrl, id, inputProps });
+// The backdrop's window depends on the frame's shape, so read it from the composition
+// first, then select again: Remotion renders with the props the composition was
+// selected with, and a change to inputProps afterwards never reaches the frames.
+let composition = await selectComposition({ serveUrl, id, inputProps });
+if (inputProps.cover) {
+  const frameAspect = composition.width / composition.height;
+  inputProps.backdrop = faces ? backdropSpec(faces, frameAspect) : blurredSpec(frameAspect);
+  if (faces?.faces.length) {
+    const b = inputProps.backdrop;
+    console.log(`cover has ${faces.faces.length} face(s): ${b.blur > 9 ? "backdrop blurred past recognition" : `backdrop kept to ${Math.round(b.center[0] * 100)}–${Math.round(b.center[1] * 100)}% of the cover at ${b.zoom[0]}× to stay clear of them`}`);
+  }
+  composition = await selectComposition({ serveUrl, id, inputProps });
+  if (JSON.stringify(composition.props.backdrop) !== JSON.stringify(inputProps.backdrop)) throw new Error("backdrop did not reach the composition's props");
+}
 console.log(`${id}: ${composition.durationInFrames} frames at ${composition.fps} fps = ${(composition.durationInFrames / composition.fps).toFixed(1)} s`);
 
-await renderStill({ composition, serveUrl, inputProps, frame: 60, output: path.join(outDir, "cover.png") });
+await renderStill({ composition, serveUrl, inputProps, frame: 60, output: path.join(outDir, `cover${suffix}.png`) });
 
 let last = -1;
 const progress = (p) => {
   const pct = Math.floor(p * 10) * 10;
   if (pct !== last) { last = pct; process.stdout.write(`${pct}% `); }
 };
-const reel = path.join(outDir, withAudio ? "reel-silent.mp4" : "reel.mp4");
+const reel = path.join(outDir, withAudio ? `reel${suffix}-silent.mp4` : `reel${suffix}.mp4`);
 
 if (oldMac) {
-  const frames = path.join(outDir, "frames");
+  const frames = path.join(outDir, `frames${suffix}`);
   fs.rmSync(frames, { recursive: true, force: true });
   await renderFrames({
     composition, serveUrl, inputProps,
@@ -131,10 +130,10 @@ if (oldMac) {
 if (withAudio) {
   const mixer = swiftTool("mixaudio");
   const clips = timeline(inputProps).filter((t) => t.file).map((t) => ({ file: path.join(ROOT, t.file), start: t.voiceAt }));
-  const spec = { video: reel, out: path.join(outDir, "reel.mp4"), music: fs.existsSync(music) ? music : null, musicGain: 0.6, duckGain: 0.16, clips };
-  const specFile = path.join(outDir, ".mix.json");
+  const spec = { video: reel, out: path.join(outDir, `reel${suffix}.mp4`), music: fs.existsSync(music) ? music : null, musicGain: 0.6, duckGain: 0.16, clips };
+  const specFile = path.join(outDir, `.mix${suffix}.json`);
   fs.writeFileSync(specFile, JSON.stringify(spec, null, 2));
   execFileSync(mixer, [specFile], { stdio: "inherit" });
   fs.rmSync(specFile);
 }
-console.log(`wrote out/${slug}/reel.mp4${withAudio ? " (voice-over and music; reel-silent.mp4 without)" : ""} and cover.png`);
+console.log(`wrote out/${slug}/reel${suffix}.mp4${withAudio ? ` (voice-over and music; reel${suffix}-silent.mp4 without)` : ""} and cover${suffix}.png`);

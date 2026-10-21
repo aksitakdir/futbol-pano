@@ -1,7 +1,9 @@
 import React from "react";
 import { AbsoluteFill, Img, Sequence, interpolate, useCurrentFrame, useVideoConfig } from "remotion";
 import { color, fonts, gradient, gradientText, safe } from "./theme";
-import { Backdrop, type BackdropSpec, Brand, Grain, Hatch, Monogram, RatingBar, Rise, useIn } from "./parts";
+import { Brand, Grain, Hatch, Monogram, RatingBar, Rise, useIn } from "./parts";
+import { Backdrop, type BackdropSpec } from "./Backdrop";
+import { rankCaption, section, shortLabel, whenParts } from "./labels";
 import { timeline, totalFrames } from "./timeline.mjs";
 
 /**
@@ -37,7 +39,7 @@ export type RundownProps = {
   /** Voice-over timings (data/<slug>.vo.json); scenes stretch to fit their lines. */
   vo?: { clips?: { scene: string; seconds: number; file: string }[] };
   /** Set by render.mjs from the faces in the cover. */
-  backdrop?: BackdropSpec;
+  backdrop?: Partial<BackdropSpec>;
 };
 
 export const rundownDuration = (p: RundownProps) => totalFrames(p);
@@ -46,9 +48,6 @@ const ACCENTS = [color.emerald, color.cyan, color.sky, color.amber, color.rose];
 /** The card column's width, and what is left of it beside the 240px tile. */
 const COLUMN = 1080 - safe.x * 2 - safe.rail;
 const NUMERAL_ROOM = COLUMN - 240 - 40;
-/** "scoutgamer.com/lists/…" → "LISTS", the section a reader will land in. */
-const section = (url: string) => (url.split("/")[1] ?? "").replace(/-/g, " ").toUpperCase();
-const shortLabel = (l: string) => (/world cup/i.test(l) ? "WORLD CUP" : /20\d\d-\d\d/.test(l) ? (l.match(/20\d\d-\d\d/)![0] + " SEASON") : l.toUpperCase());
 
 // ── scenes ────────────────────────────────────────────────────────────────────
 
@@ -94,10 +93,7 @@ const Item: React.FC<{ item: RundownItem; index: number; total: number; edition:
   const accent = ACCENTS[index % ACCENTS.length];
   const exit = interpolate(frame, [durationInFrames - 8, durationInFrames], [0, 1], { extrapolateLeft: "clamp", extrapolateRight: "clamp" });
   const enter = useIn(0, 16);
-  const top = item.rank.replace("=", "") === "1";
   const jump = item.jump !== undefined && item.from !== undefined;
-  const n = item.rank.replace("=", "");
-  const tied = item.rank.startsWith("=") ? " (TIED)" : "";
   const numeral = jump ? `+${item.jump}` : item.rank;
   return (
     <AbsoluteFill style={{ opacity: 1 - exit, transform: `translateY(${-exit * 60}px)` }}>
@@ -114,10 +110,7 @@ const Item: React.FC<{ item: RundownItem; index: number; total: number; edition:
         </div>
         <Rise delay={4}>
           <div style={{ fontFamily: fonts.mono, fontSize: 26, letterSpacing: "0.22em", color: accent, marginTop: 56 }}>
-            {/* The countdown is the game's order, not ours: say so on every card. */}
-            {jump
-              ? (top ? "THE BIGGEST JUMP" : `JUMP RANK ${n}${tied}`)
-              : (top ? `FC ${edition}'S No. 1` : `FC ${edition} RANK ${n}${tied}`)} · {item.club.toUpperCase()}
+            {rankCaption(item.rank, edition, jump)} · {item.club.toUpperCase()}
           </div>
         </Rise>
         <Rise delay={7}>
@@ -183,11 +176,10 @@ const Ballot: React.FC<{ ballot: RundownProps["ballot"] }> = ({ ballot }) => (
  * The end card: the cover comes back sharp, and over it the brand and the address
  * in large type, so the last thing on screen is where to read the piece.
  */
-export const Close: React.FC<{ when?: string; url: string; cover?: string | null; kicker?: string }> = ({ when = "", url, cover, kicker }) => {
+export const Close: React.FC<{ when?: string; url: string; cover?: string | null; kicker?: string }> = ({ when, url, cover, kicker }) => {
   const frame = useCurrentFrame();
   const { durationInFrames } = useVideoConfig();
-  const date = when.match(/\d{1,2} [A-Z][a-z]+/)?.[0];
-  const venue = when.match(/at the ([A-Z][\w' ]+?(?: Palladium| Stadium| Theatre| Arena)?)(?:,|\.|$)/)?.[1];
+  const { date, venue } = whenParts(when);
   const zoom = interpolate(frame, [0, durationInFrames], [1.0, 1.1]);
   const show = interpolate(frame, [0, 14], [0, 1], { extrapolateRight: "clamp" });
   const tile = useIn(date ? 16 : 4, 14);

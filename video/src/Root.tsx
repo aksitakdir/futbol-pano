@@ -2,6 +2,7 @@ import React from "react";
 import { Composition } from "remotion";
 import { Rundown, rundownDuration, type RundownProps } from "./Rundown";
 import { Profile, profileDuration, type ProfileProps } from "./Profile";
+import { RundownWide } from "./RundownWide";
 import rundownPilot from "../data/kopa-trophy-2026-the-ten-nominees-read-against-their-cards.json";
 
 /**
@@ -28,6 +29,17 @@ export const Root: React.FC = () => (
       component={Rundown}
       width={1080}
       height={1920}
+      fps={30}
+      durationInFrames={rundownDuration(rundownPilot as RundownProps)}
+      defaultProps={rundownPilot as RundownProps}
+      calculateMetadata={({ props }) => ({ durationInFrames: rundownDuration(props) })}
+    />
+    {/* The same Rundown at 16:9, for X: scripts/render.mjs <slug> --format x */}
+    <Composition
+      id="RundownWide"
+      component={RundownWide}
+      width={1920}
+      height={1080}
       fps={30}
       durationInFrames={rundownDuration(rundownPilot as RundownProps)}
       defaultProps={rundownPilot as RundownProps}

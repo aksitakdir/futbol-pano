@@ -70,6 +70,9 @@ Midjourney promptları (kimliği belirsiz figürler — gerçek oyuncu üretmek 
 Sahneler seslendirmeye göre uzar; müzik konuşmada kısılır. macOS 13'te Remotion'un ffmpeg'i çalışmıyor:
 kareleri `frames2mp4.swift`, sesi `mixaudio.swift` (AVFoundation) işliyor. Kopa reel'i: 66,9 sn, ~10 dk render.
 Anahtar `.env.local`'da (`ELEVENLABS_API_KEY`, kısıtlı yetki: seslendirme + müzik).
+`render.mjs` ElevenLabs'ı hiç çağırmaz: görsel değişiklikten sonra yeniden render bedava. X için 16:9:
+`node scripts/render.mjs <slug> --format x` → `reel-x.mp4` (aynı seslendirme ve müzik; şimdilik yalnız Rundown).
+Kapakta yüz varsa (macOS Vision, `faces.swift`) arka plan o yüzü isimli oyuncunun arkasına düşürmez.
 
 ---
 

@@ -1,7 +1,9 @@
 import React from "react";
 import { AbsoluteFill, Img, Sequence, interpolate, useCurrentFrame, useVideoConfig } from "remotion";
 import { color, fonts, gradient, gradientText, safe } from "./theme";
-import { Backdrop, type BackdropSpec, Brand, Grain, Rise, useIn } from "./parts";
+import { Brand, Grain, Rise, useIn } from "./parts";
+import { Backdrop, type BackdropSpec } from "./Backdrop";
+import { section } from "./labels";
 import { Close, Quote } from "./Rundown";
 import { timeline, totalFrames } from "./timeline.mjs";
 
@@ -25,13 +27,11 @@ export type ProfileProps = {
   quote: string | null;
   vo?: { clips?: { scene: string; seconds: number; file: string }[] };
   /** Set by render.mjs from the faces in the cover. */
-  backdrop?: BackdropSpec;
+  backdrop?: Partial<BackdropSpec>;
 };
 
 export const profileDuration = (p: ProfileProps) => totalFrames(p);
 
-/** "tactics-lab" → "TACTICS LAB", for the brand tag. */
-const sectionOf = (url: string) => (url.split("/")[1] ?? "").replace(/-/g, " ").toUpperCase();
 
 const Hook: React.FC<ProfileProps> = ({ cover, kicker, subtitle, url, asOf }) => {
   const frame = useCurrentFrame();
@@ -41,7 +41,7 @@ const Hook: React.FC<ProfileProps> = ({ cover, kicker, subtitle, url, asOf }) =>
     <AbsoluteFill>
       {cover ? <Img src={cover} style={{ width: "100%", height: "100%", objectFit: "cover", transform: `scale(${zoom})`, filter: "brightness(0.42) saturate(0.9)" }} /> : null}
       <AbsoluteFill style={{ background: `linear-gradient(to top, ${color.bg} 10%, transparent 60%), linear-gradient(to bottom, ${color.bg} 0%, transparent 30%)` }} />
-      <Brand tag={sectionOf(url)} />
+      <Brand tag={section(url)} />
       <div style={{ position: "absolute", left: safe.x, right: safe.x, bottom: safe.bottom + 40 }}>
         <Rise delay={6}>
           <div style={{ fontFamily: fonts.display, fontWeight: 700, fontSize: kicker.length > 22 ? 118 : 148, lineHeight: 0.96, letterSpacing: "-0.05em", color: color.text }}>{kicker}</div>
@@ -124,7 +124,7 @@ export const Profile: React.FC<ProfileProps> = (props) => {
   const scenes = timeline(props);
   const at = (scene: string) => scenes.find((t) => t.scene === scene)!;
   const seq = (scene: string) => ({ from: at(scene).from, durationInFrames: at(scene).frames });
-  const tag = sectionOf(props.url);
+  const tag = section(props.url);
   return (
     <AbsoluteFill style={{ background: color.bg, color: color.text }}>
       <Backdrop src={props.cover} spec={props.backdrop} />
