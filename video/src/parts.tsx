@@ -39,6 +39,13 @@ export function useIn(delay = 0, damping = 18): number {
   return spring({ frame: frame - delay, fps, config: { damping, mass: 0.8 } });
 }
 
+/**
+ * A Rise delay that has already landed by frame 0. The opening title uses it: when a
+ * video is posted from a laptop, X shows the first frame as the cover, so the title
+ * has to be there from the first frame, not fade in.
+ */
+export const IN_PLACE = -60;
+
 /** Fade + rise for a block of text. */
 export const Rise: React.FC<{ delay?: number; distance?: number; children: React.ReactNode; style?: React.CSSProperties }> = ({ delay = 0, distance = 40, children, style }) => {
   const p = useIn(delay);

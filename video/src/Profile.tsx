@@ -1,7 +1,7 @@
 import React from "react";
 import { AbsoluteFill, Img, Sequence, interpolate, useCurrentFrame, useVideoConfig } from "remotion";
 import { Look, color, fonts, gradient, gradientText, safe, themeVars, useLook, type ThemeName } from "./theme";
-import { Brand, Grain, Rise, useIn } from "./parts";
+import { Brand, Grain, Rise, useIn, IN_PLACE } from "./parts";
 import { Backdrop, type BackdropSpec } from "./Backdrop";
 import { Captions, type Cue } from "./Captions";
 import { section } from "./labels";
@@ -47,11 +47,11 @@ const Hook: React.FC<ProfileProps> = ({ cover, kicker, subtitle, url, asOf }) =>
       <AbsoluteFill style={{ background: look.scrim }} />
       <Brand tag={section(url)} />
       <div style={{ position: "absolute", left: safe.x, right: safe.x, bottom: safe.bottom + 40 + look.band }}>
-        <Rise delay={6}>
+        <Rise delay={IN_PLACE}>
           <div style={{ fontFamily: fonts.display, fontWeight: 700, fontSize: kicker.length > 22 ? 118 : 148, lineHeight: 0.96, letterSpacing: "-0.05em", color: color.text }}>{kicker}</div>
         </Rise>
-        <Rise delay={16}><div style={{ fontFamily: fonts.body, fontSize: 44, lineHeight: 1.25, color: color.textSecondary, marginTop: 34, maxWidth: 880 }}>{subtitle}</div></Rise>
-        {asOf ? <Rise delay={24}><div style={{ fontFamily: fonts.mono, fontSize: 22, letterSpacing: "0.2em", color: color.muted, marginTop: 26 }}>FIGURES AS OF {asOf.toUpperCase()}</div></Rise> : null}
+        <Rise delay={10}><div style={{ fontFamily: fonts.body, fontSize: 44, lineHeight: 1.25, color: color.textSecondary, marginTop: 34, maxWidth: 880 }}>{subtitle}</div></Rise>
+        {asOf ? <Rise delay={16}><div style={{ fontFamily: fonts.mono, fontSize: 22, letterSpacing: "0.2em", color: color.muted, marginTop: 26 }}>FIGURES AS OF {asOf.toUpperCase()}</div></Rise> : null}
       </div>
     </AbsoluteFill>
   );

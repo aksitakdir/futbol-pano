@@ -1,7 +1,7 @@
 import React from "react";
 import { AbsoluteFill, Img, Sequence, interpolate, useCurrentFrame, useVideoConfig } from "remotion";
 import { Look, color, fonts, gradient, gradientText, themeVars, useLook } from "./theme";
-import { Brand, Grain, Hatch, Monogram, RatingBar, Rise, useIn } from "./parts";
+import { Brand, Grain, Hatch, Monogram, RatingBar, Rise, useIn, IN_PLACE } from "./parts";
 import { Backdrop } from "./Backdrop";
 import { Captions } from "./Captions";
 import { rankCaption, section, shortLabel, whenParts } from "./labels";
@@ -37,17 +37,17 @@ const Hook: React.FC<RundownProps> = ({ cover, kicker, subtitle, edition, items,
       <AbsoluteFill style={{ background: look.scrimWide }} />
       <Brand tag={`EA FC ${edition}`} top={wide.top} x={wide.x} />
       <div style={{ position: "absolute", left: wide.x, width: 1060, top: wide.top + 80, bottom: wide.bottom + look.band, display: "flex", flexDirection: "column", justifyContent: "center" }}>
-        <Rise delay={4}><div style={{ fontFamily: fonts.mono, fontSize: 26, letterSpacing: "0.24em", color: color.emerald, marginBottom: 22 }}>{items.length} {countLabel ?? "NOMINEES"}</div></Rise>
-        <Rise delay={8}>
+        <Rise delay={IN_PLACE}><div style={{ fontFamily: fonts.mono, fontSize: 26, letterSpacing: "0.24em", color: color.emerald, marginBottom: 22 }}>{items.length} {countLabel ?? "NOMINEES"}</div></Rise>
+        <Rise delay={IN_PLACE}>
           <div style={{ fontFamily: fonts.display, fontWeight: 700, fontSize: size, lineHeight: 0.96, letterSpacing: "-0.05em", color: color.text, textWrap: "balance" }}>{name}</div>
         </Rise>
         {year ? (
-          <Rise delay={14}>
+          <Rise delay={IN_PLACE}>
             <div style={{ fontFamily: fonts.display, fontWeight: 700, fontSize: size, lineHeight: 0.98, letterSpacing: "-0.05em", ...gradientText() }}>{year}</div>
           </Rise>
         ) : null}
-        <Rise delay={22}><div style={{ fontFamily: fonts.body, fontSize: 38, lineHeight: 1.25, color: color.textSecondary, marginTop: 30, maxWidth: 900 }}>{subtitle}</div></Rise>
-        {asOf ? <Rise delay={28}><div style={{ fontFamily: fonts.mono, fontSize: 20, letterSpacing: "0.2em", color: color.muted, marginTop: 22 }}>FIGURES AS OF {asOf.toUpperCase()}</div></Rise> : null}
+        <Rise delay={10}><div style={{ fontFamily: fonts.body, fontSize: 38, lineHeight: 1.25, color: color.textSecondary, marginTop: 30, maxWidth: 900 }}>{subtitle}</div></Rise>
+        {asOf ? <Rise delay={16}><div style={{ fontFamily: fonts.mono, fontSize: 20, letterSpacing: "0.2em", color: color.muted, marginTop: 22 }}>FIGURES AS OF {asOf.toUpperCase()}</div></Rise> : null}
       </div>
     </AbsoluteFill>
   );
