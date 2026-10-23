@@ -155,7 +155,11 @@ if (inputProps.cover) {
 }
 console.log(`${id}: ${composition.durationInFrames} frames at ${composition.fps} fps = ${(composition.durationInFrames / composition.fps).toFixed(1)} s`);
 
-await renderStill({ composition, serveUrl, inputProps, frame: 60, output: path.join(outDir, `cover${suffix}.png`) });
+// The cover is a poster, not a moment of speech: drawn without captions (and so without
+// the band they keep clear), at 2 s, when the title has landed. Upload it as the cover:
+// Instagram asks for one, and X otherwise shows the first frame, before the title is in.
+const poster = inputProps.captions?.length ? await selectComposition({ serveUrl, id, inputProps: { ...inputProps, captions: [] } }) : composition;
+await renderStill({ composition: poster, serveUrl, inputProps: poster.props, frame: 60, output: path.join(outDir, `cover${suffix}.png`) });
 
 let last = -1;
 const progress = (p) => {

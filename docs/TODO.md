@@ -77,6 +77,10 @@ Altyazı varsayılan olarak videoya gömülür (seslendirme metninden, kliplerde
 `out/<slug>/captions.srt` olarak da yazılır (X'e yüklemek için); `--no-captions` kapatır. `--theme light`
 açık renk versiyon (`reel-light.mp4`). Bit hızı 3,5 Mbps (65 sn ≈ 30 MB; 2,5/4,5/6 ile karşılaştırıldı).
 Eski videoları yeniden render etmeden küçültmek: `scripts/shrink.swift`.
+Mecra kontrolü (23 Eki): elle paylaşım için dikey → Instagram, 16:9 → X olduğu gibi geçiyor. Yayını ileride
+Instagram Graph API ile otomatikleştirirsek iki düzeltme gerekiyor: `moov` atomu başa (mixaudio.swift'te
+`shouldOptimizeForNetworkUse = true`) ve edit list olmadan kaydetme. Gömülü altyazılı videoya `.srt` ekleme
+(X ve Instagram altyazıyı ikinci kez üstüne basar).
 
 ---
 
