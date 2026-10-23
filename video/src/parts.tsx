@@ -1,10 +1,10 @@
 import React from "react";
 import { AbsoluteFill, interpolate, spring, useCurrentFrame, useVideoConfig } from "remotion";
-import { color, fonts, gradient, gradientText, safe } from "./theme";
+import { color, fonts, gradient, gradientText, safe, useLook } from "./theme";
 
 /** Film grain over everything, like the site's .grain surfaces. */
 export const Grain: React.FC = () => (
-  <AbsoluteFill style={{ pointerEvents: "none", opacity: 0.09, mixBlendMode: "overlay" }}>
+  <AbsoluteFill style={{ pointerEvents: "none", opacity: useLook().grain, mixBlendMode: "overlay" }}>
     <svg width="100%" height="100%">
       <filter id="g">
         <feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="2" stitchTiles="stitch" />
@@ -16,7 +16,7 @@ export const Grain: React.FC = () => (
 
 /** Thin diagonal hatching from the site's hero, very faint. */
 export const Hatch: React.FC<{ opacity?: number }> = ({ opacity = 0.05 }) => (
-  <AbsoluteFill style={{ opacity, backgroundImage: "repeating-linear-gradient(-45deg, rgba(255,255,255,0.6) 0 1px, transparent 1px 22px)" }} />
+  <AbsoluteFill style={{ opacity, backgroundImage: `repeating-linear-gradient(-45deg, color-mix(in oklch, ${color.ink} 60%, transparent) 0 1px, transparent 1px 22px)` }} />
 );
 
 /** "SCOUT GAMER" lockup, top-left inside the safe area (the vertical one unless told otherwise). */
@@ -50,8 +50,8 @@ export const Monogram: React.FC<{ name: string; size?: number; accent?: string }
   const initials = name.split(/\s+/).filter(Boolean).map((w) => w[0]).slice(0, 2).join("").toUpperCase();
   return (
     <div style={{ width: size, height: size, borderRadius: size * 0.16, position: "relative", overflow: "hidden", background: `linear-gradient(150deg, color-mix(in oklch, ${accent} 38%, ${color.surface}) 0%, ${color.surface} 70%)`, border: `1px solid color-mix(in oklch, ${accent} 50%, transparent)` }}>
-      <div style={{ position: "absolute", inset: 0, backgroundImage: "repeating-linear-gradient(-45deg, rgba(255,255,255,0.06) 0 1px, transparent 1px 14px)" }} />
-      <div style={{ position: "absolute", inset: 0, display: "flex", alignItems: "center", justifyContent: "center", fontFamily: fonts.display, fontWeight: 700, fontSize: size * 0.46, letterSpacing: "-0.05em", color: `color-mix(in oklch, ${accent} 70%, white)`, opacity: 0.9 }}>
+      <div style={{ position: "absolute", inset: 0, backgroundImage: `repeating-linear-gradient(-45deg, color-mix(in oklch, ${color.ink} 6%, transparent) 0 1px, transparent 1px 14px)` }} />
+      <div style={{ position: "absolute", inset: 0, display: "flex", alignItems: "center", justifyContent: "center", fontFamily: fonts.display, fontWeight: 700, fontSize: size * 0.46, letterSpacing: "-0.05em", color: `color-mix(in oklch, ${accent} 70%, ${color.ink})`, opacity: 0.9 }}>
         {initials}
       </div>
     </div>

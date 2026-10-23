@@ -73,6 +73,10 @@ Anahtar `.env.local`'da (`ELEVENLABS_API_KEY`, kısıtlı yetki: seslendirme + m
 `render.mjs` ElevenLabs'ı hiç çağırmaz: görsel değişiklikten sonra yeniden render bedava. X için 16:9:
 `node scripts/render.mjs <slug> --format x` → `reel-x.mp4` (aynı seslendirme ve müzik; şimdilik yalnız Rundown).
 Kapakta yüz varsa (macOS Vision, `faces.swift`) arka plan o yüzü isimli oyuncunun arkasına düşürmez.
+Altyazı varsayılan olarak videoya gömülür (seslendirme metninden, kliplerdeki duraklamalara hizalı) ve
+`out/<slug>/captions.srt` olarak da yazılır (X'e yüklemek için); `--no-captions` kapatır. `--theme light`
+açık renk versiyon (`reel-light.mp4`). Bit hızı 3,5 Mbps (65 sn ≈ 30 MB; 2,5/4,5/6 ile karşılaştırıldı).
+Eski videoları yeniden render etmeden küçültmek: `scripts/shrink.swift`.
 
 ---
 

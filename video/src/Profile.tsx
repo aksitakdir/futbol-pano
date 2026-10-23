@@ -1,8 +1,9 @@
 import React from "react";
 import { AbsoluteFill, Img, Sequence, interpolate, useCurrentFrame, useVideoConfig } from "remotion";
-import { color, fonts, gradient, gradientText, safe } from "./theme";
+import { Look, color, fonts, gradient, gradientText, safe, themeVars, useLook, type ThemeName } from "./theme";
 import { Brand, Grain, Rise, useIn } from "./parts";
 import { Backdrop, type BackdropSpec } from "./Backdrop";
+import { Captions, type Cue } from "./Captions";
 import { section } from "./labels";
 import { Close, Quote } from "./Rundown";
 import { timeline, totalFrames } from "./timeline.mjs";
@@ -28,6 +29,8 @@ export type ProfileProps = {
   vo?: { clips?: { scene: string; seconds: number; file: string }[] };
   /** Set by render.mjs from the faces in the cover. */
   backdrop?: Partial<BackdropSpec>;
+  theme?: ThemeName;
+  captions?: Cue[];
 };
 
 export const profileDuration = (p: ProfileProps) => totalFrames(p);
@@ -37,12 +40,13 @@ const Hook: React.FC<ProfileProps> = ({ cover, kicker, subtitle, url, asOf }) =>
   const frame = useCurrentFrame();
   const { durationInFrames } = useVideoConfig();
   const zoom = interpolate(frame, [0, durationInFrames], [1.08, 1.0]);
+  const look = useLook();
   return (
     <AbsoluteFill>
-      {cover ? <Img src={cover} style={{ width: "100%", height: "100%", objectFit: "cover", transform: `scale(${zoom})`, filter: "brightness(0.42) saturate(0.9)" }} /> : null}
-      <AbsoluteFill style={{ background: `linear-gradient(to top, ${color.bg} 10%, transparent 60%), linear-gradient(to bottom, ${color.bg} 0%, transparent 30%)` }} />
+      {cover ? <Img src={cover} style={{ width: "100%", height: "100%", objectFit: "cover", transform: `scale(${zoom})`, filter: look.cover }} /> : null}
+      <AbsoluteFill style={{ background: look.scrim }} />
       <Brand tag={section(url)} />
-      <div style={{ position: "absolute", left: safe.x, right: safe.x, bottom: safe.bottom + 40 }}>
+      <div style={{ position: "absolute", left: safe.x, right: safe.x, bottom: safe.bottom + 40 + look.band }}>
         <Rise delay={6}>
           <div style={{ fontFamily: fonts.display, fontWeight: 700, fontSize: kicker.length > 22 ? 118 : 148, lineHeight: 0.96, letterSpacing: "-0.05em", color: color.text }}>{kicker}</div>
         </Rise>
@@ -69,7 +73,7 @@ const Stat: React.FC<{ stat: ProfileProps["stats"][number]; index: number; total
           <div key={i} style={{ flex: 1, height: 5, borderRadius: 999, background: i <= index ? accent : color.surface }} />
         ))}
       </div>
-      <div style={{ position: "absolute", left: safe.x, right: safe.x + safe.rail, top: safe.top, bottom: safe.bottom, display: "flex", flexDirection: "column", justifyContent: "center" }}>
+      <div style={{ position: "absolute", left: safe.x, right: safe.x + safe.rail, top: safe.top, bottom: safe.bottom + useLook().band, display: "flex", flexDirection: "column", justifyContent: "center" }}>
         <div style={{ opacity: pop, transform: `scale(${0.82 + pop * 0.18})`, transformOrigin: "left center" }}>
           <div style={{ fontFamily: fonts.display, fontWeight: 700, fontSize: stat.value.length > 4 ? 260 : 360, lineHeight: 0.85, letterSpacing: "-0.06em", ...gradientText(`linear-gradient(120deg, ${accent} 0%, ${color.text} 140%)`) }}>
             {stat.value}
@@ -90,7 +94,7 @@ const Contrast: React.FC<{ contrast: NonNullable<ProfileProps["contrast"]> }> = 
   };
   return (
     <AbsoluteFill>
-      <div style={{ position: "absolute", left: safe.x, right: safe.x, top: safe.top + 40, bottom: safe.bottom - 20, display: "flex", flexDirection: "column", justifyContent: "center" }}>
+      <div style={{ position: "absolute", left: safe.x, right: safe.x, top: safe.top + 40, bottom: safe.bottom - 20 + useLook().band, display: "flex", flexDirection: "column", justifyContent: "center" }}>
         <Rise>
           <div style={{ display: "flex", alignItems: "baseline", gap: 24, fontFamily: fonts.display, fontWeight: 700, fontSize: 80, letterSpacing: "-0.04em" }}>
             <span style={{ color: color.emerald }}>{contrast.left}</span>
@@ -126,7 +130,8 @@ export const Profile: React.FC<ProfileProps> = (props) => {
   const seq = (scene: string) => ({ from: at(scene).from, durationInFrames: at(scene).frames });
   const tag = section(props.url);
   return (
-    <AbsoluteFill style={{ background: color.bg, color: color.text }}>
+    <Look.Provider value={{ theme: props.theme ?? "dark", band: props.captions?.length ? 140 : 0 }}>
+    <AbsoluteFill style={{ ...themeVars(props.theme ?? "dark"), background: color.bg, color: color.text }}>
       <Backdrop src={props.cover} spec={props.backdrop} />
       <Sequence {...seq("hook")}><Hook {...props} /></Sequence>
       {props.stats.map((stat, i) => (
@@ -138,7 +143,9 @@ export const Profile: React.FC<ProfileProps> = (props) => {
       {props.contrast ? <Sequence {...seq("contrast")}><Brand tag={tag} /><Contrast contrast={props.contrast} /></Sequence> : null}
       {props.quote ? <Sequence {...seq("quote")}><Brand /><Quote quote={props.quote} turn={props.turn} /></Sequence> : null}
       <Sequence {...seq("close")}><Close url={props.url} cover={props.cover} kicker={props.kicker} /></Sequence>
+      <Captions cues={props.captions} left={safe.x} right={safe.x + safe.rail} bottom={safe.bottom + 16} size={42} />
       <Grain />
     </AbsoluteFill>
+    </Look.Provider>
   );
 };

@@ -9,8 +9,8 @@
 //   swiftc -O scripts/frames2mp4.swift -o node_modules/.cache/frames2mp4
 //   node_modules/.cache/frames2mp4 <frames-dir> <fps> <out.mp4> [bitrate]
 //
-// Frames are read in name order (element-0000.jpeg …). Silent by design: music is
-// added in the app at posting time, from the platform's licensed library.
+// Frames are read in name order (element-0000.jpeg …). The picture only: render.mjs
+// lays the voice-over and music in afterwards (scripts/mixaudio.swift).
 
 import AVFoundation
 import CoreGraphics
@@ -51,10 +51,15 @@ let input = AVAssetWriterInput(mediaType: .video, outputSettings: [
   AVVideoCodecKey: AVVideoCodecType.h264,
   AVVideoWidthKey: W,
   AVVideoHeightKey: H,
+  // CABAC and a keyframe every 4 s: the same picture in fewer bytes. Instagram and X
+  // re-encode every upload, so the file only has to be clean, not archival.
   AVVideoCompressionPropertiesKey: [
     AVVideoAverageBitRateKey: bitrate,
     AVVideoProfileLevelKey: AVVideoProfileLevelH264HighAutoLevel,
-    AVVideoMaxKeyFrameIntervalKey: Int(fps) * 2,
+    AVVideoH264EntropyModeKey: AVVideoH264EntropyModeCABAC,
+    AVVideoMaxKeyFrameIntervalKey: Int(fps) * 4,
+    AVVideoMaxKeyFrameIntervalDurationKey: 4,
+    AVVideoAllowFrameReorderingKey: true,
   ] as [String: Any],
 ])
 input.expectsMediaDataInRealTime = false

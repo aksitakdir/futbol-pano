@@ -1,8 +1,9 @@
 import React from "react";
 import { AbsoluteFill, Img, Sequence, interpolate, useCurrentFrame, useVideoConfig } from "remotion";
-import { color, fonts, gradient, gradientText, safe } from "./theme";
+import { Look, color, fonts, gradient, gradientText, safe, themeVars, useLook, type ThemeName } from "./theme";
 import { Brand, Grain, Hatch, Monogram, RatingBar, Rise, useIn } from "./parts";
 import { Backdrop, type BackdropSpec } from "./Backdrop";
+import { Captions, type Cue } from "./Captions";
 import { rankCaption, section, shortLabel, whenParts } from "./labels";
 import { timeline, totalFrames } from "./timeline.mjs";
 
@@ -40,11 +41,17 @@ export type RundownProps = {
   vo?: { clips?: { scene: string; seconds: number; file: string }[] };
   /** Set by render.mjs from the faces in the cover. */
   backdrop?: Partial<BackdropSpec>;
+  /** The palette (render.mjs --theme). */
+  theme?: ThemeName;
+  /** Burnt-in captions from the voice-over (render.mjs; src/captions.mjs). */
+  captions?: Cue[];
 };
 
 export const rundownDuration = (p: RundownProps) => totalFrames(p);
 
 const ACCENTS = [color.emerald, color.cyan, color.sky, color.amber, color.rose];
+/** Kept clear at the bottom of every scene for the captions, when there are any. */
+const CAPTION_BAND = 140;
 /** The card column's width, and what is left of it beside the 240px tile. */
 const COLUMN = 1080 - safe.x * 2 - safe.rail;
 const NUMERAL_ROOM = COLUMN - 240 - 40;
@@ -57,12 +64,13 @@ const Hook: React.FC<RundownProps> = ({ cover, kicker, subtitle, edition, items,
   const zoom = interpolate(frame, [0, durationInFrames], [1.08, 1.0]);
   const exit = interpolate(frame, [durationInFrames - 10, durationInFrames], [0, 1], { extrapolateLeft: "clamp", extrapolateRight: "clamp" });
   const [name, year] = kicker.match(/^(.*?)\s*(\d{4})?$/)!.slice(1);
+  const look = useLook();
   return (
     <AbsoluteFill style={{ opacity: 1 - exit }}>
-      {cover ? <Img src={cover} style={{ width: "100%", height: "100%", objectFit: "cover", transform: `scale(${zoom})`, filter: "brightness(0.42) saturate(0.9)" }} /> : null}
-      <AbsoluteFill style={{ background: `linear-gradient(to top, ${color.bg} 8%, transparent 55%), linear-gradient(to bottom, ${color.bg} 0%, transparent 30%)` }} />
+      {cover ? <Img src={cover} style={{ width: "100%", height: "100%", objectFit: "cover", transform: `scale(${zoom})`, filter: look.cover }} /> : null}
+      <AbsoluteFill style={{ background: look.scrim }} />
       <Brand tag={`EA FC ${edition}`} />
-      <div style={{ position: "absolute", left: safe.x, right: safe.x, bottom: safe.bottom + 40 }}>
+      <div style={{ position: "absolute", left: safe.x, right: safe.x, bottom: safe.bottom + 40 + look.band }}>
         <Rise delay={4}><div style={{ fontFamily: fonts.mono, fontSize: 28, letterSpacing: "0.24em", color: color.emerald, marginBottom: 26 }}>{items.length} {countLabel ?? "NOMINEES"}</div></Rise>
         <Rise delay={8}>
           <div style={{ fontFamily: fonts.display, fontWeight: 700, fontSize: name.length > 30 ? 150 : 168, lineHeight: 0.96, letterSpacing: "-0.05em", color: color.text }}>{name}</div>
@@ -95,10 +103,11 @@ const Item: React.FC<{ item: RundownItem; index: number; total: number; edition:
   const enter = useIn(0, 16);
   const jump = item.jump !== undefined && item.from !== undefined;
   const numeral = jump ? `+${item.jump}` : item.rank;
+  const { band } = useLook();
   return (
     <AbsoluteFill style={{ opacity: 1 - exit, transform: `translateY(${-exit * 60}px)` }}>
       <Progress total={total} index={index} />
-      <div style={{ position: "absolute", left: safe.x, right: safe.x + safe.rail, top: safe.top + 80, bottom: safe.bottom - 40, display: "flex", flexDirection: "column", justifyContent: "center" }}>
+      <div style={{ position: "absolute", left: safe.x, right: safe.x + safe.rail, top: safe.top + 80, bottom: safe.bottom - 40 + band, display: "flex", flexDirection: "column", justifyContent: "center" }}>
         {/* The tile, and beside it the rank (or the jump) in outline, sized to the room left so the two never touch. */}
         <div style={{ display: "flex", alignItems: "flex-end", justifyContent: "space-between", gap: 40 }}>
           <div style={{ opacity: enter, transform: `scale(${0.9 + enter * 0.1})`, transformOrigin: "left top" }}>
@@ -139,7 +148,7 @@ const Item: React.FC<{ item: RundownItem; index: number; total: number; edition:
 export const Quote: React.FC<{ quote: string; turn?: string }> = ({ quote, turn }) => (
   <AbsoluteFill>
     <Hatch opacity={0.04} />
-    <div style={{ position: "absolute", left: safe.x, right: safe.x, top: safe.top, bottom: safe.bottom, display: "flex", flexDirection: "column", justifyContent: "center" }}>
+    <div style={{ position: "absolute", left: safe.x, right: safe.x, top: safe.top, bottom: safe.bottom + useLook().band, display: "flex", flexDirection: "column", justifyContent: "center" }}>
       <Rise><div style={{ fontFamily: fonts.mono, fontSize: 28, letterSpacing: "0.24em", color: color.amber }}>{turn ?? "BUT THE JURY JUDGES THE SEASON"}</div></Rise>
       <Rise delay={8}>
         <div style={{ fontFamily: fonts.display, fontWeight: 700, fontSize: 100, lineHeight: 1.05, letterSpacing: "-0.04em", color: color.text, marginTop: 48 }}>
@@ -152,7 +161,7 @@ export const Quote: React.FC<{ quote: string; turn?: string }> = ({ quote, turn 
 
 const Ballot: React.FC<{ ballot: RundownProps["ballot"] }> = ({ ballot }) => (
   <AbsoluteFill>
-    <div style={{ position: "absolute", left: safe.x, right: safe.x + safe.rail, top: safe.top, bottom: safe.bottom, display: "flex", flexDirection: "column", justifyContent: "center" }}>
+    <div style={{ position: "absolute", left: safe.x, right: safe.x + safe.rail, top: safe.top, bottom: safe.bottom + useLook().band, display: "flex", flexDirection: "column", justifyContent: "center" }}>
       <Rise><div style={{ fontFamily: fonts.mono, fontSize: 28, letterSpacing: "0.24em", color: color.emerald }}>OUR BALLOT</div></Rise>
       <Rise delay={4}><div style={{ fontFamily: fonts.display, fontWeight: 700, fontSize: 84, lineHeight: 1, letterSpacing: "-0.04em", color: color.text, marginTop: 20 }}>How we would vote</div></Rise>
       <div style={{ marginTop: 70, display: "flex", flexDirection: "column", gap: 44 }}>
@@ -188,16 +197,17 @@ export const Close: React.FC<{ when?: string; url: string; cover?: string | null
   const dim = (pct: number) => `color-mix(in oklch, ${color.bg} ${pct}%, transparent)`;
   const glow = `color-mix(in oklch, ${color.emerald} 40%, transparent)`;
   const long = (kicker ?? "").length > 34;
+  const look = useLook();
   return (
     <AbsoluteFill>
       {cover ? (
         <AbsoluteFill style={{ opacity: show, overflow: "hidden" }}>
-          <Img src={cover} style={{ width: "100%", height: "100%", objectFit: "cover", transform: `scale(${zoom})`, filter: "brightness(0.62) saturate(1.1)" }} />
+          <Img src={cover} style={{ width: "100%", height: "100%", objectFit: "cover", transform: `scale(${zoom})`, filter: look.close }} />
         </AbsoluteFill>
       ) : null}
-      <AbsoluteFill style={{ background: `radial-gradient(ellipse 85% 48% at 50% 54%, ${dim(62)} 0%, ${dim(30)} 70%, ${dim(10)} 100%)` }} />
+      <AbsoluteFill style={{ background: `radial-gradient(ellipse 85% 48% at 50% 54%, ${dim(look.closeWash[0])} 0%, ${dim(look.closeWash[1])} 70%, ${dim(look.closeWash[2])} 100%)` }} />
       <AbsoluteFill style={{ background: `linear-gradient(to bottom, ${color.bg} 0%, transparent 20%, transparent 74%, ${color.bg} 100%)` }} />
-      <div style={{ position: "absolute", left: safe.x, right: safe.x, top: safe.top, bottom: safe.bottom, display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center", textAlign: "center" }}>
+      <div style={{ position: "absolute", left: safe.x, right: safe.x, top: safe.top, bottom: safe.bottom + look.band, display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center", textAlign: "center" }}>
         {date ? (
           <div style={{ marginBottom: 96 }}>
             <Rise><div style={{ fontFamily: fonts.mono, fontSize: 26, letterSpacing: "0.24em", color: color.textSecondary }}>WINNER ANNOUNCED</div></Rise>
@@ -238,7 +248,8 @@ export const Rundown: React.FC<RundownProps> = (props) => {
   const at = (scene: string) => scenes.find((t) => t.scene === scene)!;
   const seq = (scene: string) => ({ from: at(scene).from, durationInFrames: at(scene).frames });
   return (
-    <AbsoluteFill style={{ background: color.bg, color: color.text }}>
+    <Look.Provider value={{ theme: props.theme ?? "dark", band: props.captions?.length ? CAPTION_BAND : 0 }}>
+    <AbsoluteFill style={{ ...themeVars(props.theme ?? "dark"), background: color.bg, color: color.text }}>
       <Backdrop src={props.cover} spec={props.backdrop} />
       <Sequence {...seq("hook")}><Hook {...props} /></Sequence>
       {props.items.map((item, i) => (
@@ -250,7 +261,9 @@ export const Rundown: React.FC<RundownProps> = (props) => {
       {props.quote ? <Sequence {...seq("quote")}><Brand /><Quote quote={props.quote} turn={props.turn} /></Sequence> : null}
       {props.ballot.length ? <Sequence {...seq("ballot")}><Brand /><Ballot ballot={props.ballot} /></Sequence> : null}
       <Sequence {...seq("close")}><Close {...props} /></Sequence>
+      <Captions cues={props.captions} left={safe.x} right={safe.x + safe.rail} bottom={safe.bottom + 16} size={42} />
       <Grain />
     </AbsoluteFill>
+    </Look.Provider>
   );
 };
