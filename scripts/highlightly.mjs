@@ -8,7 +8,7 @@
  * players merged under one name. Highlightly returns the same facts as dated,
  * structured data.
  *
- * Rules this client enforces, because the key is on a 100-requests-a-day plan:
+ * Rules this client enforces, because the plan's quota is shared (see HARD_CAP):
  * - LOCAL ONLY. Never imported by the site; visitors never spend the quota and
  *   the key never leaves this machine.
  * - CACHED. Every response is kept in data/highlightly-cache/ (gitignored) for
@@ -39,7 +39,14 @@ for (const line of fs.existsSync(path.join(ROOT, ".env.local"))
   if (m && !process.env[m[1]]) process.env[m[1]] = m[2].replace(/^["']|["']$/g, "");
 }
 const KEY = process.env.HIGHLIGHTLY_API_KEY || "";
-const CAP = Number(process.env.HIGHLIGHTLY_DAILY_CAP || 60);
+/**
+ * The plan is shared with dictumus.com (October 2026), which watches the total and
+ * warns at 50%. Our side of the agreement: the key stays on this machine, answers are
+ * cached, and this script never spends more than HARD_CAP requests a day, whatever
+ * HIGHLIGHTLY_DAILY_CAP says.
+ */
+const HARD_CAP = 1500;
+const CAP = Math.min(Number(process.env.HIGHLIGHTLY_DAILY_CAP || 60), HARD_CAP);
 
 fs.mkdirSync(CACHE, { recursive: true });
 const budgetFile = path.join(CACHE, "_budget.json");
