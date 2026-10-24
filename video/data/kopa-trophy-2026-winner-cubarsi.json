@@ -1,0 +1,50 @@
+{
+  "template": "Profile",
+  "slug": "kopa-trophy-2026-winner-cubarsi",
+  "url": "scoutgamer.com/lists/kopa-trophy-2026-the-ten-nominees-read-against-their-cards",
+  "cover": "https://bfjpatsihrzlknrpghvm.supabase.co/storage/v1/object/public/content-images/1792457723731-02ge5iqg91fs.jpeg",
+  "kicker": "Cubarsí Wins the Kopa",
+  "subtitle": "Pau Cubarsí wins the Kopa Trophy 2026 after every minute of Spain's World Cup win. Our ballot had him first.",
+  "asOf": "17 October 2026",
+  "turn": "THE READ",
+  "stats": [
+    {
+      "value": "8",
+      "label": "World Cup starts",
+      "note": "Every one of Spain's matches, the final included, without missing a minute"
+    },
+    {
+      "value": "1",
+      "label": "Goal conceded",
+      "note": "By Spain's defence in the whole tournament"
+    },
+    {
+      "value": "86",
+      "label": "EA FC 27 rating",
+      "note": "DEF 85, PHY 81. A World Cup winner at nineteen"
+    }
+  ],
+  "contrast": {
+    "left": "Cubarsí",
+    "right": "Yamal",
+    "rows": [
+      [
+        "2025-26 for Barcelona: 48 games, 45 starts",
+        "2025-26 for Barcelona: 45 games, 24 goals, 17 assists"
+      ],
+      [
+        "World Cup: winner, every minute",
+        "World Cup: winner, short of fitness"
+      ],
+      [
+        "FIFA Young Player Award: yes",
+        "FIFA Young Player Award: no"
+      ],
+      [
+        "Kopa wins so far: 2026",
+        "Kopa wins so far: 2024, 2025"
+      ]
+    ]
+  },
+  "quote": "Yamal was the favourite for the Kopa. Cubarsí had already won the World Cup's version of it, and now he has both."
+}

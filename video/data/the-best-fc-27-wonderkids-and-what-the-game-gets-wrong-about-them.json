@@ -1,0 +1,262 @@
+{
+  "template": "Rundown",
+  "slug": "the-best-fc-27-wonderkids-and-what-the-game-gets-wrong-about-them",
+  "url": "scoutgamer.com/lists/the-best-fc-27-wonderkids-and-what-the-game-gets-wrong-about-them",
+  "cover": "https://bfjpatsihrzlknrpghvm.supabase.co/storage/v1/object/public/content-images/1792866871871-fk25xpb4rcs.jpeg",
+  "kicker": "The Best FC 27 Wonderkids",
+  "subtitle": "And What the Game Gets Wrong About Them",
+  "asOf": "12 October 2026",
+  "quote": null,
+  "turn": "THE READ",
+  "source": "The Best FC 27 Wonderkids — and What the Game Gets Wrong About Them — scoutgamer.com, figures as stated in the article",
+  "edition": "27",
+  "mode": "rating",
+  "fromEdition": null,
+  "countLabel": "PLAYERS",
+  "items": [
+    {
+      "name": "Luka Vušković",
+      "club": "Brighton",
+      "rating": 81,
+      "details": [
+        {
+          "label": "Verdict",
+          "value": "Fair"
+        }
+      ],
+      "rank": "=10"
+    },
+    {
+      "name": "Dean Huijsen",
+      "club": "Real Madrid",
+      "rating": 81,
+      "details": [
+        {
+          "label": "Verdict",
+          "value": "Fair"
+        }
+      ],
+      "rank": "=10"
+    },
+    {
+      "name": "Robin Risser",
+      "club": "RC Lens",
+      "rating": 81,
+      "details": [
+        {
+          "label": "Verdict",
+          "value": "Fair"
+        }
+      ],
+      "rank": "=10"
+    },
+    {
+      "name": "Kobbie Mainoo",
+      "club": "Manchester United",
+      "rating": 81,
+      "details": [
+        {
+          "label": "Verdict",
+          "value": "Too low"
+        }
+      ],
+      "rank": "=10"
+    },
+    {
+      "name": "Victor Froholdt",
+      "club": "FC Porto",
+      "rating": 82,
+      "details": [
+        {
+          "label": "Verdict",
+          "value": "Too low"
+        }
+      ],
+      "rank": "9"
+    },
+    {
+      "name": "Arda Güler",
+      "club": "Real Madrid",
+      "rating": 83,
+      "details": [
+        {
+          "label": "Verdict",
+          "value": "Wrong position"
+        }
+      ],
+      "rank": "=6"
+    },
+    {
+      "name": "Nico O'Reilly",
+      "club": "Manchester City",
+      "rating": 83,
+      "details": [
+        {
+          "label": "Verdict",
+          "value": "Fair"
+        }
+      ],
+      "rank": "=6"
+    },
+    {
+      "name": "Warren Zaïre-Emery",
+      "club": "Paris SG",
+      "rating": 83,
+      "details": [
+        {
+          "label": "Verdict",
+          "value": "Wrong position"
+        }
+      ],
+      "rank": "=6"
+    },
+    {
+      "name": "Yan Diomande",
+      "club": "Real Madrid",
+      "rating": 84,
+      "details": [
+        {
+          "label": "Verdict",
+          "value": "Generous"
+        }
+      ],
+      "rank": "=4"
+    },
+    {
+      "name": "Kenan Yıldız",
+      "club": "Juventus",
+      "rating": 84,
+      "details": [
+        {
+          "label": "Verdict",
+          "value": "Fair rating, wrong position"
+        }
+      ],
+      "rank": "=4"
+    },
+    {
+      "name": "Désiré Doué",
+      "club": "Paris SG",
+      "rating": 86,
+      "details": [
+        {
+          "label": "Verdict",
+          "value": "Generous"
+        }
+      ],
+      "rank": "=2"
+    },
+    {
+      "name": "Pau Cubarsí",
+      "club": "FC Barcelona",
+      "rating": 86,
+      "details": [
+        {
+          "label": "Verdict",
+          "value": "Fair"
+        }
+      ],
+      "rank": "=2"
+    },
+    {
+      "name": "Lamine Yamal",
+      "club": "FC Barcelona",
+      "rating": 90,
+      "details": [
+        {
+          "label": "Verdict",
+          "value": "Fair"
+        }
+      ],
+      "rank": "1"
+    }
+  ],
+  "ballot": [],
+  "when": "",
+  "coverFaces": [
+    {
+      "x": 0.44,
+      "w": 0.09
+    }
+  ],
+  "backdropFaces": {
+    "aksitakdir_glowing_holographic_soccer_trading_cards_floating__54ffbf51-c20b-4037-8743-ee9d41d9cf8c_3.jpeg": [
+      {
+        "x": 0.562,
+        "w": 0.041
+      },
+      {
+        "x": 0.244,
+        "w": 0.048
+      }
+    ],
+    "aksitakdir_glowing_holographic_soccer_trading_cards_floating__8104b061-74fb-4994-9f48-69b3edc390c2_0.jpeg": [
+      {
+        "x": 0.23,
+        "w": 0.048
+      },
+      {
+        "x": 0.409,
+        "w": 0.024
+      },
+      {
+        "x": 0.405,
+        "w": 0.021
+      },
+      {
+        "x": 0.567,
+        "w": 0.027
+      },
+      {
+        "x": 0.742,
+        "w": 0.031
+      },
+      {
+        "x": 0.817,
+        "w": 0.027
+      },
+      {
+        "x": 0.927,
+        "w": 0.065
+      }
+    ],
+    "aksitakdir_glowing_holographic_soccer_trading_cards_floating__828d3eb7-891b-4eff-b983-3fbc75b3ef57_2.jpeg": [
+      {
+        "x": 0.464,
+        "w": 0.045
+      },
+      {
+        "x": 0.697,
+        "w": 0.027
+      },
+      {
+        "x": 0.656,
+        "w": 0.021
+      }
+    ],
+    "aksitakdir_glowing_holographic_soccer_trading_cards_floating__828d3eb7-891b-4eff-b983-3fbc75b3ef57_3.jpeg": [
+      {
+        "x": 0.244,
+        "w": 0.048
+      },
+      {
+        "x": 0.467,
+        "w": 0.017
+      },
+      {
+        "x": 0.944,
+        "w": 0.017
+      }
+    ],
+    "aksitakdir_glowing_holographic_soccer_trading_cards_floating__a1a0dd78-320c-441a-aa00-352582cf8f37_3.jpeg": [
+      {
+        "x": 0.491,
+        "w": 0.045
+      },
+      {
+        "x": 0.024,
+        "w": 0.034
+      }
+    ]
+  }
+}

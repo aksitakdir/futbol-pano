@@ -1,0 +1,104 @@
+{
+  "approved": "2026-10-24 by the owner in chat",
+  "note": "FC 27 Wonderkids countdown (article #164). Lines fact-checked against the corrected article on 24 Oct 2026; generate only after the owner approves.",
+  "voice": "nPczCjzI2devNBz1zQrb",
+  "lines": {
+    "hook": "EA FC 27 rates thirteen players aged twenty-one or under at eighty-one or higher. Checked against the football, six cards hold up. Seven don't.",
+    "items": [
+      "Luka Vušković, eighty-one. Fair: Brighton's club-record signing, and a Premier League starter.",
+      "Dean Huijsen, eighty-one. Fair: a regular at Real Madrid.",
+      "Robin Risser, eighty-one. Fair: Ligue One's goalkeeper of last season.",
+      "Kobbie Mainoo, eighty-one. Too low: September's player of the month at United.",
+      "Victor Froholdt, eighty-two. Too low: in September, the most valuable player outside the big five leagues.",
+      "Arda Güler, eighty-three. Wrong position: carded on the right, playing as Madrid's ten.",
+      "Nico O'Reilly, eighty-three. Fair: Manchester City's first-choice left-back last season.",
+      "Warren Zaïre-Emery, eighty-three. Wrong position: carded in midfield, used at full-back.",
+      "Yan Diomande, eighty-four, up eighteen. Generous, for now: a rating for the Leipzig season.",
+      "Kenan Yıldız, eighty-four. Fair rating, but a ten on the card, a winger on the pitch.",
+      "Désiré Doué, eighty-six. Generous in September, earned in October: three goals in seven days.",
+      "Pau Cubarsí, eighty-six. Fair: the World Cup's best young player.",
+      "And the game's number one: Lamine Yamal, ninety. Fair: seven league goals, five assists by the twelfth of October."
+    ],
+    "close": "The card is where scouting starts. The full read is on scoutgamer.com."
+  },
+  "clips": [
+    {
+      "scene": "hook",
+      "file": "out/the-best-fc-27-wonderkids-and-what-the-game-gets-wrong-about-them/vo/hook.mp3",
+      "seconds": 10.162
+    },
+    {
+      "scene": "item-00",
+      "file": "out/the-best-fc-27-wonderkids-and-what-the-game-gets-wrong-about-them/vo/item-00.mp3",
+      "seconds": 5.564
+    },
+    {
+      "scene": "item-01",
+      "file": "out/the-best-fc-27-wonderkids-and-what-the-game-gets-wrong-about-them/vo/item-01.mp3",
+      "seconds": 3.997
+    },
+    {
+      "scene": "item-02",
+      "file": "out/the-best-fc-27-wonderkids-and-what-the-game-gets-wrong-about-them/vo/item-02.mp3",
+      "seconds": 5.198
+    },
+    {
+      "scene": "item-03",
+      "file": "out/the-best-fc-27-wonderkids-and-what-the-game-gets-wrong-about-them/vo/item-03.mp3",
+      "seconds": 4.493
+    },
+    {
+      "scene": "item-04",
+      "file": "out/the-best-fc-27-wonderkids-and-what-the-game-gets-wrong-about-them/vo/item-04.mp3",
+      "seconds": 6.348
+    },
+    {
+      "scene": "item-05",
+      "file": "out/the-best-fc-27-wonderkids-and-what-the-game-gets-wrong-about-them/vo/item-05.mp3",
+      "seconds": 5.277
+    },
+    {
+      "scene": "item-06",
+      "file": "out/the-best-fc-27-wonderkids-and-what-the-game-gets-wrong-about-them/vo/item-06.mp3",
+      "seconds": 5.251
+    },
+    {
+      "scene": "item-07",
+      "file": "out/the-best-fc-27-wonderkids-and-what-the-game-gets-wrong-about-them/vo/item-07.mp3",
+      "seconds": 5.46
+    },
+    {
+      "scene": "item-08",
+      "file": "out/the-best-fc-27-wonderkids-and-what-the-game-gets-wrong-about-them/vo/item-08.mp3",
+      "seconds": 6.296
+    },
+    {
+      "scene": "item-09",
+      "file": "out/the-best-fc-27-wonderkids-and-what-the-game-gets-wrong-about-them/vo/item-09.mp3",
+      "seconds": 5.042
+    },
+    {
+      "scene": "item-10",
+      "file": "out/the-best-fc-27-wonderkids-and-what-the-game-gets-wrong-about-them/vo/item-10.mp3",
+      "seconds": 6.034
+    },
+    {
+      "scene": "item-11",
+      "file": "out/the-best-fc-27-wonderkids-and-what-the-game-gets-wrong-about-them/vo/item-11.mp3",
+      "seconds": 4.493
+    },
+    {
+      "scene": "item-12",
+      "file": "out/the-best-fc-27-wonderkids-and-what-the-game-gets-wrong-about-them/vo/item-12.mp3",
+      "seconds": 7.001
+    },
+    {
+      "scene": "close",
+      "file": "out/the-best-fc-27-wonderkids-and-what-the-game-gets-wrong-about-them/vo/close.mp3",
+      "seconds": 4.78
+    }
+  ],
+  "written": {
+    "the twelfth of October": "12 October"
+  }
+}

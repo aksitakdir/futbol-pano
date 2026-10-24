@@ -1,0 +1,50 @@
+{
+  "template": "Profile",
+  "slug": "kopa-trophy-2026-winner-yamal",
+  "url": "scoutgamer.com/lists/kopa-trophy-2026-the-ten-nominees-read-against-their-cards",
+  "cover": "https://bfjpatsihrzlknrpghvm.supabase.co/storage/v1/object/public/content-images/1792457723731-02ge5iqg91fs.jpeg",
+  "kicker": "Yamal, Three in a Row",
+  "subtitle": "Lamine Yamal wins the Kopa Trophy 2026, the first player to win it three times. Our ballot had Pau Cubarsí first.",
+  "asOf": "17 October 2026",
+  "turn": "THE READ",
+  "stats": [
+    {
+      "value": "3",
+      "label": "Kopa Trophies",
+      "note": "2024, 2025 and 2026, the first player to win it three times"
+    },
+    {
+      "value": "24",
+      "label": "Goals in 2025-26",
+      "note": "And 17 assists in 45 games for Barcelona, before a torn hamstring in April"
+    },
+    {
+      "value": "90",
+      "label": "EA FC 27 rating",
+      "note": "DRI 93, PAS 87. The highest-rated nominee, and the only one at 90"
+    }
+  ],
+  "contrast": {
+    "left": "Yamal",
+    "right": "Cubarsí",
+    "rows": [
+      [
+        "2025-26 for Barcelona: 45 games, 24 goals, 17 assists",
+        "2025-26 for Barcelona: 48 games, 45 starts"
+      ],
+      [
+        "World Cup: winner, short of fitness",
+        "World Cup: winner, every minute"
+      ],
+      [
+        "FIFA Young Player Award: no",
+        "FIFA Young Player Award: yes"
+      ],
+      [
+        "Kopa wins so far: 2024, 2025, 2026",
+        "Kopa wins so far: none"
+      ]
+    ]
+  },
+  "quote": "Yamal won the Kopa, as expected. Cubarsí had already won the World Cup's version of it."
+}
