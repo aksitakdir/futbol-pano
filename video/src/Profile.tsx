@@ -2,9 +2,9 @@ import React from "react";
 import { AbsoluteFill, Img, Sequence, interpolate, useCurrentFrame, useVideoConfig } from "remotion";
 import { Look, color, fonts, gradient, gradientText, safe, themeVars, useLook, type ThemeName } from "./theme";
 import { Brand, Grain, Rise, useIn, IN_PLACE } from "./parts";
-import { Backdrop, type BackdropSpec } from "./Backdrop";
+import { Backdrop, backdropLayers, type BackdropSpec } from "./Backdrop";
 import { Captions, type Cue } from "./Captions";
-import { section } from "./labels";
+import { keepTogether, section } from "./labels";
 import { Close, Quote } from "./Rundown";
 import { timeline, totalFrames } from "./timeline.mjs";
 
@@ -29,6 +29,10 @@ export type ProfileProps = {
   vo?: { clips?: { scene: string; seconds: number; file: string }[] };
   /** Set by render.mjs from the faces in the cover. */
   backdrop?: Partial<BackdropSpec>;
+  /** Extra backdrop images (the cover's other Midjourney variations), set by render.mjs. */
+  backdrops?: { src: string; spec?: Partial<BackdropSpec> }[];
+  /** Faces in the cover that macOS Vision misses (painted ones), as fractions of its width. */
+  coverFaces?: { x: number; w: number }[];
   theme?: ThemeName;
   captions?: Cue[];
 };
@@ -48,9 +52,9 @@ const Hook: React.FC<ProfileProps> = ({ cover, kicker, subtitle, url, asOf }) =>
       <Brand tag={section(url)} />
       <div style={{ position: "absolute", left: safe.x, right: safe.x, bottom: safe.bottom + 40 + look.band }}>
         <Rise delay={IN_PLACE}>
-          <div style={{ fontFamily: fonts.display, fontWeight: 700, fontSize: kicker.length > 22 ? 118 : 148, lineHeight: 0.96, letterSpacing: "-0.05em", color: color.text }}>{kicker}</div>
+          <div style={{ fontFamily: fonts.display, fontWeight: 700, fontSize: kicker.length > 22 ? 118 : 148, lineHeight: 0.96, letterSpacing: "-0.05em", color: color.text }}>{keepTogether(kicker)}</div>
         </Rise>
-        <Rise delay={10}><div style={{ fontFamily: fonts.body, fontSize: 44, lineHeight: 1.25, color: color.textSecondary, marginTop: 34, maxWidth: 880 }}>{subtitle}</div></Rise>
+        <Rise delay={10}><div style={{ fontFamily: fonts.body, fontSize: 44, lineHeight: 1.25, color: color.textSecondary, marginTop: 34, maxWidth: 880, textWrap: "balance" }}>{subtitle}</div></Rise>
         {asOf ? <Rise delay={16}><div style={{ fontFamily: fonts.mono, fontSize: 22, letterSpacing: "0.2em", color: color.muted, marginTop: 26 }}>FIGURES AS OF {asOf.toUpperCase()}</div></Rise> : null}
       </div>
     </AbsoluteFill>
@@ -132,7 +136,7 @@ export const Profile: React.FC<ProfileProps> = (props) => {
   return (
     <Look.Provider value={{ theme: props.theme ?? "dark", band: props.captions?.length ? 140 : 0 }}>
     <AbsoluteFill style={{ ...themeVars(props.theme ?? "dark"), background: color.bg, color: color.text }}>
-      <Backdrop src={props.cover} spec={props.backdrop} />
+      <Backdrop src={props.cover} spec={props.backdrop} layers={backdropLayers(props.cover, props.backdrop, props.backdrops, scenes)} />
       <Sequence {...seq("hook")}><Hook {...props} /></Sequence>
       {props.stats.map((stat, i) => (
         <Sequence key={stat.label} {...seq(`stat-${String(i).padStart(2, "0")}`)}>

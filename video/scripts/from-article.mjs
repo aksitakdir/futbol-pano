@@ -51,7 +51,9 @@ function isRanking(tb) {
 /** Goalkeeping facets in EA FC, by column code. */
 const FACETS = { DIV: "Diving", HAN: "Handling", KIC: "Kicking", REF: "Reflexes", POS: "Positioning", SPD: "Speed" };
 const title = (row.title_en || row.title).trim();
-const [kicker, subtitle] = title.split(/:\s*/, 2);
+// "Kicker: subtitle" or "Kicker — and subtitle"; the second half starts with a capital either way.
+const [kicker, rest] = title.split(/:\s*|\s+—\s+/, 2);
+const subtitle = rest ? rest.charAt(0).toUpperCase() + rest.slice(1) : rest;
 
 // "(Figures as of 12 October 2026.)" or "(Club details as of …)" at the end of the lead.
 const asOf = (m.lead.match(/\((?:[A-Z][a-z]+ )*(?:figures|details) as of ([^)]+?)\.?\)/i) ?? [])[1] ?? null;
@@ -136,5 +138,10 @@ if (template === "Rundown") {
 }
 
 const out = path.join(HERE, "..", "data", `${row.slug}.json`);
+// Fields set by hand survive a rebuild: faces Vision misses on the cover or on its variations.
+if (fs.existsSync(out)) {
+  const before = JSON.parse(fs.readFileSync(out, "utf8"));
+  for (const k of ["coverFaces", "backdropFaces"]) if (before[k]) data[k] = before[k];
+}
 fs.writeFileSync(out, JSON.stringify(data, null, 2) + "\n");
 console.log(`wrote data/${row.slug}.json — ${template}${data.items ? `, ${data.items.length} ranked (${data.mode})` : `, ${data.stats.length} stats`}, quote: ${data.quote ? "yes" : "no"}, as of: ${data.asOf ?? "—"}`);

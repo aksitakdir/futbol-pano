@@ -61,9 +61,46 @@ for c in spec.clips {
   spans.append((c.start, c.start + a.duration.seconds))
 }
 
+/// A bed shorter than the video loops its body. Generated beds take about a fifth of
+/// their length to build and fade out over their last six seconds or so, so each copy
+/// after the first starts a fifth of the way in, and the copies cross-fade over `XF`
+/// seconds, seven seconds before the end, while the music is still at full strength.
+func loopedBed(_ a: AVAsset, to total: Double) -> AVAsset {
+  let mlen = a.duration.seconds
+  guard mlen < total, let tr = a.tracks(withMediaType: .audio).first else { return a }
+  let XF = 2.0, lo = mlen * 0.2, hi = mlen - 7
+  let comp = AVMutableComposition()
+  var params: [AVMutableAudioMixInputParameters] = []
+  var at = 0.0, from = 0.0
+  while at < total {
+    guard let copy = comp.addMutableTrack(withMediaType: .audio, preferredTrackID: kCMPersistentTrackID_Invalid) else { fail("no bed track") }
+    let dur = min(hi + XF - from, total - at)
+    try? copy.insertTimeRange(CMTimeRange(start: t(from), duration: t(dur)), of: tr, at: t(at))
+    let p = AVMutableAudioMixInputParameters(track: copy)
+    p.setVolume(1, at: .zero)
+    if at > 0 { p.setVolumeRamp(fromStartVolume: 0, toEndVolume: 1, timeRange: CMTimeRange(start: t(at), duration: t(XF))) }
+    if at + dur < total { p.setVolumeRamp(fromStartVolume: 1, toEndVolume: 0, timeRange: CMTimeRange(start: t(at + dur - XF), duration: t(XF))) }
+    params.append(p)
+    at += hi - from
+    from = lo
+  }
+  let mix = AVMutableAudioMix()
+  mix.inputParameters = params
+  let file = base.appendingPathComponent(".bed.m4a")
+  try? FileManager.default.removeItem(at: file)
+  guard let ex = AVAssetExportSession(asset: comp, presetName: AVAssetExportPresetAppleM4A) else { fail("no bed exporter") }
+  ex.outputURL = file
+  ex.outputFileType = .m4a
+  ex.audioMix = mix
+  ex.timeRange = CMTimeRange(start: .zero, duration: t(total))
+  export(ex)
+  print("music bed \(String(format: "%.1f", mlen))s looped to \(String(format: "%.1f", total))s")
+  return AVURLAsset(url: file)
+}
+
 var params: [AVMutableAudioMixInputParameters] = []
 if let m = spec.music {
-  let a = AVURLAsset(url: url(m))
+  let a = loopedBed(AVURLAsset(url: url(m)), to: length.seconds)
   guard let tr = a.tracks(withMediaType: .audio).first, let bed = audio.addMutableTrack(withMediaType: .audio, preferredTrackID: kCMPersistentTrackID_Invalid)
   else { fail("no audio in \(m)") }
   let len = min(a.duration, length)
@@ -106,6 +143,7 @@ mix.inputParameters = params
 
 let mixed = base.appendingPathComponent(".mix.m4a")
 try? FileManager.default.removeItem(at: mixed)
+try? FileManager.default.removeItem(at: base.appendingPathComponent(".bed.m4a"))
 guard let ex1 = AVAssetExportSession(asset: audio, presetName: AVAssetExportPresetAppleM4A) else { fail("no audio exporter") }
 ex1.outputURL = mixed
 ex1.outputFileType = .m4a
@@ -130,4 +168,5 @@ ex2.outputURL = outURL
 ex2.outputFileType = .mp4
 export(ex2)
 try? FileManager.default.removeItem(at: mixed)
+try? FileManager.default.removeItem(at: base.appendingPathComponent(".bed.m4a"))
 print("wrote \(outURL.path) — \(String(format: "%.1f", length.seconds))s, \(spec.clips.count) voice clips\(spec.music != nil ? " + music" : "")")

@@ -2,9 +2,9 @@ import React from "react";
 import { AbsoluteFill, Img, Sequence, interpolate, useCurrentFrame, useVideoConfig } from "remotion";
 import { Look, color, fonts, gradient, gradientText, themeVars, useLook } from "./theme";
 import { Brand, Grain, Hatch, Monogram, RatingBar, Rise, useIn, IN_PLACE } from "./parts";
-import { Backdrop } from "./Backdrop";
+import { Backdrop, backdropLayers } from "./Backdrop";
 import { Captions } from "./Captions";
-import { rankCaption, section, shortLabel, whenParts } from "./labels";
+import { keepTogether, rankCaption, section, shortLabel, whenParts } from "./labels";
 import type { RundownItem, RundownProps } from "./Rundown";
 import { timeline } from "./timeline.mjs";
 
@@ -39,21 +39,21 @@ const Hook: React.FC<RundownProps> = ({ cover, kicker, subtitle, edition, items,
       <div style={{ position: "absolute", left: wide.x, width: 1060, top: wide.top + 80, bottom: wide.bottom + look.band, display: "flex", flexDirection: "column", justifyContent: "center" }}>
         <Rise delay={IN_PLACE}><div style={{ fontFamily: fonts.mono, fontSize: 26, letterSpacing: "0.24em", color: color.emerald, marginBottom: 22 }}>{items.length} {countLabel ?? "NOMINEES"}</div></Rise>
         <Rise delay={IN_PLACE}>
-          <div style={{ fontFamily: fonts.display, fontWeight: 700, fontSize: size, lineHeight: 0.96, letterSpacing: "-0.05em", color: color.text, textWrap: "balance" }}>{name}</div>
+          <div style={{ fontFamily: fonts.display, fontWeight: 700, fontSize: size, lineHeight: 0.96, letterSpacing: "-0.05em", color: color.text, textWrap: "balance" }}>{keepTogether(name)}</div>
         </Rise>
         {year ? (
           <Rise delay={IN_PLACE}>
             <div style={{ fontFamily: fonts.display, fontWeight: 700, fontSize: size, lineHeight: 0.98, letterSpacing: "-0.05em", ...gradientText() }}>{year}</div>
           </Rise>
         ) : null}
-        <Rise delay={10}><div style={{ fontFamily: fonts.body, fontSize: 38, lineHeight: 1.25, color: color.textSecondary, marginTop: 30, maxWidth: 900 }}>{subtitle}</div></Rise>
+        <Rise delay={10}><div style={{ fontFamily: fonts.body, fontSize: 38, lineHeight: 1.25, color: color.textSecondary, marginTop: 30, maxWidth: 900, textWrap: "balance" }}>{subtitle}</div></Rise>
         {asOf ? <Rise delay={16}><div style={{ fontFamily: fonts.mono, fontSize: 20, letterSpacing: "0.2em", color: color.muted, marginTop: 22 }}>FIGURES AS OF {asOf.toUpperCase()}</div></Rise> : null}
       </div>
     </AbsoluteFill>
   );
 };
 
-const Progress: React.FC<{ total: number; index: number }> = ({ total, index }) => (
+export const Progress: React.FC<{ total: number; index: number }> = ({ total, index }) => (
   <div style={{ position: "absolute", top: wide.top + 76, left: wide.x, right: wide.x, display: "flex", gap: 12 }}>
     {Array.from({ length: total }, (_, i) => (
       <div key={i} style={{ flex: 1, height: 5, borderRadius: 999, background: i <= index ? color.emerald : color.surface }} />
@@ -85,7 +85,8 @@ const Item: React.FC<{ item: RundownItem; index: number; total: number; edition:
           <div style={{ opacity: enter, transform: `scale(${0.9 + enter * 0.1})`, transformOrigin: "left top" }}>
             <Monogram name={item.name} size={TILE} accent={accent} />
           </div>
-          <div style={{ marginTop: 34, fontFamily: fonts.display, fontWeight: 700, fontSize: Math.min(220, TILE / (numeral.length * 0.6)), lineHeight: 0.8, letterSpacing: "-0.06em", whiteSpace: "nowrap", color: "transparent", WebkitTextStroke: `4px color-mix(in oklch, ${accent} 75%, transparent)`, opacity: enter, transform: `translateY(${(1 - enter) * 40}px)` }}>
+          {/* A fixed-height row, so a smaller "=10" does not move the tile between cards */}
+          <div style={{ marginTop: 34, height: 220 * 0.8, display: "flex", alignItems: "center", fontFamily: fonts.display, fontWeight: 700, fontSize: Math.min(220, TILE / (numeral.length * 0.6)), lineHeight: 0.8, letterSpacing: "-0.06em", whiteSpace: "nowrap", color: "transparent", WebkitTextStroke: `4px color-mix(in oklch, ${accent} 75%, transparent)`, opacity: enter, transform: `translateY(${(1 - enter) * 40}px)` }}>
             {numeral}
           </div>
         </div>
@@ -120,7 +121,7 @@ const Item: React.FC<{ item: RundownItem; index: number; total: number; edition:
   );
 };
 
-const Quote: React.FC<{ quote: string; turn?: string }> = ({ quote, turn }) => (
+export const Quote: React.FC<{ quote: string; turn?: string }> = ({ quote, turn }) => (
   <AbsoluteFill>
     <Hatch opacity={0.04} />
     <div style={{ position: "absolute", left: wide.x, right: wide.x, top: wide.top + 60, bottom: wide.bottom + useLook().band, display: "flex", flexDirection: "column", justifyContent: "center" }}>
@@ -155,7 +156,7 @@ const Ballot: React.FC<{ ballot: RundownProps["ballot"] }> = ({ ballot }) => (
 );
 
 /** The end card: the whole cover, sharp, and over it the brand and the address in large type. */
-const Close: React.FC<{ when?: string; url: string; cover?: string | null; kicker?: string }> = ({ when, url, cover, kicker }) => {
+export const Close: React.FC<{ when?: string; url: string; cover?: string | null; kicker?: string }> = ({ when, url, cover, kicker }) => {
   const frame = useCurrentFrame();
   const { durationInFrames } = useVideoConfig();
   const { date, venue } = whenParts(when);
@@ -204,7 +205,7 @@ const Close: React.FC<{ when?: string; url: string; cover?: string | null; kicke
         <Rise delay={d + 24}>
           <div style={{ marginTop: 36, display: "inline-flex", alignItems: "center", gap: 20, padding: "16px 32px", borderRadius: 999, maxWidth: 1500, background: dim(70), border: `1px solid ${color.border}` }}>
             <span style={{ fontFamily: fonts.mono, fontSize: 24, letterSpacing: "0.2em", color: color.emerald }}>{section(url)}</span>
-            {kicker ? <span style={{ fontFamily: fonts.body, fontWeight: 600, fontSize: 32, color: color.text }}>{kicker}</span> : null}
+            {kicker ? <span style={{ fontFamily: fonts.body, fontWeight: 600, fontSize: 32, color: color.text }}>{keepTogether(kicker)}</span> : null}
           </div>
         </Rise>
       </div>
@@ -220,7 +221,7 @@ export const RundownWide: React.FC<RundownProps> = (props) => {
   return (
     <Look.Provider value={{ theme: props.theme ?? "dark", band: props.captions?.length ? CAPTION_BAND : 0 }}>
     <AbsoluteFill style={{ ...themeVars(props.theme ?? "dark"), background: color.bg, color: color.text }}>
-      <Backdrop src={props.cover} spec={props.backdrop} />
+      <Backdrop src={props.cover} spec={props.backdrop} layers={backdropLayers(props.cover, props.backdrop, props.backdrops, scenes)} />
       <Sequence {...seq("hook")}><Hook {...props} /></Sequence>
       {props.items.map((item, i) => (
         <Sequence key={item.name} {...seq(`item-${String(i).padStart(2, "0")}`)}>

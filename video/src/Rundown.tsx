@@ -2,9 +2,9 @@ import React from "react";
 import { AbsoluteFill, Img, Sequence, interpolate, useCurrentFrame, useVideoConfig } from "remotion";
 import { Look, color, fonts, gradient, gradientText, safe, themeVars, useLook, type ThemeName } from "./theme";
 import { Brand, Grain, Hatch, Monogram, RatingBar, Rise, useIn, IN_PLACE } from "./parts";
-import { Backdrop, type BackdropSpec } from "./Backdrop";
+import { Backdrop, backdropLayers, type BackdropSpec } from "./Backdrop";
 import { Captions, type Cue } from "./Captions";
-import { rankCaption, section, shortLabel, whenParts } from "./labels";
+import { keepTogether, rankCaption, section, shortLabel, whenParts } from "./labels";
 import { timeline, totalFrames } from "./timeline.mjs";
 
 /**
@@ -41,6 +41,10 @@ export type RundownProps = {
   vo?: { clips?: { scene: string; seconds: number; file: string }[] };
   /** Set by render.mjs from the faces in the cover. */
   backdrop?: Partial<BackdropSpec>;
+  /** Extra backdrop images (the cover's other Midjourney variations), set by render.mjs. */
+  backdrops?: { src: string; spec?: Partial<BackdropSpec> }[];
+  /** Faces in the cover that macOS Vision misses (painted ones), as fractions of its width. */
+  coverFaces?: { x: number; w: number }[];
   /** The palette (render.mjs --theme). */
   theme?: ThemeName;
   /** Burnt-in captions from the voice-over (render.mjs; src/captions.mjs). */
@@ -73,14 +77,14 @@ const Hook: React.FC<RundownProps> = ({ cover, kicker, subtitle, edition, items,
       <div style={{ position: "absolute", left: safe.x, right: safe.x, bottom: safe.bottom + 40 + look.band }}>
         <Rise delay={IN_PLACE}><div style={{ fontFamily: fonts.mono, fontSize: 28, letterSpacing: "0.24em", color: color.emerald, marginBottom: 26 }}>{items.length} {countLabel ?? "NOMINEES"}</div></Rise>
         <Rise delay={IN_PLACE}>
-          <div style={{ fontFamily: fonts.display, fontWeight: 700, fontSize: name.length > 30 ? 150 : 168, lineHeight: 0.96, letterSpacing: "-0.05em", color: color.text }}>{name}</div>
+          <div style={{ fontFamily: fonts.display, fontWeight: 700, fontSize: name.length > 30 ? 150 : 168, lineHeight: 0.96, letterSpacing: "-0.05em", color: color.text }}>{keepTogether(name)}</div>
         </Rise>
         {year ? (
           <Rise delay={IN_PLACE}>
             <div style={{ fontFamily: fonts.display, fontWeight: 700, fontSize: 168, lineHeight: 0.95, letterSpacing: "-0.05em", ...gradientText() }}>{year}</div>
           </Rise>
         ) : null}
-        <Rise delay={10}><div style={{ fontFamily: fonts.body, fontSize: 44, lineHeight: 1.25, color: color.textSecondary, marginTop: 34, maxWidth: 860 }}>{subtitle}</div></Rise>
+        <Rise delay={10}><div style={{ fontFamily: fonts.body, fontSize: 44, lineHeight: 1.25, color: color.textSecondary, marginTop: 34, maxWidth: 860, textWrap: "balance" }}>{subtitle}</div></Rise>
         {asOf ? <Rise delay={16}><div style={{ fontFamily: fonts.mono, fontSize: 22, letterSpacing: "0.2em", color: color.muted, marginTop: 26 }}>FIGURES AS OF {asOf.toUpperCase()}</div></Rise> : null}
       </div>
     </AbsoluteFill>
@@ -123,7 +127,8 @@ const Item: React.FC<{ item: RundownItem; index: number; total: number; edition:
           </div>
         </Rise>
         <Rise delay={7}>
-          <div style={{ fontFamily: fonts.display, fontWeight: 700, fontSize: Math.min(118, COLUMN / (item.name.length * 0.56)), lineHeight: 0.95, whiteSpace: "nowrap", letterSpacing: "-0.045em", color: color.text, marginTop: 18 }}>{item.name}</div>
+          {/* A fixed-height row: a long name set smaller must not move the card's other rows */}
+          <div style={{ height: 118 * 0.95, display: "flex", alignItems: "flex-end", fontFamily: fonts.display, fontWeight: 700, fontSize: Math.min(118, COLUMN / (item.name.length * 0.56)), lineHeight: 0.95, whiteSpace: "nowrap", letterSpacing: "-0.045em", color: color.text, marginTop: 18 }}>{item.name}</div>
         </Rise>
         <div style={{ marginTop: 72 }}>
           {jump
@@ -233,7 +238,7 @@ export const Close: React.FC<{ when?: string; url: string; cover?: string | null
           {/* Section and title on one pill; a long title goes under the section instead of wrapping beside it. */}
           <div style={{ marginTop: 40, display: "inline-flex", flexDirection: long ? "column" : "row", alignItems: "center", gap: long ? 10 : 18, padding: long ? "22px 40px" : "18px 30px", borderRadius: long ? 32 : 999, maxWidth: 860, background: dim(70), border: `1px solid ${color.border}` }}>
             <span style={{ fontFamily: fonts.mono, fontSize: 24, letterSpacing: "0.2em", color: color.emerald }}>{section(url)}</span>
-            {kicker ? <span style={{ fontFamily: fonts.body, fontWeight: 600, fontSize: 32, lineHeight: 1.25, color: color.text, textWrap: "balance" }}>{kicker}</span> : null}
+            {kicker ? <span style={{ fontFamily: fonts.body, fontWeight: 600, fontSize: 32, lineHeight: 1.25, color: color.text, textWrap: "balance" }}>{keepTogether(kicker)}</span> : null}
           </div>
         </Rise>
       </div>
@@ -250,7 +255,7 @@ export const Rundown: React.FC<RundownProps> = (props) => {
   return (
     <Look.Provider value={{ theme: props.theme ?? "dark", band: props.captions?.length ? CAPTION_BAND : 0 }}>
     <AbsoluteFill style={{ ...themeVars(props.theme ?? "dark"), background: color.bg, color: color.text }}>
-      <Backdrop src={props.cover} spec={props.backdrop} />
+      <Backdrop src={props.cover} spec={props.backdrop} layers={backdropLayers(props.cover, props.backdrop, props.backdrops, scenes)} />
       <Sequence {...seq("hook")}><Hook {...props} /></Sequence>
       {props.items.map((item, i) => (
         <Sequence key={item.name} {...seq(`item-${String(i).padStart(2, "0")}`)}>

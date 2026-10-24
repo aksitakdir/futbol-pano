@@ -53,3 +53,5 @@ social-out/
 # Remotion workspace (video/): dependencies and rendered output
 video/node_modules/
 video/out/
+# Midjourney variations used as video backdrops (large, the owner's own art; kept locally)
+video/public/backdrops/

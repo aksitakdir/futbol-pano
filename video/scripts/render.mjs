@@ -7,7 +7,7 @@
  *       carries the mix and reel-silent.mp4 is kept for in-app music.
  *     --format x renders the same video at 16:9 (1920×1080) for X, from the template's
  *       Wide composition, as reel-x.mp4 / reel-x-silent.mp4 / cover-x.png. Same
- *       timeline, so the same voice-over and music fit it.
+ *       timeline, so the same voice-over and music fit it. Rundown and Profile both have one.
  *     --theme light draws it on the light palette (…-light.mp4).
  *     With a voice-over the captions are burnt in (--no-captions leaves them out),
  *       and written as out/<slug>/captions.srt for X's caption upload.
@@ -42,7 +42,6 @@ if (!["vertical", "x"].includes(format)) { console.error(`Unknown --format ${for
 const th = process.argv.indexOf("--theme");
 const theme = th !== -1 ? process.argv[th + 1] : "dark";
 if (!["dark", "light"].includes(theme)) { console.error(`Unknown --theme ${theme}: dark or light`); process.exit(1); }
-if (format === "x" && template !== "Rundown") { console.error(`No 16:9 ${template} yet: --format x renders Rundown videos`); process.exit(1); }
 const id = format === "x" ? `${template}Wide` : template;
 /** Output names: reel.mp4 for the vertical reel, reel-x.mp4 for X, -light for the light palette. */
 const suffix = (format === "x" ? "-x" : "") + (theme === "light" ? "-light" : "");
@@ -97,6 +96,24 @@ async function coverFaces(cover) {
   }
 }
 const faces = inputProps.cover ? await coverFaces(inputProps.cover) : null;
+// Painted faces Vision misses can be marked by hand in the data: "coverFaces": [{ "x": 0.44, "w": 0.09 }].
+if (faces && inputProps.coverFaces?.length) faces.faces.push(...inputProps.coverFaces);
+
+/**
+ * The cover's other Midjourney variations, if the owner dropped them into
+ * public/backdrops/<slug>/: the scenes between the opening and the end card take them in
+ * turn (src/Backdrop.tsx). Each gets its own face check, plus any faces marked by hand in
+ * the data ("backdropFaces": { "<file>": [{ "x": …, "w": … }] }).
+ */
+const extraDir = path.join(ROOT, "public", "backdrops", slug);
+const extras = fs.existsSync(extraDir)
+  ? fs.readdirSync(extraDir).filter((f) => /\.(png|jpe?g|webp)$/i.test(f)).sort().map((file) => {
+      let found = null;
+      try { found = JSON.parse(execFileSync(swiftTool("faces"), [path.join(extraDir, file)]).toString()); } catch { /* blurred below */ }
+      if (found) found.faces.push(...(inputProps.backdropFaces?.[file] ?? []));
+      return { file, found };
+    })
+  : [];
 
 /**
  * Where the speech in each voice clip starts and ends, and its pauses (0.12 s or more
@@ -133,7 +150,7 @@ function measureSpeech(clips) {
   return out;
 }
 if (captions) {
-  inputProps.captions = buildCues({ lines: vo.lines, timeline: timeline(inputProps), clips: vo.clips, fps: 30, speech: measureSpeech(vo.clips), onScreen: inputProps.quote });
+  inputProps.captions = buildCues({ lines: vo.lines, timeline: timeline(inputProps), clips: vo.clips, fps: 30, speech: measureSpeech(vo.clips), onScreen: inputProps.quote, written: vo.written });
   fs.writeFileSync(path.join(outDir, "captions.srt"), toSrt(inputProps.captions));
   console.log(`captions: ${inputProps.captions.length} cues, burnt in and written to out/${slug}/captions.srt`);
 }
@@ -145,13 +162,19 @@ const serveUrl = await bundle({ entryPoint: path.join(ROOT, "src", "index.ts") }
 let composition = await selectComposition({ serveUrl, id, inputProps });
 if (inputProps.cover) {
   const frameAspect = composition.width / composition.height;
+  const say = (what, f, b) => console.log(`${what} has ${f.faces.length} face(s): ${b.blur > 9 ? "blurred past recognition" : `kept to ${Math.round(b.center[0] * 100)}–${Math.round(b.center[1] * 100)}% of it at ${b.zoom[0]}× to stay clear of them`}`);
   inputProps.backdrop = faces ? backdropSpec(faces, frameAspect) : blurredSpec(frameAspect);
-  if (faces?.faces.length) {
-    const b = inputProps.backdrop;
-    console.log(`cover has ${faces.faces.length} face(s): ${b.blur > 9 ? "backdrop blurred past recognition" : `backdrop kept to ${Math.round(b.center[0] * 100)}–${Math.round(b.center[1] * 100)}% of the cover at ${b.zoom[0]}× to stay clear of them`}`);
+  if (faces?.faces.length) say("cover", faces, inputProps.backdrop);
+  if (extras.length) {
+    inputProps.backdrops = extras.map(({ file, found }) => {
+      const spec = found ? backdropSpec(found, frameAspect) : blurredSpec(frameAspect);
+      if (found?.faces.length) say(file, found, spec);
+      return { src: `backdrops/${slug}/${file}`, spec };
+    });
+    console.log(`backdrops: the cover, then ${extras.length} variation(s) in turn behind the scenes between`);
   }
   composition = await selectComposition({ serveUrl, id, inputProps });
-  if (JSON.stringify(composition.props.backdrop) !== JSON.stringify(inputProps.backdrop)) throw new Error("backdrop did not reach the composition's props");
+  if (JSON.stringify(composition.props.backdrop) !== JSON.stringify(inputProps.backdrop) || JSON.stringify(composition.props.backdrops) !== JSON.stringify(inputProps.backdrops)) throw new Error("backdrop did not reach the composition's props");
 }
 console.log(`${id}: ${composition.durationInFrames} frames at ${composition.fps} fps = ${(composition.durationInFrames / composition.fps).toFixed(1)} s`);
 
