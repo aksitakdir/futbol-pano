@@ -1,6 +1,6 @@
 # Scout Gamer — To-Do
 
-Son güncelleme: 2026-10-20
+Son güncelleme: 2026-10-24
 
 Bu liste sohbette yaşıyordu ve her sorulduğunda yeniden kuruluyordu. İlk repo
 sürümünü bir sohbet **özetinden** kurdum ve dört madde ile birçok gerekçe düştü;
@@ -12,39 +12,85 @@ tekrar eden sorunları görmenin tek yolu.
 
 ---
 
+## 🎯 0. İçerik stratejisi v2 — çeşitlilik ve farklılaşma (2026-10-24, en öncelikli)
+
+Sahibin tespiti (24 Eki): kapaklar ve seslendirmeler birbirine çok benziyor; hesabın geneline
+fark yaratacak bir post stratejimiz yok. Veriyi güzel paketliyoruz ama videonun ilk kısmında
+"herkesten farklı söylediğimiz şey" yok. Kapak, renk, ses ve bağlam her anlamda çeşitlenmeli.
+Kaynak sınırlı olduğu için post'lar metin ağırlıklı kalıyor; X'te bir ölçüde tolere edilir,
+Instagram'da karşılık bulmaz.
+- [x] Taslak hazır (24 Eki): **`docs/CONTENT-STRATEGY-V2.md`** — teşhis, kanca grameri, 5 seri,
+      bağlam takvimi, araçlar, gerçekçi saat (~3,5–4 sa/hafta), 4 haftalık test (26 Eki–22 Kas).
+- [x] **Kararlar 1–3 onaylandı (25 Eki):** iddia ilk karede · Kopa gecesi satırları (Yamal'a "Our ballot went to
+      Cubarsí." eklendi, iki seslendirme onaylı; kredi yalnız kazananınkine) · Wonderkids v2 olduğu gibi yayında.
+- [ ] **Kalan kararlar (§10):** 1 Kas'a kadar 4–6 (Doué hücresi · insansız sosyal görsel ·
+      haftalık yük) → 8 Kas'a kadar 7–10 (Your Call açık tema · Midjourney planı · ElevenLabs planı/kredi ·
+      AI etiketi).
+- [ ] 1. hafta (Claude): Kopa gecesi kiti · Rundown/RundownWide'da iddia ilk karede · ikinci ses dinlemesi
+      (`video/out/vo-samples/`, kredisiz). Sonraki işler belgenin §11 tablosunda, sırayla.
+- [ ] 23 Kas: test kararı → `docs/SOCIAL-STRATEGY.md` §6/§8/§9'a işle (yerine koyma, ekle).
+
+---
+
 ## 🔥 Bu hafta — trafik (2026-10-20)
 
 Trafik son dönemde düşüyor. Olası nedenler (veriyle doğrulanacak): Dünya Kupası talebinin
 bitmesi; hub ve ana sayfa linklerinin Google'a görünmemesi (P0–P3 ile 19–20 Eki'de düzeldi,
 etkisi 2–4 haftada gelir); ve **7 hazır yazının yayında olmaması.**
 
-**1. Bekleyen 7 yazıyı yayına al** — tek eksik kapak (Midjourney, sahip üretiyor; 1456×816,
+**1. Bekleyen 6 yazıyı yayına al** (#166 Rodri Effect yayına girdi) — tek eksik kapak (Midjourney, sahip üretiyor; 1456×816,
 `--ar 16:9`). Not: kapak yayının teknik şartı değil, kart varyantları görselsiz çalışıyor.
 Yayınlayınca hub, ana sayfa (In Focus, Latest) ve kardeş yazıların "More in" blokları
 kendiliğinden yenilenir.
 
 | Sıra | # | Yazı | Neden şimdi |
 |---|---|---|---|
-| 1 | 164 | The Best FC 27 Wonderkids | "FC 27 wonderkids" aramaları çıkış haftalarında zirve yapar; 6 Eki'den beri bekliyor |
+| ~~1~~ | ~~164~~ | ~~The Best FC 27 Wonderkids~~ | **yayında (24 Eki)**; video + postlar `video/out/ready-to-post/` |
 | 2 | 168 | Best Young Wingers | GSC: kanat sorgularında sıfır görünürlük |
 | 3 | 169 | Best Young Defenders | GSC: sayfa yokken ~420 gösterim/28g |
 | 4 | 170 | Turkey's Best Young Footballers | "most valuable turkish players" yükselen sorgu → yayınlanınca #39'dan 301 |
-| 5 | 166 | Rodri Effect (defansif orta saha) | pozisyon kümesini tamamlar |
+| ~~5~~ | ~~166~~ | ~~Rodri Effect~~ | **yayında** |
 | 6 | 160 | Number 10s | 30 Eyl verisi — yayından önce dakika/sakatlık kontrolü |
 | 7 | 161 | Netherlands | 30 Eyl verisi — yayından önce dakika/sakatlık kontrolü |
 
-Midjourney promptları (kimliği belirsiz figürler — gerçek oyuncu üretmek hukuken riskli):
-- **#164:** `glowing holographic football trading cards floating in a dark void, an anonymous young player emerging from a card, game-culture aesthetic, painterly brush strokes, teal and amber light, editorial illustration, no text, no logos --ar 16:9`
-- **#168:** `anonymous young winger sprinting down the touchline with the ball, motion blur, expressive painterly brush strokes, dark background, splashes of crimson and teal, editorial sports illustration, cinematic lighting, no text, no logos --ar 16:9`
-- **#169:** `anonymous young centre-back mid-tackle, low angle, powerful stance, dark stadium atmosphere, painterly brush texture, deep teal and red accents, editorial sports illustration, no faces in focus, no text, no logos --ar 16:9`
-- **#170:** `silhouette of a young footballer in a red kit walking out of a tunnel into floodlights, crescent-shaped light flare, painterly texture, dark moody palette with red and white accents, editorial illustration, no text, no logos, no flags --ar 16:9`
+Midjourney promptları (kimliği belirsiz figürler — gerçek oyuncu üretmek hukuken riskli). 24 Eki revizyonu:
+"football" Midjourney'de Amerikan futbolu çıkarıyor → hep "soccer" + `--no american football, helmet…`.
+Kompozisyon: makale banner'ı solu karartıp başlığı oraya yazıyor, masaüstünde üst-alt kırpılıyor, mobilde
+yalnızca ortadaki ~%45 (genişliğin %27–72'si) görünüyor → özne ortanın sağında (~%60–65) ve dikeyde ortada.
+- **#164:** `glowing holographic soccer trading cards floating in a dark void, an anonymous young soccer player with a soccer ball at his feet emerging from one card, face in shadow, subject placed right of centre and vertically centred, dark empty negative space on the left third, game-culture aesthetic, painterly brush strokes, teal and amber light, editorial illustration --no american football, helmet, shoulder pads, text, letters, numbers, logo, flag --ar 16:9`
+- **#168:** `anonymous young soccer winger sprinting down the touchline with a soccer ball at his feet, motion blur, face in shadow, subject placed right of centre and vertically centred, dark empty negative space on the left third, expressive painterly brush strokes, dark background, splashes of crimson and teal, editorial sports illustration, cinematic lighting --no american football, helmet, shoulder pads, text, letters, numbers, logo, flag --ar 16:9`
+- **#169:** `anonymous young soccer centre-back making a sliding tackle on a soccer ball, low angle, powerful stance, face in shadow, dark stadium atmosphere, subject placed right of centre and vertically centred, dark empty negative space on the left third, painterly brush texture, deep teal and red accents, editorial sports illustration --no american football, helmet, shoulder pads, text, letters, numbers, logo, flag --ar 16:9`
+- **#170:** `silhouette of a young soccer player in a red kit walking out of a tunnel into floodlights with a soccer ball under his arm, crescent-shaped light flare, subject placed right of centre and vertically centred, dark empty negative space on the left third, painterly texture, dark moody palette with red and white accents, editorial illustration --no american football, helmet, shoulder pads, text, letters, numbers, logo, flag --ar 16:9`
 - **#166:** `anonymous holding midfielder standing at the centre of the pitch with passing lines radiating around him like a tactics board, dark background, painterly strokes, teal and amber light trails, editorial sports illustration, no text, no logos --ar 16:9`
-- **#160:** `anonymous playmaker receiving the ball between the lines, glowing passing lanes opening ahead of him, dark pitch from above, painterly brush texture, gold and teal accents, editorial sports illustration, no text, no logos --ar 16:9`
-- **#161:** `young footballer in an orange kit silhouetted against a low northern sky, painterly brush texture, orange and deep blue palette, editorial sports illustration, no text, no logos, no flags --ar 16:9`
+- **#160:** `anonymous soccer playmaker receiving a soccer ball between the lines, glowing passing lanes opening ahead of him, soccer pitch seen from above, face in shadow, subject placed right of centre and vertically centred, dark empty negative space on the left third, painterly brush texture, gold and teal accents, editorial sports illustration --no american football, helmet, shoulder pads, text, letters, numbers, logo, flag --ar 16:9`
+- **#161:** `young soccer player in an orange kit with a soccer ball, silhouetted against a low northern sky, subject placed right of centre and vertically centred, dark empty negative space on the left third, painterly brush texture, orange and deep blue palette, editorial sports illustration --no american football, helmet, shoulder pads, text, letters, numbers, logo, flag --ar 16:9`
 
-**2. Kopa (#167, yayında)** — reel hazır (`video/out/kopa-…/reel.mp4`, metinler `copy.md`).
-- [ ] 26 Eki'den önce paylaş (müziği uygulamada ekle, oyuncuları etiketleme).
-- [ ] 26 Eki gecesi: kazananı yazıya güncelleme olarak ekle + ikinci video.
+**1b. Yeniden doğrulama (24 Eki): 41 olgusal düzeltme bekleyen 6 yazıya uygulandı (yedekli).** Sahibin
+futbol kararları — yayından önce:
+- **#164 (yayında, 24 Eki):** Doué okuması "generous in September, earned in October" oldu (9 düzeltme canlıda;
+  admin kaydı bir kez ezdi, yeniden uygulandı). Açık: tablo hücresi hâlâ "Generous" — "Generous, then earned"
+  mı olsun? (Video ekranı tablodan okur.) Tarih tuzakları: Diomande 14 Kas'ta 20, Risser 2 Ara'da 22 olur.
+- **#168:** El Mala son iki maçta ikili forvetin solunda → kanat listesinde kes / frame_exception / farkı
+  konu yap. William Gomes sakat (Ekim'deki iki CL maçını kaçırdı) ama "Playing Every Week" altında.
+- **#169:** "Moved, Benched or Waiting" dağılıyor: Huijsen, Hato, Lewis-Skelly yeniden ilk 11'de. Ganiou dizden
+  ameliyat (birkaç hafta). Ramón son 3 lig maçının 2'sinde yedek.
+- **#170:** Tek ülke listesi + coğrafi tarafsızlık (#161 Hollanda ile dönüşümlü kabul?). Uzun 11 Kas'ta 21,
+  Öztaşdelen 9 Ara'da 22 (çerçeve dışına düşer).
+- **#160:** Wanner 27 Eyl'den beri kadroda yok ama listenin başında "Ready Now". Uzun 16 Eki'de yedek.
+- **#161:** Tarih çapası 30 Eyl → Eki'ye taşınacak mı (Hato ilk 11'de)? Smit sakat ("Read and Smit may be
+  next"?). Steur'ün €24m'si için yayın günü tarihli kaynak gerekli.
+- ~~**Araç:** Highlightly anahtarı 401 dönüyor~~ — çözüldü 24 Eki: dictumus ile paylaşılan PRO anahtarı `.env.local`'de, test edildi.
+
+**2. Kopa (#167, yayında)** — videolar ve metinler `video/out/ready-to-post/` (POSTS.md).
+- [x] Videolar paylaşılmaya başladı (24 Eki: 2-3'ü X ve Instagram'da yayında).
+- [ ] 26 Eki gecesi: kazananı yazıya güncelleme olarak ekle + ikinci video. Kit yalnız iki senaryo
+      için hazırlanıyor: Yamal ya da Cubarsí (sahibin kararı, 24 Eki).
+
+**2b. Radar: haftada en az bir yazı.** Son Radar 11 Eki (#158); bekleyen yazıların hepsi liste.
+Son üç Radar'ın üçü de Premier League (Dowman, Sullivan, Ngumoha) → yeni ikisi başka liglerden.
+- [ ] **#171 Zabiri (Rennes) ve #172 Brunner (Monaco) pending (24 Eki), sahip incelemesi bekliyor.**
+      Zabiri: 25 Eki El Clásico "level with Lamine Yamal / joint third" cümlesini değiştirebilir → yayından önce
+      gol krallığına bak. Brunner: Toulouse maçını neden kaçırdığı belirsiz; "joint top after seven rounds".
 
 **3. Google Search Console** (sahip, birkaç tık)
 - [ ] Sitemap'i yeniden gönder.
@@ -55,7 +101,7 @@ Midjourney promptları (kimliği belirsiz figürler — gerçek oyuncu üretmek 
 **4. Sonraki 2 hafta**
 - [ ] Trafiğin %97'sini getiren listeleri tazele: Strikers (17 Ağu), Centre-Backs (9 Tem) — güncel sezon verisi.
 - [ ] Golden Boy yazısı (Kasım) · "FC 27 one month in".
-- [ ] Her yeni listeye bir Remotion videosu (şablon: Rundown).
+- [ ] Her yeni listeye bir Remotion videosu — ama `CONTENT-STRATEGY-V2.md` §7: 4 videodan en fazla 1'i geri sayım, o da bizim hükmümüze göre sıralı.
 - [ ] Kart kapak görselleri tam boy JPEG yüklüyor (/lists'te ~13 MB) → küçük önizleme boyutları.
 - [ ] Güvenlik: bekleyen yazılar herkese açık anahtarla tam metinleriyle okunabiliyor → RLS
       (önizleme için sunucu tarafı istemci gerekiyor; ayrı, dikkatli iş).
