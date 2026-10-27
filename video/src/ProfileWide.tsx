@@ -33,7 +33,8 @@ const Hook: React.FC<ProfileProps> = ({ cover, kicker, subtitle, url, asOf }) =>
         <Rise delay={IN_PLACE}>
           <div style={{ fontFamily: fonts.display, fontWeight: 700, fontSize: kicker.length > 26 ? 104 : 128, lineHeight: 0.96, letterSpacing: "-0.05em", color: color.text, textWrap: "balance" }}>{keepTogether(kicker)}</div>
         </Rise>
-        <Rise delay={10}><div style={{ fontFamily: fonts.body, fontSize: 38, lineHeight: 1.25, color: color.textSecondary, marginTop: 30, maxWidth: 900, textWrap: "balance" }}>{subtitle}</div></Rise>
+        {/* The subtitle is the claim: in place from frame 0 with the title, since X shows that frame as the cover */}
+        <Rise delay={IN_PLACE}><div style={{ fontFamily: fonts.body, fontSize: 38, lineHeight: 1.25, color: color.textSecondary, marginTop: 30, maxWidth: 900, textWrap: "balance" }}>{subtitle}</div></Rise>
         {asOf ? <Rise delay={16}><div style={{ fontFamily: fonts.mono, fontSize: 20, letterSpacing: "0.2em", color: color.muted, marginTop: 22 }}>FIGURES AS OF {asOf.toUpperCase()}</div></Rise> : null}
       </div>
     </AbsoluteFill>
@@ -86,6 +87,13 @@ const Contrast: React.FC<{ contrast: NonNullable<ProfileProps["contrast"]> }> = 
             <span style={{ color: color.emerald }}>{contrast.left}</span>
             <span style={{ color: color.sky }}>{contrast.right}</span>
           </div>
+          {contrast.sub ? (
+            <div style={{ display: "grid", gridTemplateColumns: "420px 1fr 1fr", gap: 40, marginTop: 12, fontFamily: fonts.mono, fontSize: 22, letterSpacing: "0.2em", color: color.muted }}>
+              <span />
+              <span>{contrast.sub[0]?.toUpperCase()}</span>
+              <span>{contrast.sub[1]?.toUpperCase()}</span>
+            </div>
+          ) : null}
         </Rise>
         <div style={{ marginTop: 34, display: "flex", flexDirection: "column", gap: 22 }}>
           {contrast.rows.map((row, i) => {

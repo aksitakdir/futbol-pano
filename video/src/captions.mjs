@@ -129,8 +129,8 @@ export function chunk(line, extra = {}) {
   return cues;
 }
 
-/** Words that lead into what follows, so they belong at the start of a cue, not its end. */
-const LEAD_WORDS = /^(the|a|an|of|on|in|at|to|for|by|with|from|into|among|about|over|after|before|between|without|through|per|and|or|but|his|her|their|its|than|as|aged|whether)$/i;
+/** Words that lead into what follows, so they belong at the start of a cue, not its end: "the", "of", and a modal or auxiliary waiting for its verb ("should / have been"). Bare only, so a sentence-final "was." stays. */
+const LEAD_WORDS = /^(the|a|an|of|on|in|at|to|for|by|with|from|into|among|about|over|after|before|between|without|through|per|and|or|but|his|her|their|its|than|as|aged|whether|should|would|could|will|can|must|might|may|shall|has|have|had|be|been|not)$/i;
 
 const squash = (s) => s.toLowerCase().replace(/[^a-z0-9]+/g, "");
 

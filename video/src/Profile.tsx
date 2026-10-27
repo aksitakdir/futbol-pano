@@ -24,7 +24,8 @@ export type ProfileProps = {
   asOf?: string | null;
   turn?: string;
   stats: { value: string; label: string; note: string }[];
-  contrast: { left: string; right: string; rows: string[][] } | null;
+  /** `sub` is the vs block's subtitle line, e.g. the two dates of a receipt. */
+  contrast: { left: string; right: string; rows: string[][]; sub?: string[] } | null;
   quote: string | null;
   vo?: { clips?: { scene: string; seconds: number; file: string }[] };
   /** Set by render.mjs from the faces in the cover. */
@@ -33,6 +34,8 @@ export type ProfileProps = {
   backdrops?: { src: string; spec?: Partial<BackdropSpec> }[];
   /** Faces in the cover that macOS Vision misses (painted ones), as fractions of its width. */
   coverFaces?: { x: number; w: number }[];
+  /** Where the vertical opening crops the 16:9 cover, as a fraction of its width (default the centre): a subject right of centre stays in frame. */
+  coverX?: number;
   theme?: ThemeName;
   captions?: Cue[];
 };
@@ -40,21 +43,22 @@ export type ProfileProps = {
 export const profileDuration = (p: ProfileProps) => totalFrames(p);
 
 
-const Hook: React.FC<ProfileProps> = ({ cover, kicker, subtitle, url, asOf }) => {
+const Hook: React.FC<ProfileProps> = ({ cover, kicker, subtitle, url, asOf, coverX }) => {
   const frame = useCurrentFrame();
   const { durationInFrames } = useVideoConfig();
   const zoom = interpolate(frame, [0, durationInFrames], [1.08, 1.0]);
   const look = useLook();
   return (
     <AbsoluteFill>
-      {cover ? <Img src={cover} style={{ width: "100%", height: "100%", objectFit: "cover", transform: `scale(${zoom})`, filter: look.cover }} /> : null}
+      {cover ? <Img src={cover} style={{ width: "100%", height: "100%", objectFit: "cover", objectPosition: `${(coverX ?? 0.5) * 100}% 50%`, transform: `scale(${zoom})`, transformOrigin: `${(coverX ?? 0.5) * 100}% 50%`, filter: look.cover }} /> : null}
       <AbsoluteFill style={{ background: look.scrim }} />
       <Brand tag={section(url)} />
       <div style={{ position: "absolute", left: safe.x, right: safe.x, bottom: safe.bottom + 40 + look.band }}>
         <Rise delay={IN_PLACE}>
           <div style={{ fontFamily: fonts.display, fontWeight: 700, fontSize: kicker.length > 22 ? 118 : 148, lineHeight: 0.96, letterSpacing: "-0.05em", color: color.text }}>{keepTogether(kicker)}</div>
         </Rise>
-        <Rise delay={10}><div style={{ fontFamily: fonts.body, fontSize: 44, lineHeight: 1.25, color: color.textSecondary, marginTop: 34, maxWidth: 880, textWrap: "balance" }}>{subtitle}</div></Rise>
+        {/* The subtitle is the claim: in place from frame 0 with the title, since X shows that frame as the cover */}
+        <Rise delay={IN_PLACE}><div style={{ fontFamily: fonts.body, fontSize: 44, lineHeight: 1.25, color: color.textSecondary, marginTop: 34, maxWidth: 880, textWrap: "balance" }}>{subtitle}</div></Rise>
         {asOf ? <Rise delay={16}><div style={{ fontFamily: fonts.mono, fontSize: 22, letterSpacing: "0.2em", color: color.muted, marginTop: 26 }}>FIGURES AS OF {asOf.toUpperCase()}</div></Rise> : null}
       </div>
     </AbsoluteFill>
@@ -84,7 +88,7 @@ const Stat: React.FC<{ stat: ProfileProps["stats"][number]; index: number; total
           </div>
         </div>
         <Rise delay={8}><div style={{ fontFamily: fonts.mono, fontSize: 34, letterSpacing: "0.24em", color: accent, marginTop: 40 }}>{stat.label.toUpperCase()}</div></Rise>
-        <Rise delay={14}><div style={{ fontFamily: fonts.body, fontWeight: 500, fontSize: 52, lineHeight: 1.25, color: color.textSecondary, marginTop: 28, maxWidth: 860 }}>{stat.note}</div></Rise>
+        <Rise delay={14}><div style={{ fontFamily: fonts.body, fontWeight: 500, fontSize: 52, lineHeight: 1.25, color: color.textSecondary, marginTop: 28, maxWidth: 860, textWrap: "balance" }}>{stat.note}</div></Rise>
       </div>
     </AbsoluteFill>
   );
@@ -99,12 +103,20 @@ const Contrast: React.FC<{ contrast: NonNullable<ProfileProps["contrast"]> }> = 
   return (
     <AbsoluteFill>
       <div style={{ position: "absolute", left: safe.x, right: safe.x, top: safe.top + 40, bottom: safe.bottom - 20 + useLook().band, display: "flex", flexDirection: "column", justifyContent: "center" }}>
+        {/* The two names head the same two columns as the rows below them, so each side
+            reads down its own column; the subtitle line (a receipt's two dates) sits under them. */}
         <Rise>
-          <div style={{ display: "flex", alignItems: "baseline", gap: 24, fontFamily: fonts.display, fontWeight: 700, fontSize: 80, letterSpacing: "-0.04em" }}>
+          <div style={{ fontFamily: fonts.mono, fontSize: 24, letterSpacing: "0.2em", color: color.muted, marginBottom: 14 }}>VS</div>
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 36, alignItems: "end", fontFamily: fonts.display, fontWeight: 700, fontSize: Math.min(80, 430 / (Math.max(contrast.left.length, contrast.right.length) * 0.56)), lineHeight: 1, letterSpacing: "-0.04em" }}>
             <span style={{ color: color.emerald }}>{contrast.left}</span>
-            <span style={{ fontFamily: fonts.mono, fontSize: 30, fontWeight: 400, letterSpacing: "0.2em", color: color.muted }}>VS</span>
             <span style={{ color: color.sky }}>{contrast.right}</span>
           </div>
+          {contrast.sub ? (
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 36, marginTop: 14, fontFamily: fonts.mono, fontSize: 24, letterSpacing: "0.2em", color: color.muted }}>
+              <span>{contrast.sub[0]?.toUpperCase()}</span>
+              <span>{contrast.sub[1]?.toUpperCase()}</span>
+            </div>
+          ) : null}
         </Rise>
         <div style={{ marginTop: 48, display: "flex", flexDirection: "column", gap: 34 }}>
           {contrast.rows.map((row, i) => {

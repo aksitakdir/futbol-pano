@@ -66,6 +66,11 @@ if (cmd === "samples") {
   const voice = v !== -1 ? rest[v + 1] : spec.voice;
   if (!voice) { console.error("No voice: pass --voice <id> or set \"voice\" in the .vo.json"); process.exit(1); }
   const dir = path.join(ROOT, "out", slug, "vo");
+  // --only hook,contrast re-voices just those scenes (a corrected line costs its own
+  // characters, not the whole script); every other clip and its timing is kept.
+  const o = rest.indexOf("--only");
+  const only = o !== -1 ? rest[o + 1].split(",") : null;
+  const kept = new Map((spec.clips ?? []).map((c) => [c.scene, c]));
   const clips = [];
   // Lines per scene: hook, items[] (Rundown) or stats[] (Profile), contrast, quote, ballot, close.
   const L = spec.lines;
@@ -79,6 +84,12 @@ if (cmd === "samples") {
   for (const [scene, text] of scenes) {
     if (!text) continue;
     const file = path.join(dir, `${scene}.mp3`);
+    if (only && !only.includes(scene)) {
+      if (!kept.has(scene) || !fs.existsSync(file)) { console.error(`--only: no earlier clip for ${scene}; voice it too`); process.exit(1); }
+      clips.push(kept.get(scene));
+      console.log(`${scene.padEnd(8)} kept`);
+      continue;
+    }
     await speak(voice, text, file);
     clips.push({ scene, file: path.relative(ROOT, file), seconds: Number(seconds(file).toFixed(3)) });
     console.log(`${scene.padEnd(8)} ${clips.at(-1).seconds.toFixed(2)} s  ${text}`);
