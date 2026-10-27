@@ -1,0 +1,58 @@
+{
+  "template": "Profile",
+  "slug": "kopa-trophy-2026-ranking-what-we-said-and-what-happened",
+  "url": "scoutgamer.com/lists/kopa-trophy-2026-ranking-what-we-said-and-what-happened",
+  "cover": "https://bfjpatsihrzlknrpghvm.supabase.co/storage/v1/object/public/content-images/1793133195961-gtw7vyaobww.jpeg",
+  "kicker": "We Said Cubarsí",
+  "subtitle": "20 October: our Kopa ballot put Pau Cubarsí first. 26 October: Lamine Yamal won the Kopa Trophy, and said it should have been Cubarsí's.",
+  "asOf": null,
+  "quote": "This prize should have been for him.",
+  "turn": "YAMAL ON CUBARSÍ · ESPN TRANSLATION",
+  "source": "Kopa Trophy 2026 Ranking: What We Said, and What Happened — scoutgamer.com, figures as stated in the article",
+  "stats": [
+    {
+      "value": "1st",
+      "label": "Lamine Yamal",
+      "note": "A third Kopa in a row, the first player to win it three times"
+    },
+    {
+      "value": "2nd",
+      "label": "Pau Cubarsí",
+      "note": "First on our ballot, second on the jury's"
+    },
+    {
+      "value": "4th",
+      "label": "Lennart Karl",
+      "note": "Ninth of ten by his EA FC 27 card"
+    }
+  ],
+  "dropped": [],
+  "contrast": {
+    "left": "We said",
+    "right": "What happened",
+    "rows": [
+      [
+        "Winner: Yamal, most likely",
+        "Winner: Yamal, a third in a row"
+      ],
+      [
+        "Cubarsí: our first, five points",
+        "Cubarsí: second"
+      ],
+      [
+        "Yamal: our second, three points",
+        "Yamal: first"
+      ],
+      [
+        "Diomande: our third, one point",
+        "Diomande: fifth"
+      ]
+    ],
+    "sub": [
+      "20 October",
+      "26 October"
+    ]
+  },
+  "handSet": "kicker, subtitle, cover, quote, turn, asOf, contrast.sub and coverX set by hand on 27-28 Oct 2026 (approved receipt plan + QA fixes); a from-article rebuild overwrites them",
+  "coverX": 0.6
+}

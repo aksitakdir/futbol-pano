@@ -1,0 +1,53 @@
+{
+  "approved": "2026-10-27 by the owner in chat (receipt plan, 'hepsine onay'); generate after #173 is published; contrast and quote lines changed after QA, approved by the owner on 28 Oct 2026",
+  "note": "Kopa Trophy 2026 receipt (article #173). Facts verified 27 Oct 2026 against #167 (20 Oct) and two independent result checks; the quote is ESPN's translation.",
+  "voice": "nPczCjzI2devNBz1zQrb",
+  "lines": {
+    "hook": "Our Kopa ballot put Pau Cubarsí first. Lamine Yamal won it, and said on stage the prize should have been Cubarsí's.",
+    "stats": [
+      "Yamal: a third Kopa in a row, the first player to win it three times. We said he most likely would.",
+      "Cubarsí, our first: second on the jury's ballot.",
+      "And Lennart Karl, ninth of ten by his EA FC twenty-seven card, finished fourth."
+    ],
+    "contrast": "Yamal was our second and the jury's first. Our third, Yan Diomande, finished fifth.",
+    "quote": "Yamal, on Cubarsí: this prize should have been for him.",
+    "close": "We keep the receipts. The full read is on scoutgamer.com."
+  },
+  "clips": [
+    {
+      "scene": "hook",
+      "file": "out/kopa-trophy-2026-ranking-what-we-said-and-what-happened/vo/hook.mp3",
+      "seconds": 6.583
+    },
+    {
+      "scene": "stat-00",
+      "file": "out/kopa-trophy-2026-ranking-what-we-said-and-what-happened/vo/stat-00.mp3",
+      "seconds": 5.878
+    },
+    {
+      "scene": "stat-01",
+      "file": "out/kopa-trophy-2026-ranking-what-we-said-and-what-happened/vo/stat-01.mp3",
+      "seconds": 2.769
+    },
+    {
+      "scene": "stat-02",
+      "file": "out/kopa-trophy-2026-ranking-what-we-said-and-what-happened/vo/stat-02.mp3",
+      "seconds": 4.598
+    },
+    {
+      "scene": "contrast",
+      "file": "out/kopa-trophy-2026-ranking-what-we-said-and-what-happened/vo/contrast.mp3",
+      "seconds": 4.963
+    },
+    {
+      "scene": "quote",
+      "file": "out/kopa-trophy-2026-ranking-what-we-said-and-what-happened/vo/quote.mp3",
+      "seconds": 3.291
+    },
+    {
+      "scene": "close",
+      "file": "out/kopa-trophy-2026-ranking-what-we-said-and-what-happened/vo/close.mp3",
+      "seconds": 3.056
+    }
+  ]
+}
