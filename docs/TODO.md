@@ -82,6 +82,11 @@ futbol kararları — yayından önce:
 - ~~**Araç:** Highlightly anahtarı 401 dönüyor~~ — çözüldü 24 Eki: dictumus ile paylaşılan PRO anahtarı `.env.local`'de, test edildi.
 
 **2. Kopa (#167, yayında)** — videolar ve metinler `video/out/ready-to-post/` (POSTS.md).
+- [x] **Sonuç (26 Eki): Yamal kazandı, Cubarsí 2., Zaïre-Emery 3.** Makbuz yazısı **#173 "Kopa Trophy 2026 Ranking:
+      What We Said, and What Happened" yayında (27 Eki)**; #167'ye 12 düzeltme + #173 linki canlıda; seo-check temiz.
+      Makbuz videosu ("We Said Cubarsí", 37 sn, iki format) ve post'lar `ready-to-post/` — CONTENT-STRATEGY-V2'deki
+      "The Receipt" kalıbının ilk örneği. Dikkat: Yamal'ın sözü için "deserved it the most" KULLANILMAZ (İspanyolcasında yok);
+      ESPN çevirisi "This prize should have been for him." Eski "Yamal wins" Profile kiti iptal (kredi harcanmadı).
 - [x] Videolar paylaşılmaya başladı (24 Eki: 2-3'ü X ve Instagram'da yayında).
 - [ ] 26 Eki gecesi: kazananı yazıya güncelleme olarak ekle + ikinci video. Kit yalnız iki senaryo
       için hazırlanıyor: Yamal ya da Cubarsí (sahibin kararı, 24 Eki).
