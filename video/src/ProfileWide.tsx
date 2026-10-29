@@ -18,7 +18,7 @@ import { timeline } from "./timeline.mjs";
 const CAPTION_BAND = 100;
 const ACCENTS = [color.emerald, color.cyan, color.sky, color.amber];
 
-const Hook: React.FC<ProfileProps> = ({ cover, kicker, subtitle, url, asOf }) => {
+const Hook: React.FC<ProfileProps> = ({ cover, kicker, subtitle, url, asOf, coverBlur }) => {
   const frame = useCurrentFrame();
   const { durationInFrames } = useVideoConfig();
   const zoom = interpolate(frame, [0, durationInFrames], [1.06, 1.0]);
@@ -26,7 +26,7 @@ const Hook: React.FC<ProfileProps> = ({ cover, kicker, subtitle, url, asOf }) =>
   const look = useLook();
   return (
     <AbsoluteFill style={{ opacity: 1 - exit }}>
-      {cover ? <Img src={cover} style={{ width: "100%", height: "100%", objectFit: "cover", transform: `scale(${zoom})`, filter: look.coverWide }} /> : null}
+      {cover ? <Img src={cover} style={{ width: "100%", height: "100%", objectFit: "cover", transform: `scale(${zoom})`, filter: `${coverBlur ? `blur(${coverBlur}px) ` : ""}${look.coverWide}` }} /> : null}
       <AbsoluteFill style={{ background: look.scrimWide }} />
       <Brand tag={section(url)} top={wide.top} x={wide.x} />
       <div style={{ position: "absolute", left: wide.x, width: 1060, top: wide.top + 80, bottom: wide.bottom + look.band, display: "flex", flexDirection: "column", justifyContent: "center" }}>
@@ -35,7 +35,7 @@ const Hook: React.FC<ProfileProps> = ({ cover, kicker, subtitle, url, asOf }) =>
         </Rise>
         {/* The subtitle is the claim: in place from frame 0 with the title, since X shows that frame as the cover */}
         <Rise delay={IN_PLACE}><div style={{ fontFamily: fonts.body, fontSize: 38, lineHeight: 1.25, color: color.textSecondary, marginTop: 30, maxWidth: 900, textWrap: "balance" }}>{subtitle}</div></Rise>
-        {asOf ? <Rise delay={16}><div style={{ fontFamily: fonts.mono, fontSize: 20, letterSpacing: "0.2em", color: color.muted, marginTop: 22 }}>FIGURES AS OF {asOf.toUpperCase()}</div></Rise> : null}
+        {asOf ? <Rise delay={IN_PLACE}><div style={{ fontFamily: fonts.mono, fontSize: 20, letterSpacing: "0.2em", color: color.muted, marginTop: 22 }}>FIGURES AS OF {asOf.toUpperCase()}</div></Rise> : null}
       </div>
     </AbsoluteFill>
   );
@@ -83,7 +83,7 @@ const Contrast: React.FC<{ contrast: NonNullable<ProfileProps["contrast"]> }> = 
       <div style={{ position: "absolute", left: wide.x, right: wide.x, top: wide.top + 60, bottom: wide.bottom + band, display: "flex", flexDirection: "column", justifyContent: "center" }}>
         <Rise>
           <div style={{ display: "grid", gridTemplateColumns: "420px 1fr 1fr", gap: 40, alignItems: "baseline", fontFamily: fonts.display, fontWeight: 700, fontSize: 72, letterSpacing: "-0.04em" }}>
-            <span style={{ fontFamily: fonts.mono, fontSize: 24, fontWeight: 400, letterSpacing: "0.2em", color: color.muted }}>VS</span>
+            <span style={{ fontFamily: fonts.mono, fontSize: 24, fontWeight: 400, letterSpacing: "0.2em", color: color.muted }}>{contrast.sub ? "" : "VS"}</span>
             <span style={{ color: color.emerald }}>{contrast.left}</span>
             <span style={{ color: color.sky }}>{contrast.right}</span>
           </div>
@@ -134,7 +134,7 @@ export const ProfileWide: React.FC<ProfileProps> = (props) => {
       ))}
       {props.contrast ? <Sequence {...seq("contrast")}>{brand(tag)}<Contrast contrast={props.contrast} /></Sequence> : null}
       {props.quote ? <Sequence {...seq("quote")}>{brand()}<Quote quote={props.quote} turn={props.turn} /></Sequence> : null}
-      <Sequence {...seq("close")}><Close url={props.url} cover={props.cover} kicker={props.kicker} /></Sequence>
+      <Sequence {...seq("close")}><Close url={props.url} cover={props.cover} kicker={props.kicker} blur={props.coverBlur} /></Sequence>
       <Captions cues={props.captions} left={wide.x} right={wide.x} bottom={wide.bottom + 6} size={40} />
       <Grain />
     </AbsoluteFill>

@@ -36,6 +36,8 @@ export type ProfileProps = {
   coverFaces?: { x: number; w: number }[];
   /** Where the vertical opening crops the 16:9 cover, as a fraction of its width (default the centre): a subject right of centre stays in frame. */
   coverX?: number;
+  /** Blur (px) on the cover where it is shown openly (opening and end card): for a cover whose figure would read as the named player himself. */
+  coverBlur?: number;
   theme?: ThemeName;
   captions?: Cue[];
 };
@@ -43,14 +45,14 @@ export type ProfileProps = {
 export const profileDuration = (p: ProfileProps) => totalFrames(p);
 
 
-const Hook: React.FC<ProfileProps> = ({ cover, kicker, subtitle, url, asOf, coverX }) => {
+const Hook: React.FC<ProfileProps> = ({ cover, kicker, subtitle, url, asOf, coverX, coverBlur }) => {
   const frame = useCurrentFrame();
   const { durationInFrames } = useVideoConfig();
   const zoom = interpolate(frame, [0, durationInFrames], [1.08, 1.0]);
   const look = useLook();
   return (
     <AbsoluteFill>
-      {cover ? <Img src={cover} style={{ width: "100%", height: "100%", objectFit: "cover", objectPosition: `${(coverX ?? 0.5) * 100}% 50%`, transform: `scale(${zoom})`, transformOrigin: `${(coverX ?? 0.5) * 100}% 50%`, filter: look.cover }} /> : null}
+      {cover ? <Img src={cover} style={{ width: "100%", height: "100%", objectFit: "cover", objectPosition: `${(coverX ?? 0.5) * 100}% 50%`, transform: `scale(${zoom})`, transformOrigin: `${(coverX ?? 0.5) * 100}% 50%`, filter: `${coverBlur ? `blur(${coverBlur}px) ` : ""}${look.cover}` }} /> : null}
       <AbsoluteFill style={{ background: look.scrim }} />
       <Brand tag={section(url)} />
       <div style={{ position: "absolute", left: safe.x, right: safe.x, bottom: safe.bottom + 40 + look.band }}>
@@ -59,7 +61,7 @@ const Hook: React.FC<ProfileProps> = ({ cover, kicker, subtitle, url, asOf, cove
         </Rise>
         {/* The subtitle is the claim: in place from frame 0 with the title, since X shows that frame as the cover */}
         <Rise delay={IN_PLACE}><div style={{ fontFamily: fonts.body, fontSize: 44, lineHeight: 1.25, color: color.textSecondary, marginTop: 34, maxWidth: 880, textWrap: "balance" }}>{subtitle}</div></Rise>
-        {asOf ? <Rise delay={16}><div style={{ fontFamily: fonts.mono, fontSize: 22, letterSpacing: "0.2em", color: color.muted, marginTop: 26 }}>FIGURES AS OF {asOf.toUpperCase()}</div></Rise> : null}
+        {asOf ? <Rise delay={IN_PLACE}><div style={{ fontFamily: fonts.mono, fontSize: 22, letterSpacing: "0.2em", color: color.muted, marginTop: 26 }}>FIGURES AS OF {asOf.toUpperCase()}</div></Rise> : null}
       </div>
     </AbsoluteFill>
   );
@@ -106,7 +108,7 @@ const Contrast: React.FC<{ contrast: NonNullable<ProfileProps["contrast"]> }> = 
         {/* The two names head the same two columns as the rows below them, so each side
             reads down its own column; the subtitle line (a receipt's two dates) sits under them. */}
         <Rise>
-          <div style={{ fontFamily: fonts.mono, fontSize: 24, letterSpacing: "0.2em", color: color.muted, marginBottom: 14 }}>VS</div>
+          {contrast.sub ? null : <div style={{ fontFamily: fonts.mono, fontSize: 24, letterSpacing: "0.2em", color: color.muted, marginBottom: 14 }}>VS</div>}
           <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 36, alignItems: "end", fontFamily: fonts.display, fontWeight: 700, fontSize: Math.min(80, 430 / (Math.max(contrast.left.length, contrast.right.length) * 0.56)), lineHeight: 1, letterSpacing: "-0.04em" }}>
             <span style={{ color: color.emerald }}>{contrast.left}</span>
             <span style={{ color: color.sky }}>{contrast.right}</span>
@@ -158,7 +160,7 @@ export const Profile: React.FC<ProfileProps> = (props) => {
       ))}
       {props.contrast ? <Sequence {...seq("contrast")}><Brand tag={tag} /><Contrast contrast={props.contrast} /></Sequence> : null}
       {props.quote ? <Sequence {...seq("quote")}><Brand /><Quote quote={props.quote} turn={props.turn} /></Sequence> : null}
-      <Sequence {...seq("close")}><Close url={props.url} cover={props.cover} kicker={props.kicker} /></Sequence>
+      <Sequence {...seq("close")}><Close url={props.url} cover={props.cover} kicker={props.kicker} blur={props.coverBlur} /></Sequence>
       <Captions cues={props.captions} left={safe.x} right={safe.x + safe.rail} bottom={safe.bottom + 16} size={42} />
       <Grain />
     </AbsoluteFill>

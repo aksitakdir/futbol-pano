@@ -156,7 +156,7 @@ const Ballot: React.FC<{ ballot: RundownProps["ballot"] }> = ({ ballot }) => (
 );
 
 /** The end card: the whole cover, sharp, and over it the brand and the address in large type. */
-export const Close: React.FC<{ when?: string; url: string; cover?: string | null; kicker?: string }> = ({ when, url, cover, kicker }) => {
+export const Close: React.FC<{ when?: string; url: string; cover?: string | null; kicker?: string; blur?: number }> = ({ when, url, cover, kicker, blur }) => {
   const frame = useCurrentFrame();
   const { durationInFrames } = useVideoConfig();
   const { date, venue } = whenParts(when);
@@ -172,7 +172,7 @@ export const Close: React.FC<{ when?: string; url: string; cover?: string | null
     <AbsoluteFill>
       {cover ? (
         <AbsoluteFill style={{ opacity: show, overflow: "hidden" }}>
-          <Img src={cover} style={{ width: "100%", height: "100%", objectFit: "cover", transform: `scale(${zoom})`, filter: look.closeWide }} />
+          <Img src={cover} style={{ width: "100%", height: "100%", objectFit: "cover", transform: `scale(${zoom})`, filter: `${blur ? `blur(${blur}px) ` : ""}${look.closeWide}` }} />
         </AbsoluteFill>
       ) : null}
       <AbsoluteFill style={{ background: `radial-gradient(ellipse 62% 70% at 50% 50%, ${dim(look.closeWash[0] + 4)} 0%, ${dim(look.closeWash[1] + 6)} 70%, ${dim(look.closeWash[2] + 4)} 100%)` }} />

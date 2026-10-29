@@ -121,7 +121,7 @@ export function chunk(line, extra = {}) {
   // A cue never ends on "the", "on", "of"…: those words move to the start of the next cue.
   for (let i = 0; i < cues.length - 1; i++) {
     let words = cues[i].split(" ");
-    while (words.length > 1 && LEAD_WORDS.test(words.at(-1)) && len(`${words.at(-1)} ${cues[i + 1]}`) <= MAX) {
+    while (words.length > 1 && leadsOn(words.at(-1), cues[i + 1]) && len(`${words.at(-1)} ${cues[i + 1]}`) <= MAX) {
       cues[i + 1] = `${words.pop()} ${cues[i + 1]}`;
     }
     cues[i] = words.join(" ");
@@ -129,8 +129,11 @@ export function chunk(line, extra = {}) {
   return cues;
 }
 
-/** Words that lead into what follows, so they belong at the start of a cue, not its end: "the", "of", and a modal or auxiliary waiting for its verb ("should / have been"). Bare only, so a sentence-final "was." stays. */
+/** Words that lead into what follows, so they belong at the start of a cue, not its end: "the", "of", and a modal or auxiliary waiting for its verb ("should / have been"), and a number or ordinal waiting for its noun ("eight in ten / games", "first / three league wins"). Bare only, so a sentence-final "was." stays. */
 const LEAD_WORDS = /^(the|a|an|of|on|in|at|to|for|by|with|from|into|among|about|over|after|before|between|without|through|per|and|or|but|his|her|their|its|than|as|aged|whether|should|would|could|will|can|must|might|may|shall|has|have|had|be|been|not)$/i;
+/** A number or ordinal leads into its noun ("ten / games", "first / three league wins"), but not into a preposition ("has eight / in ten"). */
+const NUMBER_WORDS = /^(one|two|three|four|five|six|seven|eight|nine|ten|eleven|twelve|first|second|third|fourth|fifth|last|next)$/i;
+const leadsOn = (word, next) => LEAD_WORDS.test(word) || (NUMBER_WORDS.test(word) && !LEAD_WORDS.test(next.split(" ")[0]));
 
 const squash = (s) => s.toLowerCase().replace(/[^a-z0-9]+/g, "");
 
