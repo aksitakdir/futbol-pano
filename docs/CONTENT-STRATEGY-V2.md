@@ -195,6 +195,17 @@ Football Manager, konumlanmamızın ("EA FC, Football Manager") yarısı. Bu tak
 - **İnsansız görsel (karar 5):** Sosyal görsellerde insan olmazsa yüz sorunu kökten biter. Bedeli: yazı kapaklarındaki anonim figürlü görseller sosyalde tekrar kullanılamaz. Kaleciler ve Wonderkids kapakları bu yüzden yeniden kullanılmaz.
 - **Kısa döngüler:** Video modeli bir görseli 5 saniyelik döngüye çevirebiliyor. Denetime göre maliyeti yaklaşık 8 görsel kadar (doğrulanacak). Basic'te ayda ~10 döngü düşünülebilir.
 - **Gizlilik:** Stealth modu olmadan görseller herkese açık.
+- **Atmosfer rotasyonu (30 Ekim, sahibin tespiti):** Art arda verilen dört kapak prompt'unun dördünde de gece, yağmur, projektör ve film greni vardı. Her yeni kapak, bir öncekinden farklı bir ışık ve hava seçer:
+  1. altın saat ya da gün batımı;
+  2. açık kış öğleden sonrası;
+  3. sis (yağmursuz);
+  4. sert öğle güneşi ya da tepeden çekim;
+  5. mavi saat;
+  6. tünel ya da iç mekân;
+  7. sabah antrenman sahası;
+  8. gece projektörü (seyrek).
+
+  "rain" her zaman `--no` listesinde durur, yağmur bilinçli olarak seçilmedikçe. Anonim silüet ve yüzün gölgede kalması değişmez.
 
 **5.4 Remotion**
 - **Yeni paketler:** `@remotion/transitions`, `@remotion/paths`, `@remotion/layout-utils`. 4.0.537'ye sabitlenerek kurulur.

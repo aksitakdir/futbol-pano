@@ -46,8 +46,8 @@ kendiliğinden yenilenir.
 | Sıra | # | Yazı | Neden şimdi |
 |---|---|---|---|
 | ~~1~~ | ~~164~~ | ~~The Best FC 27 Wonderkids~~ | **yayında (24 Eki)**; video + postlar `video/out/ready-to-post/` |
-| 2 | 168 | Best Young Wingers | GSC: kanat sorgularında sıfır görünürlük |
-| 3 | 169 | Best Young Defenders | GSC: sayfa yokken ~420 gösterim/28g |
+| ~~2~~ | ~~168~~ | ~~Best Young Wingers~~ | **yayında (29 Eki)**, 31 tazeleme + sahip kararları (El Mala forvet notu, Gomes "Out for Now", Quenda) |
+| ~~3~~ | ~~169~~ | ~~Best Young Defenders~~ | **yayında (29 Eki)**, 34 tazeleme canlıda; bölüm "Left Out on 16 October"; Cubarsí Kopa 2. (#173 linki) |
 | 4 | 170 | Turkey's Best Young Footballers | "most valuable turkish players" yükselen sorgu → yayınlanınca #39'dan 301 |
 | ~~5~~ | ~~166~~ | ~~Rodri Effect~~ | **yayında** |
 | 6 | 160 | Number 10s | 30 Eyl verisi — yayından önce dakika/sakatlık kontrolü |
@@ -87,15 +87,19 @@ futbol kararları — yayından önce:
       Makbuz videosu ("We Said Cubarsí", 37 sn, iki format) ve post'lar `ready-to-post/` — CONTENT-STRATEGY-V2'deki
       "The Receipt" kalıbının ilk örneği. Dikkat: Yamal'ın sözü için "deserved it the most" KULLANILMAZ (İspanyolcasında yok);
       ESPN çevirisi "This prize should have been for him." Eski "Yamal wins" Profile kiti iptal (kredi harcanmadı).
+- [ ] **Makbuz videoları paylaşıldı (28 Eki, X + Instagram).** 4 Kas'ta 7. gün ölçümü (CONTENT-STRATEGY-V2 §9):
+      IG 3 sn atlama oranı + ortalama izleme, X yanıt/alıntı + profil ziyareti. İlk "Receipt" verisi, geri sayımlarla kıyaslanacak.
 - [x] Videolar paylaşılmaya başladı (24 Eki: 2-3'ü X ve Instagram'da yayında).
 - [ ] 26 Eki gecesi: kazananı yazıya güncelleme olarak ekle + ikinci video. Kit yalnız iki senaryo
       için hazırlanıyor: Yamal ya da Cubarsí (sahibin kararı, 24 Eki).
 
+- [ ] **30 Eki sabah kontrolü (#169, yayında):** Tiago Gabriel 29 Eki Frosinone maçında oynadı mı (25 Eki Juventus'ta topallayarak
+      çıktı; tablo 6 ilk 11), Arthur Dias 29 Eki gece Grêmio'da oynadı mı (24 Eki sağ uyluk; 29 ilk 11, "fourth in the table").
+      Tarih tuzakları: Rico Lewis 21 Kas'ta 22, Tiago Gabriel 26 Ara'da 22, Ramón 6 Oca'da 22.
+
 **2b. Radar: haftada en az bir yazı.** Son Radar 11 Eki (#158); bekleyen yazıların hepsi liste.
 Son üç Radar'ın üçü de Premier League (Dowman, Sullivan, Ngumoha) → yeni ikisi başka liglerden.
-- [ ] **#171 Zabiri (Rennes) ve #172 Brunner (Monaco) pending (24 Eki), sahip incelemesi bekliyor.**
-      Zabiri: 25 Eki El Clásico "level with Lamine Yamal / joint third" cümlesini değiştirebilir → yayından önce
-      gol krallığına bak. Brunner: Toulouse maçını neden kaçırdığı belirsiz; "joint top after seven rounds".
+- [ ] **#171 Zabiri: 29 Eki tazelendi (15 düzeltme, LaLiga resmi gol tablosuyla birebir), yayına hazır — kapak bekliyor** (silüet prompt'ları, öneri A). **#172 Brunner (Monaco) pending:** 13 tazeleme hazır (uygulanmadı); kararlar: men cezası/sevinç nasıl anlatılacak, "Germany's next striker" kapanışı.
 
 **3. Google Search Console** (sahip, birkaç tık)
 - [ ] Sitemap'i yeniden gönder.
