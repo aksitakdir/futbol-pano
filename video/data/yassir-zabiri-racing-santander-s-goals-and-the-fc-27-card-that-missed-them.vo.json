@@ -1,0 +1,53 @@
+{
+  "approved": "2026-10-30 by the owner in chat (Card vs Pitch script; voice Charlie; new music bed); stat 2, stat 3 and close changed after QA, approved by the owner on 29 Oct 2026",
+  "note": "Zabiri Card vs Pitch (article #171). Every number from the live article, as of 29 Oct 2026.",
+  "voice": "IKne3meq5aSn9XLyUdCD",
+  "lines": {
+    "hook": "Sixty-six on the card. Eight LaLiga goals on the pitch.",
+    "stats": [
+      "Yassir Zabiri has eight in ten games for Racing Santander, the same as Lamine Yamal after ten matchdays.",
+      "Three of his goals won games: one in each of Racing's three league wins.",
+      "The card was rated on seven goals at Famalicão and forty-two Ligue 1 minutes from the Rennes bench."
+    ],
+    "contrast": "A goal every eighty-two minutes, on a card that gives him sixty-six for shooting.",
+    "quote": "EA moved his club to Santander. It has not yet moved the number.",
+    "close": "What would you rate Zabiri? The full read is on scoutgamer.com."
+  },
+  "clips": [
+    {
+      "scene": "hook",
+      "file": "out/yassir-zabiri-racing-santander-s-goals-and-the-fc-27-card-that-missed-them/vo/hook.mp3",
+      "seconds": 3.239
+    },
+    {
+      "scene": "stat-00",
+      "file": "out/yassir-zabiri-racing-santander-s-goals-and-the-fc-27-card-that-missed-them/vo/stat-00.mp3",
+      "seconds": 6.922
+    },
+    {
+      "scene": "stat-01",
+      "file": "out/yassir-zabiri-racing-santander-s-goals-and-the-fc-27-card-that-missed-them/vo/stat-01.mp3",
+      "seconds": 4.833
+    },
+    {
+      "scene": "stat-02",
+      "file": "out/yassir-zabiri-racing-santander-s-goals-and-the-fc-27-card-that-missed-them/vo/stat-02.mp3",
+      "seconds": 6.165
+    },
+    {
+      "scene": "contrast",
+      "file": "out/yassir-zabiri-racing-santander-s-goals-and-the-fc-27-card-that-missed-them/vo/contrast.mp3",
+      "seconds": 4.676
+    },
+    {
+      "scene": "quote",
+      "file": "out/yassir-zabiri-racing-santander-s-goals-and-the-fc-27-card-that-missed-them/vo/quote.mp3",
+      "seconds": 4.075
+    },
+    {
+      "scene": "close",
+      "file": "out/yassir-zabiri-racing-santander-s-goals-and-the-fc-27-card-that-missed-them/vo/close.mp3",
+      "seconds": 4.075
+    }
+  ]
+}

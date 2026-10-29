@@ -1,0 +1,63 @@
+{
+  "template": "Profile",
+  "slug": "yassir-zabiri-racing-santander-s-goals-and-the-fc-27-card-that-missed-them",
+  "url": "scoutgamer.com/radar/yassir-zabiri-racing-santander-s-goals-and-the-fc-27-card-that-missed-them",
+  "cover": "https://bfjpatsihrzlknrpghvm.supabase.co/storage/v1/object/public/content-images/1793302809881-9p0x0olqsq4.jpeg",
+  "kicker": "Zabiri: 66 on the Card",
+  "subtitle": "Eight LaLiga goals in ten games for Racing Santander, the same as Lamine Yamal after ten matchdays.",
+  "asOf": "29 October 2026",
+  "quote": "EA moved his club to Santander. It has not yet moved the number.",
+  "turn": "SCOUT GAMER'S READ",
+  "source": "Yassir Zabiri: Racing Santander's Goals and the FC 27 Card That Missed Them — scoutgamer.com, figures as stated in the article",
+  "stats": [
+    {
+      "value": "8",
+      "label": "LaLiga goals",
+      "note": "10 appearances, 7 starts, as of 29 Oct 2026"
+    },
+    {
+      "value": "3",
+      "label": "Match-winners",
+      "note": "One in each of Racing's three league wins"
+    },
+    {
+      "value": "42",
+      "label": "Ligue 1 minutes",
+      "note": "Six substitute appearances for Rennes in 2025-26, no goals"
+    }
+  ],
+  "dropped": [
+    {
+      "value": "2",
+      "label": "Goals in the final",
+      "note": "Morocco 2-0 Argentina, Under-20 World Cup, 19 Oct 2025"
+    }
+  ],
+  "contrast": {
+    "left": "The card",
+    "right": "The pitch",
+    "sub": [
+      "EA FC 27",
+      "LaLiga, to 29 October"
+    ],
+    "rows": [
+      [
+        "Shooting: 66",
+        "Shooting: a goal every 82 minutes"
+      ],
+      [
+        "Minutes: 42 at Rennes, last season",
+        "Minutes: 652 at Racing, this season"
+      ]
+    ]
+  },
+  "handSet": "kicker (names him), subtitle, contrast, turn, stat-1 note (no-break space), cover, coverFaces, coverX and coverBlur set by hand on 29 Oct 2026 (Card vs Pitch, approved by the owner; QA fixes); a from-article rebuild overwrites them",
+  "coverFaces": [
+    {
+      "x": 0.625,
+      "w": 0.065
+    }
+  ],
+  "coverX": 0.62,
+  "coverBlur": 24
+}
