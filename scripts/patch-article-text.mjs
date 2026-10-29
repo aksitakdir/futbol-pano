@@ -18,6 +18,9 @@
  * `old` is matched inside every string field of every block (headings, body,
  * stats, tables, vs rows, FAQ). Markdown bold in the source is ignored when
  * matching, so a sentence copied from the rendered page still finds its block.
+ * A table row is matched as its markup line, cells joined by " | " ("Raphinha |
+ * Barcelona | 12 | 88 | 86"), and replaced cell by cell from `new`, which must have
+ * the same number of cells.
  * An `old` that matches nothing, or more than one place, is reported and skipped.
  */
 import fs from "node:fs";
@@ -87,6 +90,16 @@ function* strings(node, set) {
   }
 }
 
+/** Every table row (an array of cell strings) inside a block, so a row can be matched as "a | b | c". */
+function* rowsOf(node) {
+  if (Array.isArray(node)) {
+    if (node.length > 1 && node.every((c) => typeof c === "string")) { yield node; return; }
+    for (const x of node) yield* rowsOf(x);
+    return;
+  }
+  if (node && typeof node === "object") for (const k of Object.keys(node)) if (k !== "type") yield* rowsOf(node[k]);
+}
+
 const unbold = (s) => s.replace(/\*\*([^*]+)\*\*/g, "$1").replace(/<\/?strong>/g, "");
 let failed = 0;
 
@@ -104,6 +117,17 @@ for (const batch of batches) {
   for (const e of batch.edits) {
     const hits = [];
     for (const b of blocks) for (const s of strings(b, null)) if (s.value.includes(e.old) || unbold(s.value).includes(e.old)) hits.push(s);
+    if (!hits.length && e.old.includes(" | ")) {
+      const rows = [];
+      for (const b of blocks) for (const r of rowsOf(b)) if (r.map(unbold).join(" | ") === e.old) rows.push(r);
+      const cells = e.new.split(" | ");
+      if (rows.length === 1 && cells.length === rows[0].length) {
+        rows[0].splice(0, cells.length, ...cells);
+        applied++;
+        console.log(`  − ${e.old}\n  + ${e.new}   (table row)`);
+        continue;
+      }
+    }
     if (hits.length !== 1) {
       console.log(`  ✗ ${hits.length === 0 ? "no match" : `${hits.length} matches`}: “${e.old.slice(0, 90)}”`);
       failed++;
