@@ -87,13 +87,16 @@ futbol kararları — yayından önce:
       Makbuz videosu ("We Said Cubarsí", 37 sn, iki format) ve post'lar `ready-to-post/` — CONTENT-STRATEGY-V2'deki
       "The Receipt" kalıbının ilk örneği. Dikkat: Yamal'ın sözü için "deserved it the most" KULLANILMAZ (İspanyolcasında yok);
       ESPN çevirisi "This prize should have been for him." Eski "Yamal wins" Profile kiti iptal (kredi harcanmadı).
+- [ ] **Card vs Pitch #1 (Zabiri) paylaşıldı (30 Eki, X + Instagram).** 6 Kas'ta 7. gün ölçümü: ilk "Card vs Pitch" verisi
+      (Charlie sesi + seriye özel bed + yorum çağrısı "What would you rate Zabiri?"); makbuz ve geri sayımlarla kıyaslanacak.
 - [ ] **Makbuz videoları paylaşıldı (28 Eki, X + Instagram).** 4 Kas'ta 7. gün ölçümü (CONTENT-STRATEGY-V2 §9):
       IG 3 sn atlama oranı + ortalama izleme, X yanıt/alıntı + profil ziyareti. İlk "Receipt" verisi, geri sayımlarla kıyaslanacak.
 - [x] Videolar paylaşılmaya başladı (24 Eki: 2-3'ü X ve Instagram'da yayında).
 - [ ] 26 Eki gecesi: kazananı yazıya güncelleme olarak ekle + ikinci video. Kit yalnız iki senaryo
       için hazırlanıyor: Yamal ya da Cubarsí (sahibin kararı, 24 Eki).
 
-- [ ] **30 Eki sabah kontrolü (#169, yayında):** Tiago Gabriel 29 Eki Frosinone maçında oynadı mı (25 Eki Juventus'ta topallayarak
+- [x] **#169 kontrolü yapıldı (2 Kas, 6 düzeltme canlıda):** Tiago Gabriel 29 Eki Frosinone'da ilk 11 (tablo 7), Arthur Dias 29 Eki
+      Grêmio'da 90 dk (tablo 30, Athletico 5.), Kasım milli kadrosu eklendi. Eski not: Tiago Gabriel 29 Eki Frosinone maçında oynadı mı (25 Eki Juventus'ta topallayarak
       çıktı; tablo 6 ilk 11), Arthur Dias 29 Eki gece Grêmio'da oynadı mı (24 Eki sağ uyluk; 29 ilk 11, "fourth in the table").
       Tarih tuzakları: Rico Lewis 21 Kas'ta 22, Tiago Gabriel 26 Ara'da 22, Ramón 6 Oca'da 22.
 

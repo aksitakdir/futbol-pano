@@ -236,6 +236,21 @@ Instagram'da haftada 3 feed post. X'te aynı 3 post, yanıtlar ve gerektikçe bi
 2. Rakam yazıdakinden farklıysa ya yazının tarihli rakamı kullanılır ya da yazıya sahip onayıyla tarihli bir güncelleme girer.
 3. Yayından önce bir doğrulayıcı geçişi yapılır (Claude), sahip onaylar. 12 Ekim'den beri çalışan haftalık akış: tazele → yaz → karşıt doğrula.
 
+**6.2b Her video paketinde (2 Kasım 2026, sahibin kararı)**
+- Video (dikey ve 16:9), kapakları ve post metinleri (Instagram, X ana post, X'te linkli ilk yanıt) teslim edilir.
+- Pakete **3 X yanıt cümlesi** eklenir. Sahip bunları başkalarının paylaşımlarının altına elle atar:
+  - **A:** maç raporu ya da haber paylaşımlarının altına;
+  - **B:** oyuncunun sezonu ya da kartı hakkındaki paylaşımların altına;
+  - **C:** yalnızca biri "gerçekten ne kadar iyi?" diye sorduğunda.
+- Kurallar (§7.4):
+  - linksiz, etiketsiz, @'siz;
+  - her biri tek bir doğrulanmış olgu ekler;
+  - oyuncunun kendi hesabının altına yazılmaz;
+  - her konuşmaya bir yanıt;
+  - 220 karakteri geçmez;
+  - rakamlar tarihlidir.
+- Video bir maçtan önce paylaşılıyorsa, yanıtlar maçtan sonra yeniden doğrulanır; gerekirse zamanlanmış bir görevle.
+
 **6.3 Gerçekçi saat**
 
 | Kalem | Haftada |
