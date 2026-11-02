@@ -12,6 +12,13 @@ tekrar eden sorunları görmenin tek yolu.
 
 ---
 
+## 📣 Etkileşim sprinti (3–30 Kasım 2026) — CONTENT-STRATEGY-V2 §6.2c
+
+- [x] Hafta 1 paketi (3 Kas): `docs/social/2026-11-03-engagement-pack.md` — harita, 18 X + 4 IG satırı, takip listeleri, profil düzeltmeleri
+- [ ] Sahip: profil düzeltmeleri (bio, sabit post, header) ilk yanıttan önce
+- [ ] Hafta 2 (10 Kas, milli ara), Hafta 3 (17 Kas, + GSC yeniden ölçüm), Hafta 4 (24 Kas)
+- [ ] Her Cuma: atılan yanıt sayısı, X/IG takipçi, profil ziyareti (sahip, 1 dk) · 30 Kas: karar
+
 ## 🎯 0. İçerik stratejisi v2 — çeşitlilik ve farklılaşma (2026-10-24, en öncelikli)
 
 Sahibin tespiti (24 Eki): kapaklar ve seslendirmeler birbirine çok benziyor; hesabın geneline
@@ -221,10 +228,13 @@ FC 26 reyting sayfası var. Cavan'ın FC 26'da olmamasının sebebi büyük ihti
 
 ## 🔴 Takvimli
 
-- [ ] **#167 Kopa Trophy 2026 — en geç 22 Eki yayınla** (tören 26 Eki, Londra, 20:00). Pending, kontrolden
-      geçti. Hüküm: "Yamal muhtemelen kazanır, Cubarsí hak ediyor" (oy pusulamız 5-3-1: Cubarsí,
-      Yamal, Diomande). **26 Eki gecesi:** kazananı ekle → "makbuz" güncellemesi + sosyal paylaşım.
-- [ ] **Golden Boy 2026** — kazanan Kasım'da (25 finalist, 5 Eki). Kopa araştırmasının çoğu ortak.
+- [x] **#167 Kopa Trophy 2026** — yayında 20 Eki; makbuz #173 (27 Eki).
+- [ ] **Golden Boy 2026 — #174 yayında (3 Kas), duyurudan önce.** Kazanan "Kasım'ın ilk yarısında"
+      açıklanacak, tarih yok; 2025'inki 4 Kas'taydı. Oy pusulası 10-7-5-3-1: Cubarsí, Diomande, Zaïre-Emery,
+      Bouaddi, Froholdt. Search Console'da dizine ekleme isteği (sahip). **Duyuru günü:** makbuz (#173 kalıbı) + video; tören Torino, 14 Ara.
+- [ ] **FM27 çıkışı — 10 Kas.** Oyun kültürü için yılın arama anlarından biri; FM verimiz yok → açı kararı sahibin.
+- [ ] **Doğrulama tarihi dolan pending'ler:** #160 ve #161 (30 Eyl) gate'in 30 gün sınırını geçti, tazelemeden
+      yayınlanamaz; #170 (16 Eki) 15 Kas'tan sonra aynı duruma düşer; #172 sahibin iki kararını bekliyor.
 
 ### FC 27 verisi — ✅ IMPORT EDİLDİ (2026-09-30)
 

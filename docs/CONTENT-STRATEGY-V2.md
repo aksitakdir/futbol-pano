@@ -195,6 +195,13 @@ Football Manager, konumlanmamızın ("EA FC, Football Manager") yarısı. Bu tak
 - **İnsansız görsel (karar 5):** Sosyal görsellerde insan olmazsa yüz sorunu kökten biter. Bedeli: yazı kapaklarındaki anonim figürlü görseller sosyalde tekrar kullanılamaz. Kaleciler ve Wonderkids kapakları bu yüzden yeniden kullanılmaz.
 - **Kısa döngüler:** Video modeli bir görseli 5 saniyelik döngüye çevirebiliyor. Denetime göre maliyeti yaklaşık 8 görsel kadar (doğrulanacak). Basic'te ayda ~10 döngü düşünülebilir.
 - **Gizlilik:** Stealth modu olmadan görseller herkese açık.
+- **İnsan figürü kuralı (3 Kasım 2026, sahibin kararı; 5. kararı kapatır ve "hiç insan yok" önerisinin yerine geçer):** Futbolcu figürü olmayan bir akış işlevsel değil.
+  - **Liste ve genel konu görselleri:** anonim futbolcu figürleri serbest. Arma ve sponsor yok; yüz profilde, gölgede ya da hareket halinde.
+  - **Tek oyunculu yazılar (Radar, Card vs Pitch):** yalnızca silüet ya da arkadan görünüm; net yüz yok. Videoda gerekirse `coverBlur` kullanılır.
+  - **Her zaman:**
+    - prompt'ta oyuncu adı yok;
+    - gerçek fotoğraf ya da `--cref`/`--oref` referansı yok;
+    - videolarda isimli sahnelerin arkasında yüz tutmayan kadraj (`backdropSpec`).
 - **Atmosfer rotasyonu (30 Ekim, sahibin tespiti):** Art arda verilen dört kapak prompt'unun dördünde de gece, yağmur, projektör ve film greni vardı. Her yeni kapak, bir öncekinden farklı bir ışık ve hava seçer:
   1. altın saat ya da gün batımı;
   2. açık kış öğleden sonrası;
@@ -250,6 +257,25 @@ Instagram'da haftada 3 feed post. X'te aynı 3 post, yanıtlar ve gerektikçe bi
   - 220 karakteri geçmez;
   - rakamlar tarihlidir.
 - Video bir maçtan önce paylaşılıyorsa, yanıtlar maçtan sonra yeniden doğrulanır; gerekirse zamanlanmış bir görevle.
+
+**6.2c Etkileşim sprinti (3 – 30 Kasım 2026, sahip onayladı)**
+
+Teşhis: içerik çalışıyor, dağıtım çalışmıyor. X'te 3 takipçi var, yanıt ve yorum neredeyse hiç atılmadı. SOCIAL-STRATEGY §7'deki plan, her gün nereye ne yazılacağını bulma yükü yüzünden uygulanmadı.
+- **Sahip, hafta içi her gün ~15 dakika:**
+  - listeden 3 konuşmaya hazır yanıt atar;
+  - o hesabı takip eder ve post'u beğenir;
+  - Instagram'da 2 yoruma yazar.
+  - Haftalık hedef: 15 X yanıtı ve 10 Instagram yorumu.
+- **Claude, her Pazartesi:** haftalık paketi hazırlar:
+  1. konuşma haritası (o haftanın gerçek olayları);
+  2. 15-20 yanıt cümlesi (yazılarımızdan, doğrulanmış ve tarihli; link ve etiket yok);
+  3. var olduğu ve aktif olduğu doğrulanmış takip listesi (yaklaşık 30 hesap, lig ve ülke dengeli);
+  4. ilk hafta bir kez: profil düzeltmeleri (biyografi, sabit post, kapak görseli).
+- **İçerik:** sprint boyunca strateji aynen sürer, ama video haftada 1-2 ile sınırlanır; sahibin zamanı etkileşime gider.
+- **Ölçüm:** her Cuma attığı yanıt sayısı, X ve Instagram takipçi sayısı, profil ziyaretleri.
+- **Karar, 30 Kasım:**
+  - takipçi ve profil ziyareti büyüdüyse tempo artar;
+  - büyümediyse konuşma türleri değişir.
 
 **6.3 Gerçekçi saat**
 
