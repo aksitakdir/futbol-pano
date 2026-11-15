@@ -229,12 +229,17 @@ FC 26 reyting sayfası var. Cavan'ın FC 26'da olmamasının sebebi büyük ihti
 ## 🔴 Takvimli
 
 - [x] **#167 Kopa Trophy 2026** — yayında 20 Eki; makbuz #173 (27 Eki).
-- [ ] **Golden Boy 2026 — #174 yayında (3 Kas), duyurudan önce.** Kazanan "Kasım'ın ilk yarısında"
-      açıklanacak, tarih yok; 2025'inki 4 Kas'taydı. Oy pusulası 10-7-5-3-1: Cubarsí, Diomande, Zaïre-Emery,
-      Bouaddi, Froholdt. Search Console'da dizine ekleme isteği (sahip). **Duyuru günü:** makbuz (#173 kalıbı) + video; tören Torino, 14 Ara.
+- [x] **Golden Boy 2026** — #174 oy pusulası 2 Kas'ta yayında; kazanan 9 Kas'ta açıklandı (Cubarsí, 475/500, 43 birincilik).
+      Makbuz **#175 yayında (16 Kas)**: jürinin ilk üçü oy pusulamızla birebir (10-7-5). #174'e sonuç notu + link + SSS güncel.
+      Duyuruyu 6 gün geç yakaladık → `golden-boy-watch` zamanlanmış görevi (her sabah 09:10) tam tablo ve 14 Ara Torino
+      törenini izliyor; tablo çıkınca Bouaddi (3) ve Froholdt (1) puanlanıp #175'e eklenecek (onayınla).
 - [ ] **FM27 çıkışı — 10 Kas.** Oyun kültürü için yılın arama anlarından biri; FM verimiz yok → açı kararı sahibin.
-- [ ] **Doğrulama tarihi dolan pending'ler:** #160 ve #161 (30 Eyl) gate'in 30 gün sınırını geçti, tazelemeden
-      yayınlanamaz; #170 (16 Eki) 15 Kas'tan sonra aynı duruma düşer; #172 sahibin iki kararını bekliyor.
+- [x] **#170 Türkiye ve #172 Brunner yayında (16 Kas)** — ikisi de 15 Kas'a tazelendi (33 + 22 düzeltme, sahip kararlarıyla).
+      #39 → #170 301 yönlendirmesi (`next.config.ts`), #39 `rejected` (sitemap ve hub'lardan çıktı).
+- [ ] **#160 ve #161 (30 Eyl)** gate'in 30 gün sınırını geçti, tazelemeden yayınlanamaz.
+- [ ] **Yazımda (16 Kas):** Card vs Pitch #2 Gustavo Varela (Monza) · The Best Young Players in La Liga Right Now ·
+      #136 Centre-Backs yerinde FC 27 güncellemesi (+ kart yeniden dondurma ve deploy; #163'teki Leoni cümlesi).
+      #136'daki üç canlı hata (Jacquet kulübü, Leoni/Yarek reytingi) 16 Kas'ta tek satırla düzeltildi.
 
 ### FC 27 verisi — ✅ IMPORT EDİLDİ (2026-09-30)
 

@@ -104,7 +104,10 @@ const nextConfig: NextConfig = {
       { source: "/lists/premier-lig-goz-actirtan-15-genc-yetenek", destination: "/lists/premier-league-15-young-talents-to-watch", permanent: true },
       { source: "/lists/bundesliga-en-potansiyelii-10-gen-futbolcu", destination: "/lists/bundesliga-top-10-young-talents", permanent: true },
       { source: "/lists/u20-transfer-hareketi-buyuk-kuluplerle", destination: "/lists/u20-transfer-moves-top-clubs", permanent: true },
-      { source: "/lists/turkiyenin-en-degerli-oyunculari-arda-kenan-yildiz", destination: "/lists/turkey-most-valuable-players-arda-kenan", permanent: true },
+      { source: "/lists/turkiyenin-en-degerli-oyunculari-arda-kenan-yildiz", destination: "/lists/turkey-s-best-young-footballers-and-where-they-are-getting-their-minutes", permanent: true },
+      // #39 (March 2026, thin) consolidated into #170 (2026-11-16): carries the
+      // rising "most valuable turkish players" query signal to the new page.
+      { source: "/lists/turkey-most-valuable-players-arda-kenan", destination: "/lists/turkey-s-best-young-footballers-and-where-they-are-getting-their-minutes", permanent: true },
       { source: "/lists/u21-parlayan-yildizlar-hizli-yukselen-gencler", destination: "/lists/u21-rising-stars-fast-tracking-youngsters", permanent: true },
       { source: "/tactics-lab/big-six-savunma-hatasi-premier-league-taktik", destination: "/tactics-lab/big-six-defensive-failures-premier-league-tactical", permanent: true },
       { source: "/tactics-lab/pressing-baskisi-modern-futbolun-silahi", destination: "/tactics-lab/pressing-intensity-modern-football-weapon", permanent: true },
