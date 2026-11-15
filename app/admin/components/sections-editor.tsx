@@ -4,6 +4,7 @@ import React, { useState, useEffect, useRef } from "react";
 import { supabase } from "@/lib/supabase";
 import { searchPlayers, resolveAndSearch, type PlayerSearchResult } from "@/lib/player-search";
 import type { SectionBlock } from "@/lib/section-blocks";
+import { compressImage } from "@/lib/compress-image";
 import { parseMarkupToBlocks } from "@/lib/parse-blocks";
 
 type FcPlayerResult = PlayerSearchResult;
@@ -671,7 +672,7 @@ function ImageBlockEditor({
     setUploadError("");
     try {
       const form = new FormData();
-      form.append("file", file);
+      form.append("file", await compressImage(file));
       const res = await fetch("/api/admin/upload-image", { method: "POST", body: form });
       const json = await res.json();
       if (!res.ok) throw new Error(json.error || "Upload failed");
@@ -737,13 +738,23 @@ function ImageBlockEditor({
         <label className="mb-1 block text-[10px] font-semibold text-slate-400 uppercase tracking-wider">
           Caption <span className="text-slate-600">(optional)</span>
         </label>
-        <input
-          type="text"
-          value={block.caption ?? ""}
-          onChange={(e) => onChange({ ...block, caption: e.target.value })}
-          placeholder="Photo credit or context"
-          className="w-full rounded-lg border border-slate-700/80 bg-slate-800/70 px-3 py-2 text-sm text-slate-100 placeholder-slate-500 outline-none focus:border-teal-500/60"
-        />
+        <div className="flex gap-2">
+          <input
+            type="text"
+            value={block.caption ?? ""}
+            onChange={(e) => onChange({ ...block, caption: e.target.value })}
+            placeholder="Photo credit or context"
+            className="w-full rounded-lg border border-slate-700/80 bg-slate-800/70 px-3 py-2 text-sm text-slate-100 placeholder-slate-500 outline-none focus:border-teal-500/60"
+          />
+          {/* Real-player images need this label (docs/CONTENT-STRATEGY-V2.md §5.3, rule 6). */}
+          <button
+            type="button"
+            onClick={() => onChange({ ...block, caption: "Illustration: AI-generated" })}
+            className="shrink-0 rounded-lg border border-amber-500/40 bg-amber-500/10 px-3 py-2 text-[11px] font-bold text-amber-300 uppercase tracking-wider transition hover:bg-amber-500/20"
+          >
+            AI label
+          </button>
+        </div>
       </div>
       {block.src && (
         <div className="rounded-lg border border-slate-700/60 overflow-hidden mt-2">

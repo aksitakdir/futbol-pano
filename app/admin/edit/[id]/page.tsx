@@ -5,6 +5,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 import { supabase } from "@/lib/supabase";
+import { compressImage } from "@/lib/compress-image";
 import { searchPlayers, resolveAndSearch } from "@/lib/player-search";
 import RichTextEditor from "@/app/components/rich-text-editor";
 import AdminLayout from "../../components/admin-layout";
@@ -578,9 +579,10 @@ export default function DuzenlePage() {
                         if (!file) return;
                         setImageUploading(true);
                         try {
-                          const ext = file.name.split(".").pop();
+                          const upload = await compressImage(file);
+                          const ext = upload.name.split(".").pop();
                           const fileName = `${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
-                          const { data, error } = await supabase.storage.from("content-images").upload(fileName, file, { upsert: true });
+                          const { data, error } = await supabase.storage.from("content-images").upload(fileName, upload, { upsert: true });
                           if (error) throw error;
                           const { data: urlData } = supabase.storage.from("content-images").getPublicUrl(data.path);
                           setCoverImage(urlData.publicUrl);

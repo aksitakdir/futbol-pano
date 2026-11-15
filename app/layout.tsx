@@ -35,6 +35,9 @@ export const metadata: Metadata = {
     template: "%s | Scout Gamer",
   },
   description: "Discover the brightest young football talents, World Cup 2026 squads, transfer analysis, tactical deep-dives, and interactive bracket tournaments.",
+  // Lets Google Discover and Search show our covers as large images, not
+  // thumbnails. Pages that set their own robots (not-found) replace this.
+  robots: { "max-image-preview": "large" },
   openGraph: {
     type: "website",
     siteName: "Scout Gamer",

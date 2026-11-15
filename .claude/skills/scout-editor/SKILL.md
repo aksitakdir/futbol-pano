@@ -122,6 +122,15 @@ schema, same rendering — zero spend.
    the Confirmed Deals strip on `/transfers` (it publishes immediately unless `is_published:
    false`).
 
+7. **Image slots (since 16 Nov 2026).** With the report, name where images go: the cover, plus
+   one or two in-article images for a list and one for a radar. For each slot give the block it
+   follows, an alt text and an image prompt. The owner makes the images in ChatGPT and adds them
+   as Image blocks in the admin; never put placeholder image blocks in the markup, because the
+   admin can publish without them and an empty image would go live. Prompts follow the image
+   rules in docs/CONTENT-STRATEGY-V2.md §5.3: no realistic image of a player under 18,
+   illustration style for real players, no invented scenes, no crests; captions on real-player
+   images read "Illustration: AI-generated" (the AI label button in the admin).
+
 ## The publish gate
 
 `scripts/preflight.mjs` runs on every publish and every `--dry`, and **exits non-zero** rather
