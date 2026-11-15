@@ -131,6 +131,32 @@ schema, same rendering — zero spend.
    illustration style for real players, no invented scenes, no crests; captions on real-player
    images read "Illustration: AI-generated" (the AI label button in the admin).
 
+8. **The publishing rhythm (since 16 Nov 2026).** Two fixed slots a week, **Tuesday and
+   Friday**. A piece is written in the week it publishes — what we keep in stock is an agreed
+   player list, never a finished article (#160 and #161 sat finished from 30 September into
+   November and every figure in them went stale).
+   - **Snapshot at write time.** Step 5 takes it automatically: after a real insert or
+     `--update`, `scout-publish.mjs` runs `freshness-check.mjs snapshot <id> --brief <brief>`,
+     which stores each verified player's Highlightly id, club, birth date and season figures
+     in `data/freshness/<id>.json`. It refuses when the brief's `as_of` dates are more than a
+     day old, and never replaces a baseline taken on or after them (a typo `--update` must not
+     reset the clock); after re-verifying, `refresh-baseline <id>` moves it. A "NOT TRACKED"
+     or "note" line it passes through (age or club disagreeing with the brief) usually means
+     search found the wrong player: pin the right one with `--ids "Name=<id>"`.
+   - **Queue it once the owner approves it:** `node scripts/publish-queue.mjs add <id> <date>`
+     (pending pieces only; it warns on a date that is not a Tuesday or Friday). `list` shows the
+     slots with cover and baseline status; `due` shows what goes out today.
+   - **The evening before, diff:** `node scripts/freshness-check.mjs diff <id> --date <slot>`
+     prints only what moved since the snapshot — club, apps/starts/minutes/goals/assists, a
+     player who stopped starting, a birthday crossed — with the sentences that still carry the
+     old figure, and the "Figures as of" stamps to move. Fix them with
+     `patch-article-text.mjs`, then `freshness-check.mjs refresh-baseline <id>`.
+   - **Publish from the queue only:** `node scripts/publish-queue.mjs publish <id>` refuses a
+     piece that is not queued, not pending, has no cover, or whose diff is not clean; a carded
+     player the diff could not check blocks it too, unless `--allow-unchecked` says he was
+     verified by hand. Then it publishes, reads the status back, revalidates and runs
+     `post-publish.mjs`. Slot dates are Türkiye dates (Europe/Istanbul) on any machine.
+
 ## The publish gate
 
 `scripts/preflight.mjs` runs on every publish and every `--dry`, and **exits non-zero** rather

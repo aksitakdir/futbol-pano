@@ -4843,61 +4843,97 @@
   },
   "136": {
    "slug": "the-best-young-centre-backs-in-world-football-right-now",
-   "frozen_at": "2026-09-29",
-   "dataset": "fc26-kaggle-2025-09",
+   "frozen_at": "2026-11-15",
+   "dataset": "fc27-ea-2026-09-30",
    "cards": {
     "pau cubarsí": {
      "tier": "exact",
      "row": {
       "name": "Pau Cubarsí",
-      "overall": 82,
-      "pace": 70,
-      "shooting": 42,
-      "passing": 66,
+      "overall": 86,
+      "pace": 78,
+      "shooting": 44,
+      "passing": 69,
       "dribbling": 77,
-      "defending": 84,
-      "physical": 76,
+      "defending": 85,
+      "physical": 81,
       "position": "CB",
       "club": "FC Barcelona",
       "league": "LALIGA EA SPORTS",
       "age": 19,
-      "photo_url": "https://cdn.sofifa.net/players/278/046/26_120.png"
+      "photo_url": "https://ratings-images-prod.pulse.ea.com/FC25/full/player-portraits/p278046.png?padding=0.7"
      }
     },
-    "giovanni leoni": {
+    "lautaro di lollo": {
      "tier": "exact",
      "row": {
-      "name": "Giovanni Leoni",
-      "overall": 69,
-      "pace": 53,
-      "shooting": 27,
-      "passing": 42,
-      "dribbling": 52,
-      "defending": 71,
-      "physical": 68,
+      "name": "Lautaro Di Lollo",
+      "overall": 76,
+      "pace": 79,
+      "shooting": 31,
+      "passing": 45,
+      "dribbling": 48,
+      "defending": 76,
+      "physical": 85,
       "position": "CB",
-      "club": "Liverpool",
-      "league": "Premier League",
-      "age": 19,
-      "photo_url": "https://cdn.sofifa.net/players/070/824/26_120.png"
+      "club": "Boca Juniors",
+      "league": "LPF",
+      "age": 22,
+      "photo_url": "https://ratings-images-prod.pulse.ea.com/FC25/full/player-portraits/p272723.png?padding=0.7"
      }
     },
     "dean huijsen": {
      "tier": "exact",
      "row": {
       "name": "Dean Huijsen",
-      "overall": 82,
-      "pace": 71,
+      "overall": 81,
+      "pace": 72,
       "shooting": 55,
-      "passing": 73,
-      "dribbling": 74,
+      "passing": 72,
+      "dribbling": 72,
       "defending": 82,
-      "physical": 76,
+      "physical": 77,
       "position": "CB",
       "club": "Real Madrid",
       "league": "LALIGA EA SPORTS",
-      "age": 20,
-      "photo_url": "https://cdn.sofifa.net/players/278/349/26_120.png"
+      "age": 21,
+      "photo_url": "https://ratings-images-prod.pulse.ea.com/FC25/full/player-portraits/p278349.png?padding=0.7"
+     }
+    },
+    "jérémy jacquet": {
+     "tier": "exact",
+     "row": {
+      "name": "Jérémy Jacquet",
+      "overall": 77,
+      "pace": 64,
+      "shooting": 38,
+      "passing": 61,
+      "dribbling": 62,
+      "defending": 77,
+      "physical": 77,
+      "position": "CB",
+      "club": "Liverpool",
+      "league": "Premier League",
+      "age": 21,
+      "photo_url": "https://ratings-images-prod.pulse.ea.com/FC25/full/player-portraits/p278903.png?padding=0.7"
+     }
+    },
+    "luka vušković": {
+     "tier": "exact",
+     "row": {
+      "name": "Luka Vušković",
+      "overall": 81,
+      "pace": 54,
+      "shooting": 62,
+      "passing": 62,
+      "dribbling": 65,
+      "defending": 83,
+      "physical": 82,
+      "position": "CB",
+      "club": "Brighton",
+      "league": "Premier League",
+      "age": 19,
+      "photo_url": "https://ratings-images-prod.pulse.ea.com/FC25/full/player-portraits/p275192.png?padding=0.7"
      }
     },
     "leny yoro": {
@@ -4908,51 +4944,50 @@
       "pace": 69,
       "shooting": 41,
       "passing": 60,
-      "dribbling": 64,
+      "dribbling": 65,
       "defending": 79,
       "physical": 73,
       "position": "CB",
       "club": "Man Utd",
       "league": "Premier League",
       "age": 20,
-      "photo_url": "https://cdn.sofifa.net/players/269/087/26_120.png"
+      "photo_url": "https://ratings-images-prod.pulse.ea.com/FC25/full/player-portraits/p269087.png?padding=0.7"
      }
     },
     "castello lukeba": {
      "tier": "exact",
      "row": {
       "name": "Castello Lukeba",
-      "overall": 80,
-      "pace": 72,
+      "overall": 81,
+      "pace": 79,
       "shooting": 43,
-      "passing": 68,
-      "dribbling": 73,
-      "defending": 81,
-      "physical": 75,
+      "passing": 70,
+      "dribbling": 74,
+      "defending": 82,
+      "physical": 76,
       "position": "CB",
       "club": "RB Leipzig",
       "league": "Bundesliga",
       "age": 23,
-      "photo_url": "https://cdn.sofifa.net/players/262/138/26_120.png"
+      "photo_url": "https://ratings-images-prod.pulse.ea.com/FC25/full/player-portraits/p262138.png?padding=0.7"
      }
     },
-    "yarek gasiorowski": null,
-    "jérémy jacquet": {
+    "jon martín": {
      "tier": "exact",
      "row": {
-      "name": "Jérémy Jacquet",
-      "overall": 75,
-      "pace": 64,
-      "shooting": 38,
+      "name": "Jon Martín",
+      "overall": 78,
+      "pace": 68,
+      "shooting": 31,
       "passing": 57,
-      "dribbling": 61,
-      "defending": 75,
-      "physical": 76,
+      "dribbling": 67,
+      "defending": 78,
+      "physical": 77,
       "position": "CB",
-      "club": "Stade Rennais FC",
-      "league": "Ligue 1 McDonald's",
+      "club": "Real Sociedad",
+      "league": "LALIGA EA SPORTS",
       "age": 20,
-      "photo_url": "https://cdn.sofifa.net/players/278/903/26_120.png"
+      "photo_url": "https://ratings-images-prod.pulse.ea.com/FC25/full/player-portraits/p277225.png?padding=0.7"
      }
     }
    }
@@ -6195,6 +6230,193 @@
     }
    }
   },
+  "153": {
+   "slug": "england-s-best-young-footballers-four-of-the-ten-play-somewhere-else",
+   "frozen_at": "2026-11-15",
+   "dataset": "fc27-ea-2026-09-30",
+   "cards": {
+    "rio ngumoha": {
+     "tier": "exact",
+     "row": {
+      "name": "Rio Ngumoha",
+      "overall": 75,
+      "pace": 90,
+      "shooting": 71,
+      "passing": 68,
+      "dribbling": 79,
+      "defending": 37,
+      "physical": 49,
+      "position": "LM",
+      "club": "Liverpool",
+      "league": "Premier League",
+      "age": 18,
+      "photo_url": "https://ratings-images-prod.pulse.ea.com/FC25/full/player-portraits/p80376.png?padding=0.7"
+     }
+    },
+    "myles lewis-skelly": {
+     "tier": "exact",
+     "row": {
+      "name": "Myles Lewis-Skelly",
+      "overall": 78,
+      "pace": 71,
+      "shooting": 60,
+      "passing": 75,
+      "dribbling": 77,
+      "defending": 76,
+      "physical": 77,
+      "position": "LB",
+      "club": "Arsenal",
+      "league": "Premier League",
+      "age": 20,
+      "photo_url": "https://ratings-images-prod.pulse.ea.com/FC25/full/player-portraits/p278773.png?padding=0.7"
+     }
+    },
+    "samuel amo-ameyaw": {
+     "tier": "exact",
+     "row": {
+      "name": "Samuel Amo-Ameyaw",
+      "overall": 72,
+      "pace": 77,
+      "shooting": 60,
+      "passing": 69,
+      "dribbling": 76,
+      "defending": 30,
+      "physical": 46,
+      "position": "RM",
+      "club": "Strasbourg",
+      "league": "Ligue 1 McDonald's",
+      "age": 20,
+      "photo_url": "https://ratings-images-prod.pulse.ea.com/FC25/full/player-portraits/p277561.png?padding=0.7"
+     }
+    },
+    "ethan nwaneri": {
+     "tier": "exact",
+     "row": {
+      "name": "Ethan Nwaneri",
+      "overall": 75,
+      "pace": 81,
+      "shooting": 69,
+      "passing": 74,
+      "dribbling": 77,
+      "defending": 50,
+      "physical": 54,
+      "position": "RW",
+      "club": "Arsenal",
+      "league": "Premier League",
+      "age": 19,
+      "photo_url": "https://ratings-images-prod.pulse.ea.com/FC25/full/player-portraits/p271807.png?padding=0.7"
+     }
+    },
+    "jobe bellingham": {
+     "tier": "exact",
+     "row": {
+      "name": "Jobe Bellingham",
+      "overall": 77,
+      "pace": 70,
+      "shooting": 69,
+      "passing": 73,
+      "dribbling": 76,
+      "defending": 80,
+      "physical": 83,
+      "position": "CM",
+      "club": "Borussia Dortmund",
+      "league": "Bundesliga",
+      "age": 21,
+      "photo_url": "https://ratings-images-prod.pulse.ea.com/FC25/full/player-portraits/p270964.png?padding=0.7"
+     }
+    },
+    "archie gray": {
+     "tier": "exact",
+     "row": {
+      "name": "Archie Gray",
+      "overall": 77,
+      "pace": 68,
+      "shooting": 61,
+      "passing": 73,
+      "dribbling": 75,
+      "defending": 75,
+      "physical": 72,
+      "position": "CDM",
+      "club": "Spurs",
+      "league": "Premier League",
+      "age": 20,
+      "photo_url": "https://ratings-images-prod.pulse.ea.com/FC25/full/player-portraits/p270208.png?padding=0.7"
+     }
+    },
+    "chris rigg": {
+     "tier": "exact",
+     "row": {
+      "name": "Chris Rigg",
+      "overall": 74,
+      "pace": 68,
+      "shooting": 68,
+      "passing": 74,
+      "dribbling": 76,
+      "defending": 60,
+      "physical": 56,
+      "position": "CAM",
+      "club": "Sunderland",
+      "league": "Premier League",
+      "age": 19,
+      "photo_url": "https://ratings-images-prod.pulse.ea.com/FC25/full/player-portraits/p273459.png?padding=0.7"
+     }
+    },
+    "tyrique george": {
+     "tier": "exact",
+     "row": {
+      "name": "Tyrique George",
+      "overall": 72,
+      "pace": 78,
+      "shooting": 67,
+      "passing": 67,
+      "dribbling": 74,
+      "defending": 37,
+      "physical": 55,
+      "position": "LM",
+      "club": "Everton",
+      "league": "Premier League",
+      "age": 20,
+      "photo_url": "https://ratings-images-prod.pulse.ea.com/FC25/full/player-portraits/p71998.png?padding=0.7"
+     }
+    },
+    "tyler dibling": {
+     "tier": "exact",
+     "row": {
+      "name": "Tyler Dibling",
+      "overall": 74,
+      "pace": 76,
+      "shooting": 67,
+      "passing": 71,
+      "dribbling": 77,
+      "defending": 38,
+      "physical": 64,
+      "position": "RM",
+      "club": "Everton",
+      "league": "Premier League",
+      "age": 20,
+      "photo_url": "https://ratings-images-prod.pulse.ea.com/FC25/full/player-portraits/p279497.png?padding=0.7"
+     }
+    },
+    "mikey moore": {
+     "tier": "exact",
+     "row": {
+      "name": "Mikey Moore",
+      "overall": 74,
+      "pace": 76,
+      "shooting": 68,
+      "passing": 72,
+      "dribbling": 77,
+      "defending": 35,
+      "physical": 54,
+      "position": "LW",
+      "club": "Spurs",
+      "league": "Premier League",
+      "age": 19,
+      "photo_url": "https://ratings-images-prod.pulse.ea.com/FC25/full/player-portraits/p72159.png?padding=0.7"
+     }
+    }
+   }
+  },
   "154": {
    "slug": "the-best-young-central-midfielders-in-world-football-right-now",
    "frozen_at": "2026-09-29",
@@ -6342,6 +6564,1854 @@
       "league": "Premier League",
       "age": 21,
       "photo_url": "https://cdn.sofifa.net/players/269/230/26_120.png"
+     }
+    }
+   }
+  },
+  "155": {
+   "slug": "portugal-s-best-young-footballers-seven-of-the-nine-have-already-left",
+   "frozen_at": "2026-11-15",
+   "dataset": "fc27-ea-2026-09-30",
+   "cards": {
+    "rodrigo mora": {
+     "tier": "exact",
+     "row": {
+      "name": "Rodrigo Mora",
+      "overall": 77,
+      "pace": 76,
+      "shooting": 66,
+      "passing": 75,
+      "dribbling": 80,
+      "defending": 40,
+      "physical": 41,
+      "position": "CAM",
+      "club": "AS Roma",
+      "league": "Serie A Enilive",
+      "age": 19,
+      "photo_url": "https://ratings-images-prod.pulse.ea.com/FC25/full/player-portraits/p72997.png?padding=0.7"
+     }
+    },
+    "geovany quenda": {
+     "tier": "exact",
+     "row": {
+      "name": "Geovany Quenda",
+      "overall": 76,
+      "pace": 86,
+      "shooting": 64,
+      "passing": 72,
+      "dribbling": 79,
+      "defending": 41,
+      "physical": 68,
+      "position": "RM",
+      "club": "Chelsea",
+      "league": "Premier League",
+      "age": 19,
+      "photo_url": "https://ratings-images-prod.pulse.ea.com/FC25/full/player-portraits/p279044.png?padding=0.7"
+     }
+    },
+    "joão simões": {
+     "tier": "exact",
+     "row": {
+      "name": "João Simões",
+      "overall": 70,
+      "pace": 72,
+      "shooting": 60,
+      "passing": 69,
+      "dribbling": 70,
+      "defending": 61,
+      "physical": 69,
+      "position": "CM",
+      "club": "Sporting CP",
+      "league": "Liga Portugal",
+      "age": 19,
+      "photo_url": "https://ratings-images-prod.pulse.ea.com/FC25/full/player-portraits/p75150.png?padding=0.7"
+     }
+    },
+    "martim fernandes": {
+     "tier": "exact",
+     "row": {
+      "name": "Martim Fernandes",
+      "overall": 76,
+      "pace": 82,
+      "shooting": 56,
+      "passing": 70,
+      "dribbling": 75,
+      "defending": 71,
+      "physical": 67,
+      "position": "RB",
+      "club": "FC Porto",
+      "league": "Liga Portugal",
+      "age": 20,
+      "photo_url": "https://ratings-images-prod.pulse.ea.com/FC25/full/player-portraits/p72093.png?padding=0.7"
+     }
+    },
+    "dário essugo": {
+     "tier": "exact",
+     "row": {
+      "name": "Dário Essugo",
+      "overall": 75,
+      "pace": 72,
+      "shooting": 61,
+      "passing": 69,
+      "dribbling": 74,
+      "defending": 74,
+      "physical": 76,
+      "position": "CDM",
+      "club": "Chelsea",
+      "league": "Premier League",
+      "age": 21,
+      "photo_url": "https://ratings-images-prod.pulse.ea.com/FC25/full/player-portraits/p261530.png?padding=0.7"
+     }
+    },
+    "afonso moreira": {
+     "tier": "exact",
+     "row": {
+      "name": "Afonso Moreira",
+      "overall": 78,
+      "pace": 89,
+      "shooting": 71,
+      "passing": 70,
+      "dribbling": 78,
+      "defending": 50,
+      "physical": 70,
+      "position": "LM",
+      "club": "Leverkusen",
+      "league": "Bundesliga",
+      "age": 21,
+      "photo_url": "https://ratings-images-prod.pulse.ea.com/FC25/full/player-portraits/p276901.png?padding=0.7"
+     }
+    },
+    "gustavo sá": {
+     "tier": "exact",
+     "row": {
+      "name": "Gustavo Sá",
+      "overall": 76,
+      "pace": 75,
+      "shooting": 70,
+      "passing": 75,
+      "dribbling": 75,
+      "defending": 70,
+      "physical": 76,
+      "position": "CAM",
+      "club": "Olympiacos FC",
+      "league": "Hellas Liga",
+      "age": 21,
+      "photo_url": "https://ratings-images-prod.pulse.ea.com/FC25/full/player-portraits/p271057.png?padding=0.7"
+     }
+    },
+    "mateus mané": {
+     "tier": "exact",
+     "row": {
+      "name": "Mateus Mané",
+      "overall": 74,
+      "pace": 77,
+      "shooting": 70,
+      "passing": 74,
+      "dribbling": 76,
+      "defending": 51,
+      "physical": 64,
+      "position": "CAM",
+      "club": "Wolves",
+      "league": "EFL Championship",
+      "age": 19,
+      "photo_url": "https://ratings-images-prod.pulse.ea.com/FC25/full/player-portraits/p77593.png?padding=0.7"
+     }
+    },
+    "roger fernandes": {
+     "tier": "exact",
+     "row": {
+      "name": "Roger Fernandes",
+      "overall": 75,
+      "pace": 90,
+      "shooting": 67,
+      "passing": 66,
+      "dribbling": 78,
+      "defending": 57,
+      "physical": 61,
+      "position": "LM",
+      "club": "Al Ittihad",
+      "league": "ROSHN Saudi League",
+      "age": 20,
+      "photo_url": "https://ratings-images-prod.pulse.ea.com/FC25/full/player-portraits/p263828.png?padding=0.7"
+     }
+    }
+   }
+  },
+  "159": {
+   "slug": "the-best-young-goalkeepers-in-world-football-right-now",
+   "frozen_at": "2026-11-15",
+   "dataset": "fc27-ea-2026-09-30",
+   "cards": {
+    "robin risser": {
+     "tier": "exact",
+     "row": {
+      "name": "Robin Risser",
+      "overall": 81,
+      "pace": 0,
+      "shooting": 0,
+      "passing": 0,
+      "dribbling": 0,
+      "defending": 0,
+      "physical": 0,
+      "position": "GK",
+      "club": "RC Lens",
+      "league": "Ligue 1 McDonald's",
+      "age": 21,
+      "photo_url": "https://ratings-images-prod.pulse.ea.com/FC25/full/player-portraits/p271918.png?padding=0.7"
+     }
+    },
+    "guillaume restes": {
+     "tier": "exact",
+     "row": {
+      "name": "Guillaume Restes",
+      "overall": 78,
+      "pace": 0,
+      "shooting": 0,
+      "passing": 0,
+      "dribbling": 0,
+      "defending": 0,
+      "physical": 0,
+      "position": "GK",
+      "club": "Toulouse FC",
+      "league": "Ligue 1 McDonald's",
+      "age": 21,
+      "photo_url": "https://ratings-images-prod.pulse.ea.com/FC25/full/player-portraits/p265526.png?padding=0.7"
+     }
+    },
+    "mike penders": {
+     "tier": "exact",
+     "row": {
+      "name": "Mike Penders",
+      "overall": 78,
+      "pace": 0,
+      "shooting": 0,
+      "passing": 0,
+      "dribbling": 0,
+      "defending": 0,
+      "physical": 0,
+      "position": "GK",
+      "club": "Chelsea",
+      "league": "Premier League",
+      "age": 21,
+      "photo_url": "https://ratings-images-prod.pulse.ea.com/FC25/full/player-portraits/p270821.png?padding=0.7"
+     }
+    },
+    "dennis seimen": {
+     "tier": "exact",
+     "row": {
+      "name": "Dennis Seimen",
+      "overall": 72,
+      "pace": 0,
+      "shooting": 0,
+      "passing": 0,
+      "dribbling": 0,
+      "defending": 0,
+      "physical": 0,
+      "position": "GK",
+      "club": "VfB Stuttgart",
+      "league": "Bundesliga",
+      "age": 20,
+      "photo_url": "https://ratings-images-prod.pulse.ea.com/FC25/full/player-portraits/p271114.png?padding=0.7"
+     }
+    },
+    "santiago beltrán": {
+     "tier": "exact",
+     "row": {
+      "name": "Santiago Beltrán",
+      "overall": 73,
+      "pace": 0,
+      "shooting": 0,
+      "passing": 0,
+      "dribbling": 0,
+      "defending": 0,
+      "physical": 0,
+      "position": "GK",
+      "club": "River Plate",
+      "league": "LPF",
+      "age": 21,
+      "photo_url": "https://ratings-images-prod.pulse.ea.com/FC25/full/player-portraits/p279168.png?padding=0.7"
+     }
+    },
+    "matthieu epolo": {
+     "tier": "exact",
+     "row": {
+      "name": "Matthieu Epolo",
+      "overall": 75,
+      "pace": 0,
+      "shooting": 0,
+      "passing": 0,
+      "dribbling": 0,
+      "defending": 0,
+      "physical": 0,
+      "position": "GK",
+      "club": "Standard Liège",
+      "league": "1A Pro League",
+      "age": 21,
+      "photo_url": "https://ratings-images-prod.pulse.ea.com/FC25/full/player-portraits/p262265.png?padding=0.7"
+     }
+    },
+    "tommaso martinelli": {
+     "tier": "exact",
+     "row": {
+      "name": "Tommaso Martinelli",
+      "overall": 70,
+      "pace": 0,
+      "shooting": 0,
+      "passing": 0,
+      "dribbling": 0,
+      "defending": 0,
+      "physical": 0,
+      "position": "GK",
+      "club": "Avellino",
+      "league": "Serie BKT",
+      "age": 20,
+      "photo_url": "https://ratings-images-prod.pulse.ea.com/FC25/full/player-portraits/p275325.png?padding=0.7"
+     }
+    },
+    "ewen jaouen": {
+     "tier": "exact",
+     "row": {
+      "name": "Ewen Jaouen",
+      "overall": 70,
+      "pace": 0,
+      "shooting": 0,
+      "passing": 0,
+      "dribbling": 0,
+      "defending": 0,
+      "physical": 0,
+      "position": "GK",
+      "club": "Newcastle Utd",
+      "league": "Premier League",
+      "age": 20,
+      "photo_url": "https://ratings-images-prod.pulse.ea.com/FC25/full/player-portraits/p72022.png?padding=0.7"
+     }
+    },
+    "nazar domchak": {
+     "tier": "exact",
+     "row": {
+      "name": "Nazar Domchak",
+      "overall": 67,
+      "pace": 0,
+      "shooting": 0,
+      "passing": 0,
+      "dribbling": 0,
+      "defending": 0,
+      "physical": 0,
+      "position": "GK",
+      "club": "Slavia Praha",
+      "league": "Česká Liga",
+      "age": 19,
+      "photo_url": "https://ratings-images-prod.pulse.ea.com/FC25/full/player-portraits/p87268.png?padding=0.7"
+     }
+    },
+    "edoardo motta": {
+     "tier": "exact",
+     "row": {
+      "name": "Edoardo Motta",
+      "overall": 69,
+      "pace": 0,
+      "shooting": 0,
+      "passing": 0,
+      "dribbling": 0,
+      "defending": 0,
+      "physical": 0,
+      "position": "GK",
+      "club": "SS Lazio",
+      "league": "Serie A Enilive",
+      "age": 21,
+      "photo_url": "https://ratings-images-prod.pulse.ea.com/FC25/full/player-portraits/p277802.png?padding=0.7"
+     }
+    }
+   }
+  },
+  "163": {
+   "slug": "italy-s-best-young-footballers-the-talent-is-there-the-minutes-are-not",
+   "frozen_at": "2026-11-15",
+   "dataset": "fc27-ea-2026-09-30",
+   "cards": {
+    "marco palestra": {
+     "tier": "exact",
+     "row": {
+      "name": "Marco Palestra",
+      "overall": 78,
+      "pace": 90,
+      "shooting": 65,
+      "passing": 69,
+      "dribbling": 80,
+      "defending": 70,
+      "physical": 81,
+      "position": "RB",
+      "club": "Chelsea",
+      "league": "Premier League",
+      "age": 21,
+      "photo_url": "https://ratings-images-prod.pulse.ea.com/FC25/full/player-portraits/p278339.png?padding=0.7"
+     }
+    },
+    "pietro comuzzo": {
+     "tier": "exact",
+     "row": {
+      "name": "Pietro Comuzzo",
+      "overall": 75,
+      "pace": 52,
+      "shooting": 31,
+      "passing": 52,
+      "dribbling": 60,
+      "defending": 77,
+      "physical": 69,
+      "position": "CB",
+      "club": "Torino",
+      "league": "Serie A Enilive",
+      "age": 21,
+      "photo_url": "https://ratings-images-prod.pulse.ea.com/FC25/full/player-portraits/p278340.png?padding=0.7"
+     }
+    },
+    "francesco pio esposito": {
+     "tier": "exact",
+     "row": {
+      "name": "Francesco Pio Esposito",
+      "overall": 77,
+      "pace": 59,
+      "shooting": 78,
+      "passing": 71,
+      "dribbling": 73,
+      "defending": 38,
+      "physical": 75,
+      "position": "ST",
+      "club": "Inter",
+      "league": "Serie A Enilive",
+      "age": 21,
+      "photo_url": "https://ratings-images-prod.pulse.ea.com/FC25/full/player-portraits/p277327.png?padding=0.7"
+     }
+    },
+    "alphadjo cissè": {
+     "tier": "exact",
+     "row": {
+      "name": "Alphadjo Cissè",
+      "overall": 66,
+      "pace": 79,
+      "shooting": 61,
+      "passing": 65,
+      "dribbling": 71,
+      "defending": 49,
+      "physical": 53,
+      "position": "CAM",
+      "club": "AC Milan",
+      "league": "Serie A Enilive",
+      "age": 19,
+      "photo_url": "https://ratings-images-prod.pulse.ea.com/FC25/full/player-portraits/p278326.png?padding=0.7"
+     }
+    },
+    "luca lipani": {
+     "tier": "exact",
+     "row": {
+      "name": "Luca Lipani",
+      "overall": 69,
+      "pace": 46,
+      "shooting": 55,
+      "passing": 66,
+      "dribbling": 68,
+      "defending": 67,
+      "physical": 64,
+      "position": "CM",
+      "club": "Sassuolo",
+      "league": "Serie A Enilive",
+      "age": 21,
+      "photo_url": "https://ratings-images-prod.pulse.ea.com/FC25/full/player-portraits/p274702.png?padding=0.7"
+     }
+    },
+    "davide bartesaghi": {
+     "tier": "exact",
+     "row": {
+      "name": "Davide Bartesaghi",
+      "overall": 74,
+      "pace": 78,
+      "shooting": 58,
+      "passing": 67,
+      "dribbling": 66,
+      "defending": 70,
+      "physical": 76,
+      "position": "LB",
+      "club": "AC Milan",
+      "league": "Serie A Enilive",
+      "age": 20,
+      "photo_url": "https://ratings-images-prod.pulse.ea.com/FC25/full/player-portraits/p278237.png?padding=0.7"
+     }
+    },
+    "honest ahanor": {
+     "tier": "exact",
+     "row": {
+      "name": "Honest Ahanor",
+      "overall": 74,
+      "pace": 66,
+      "shooting": 43,
+      "passing": 58,
+      "dribbling": 66,
+      "defending": 76,
+      "physical": 67,
+      "position": "CB",
+      "club": "Atalanta",
+      "league": "Serie A Enilive",
+      "age": 18,
+      "photo_url": "https://ratings-images-prod.pulse.ea.com/FC25/full/player-portraits/p74483.png?padding=0.7"
+     }
+    },
+    "mattia liberali": {
+     "tier": "exact",
+     "row": {
+      "name": "Mattia Liberali",
+      "overall": 68,
+      "pace": 76,
+      "shooting": 64,
+      "passing": 65,
+      "dribbling": 73,
+      "defending": 48,
+      "physical": 47,
+      "position": "CAM",
+      "club": "Como",
+      "league": "Serie A Enilive",
+      "age": 19,
+      "photo_url": "https://ratings-images-prod.pulse.ea.com/FC25/full/player-portraits/p74094.png?padding=0.7"
+     }
+    },
+    "samuele inácio": {
+     "tier": "exact",
+     "row": {
+      "name": "Samuele Inácio",
+      "overall": 70,
+      "pace": 73,
+      "shooting": 58,
+      "passing": 67,
+      "dribbling": 77,
+      "defending": 36,
+      "physical": 49,
+      "position": "CAM",
+      "club": "Borussia Dortmund",
+      "league": "Bundesliga",
+      "age": 18,
+      "photo_url": "https://ratings-images-prod.pulse.ea.com/FC25/full/player-portraits/p83748.png?padding=0.7"
+     }
+    },
+    "giovanni leoni": {
+     "tier": "exact",
+     "row": {
+      "name": "Giovanni Leoni",
+      "overall": 71,
+      "pace": 57,
+      "shooting": 30,
+      "passing": 54,
+      "dribbling": 58,
+      "defending": 72,
+      "physical": 68,
+      "position": "CB",
+      "club": "Liverpool",
+      "league": "Premier League",
+      "age": 19,
+      "photo_url": "https://ratings-images-prod.pulse.ea.com/FC25/full/player-portraits/p70824.png?padding=0.7"
+     }
+    }
+   }
+  },
+  "164": {
+   "slug": "the-best-fc-27-wonderkids-and-what-the-game-gets-wrong-about-them",
+   "frozen_at": "2026-11-15",
+   "dataset": "fc27-ea-2026-09-30",
+   "cards": {
+    "yan diomande": {
+     "tier": "exact",
+     "row": {
+      "name": "Yan Diomande",
+      "overall": 84,
+      "pace": 93,
+      "shooting": 77,
+      "passing": 75,
+      "dribbling": 87,
+      "defending": 47,
+      "physical": 70,
+      "position": "RW",
+      "club": "Real Madrid",
+      "league": "LALIGA EA SPORTS",
+      "age": 19,
+      "photo_url": "https://ratings-images-prod.pulse.ea.com/FC25/full/player-portraits/p78012.png?padding=0.7"
+     }
+    },
+    "désiré doué": {
+     "tier": "exact",
+     "row": {
+      "name": "Désiré Doué",
+      "overall": 86,
+      "pace": 83,
+      "shooting": 81,
+      "passing": 79,
+      "dribbling": 90,
+      "defending": 55,
+      "physical": 80,
+      "position": "RW",
+      "club": "Paris SG",
+      "league": "Ligue 1 McDonald's",
+      "age": 21,
+      "photo_url": "https://ratings-images-prod.pulse.ea.com/FC25/full/player-portraits/p271421.png?padding=0.7"
+     }
+    },
+    "kenan yıldız": {
+     "tier": "exact",
+     "row": {
+      "name": "Kenan Yıldız",
+      "overall": 84,
+      "pace": 85,
+      "shooting": 81,
+      "passing": 79,
+      "dribbling": 85,
+      "defending": 59,
+      "physical": 70,
+      "position": "CAM",
+      "club": "Juventus",
+      "league": "Serie A Enilive",
+      "age": 21,
+      "photo_url": "https://ratings-images-prod.pulse.ea.com/FC25/full/player-portraits/p277954.png?padding=0.7"
+     }
+    },
+    "warren zaïre-emery": {
+     "tier": "exact",
+     "row": {
+      "name": "Warren Zaïre-Emery",
+      "overall": 83,
+      "pace": 79,
+      "shooting": 71,
+      "passing": 78,
+      "dribbling": 81,
+      "defending": 79,
+      "physical": 85,
+      "position": "CM",
+      "club": "Paris SG",
+      "league": "Ligue 1 McDonald's",
+      "age": 20,
+      "photo_url": "https://ratings-images-prod.pulse.ea.com/FC25/full/player-portraits/p270673.png?padding=0.7"
+     }
+    },
+    "arda güler": {
+     "tier": "exact",
+     "row": {
+      "name": "Arda Güler",
+      "overall": 83,
+      "pace": 77,
+      "shooting": 79,
+      "passing": 85,
+      "dribbling": 84,
+      "defending": 55,
+      "physical": 57,
+      "position": "RM",
+      "club": "Real Madrid",
+      "league": "LALIGA EA SPORTS",
+      "age": 21,
+      "photo_url": "https://ratings-images-prod.pulse.ea.com/FC25/full/player-portraits/p264309.png?padding=0.7"
+     }
+    },
+    "victor froholdt": {
+     "tier": "exact",
+     "row": {
+      "name": "Victor Froholdt",
+      "overall": 82,
+      "pace": 79,
+      "shooting": 76,
+      "passing": 76,
+      "dribbling": 81,
+      "defending": 78,
+      "physical": 80,
+      "position": "CM",
+      "club": "FC Porto",
+      "league": "Liga Portugal",
+      "age": 20,
+      "photo_url": "https://ratings-images-prod.pulse.ea.com/FC25/full/player-portraits/p279015.png?padding=0.7"
+     }
+    },
+    "kobbie mainoo": {
+     "tier": "exact",
+     "row": {
+      "name": "Kobbie Mainoo",
+      "overall": 81,
+      "pace": 66,
+      "shooting": 70,
+      "passing": 77,
+      "dribbling": 83,
+      "defending": 78,
+      "physical": 75,
+      "position": "CDM",
+      "club": "Man Utd",
+      "league": "Premier League",
+      "age": 21,
+      "photo_url": "https://ratings-images-prod.pulse.ea.com/FC25/full/player-portraits/p269136.png?padding=0.7"
+     }
+    },
+    "alphadjo cissè": {
+     "tier": "exact",
+     "row": {
+      "name": "Alphadjo Cissè",
+      "overall": 66,
+      "pace": 79,
+      "shooting": 61,
+      "passing": 65,
+      "dribbling": 71,
+      "defending": 49,
+      "physical": 53,
+      "position": "CAM",
+      "club": "AC Milan",
+      "league": "Serie A Enilive",
+      "age": 19,
+      "photo_url": "https://ratings-images-prod.pulse.ea.com/FC25/full/player-portraits/p278326.png?padding=0.7"
+     }
+    },
+    "marco palestra": {
+     "tier": "exact",
+     "row": {
+      "name": "Marco Palestra",
+      "overall": 78,
+      "pace": 90,
+      "shooting": 65,
+      "passing": 69,
+      "dribbling": 80,
+      "defending": 70,
+      "physical": 81,
+      "position": "RB",
+      "club": "Chelsea",
+      "league": "Premier League",
+      "age": 21,
+      "photo_url": "https://ratings-images-prod.pulse.ea.com/FC25/full/player-portraits/p278339.png?padding=0.7"
+     }
+    }
+   }
+  },
+  "165": {
+   "slug": "fc-27-s-biggest-rating-jumps-the-young-players-the-game-upgraded-most",
+   "frozen_at": "2026-11-15",
+   "dataset": "fc27-ea-2026-09-30",
+   "cards": {
+    "johan manzambi": {
+     "tier": "exact",
+     "row": {
+      "name": "Johan Manzambi",
+      "overall": 80,
+      "pace": 71,
+      "shooting": 74,
+      "passing": 73,
+      "dribbling": 83,
+      "defending": 70,
+      "physical": 71,
+      "position": "CM",
+      "club": "Aston Villa",
+      "league": "Premier League",
+      "age": 20,
+      "photo_url": "https://ratings-images-prod.pulse.ea.com/FC25/full/player-portraits/p276694.png?padding=0.7"
+     }
+    },
+    "dayann methalie": {
+     "tier": "exact",
+     "row": {
+      "name": "Dayann Methalie",
+      "overall": 75,
+      "pace": 89,
+      "shooting": 50,
+      "passing": 65,
+      "dribbling": 71,
+      "defending": 71,
+      "physical": 78,
+      "position": "LB",
+      "club": "Sunderland",
+      "league": "Premier League",
+      "age": 20,
+      "photo_url": "https://ratings-images-prod.pulse.ea.com/FC25/full/player-portraits/p74491.png?padding=0.7"
+     }
+    },
+    "zavier gozo": {
+     "tier": "exact",
+     "row": {
+      "name": "Zavier Gozo",
+      "overall": 71,
+      "pace": 88,
+      "shooting": 65,
+      "passing": 59,
+      "dribbling": 74,
+      "defending": 48,
+      "physical": 65,
+      "position": "RM",
+      "club": "Crystal Palace",
+      "league": "Premier League",
+      "age": 19,
+      "photo_url": "https://ratings-images-prod.pulse.ea.com/FC25/full/player-portraits/p278875.png?padding=0.7"
+     }
+    },
+    "mathys detourbet": {
+     "tier": "exact",
+     "row": {
+      "name": "Mathys Detourbet",
+      "overall": 73,
+      "pace": 76,
+      "shooting": 66,
+      "passing": 69,
+      "dribbling": 79,
+      "defending": 20,
+      "physical": 40,
+      "position": "LM",
+      "club": "AS Monaco",
+      "league": "Ligue 1 McDonald's",
+      "age": 19,
+      "photo_url": "https://ratings-images-prod.pulse.ea.com/FC25/full/player-portraits/p76616.png?padding=0.7"
+     }
+    },
+    "rudy matondo": {
+     "tier": "exact",
+     "row": {
+      "name": "Rudy Matondo",
+      "overall": 74,
+      "pace": 74,
+      "shooting": 61,
+      "passing": 68,
+      "dribbling": 77,
+      "defending": 65,
+      "physical": 75,
+      "position": "CM",
+      "club": "Paris FC",
+      "league": "Ligue 1 McDonald's",
+      "age": 18,
+      "photo_url": "https://ratings-images-prod.pulse.ea.com/FC25/full/player-portraits/p78070.png?padding=0.7"
+     }
+    },
+    "jorge salinas": {
+     "tier": "exact",
+     "row": {
+      "name": "Jorge Salinas",
+      "overall": 72,
+      "pace": 73,
+      "shooting": 49,
+      "passing": 68,
+      "dribbling": 68,
+      "defending": 69,
+      "physical": 73,
+      "position": "LB",
+      "club": "R. Racing Club",
+      "league": "LALIGA EA SPORTS",
+      "age": 19,
+      "photo_url": "https://ratings-images-prod.pulse.ea.com/FC25/full/player-portraits/p74606.png?padding=0.7"
+     }
+    },
+    "lennart karl": {
+     "tier": "exact",
+     "row": {
+      "name": "Lennart Karl",
+      "overall": 77,
+      "pace": 73,
+      "shooting": 73,
+      "passing": 73,
+      "dribbling": 84,
+      "defending": 34,
+      "physical": 43,
+      "position": "RM",
+      "club": "FC Bayern München",
+      "league": "Bundesliga",
+      "age": 18,
+      "photo_url": "https://ratings-images-prod.pulse.ea.com/FC25/full/player-portraits/p78063.png?padding=0.7"
+     }
+    },
+    "prosper peter": {
+     "tier": "exact",
+     "row": {
+      "name": "Prosper Peter",
+      "overall": 72,
+      "pace": 72,
+      "shooting": 71,
+      "passing": 56,
+      "dribbling": 69,
+      "defending": 38,
+      "physical": 70,
+      "position": "ST",
+      "club": "Angers SCO",
+      "league": "Ligue 1 McDonald's",
+      "age": 19,
+      "photo_url": "https://ratings-images-prod.pulse.ea.com/FC25/full/player-portraits/p78295.png?padding=0.7"
+     }
+    },
+    "arijon ibrahimović": {
+     "tier": "exact",
+     "row": {
+      "name": "Arijon Ibrahimović",
+      "overall": 75,
+      "pace": 85,
+      "shooting": 68,
+      "passing": 71,
+      "dribbling": 77,
+      "defending": 30,
+      "physical": 58,
+      "position": "LM",
+      "club": "FC Bayern München",
+      "league": "Bundesliga",
+      "age": 20,
+      "photo_url": "https://ratings-images-prod.pulse.ea.com/FC25/full/player-portraits/p266236.png?padding=0.7"
+     }
+    }
+   }
+  },
+  "166": {
+   "slug": "the-best-young-defensive-midfielders-in-world-football-the-rodri-effect",
+   "frozen_at": "2026-11-15",
+   "dataset": "fc27-ea-2026-09-30",
+   "cards": {
+    "ayyoub bouaddi": {
+     "tier": "exact",
+     "row": {
+      "name": "Ayyoub Bouaddi",
+      "overall": 80,
+      "pace": 75,
+      "shooting": 56,
+      "passing": 74,
+      "dribbling": 79,
+      "defending": 75,
+      "physical": 76,
+      "position": "CDM",
+      "club": "LOSC Lille",
+      "league": "Ligue 1 McDonald's",
+      "age": 18,
+      "photo_url": "https://ratings-images-prod.pulse.ea.com/FC25/full/player-portraits/p278901.png?padding=0.7"
+     }
+    },
+    "marc bernal": {
+     "tier": "exact",
+     "row": {
+      "name": "Marc Bernal",
+      "overall": 78,
+      "pace": 71,
+      "shooting": 62,
+      "passing": 73,
+      "dribbling": 77,
+      "defending": 73,
+      "physical": 79,
+      "position": "CDM",
+      "club": "FC Barcelona",
+      "league": "LALIGA EA SPORTS",
+      "age": 19,
+      "photo_url": "https://ratings-images-prod.pulse.ea.com/FC25/full/player-portraits/p74463.png?padding=0.7"
+     }
+    },
+    "alexis vossah": {
+     "tier": "exact",
+     "row": {
+      "name": "Alexis Vossah",
+      "overall": 71,
+      "pace": 67,
+      "shooting": 53,
+      "passing": 62,
+      "dribbling": 69,
+      "defending": 69,
+      "physical": 74,
+      "position": "CDM",
+      "club": "Toulouse FC",
+      "league": "Ligue 1 McDonald's",
+      "age": 18,
+      "photo_url": "https://ratings-images-prod.pulse.ea.com/FC25/full/player-portraits/p80696.png?padding=0.7"
+     }
+    },
+    "noah sadiki": {
+     "tier": "exact",
+     "row": {
+      "name": "Noah Sadiki",
+      "overall": 80,
+      "pace": 79,
+      "shooting": 67,
+      "passing": 75,
+      "dribbling": 80,
+      "defending": 75,
+      "physical": 75,
+      "position": "CDM",
+      "club": "Sunderland",
+      "league": "Premier League",
+      "age": 21,
+      "photo_url": "https://ratings-images-prod.pulse.ea.com/FC25/full/player-portraits/p269230.png?padding=0.7"
+     }
+    },
+    "kobbie mainoo": {
+     "tier": "exact",
+     "row": {
+      "name": "Kobbie Mainoo",
+      "overall": 81,
+      "pace": 66,
+      "shooting": 70,
+      "passing": 77,
+      "dribbling": 83,
+      "defending": 78,
+      "physical": 75,
+      "position": "CDM",
+      "club": "Man Utd",
+      "league": "Premier League",
+      "age": 21,
+      "photo_url": "https://ratings-images-prod.pulse.ea.com/FC25/full/player-portraits/p269136.png?padding=0.7"
+     }
+    },
+    "lewis miley": {
+     "tier": "exact",
+     "row": {
+      "name": "Lewis Miley",
+      "overall": 77,
+      "pace": 68,
+      "shooting": 66,
+      "passing": 76,
+      "dribbling": 75,
+      "defending": 76,
+      "physical": 69,
+      "position": "CM",
+      "club": "Newcastle Utd",
+      "league": "Premier League",
+      "age": 20,
+      "photo_url": "https://ratings-images-prod.pulse.ea.com/FC25/full/player-portraits/p274246.png?padding=0.7"
+     }
+    },
+    "aleksandar stanković": {
+     "tier": "exact",
+     "row": {
+      "name": "Aleksandar Stanković",
+      "overall": 76,
+      "pace": 65,
+      "shooting": 67,
+      "passing": 72,
+      "dribbling": 70,
+      "defending": 74,
+      "physical": 72,
+      "position": "CDM",
+      "club": "Inter",
+      "league": "Serie A Enilive",
+      "age": 21,
+      "photo_url": "https://ratings-images-prod.pulse.ea.com/FC25/full/player-portraits/p278318.png?padding=0.7"
+     }
+    },
+    "lucas silva": {
+     "tier": "exact",
+     "row": {
+      "name": "Lucas Silva",
+      "overall": 71,
+      "pace": 65,
+      "shooting": 56,
+      "passing": 67,
+      "dribbling": 68,
+      "defending": 68,
+      "physical": 66,
+      "position": "CDM",
+      "club": "River Plate",
+      "league": "LPF",
+      "age": 19,
+      "photo_url": "https://ratings-images-prod.pulse.ea.com/FC25/full/player-portraits/p85397.png?padding=0.7"
+     }
+    }
+   }
+  },
+  "167": {
+   "slug": "kopa-trophy-2026-the-ten-nominees-read-against-their-cards",
+   "frozen_at": "2026-11-15",
+   "dataset": "fc27-ea-2026-09-30",
+   "cards": {
+    "pau cubarsí": {
+     "tier": "exact",
+     "row": {
+      "name": "Pau Cubarsí",
+      "overall": 86,
+      "pace": 78,
+      "shooting": 44,
+      "passing": 69,
+      "dribbling": 77,
+      "defending": 85,
+      "physical": 81,
+      "position": "CB",
+      "club": "FC Barcelona",
+      "league": "LALIGA EA SPORTS",
+      "age": 19,
+      "photo_url": "https://ratings-images-prod.pulse.ea.com/FC25/full/player-portraits/p278046.png?padding=0.7"
+     }
+    },
+    "lamine yamal": {
+     "tier": "exact",
+     "row": {
+      "name": "Lamine Yamal",
+      "overall": 90,
+      "pace": 86,
+      "shooting": 84,
+      "passing": 87,
+      "dribbling": 93,
+      "defending": 38,
+      "physical": 61,
+      "position": "RW",
+      "club": "FC Barcelona",
+      "league": "LALIGA EA SPORTS",
+      "age": 19,
+      "photo_url": "https://ratings-images-prod.pulse.ea.com/FC25/full/player-portraits/p277643.png?padding=0.7"
+     }
+    },
+    "yan diomande": {
+     "tier": "exact",
+     "row": {
+      "name": "Yan Diomande",
+      "overall": 84,
+      "pace": 93,
+      "shooting": 77,
+      "passing": 75,
+      "dribbling": 87,
+      "defending": 47,
+      "physical": 70,
+      "position": "RW",
+      "club": "Real Madrid",
+      "league": "LALIGA EA SPORTS",
+      "age": 19,
+      "photo_url": "https://ratings-images-prod.pulse.ea.com/FC25/full/player-portraits/p78012.png?padding=0.7"
+     }
+    },
+    "warren zaïre-emery": {
+     "tier": "exact",
+     "row": {
+      "name": "Warren Zaïre-Emery",
+      "overall": 83,
+      "pace": 79,
+      "shooting": 71,
+      "passing": 78,
+      "dribbling": 81,
+      "defending": 79,
+      "physical": 85,
+      "position": "CM",
+      "club": "Paris SG",
+      "league": "Ligue 1 McDonald's",
+      "age": 20,
+      "photo_url": "https://ratings-images-prod.pulse.ea.com/FC25/full/player-portraits/p270673.png?padding=0.7"
+     }
+    },
+    "ayyoub bouaddi": {
+     "tier": "exact",
+     "row": {
+      "name": "Ayyoub Bouaddi",
+      "overall": 80,
+      "pace": 75,
+      "shooting": 56,
+      "passing": 74,
+      "dribbling": 79,
+      "defending": 75,
+      "physical": 76,
+      "position": "CDM",
+      "club": "LOSC Lille",
+      "league": "Ligue 1 McDonald's",
+      "age": 18,
+      "photo_url": "https://ratings-images-prod.pulse.ea.com/FC25/full/player-portraits/p278901.png?padding=0.7"
+     }
+    },
+    "eli junior kroupi": {
+     "tier": "exact",
+     "row": {
+      "name": "Eli Junior Kroupi",
+      "overall": 80,
+      "pace": 83,
+      "shooting": 83,
+      "passing": 71,
+      "dribbling": 81,
+      "defending": 48,
+      "physical": 65,
+      "position": "ST",
+      "club": "AFC Bournemouth",
+      "league": "Premier League",
+      "age": 20,
+      "photo_url": "https://ratings-images-prod.pulse.ea.com/FC25/full/player-portraits/p277909.png?padding=0.7"
+     }
+    },
+    "johan manzambi": {
+     "tier": "exact",
+     "row": {
+      "name": "Johan Manzambi",
+      "overall": 80,
+      "pace": 71,
+      "shooting": 74,
+      "passing": 73,
+      "dribbling": 83,
+      "defending": 70,
+      "physical": 71,
+      "position": "CM",
+      "club": "Aston Villa",
+      "league": "Premier League",
+      "age": 20,
+      "photo_url": "https://ratings-images-prod.pulse.ea.com/FC25/full/player-portraits/p276694.png?padding=0.7"
+     }
+    },
+    "ibrahim maza": {
+     "tier": "exact",
+     "row": {
+      "name": "Ibrahim Maza",
+      "overall": 80,
+      "pace": 74,
+      "shooting": 69,
+      "passing": 77,
+      "dribbling": 85,
+      "defending": 64,
+      "physical": 66,
+      "position": "CAM",
+      "club": "Leverkusen",
+      "league": "Bundesliga",
+      "age": 20,
+      "photo_url": "https://ratings-images-prod.pulse.ea.com/FC25/full/player-portraits/p275029.png?padding=0.7"
+     }
+    },
+    "lennart karl": {
+     "tier": "exact",
+     "row": {
+      "name": "Lennart Karl",
+      "overall": 77,
+      "pace": 73,
+      "shooting": 73,
+      "passing": 73,
+      "dribbling": 84,
+      "defending": 34,
+      "physical": 43,
+      "position": "RM",
+      "club": "FC Bayern München",
+      "league": "Bundesliga",
+      "age": 18,
+      "photo_url": "https://ratings-images-prod.pulse.ea.com/FC25/full/player-portraits/p78063.png?padding=0.7"
+     }
+    },
+    "kerim alajbegović": {
+     "tier": "exact",
+     "row": {
+      "name": "Kerim Alajbegović",
+      "overall": 71,
+      "pace": 73,
+      "shooting": 72,
+      "passing": 69,
+      "dribbling": 75,
+      "defending": 41,
+      "physical": 62,
+      "position": "CAM",
+      "club": "Juventus",
+      "league": "Serie A Enilive",
+      "age": 19,
+      "photo_url": "https://ratings-images-prod.pulse.ea.com/FC25/full/player-portraits/p75533.png?padding=0.7"
+     }
+    }
+   }
+  },
+  "168": {
+   "slug": "the-best-young-wingers-in-world-football-right-now",
+   "frozen_at": "2026-11-15",
+   "dataset": "fc27-ea-2026-09-30",
+   "cards": {
+    "lamine yamal": {
+     "tier": "exact",
+     "row": {
+      "name": "Lamine Yamal",
+      "overall": 90,
+      "pace": 86,
+      "shooting": 84,
+      "passing": 87,
+      "dribbling": 93,
+      "defending": 38,
+      "physical": 61,
+      "position": "RW",
+      "club": "FC Barcelona",
+      "league": "LALIGA EA SPORTS",
+      "age": 19,
+      "photo_url": "https://ratings-images-prod.pulse.ea.com/FC25/full/player-portraits/p277643.png?padding=0.7"
+     }
+    },
+    "jan virgili": {
+     "tier": "exact",
+     "row": {
+      "name": "Jan Virgili",
+      "overall": 76,
+      "pace": 86,
+      "shooting": 67,
+      "passing": 69,
+      "dribbling": 79,
+      "defending": 39,
+      "physical": 51,
+      "position": "LW",
+      "club": "Club Brugge",
+      "league": "1A Pro League",
+      "age": 20,
+      "photo_url": "https://ratings-images-prod.pulse.ea.com/FC25/full/player-portraits/p80915.png?padding=0.7"
+     }
+    },
+    "gianluca prestianni": {
+     "tier": "exact",
+     "row": {
+      "name": "Gianluca Prestianni",
+      "overall": 75,
+      "pace": 87,
+      "shooting": 64,
+      "passing": 65,
+      "dribbling": 81,
+      "defending": 44,
+      "physical": 53,
+      "position": "RW",
+      "club": "SL Benfica",
+      "league": "Liga Portugal",
+      "age": 20,
+      "photo_url": "https://ratings-images-prod.pulse.ea.com/FC25/full/player-portraits/p269292.png?padding=0.7"
+     }
+    },
+    "antonio nusa": {
+     "tier": "exact",
+     "row": {
+      "name": "Antonio Nusa",
+      "overall": 78,
+      "pace": 85,
+      "shooting": 73,
+      "passing": 70,
+      "dribbling": 85,
+      "defending": 42,
+      "physical": 64,
+      "position": "LW",
+      "club": "RB Leipzig",
+      "league": "Bundesliga",
+      "age": 21,
+      "photo_url": "https://ratings-images-prod.pulse.ea.com/FC25/full/player-portraits/p262863.png?padding=0.7"
+     }
+    },
+    "saïd el mala": {
+     "tier": "exact",
+     "row": {
+      "name": "Saïd El Mala",
+      "overall": 78,
+      "pace": 89,
+      "shooting": 78,
+      "passing": 68,
+      "dribbling": 84,
+      "defending": 41,
+      "physical": 67,
+      "position": "LM",
+      "club": "1. FC Köln",
+      "league": "Bundesliga",
+      "age": 20,
+      "photo_url": "https://ratings-images-prod.pulse.ea.com/FC25/full/player-portraits/p71178.png?padding=0.7"
+     }
+    },
+    "rayan": {
+     "tier": "exact",
+     "row": {
+      "name": "Rayan",
+      "overall": 79,
+      "pace": 85,
+      "shooting": 78,
+      "passing": 74,
+      "dribbling": 80,
+      "defending": 35,
+      "physical": 74,
+      "position": "RM",
+      "club": "AFC Bournemouth",
+      "league": "Premier League",
+      "age": 20,
+      "photo_url": "https://ratings-images-prod.pulse.ea.com/FC25/full/player-portraits/p83494.png?padding=0.7"
+     }
+    },
+    "désiré doué": {
+     "tier": "exact",
+     "row": {
+      "name": "Désiré Doué",
+      "overall": 86,
+      "pace": 83,
+      "shooting": 81,
+      "passing": 79,
+      "dribbling": 90,
+      "defending": 55,
+      "physical": 80,
+      "position": "RW",
+      "club": "Paris SG",
+      "league": "Ligue 1 McDonald's",
+      "age": 21,
+      "photo_url": "https://ratings-images-prod.pulse.ea.com/FC25/full/player-portraits/p271421.png?padding=0.7"
+     }
+    },
+    "yan diomande": {
+     "tier": "exact",
+     "row": {
+      "name": "Yan Diomande",
+      "overall": 84,
+      "pace": 93,
+      "shooting": 77,
+      "passing": 75,
+      "dribbling": 87,
+      "defending": 47,
+      "physical": 70,
+      "position": "RW",
+      "club": "Real Madrid",
+      "league": "LALIGA EA SPORTS",
+      "age": 19,
+      "photo_url": "https://ratings-images-prod.pulse.ea.com/FC25/full/player-portraits/p78012.png?padding=0.7"
+     }
+    },
+    "william gomes": {
+     "tier": "exact",
+     "row": {
+      "name": "William Gomes",
+      "overall": 77,
+      "pace": 84,
+      "shooting": 73,
+      "passing": 73,
+      "dribbling": 79,
+      "defending": 30,
+      "physical": 56,
+      "position": "RW",
+      "club": "FC Porto",
+      "league": "Liga Portugal",
+      "age": 20,
+      "photo_url": "https://ratings-images-prod.pulse.ea.com/FC25/full/player-portraits/p77033.png?padding=0.7"
+     }
+    },
+    "aymen sliti": {
+     "tier": "exact",
+     "row": {
+      "name": "Aymen Sliti",
+      "overall": 67,
+      "pace": 87,
+      "shooting": 58,
+      "passing": 59,
+      "dribbling": 71,
+      "defending": 27,
+      "physical": 48,
+      "position": "LW",
+      "club": "Excelsior",
+      "league": "Eredivisie",
+      "age": 20,
+      "photo_url": "https://ratings-images-prod.pulse.ea.com/FC25/full/player-portraits/p75535.png?padding=0.7"
+     }
+    }
+   }
+  },
+  "169": {
+   "slug": "the-best-young-defenders-in-world-football-right-now",
+   "frozen_at": "2026-11-15",
+   "dataset": "fc27-ea-2026-09-30",
+   "cards": {
+    "pau cubarsí": {
+     "tier": "exact",
+     "row": {
+      "name": "Pau Cubarsí",
+      "overall": 86,
+      "pace": 78,
+      "shooting": 44,
+      "passing": 69,
+      "dribbling": 77,
+      "defending": 85,
+      "physical": 81,
+      "position": "CB",
+      "club": "FC Barcelona",
+      "league": "LALIGA EA SPORTS",
+      "age": 19,
+      "photo_url": "https://ratings-images-prod.pulse.ea.com/FC25/full/player-portraits/p278046.png?padding=0.7"
+     }
+    },
+    "nico o'reilly": {
+     "tier": "exact",
+     "row": {
+      "name": "Nico O'Reilly",
+      "overall": 83,
+      "pace": 83,
+      "shooting": 70,
+      "passing": 78,
+      "dribbling": 79,
+      "defending": 81,
+      "physical": 81,
+      "position": "LB",
+      "club": "Manchester City",
+      "league": "Premier League",
+      "age": 21,
+      "photo_url": "https://ratings-images-prod.pulse.ea.com/FC25/full/player-portraits/p277427.png?padding=0.7"
+     }
+    },
+    "arthur dias": {
+     "tier": "last",
+     "row": {
+      "name": "Rúben Dias",
+      "overall": 87,
+      "pace": 58,
+      "shooting": 44,
+      "passing": 69,
+      "dribbling": 69,
+      "defending": 87,
+      "physical": 83,
+      "position": "CB",
+      "club": "Manchester City",
+      "league": "Premier League",
+      "age": 29,
+      "photo_url": "https://ratings-images-prod.pulse.ea.com/FC25/full/player-portraits/p239818.png?padding=0.7"
+     }
+    },
+    "jérémy jacquet": {
+     "tier": "exact",
+     "row": {
+      "name": "Jérémy Jacquet",
+      "overall": 77,
+      "pace": 64,
+      "shooting": 38,
+      "passing": 61,
+      "dribbling": 62,
+      "defending": 77,
+      "physical": 77,
+      "position": "CB",
+      "club": "Liverpool",
+      "league": "Premier League",
+      "age": 21,
+      "photo_url": "https://ratings-images-prod.pulse.ea.com/FC25/full/player-portraits/p278903.png?padding=0.7"
+     }
+    },
+    "luka vušković": {
+     "tier": "exact",
+     "row": {
+      "name": "Luka Vušković",
+      "overall": 81,
+      "pace": 54,
+      "shooting": 62,
+      "passing": 62,
+      "dribbling": 65,
+      "defending": 83,
+      "physical": 82,
+      "position": "CB",
+      "club": "Brighton",
+      "league": "Premier League",
+      "age": 19,
+      "photo_url": "https://ratings-images-prod.pulse.ea.com/FC25/full/player-portraits/p275192.png?padding=0.7"
+     }
+    },
+    "givairo read": {
+     "tier": "exact",
+     "row": {
+      "name": "Givairo Read",
+      "overall": 76,
+      "pace": 79,
+      "shooting": 56,
+      "passing": 70,
+      "dribbling": 73,
+      "defending": 71,
+      "physical": 75,
+      "position": "RB",
+      "club": "Feyenoord",
+      "league": "Eredivisie",
+      "age": 20,
+      "photo_url": "https://ratings-images-prod.pulse.ea.com/FC25/full/player-portraits/p271266.png?padding=0.7"
+     }
+    },
+    "jon martín": {
+     "tier": "exact",
+     "row": {
+      "name": "Jon Martín",
+      "overall": 78,
+      "pace": 68,
+      "shooting": 31,
+      "passing": 57,
+      "dribbling": 67,
+      "defending": 78,
+      "physical": 77,
+      "position": "CB",
+      "club": "Real Sociedad",
+      "league": "LALIGA EA SPORTS",
+      "age": 20,
+      "photo_url": "https://ratings-images-prod.pulse.ea.com/FC25/full/player-portraits/p277225.png?padding=0.7"
+     }
+    },
+    "jaydee canvot": {
+     "tier": "exact",
+     "row": {
+      "name": "Jaydee Canvot",
+      "overall": 76,
+      "pace": 75,
+      "shooting": 32,
+      "passing": 62,
+      "dribbling": 68,
+      "defending": 76,
+      "physical": 76,
+      "position": "CB",
+      "club": "Crystal Palace",
+      "league": "Premier League",
+      "age": 20,
+      "photo_url": "https://ratings-images-prod.pulse.ea.com/FC25/full/player-portraits/p74133.png?padding=0.7"
+     }
+    },
+    "jacobo ramón": {
+     "tier": "exact",
+     "row": {
+      "name": "Jacobo Ramón",
+      "overall": 76,
+      "pace": 69,
+      "shooting": 41,
+      "passing": 54,
+      "dribbling": 59,
+      "defending": 78,
+      "physical": 73,
+      "position": "CB",
+      "club": "Como",
+      "league": "Serie A Enilive",
+      "age": 21,
+      "photo_url": "https://ratings-images-prod.pulse.ea.com/FC25/full/player-portraits/p70966.png?padding=0.7"
+     }
+    },
+    "ismaëlo ganiou": {
+     "tier": "exact",
+     "row": {
+      "name": "Ismaëlo Ganiou",
+      "overall": 77,
+      "pace": 73,
+      "shooting": 56,
+      "passing": 61,
+      "dribbling": 67,
+      "defending": 77,
+      "physical": 80,
+      "position": "CB",
+      "club": "RC Lens",
+      "league": "Ligue 1 McDonald's",
+      "age": 21,
+      "photo_url": "https://ratings-images-prod.pulse.ea.com/FC25/full/player-portraits/p75320.png?padding=0.7"
+     }
+    },
+    "mamadou sarr": {
+     "tier": "exact",
+     "row": {
+      "name": "Mamadou Sarr",
+      "overall": 77,
+      "pace": 68,
+      "shooting": 38,
+      "passing": 58,
+      "dribbling": 57,
+      "defending": 78,
+      "physical": 75,
+      "position": "CB",
+      "club": "Chelsea",
+      "league": "Premier League",
+      "age": 21,
+      "photo_url": "https://ratings-images-prod.pulse.ea.com/FC25/full/player-portraits/p275507.png?padding=0.7"
+     }
+    },
+    "tiago gabriel": {
+     "tier": "exact",
+     "row": {
+      "name": "Tiago Gabriel",
+      "overall": 69,
+      "pace": 56,
+      "shooting": 35,
+      "passing": 46,
+      "dribbling": 52,
+      "defending": 69,
+      "physical": 78,
+      "position": "CB",
+      "club": "Lecce",
+      "league": "Serie A Enilive",
+      "age": 21,
+      "photo_url": "https://ratings-images-prod.pulse.ea.com/FC25/full/player-portraits/p70555.png?padding=0.7"
+     }
+    }
+   }
+  },
+  "170": {
+   "slug": "turkey-s-best-young-footballers-and-where-they-are-getting-their-minutes",
+   "frozen_at": "2026-11-15",
+   "dataset": "fc27-ea-2026-09-30",
+   "cards": {
+    "arda güler": {
+     "tier": "exact",
+     "row": {
+      "name": "Arda Güler",
+      "overall": 83,
+      "pace": 77,
+      "shooting": 79,
+      "passing": 85,
+      "dribbling": 84,
+      "defending": 55,
+      "physical": 57,
+      "position": "RM",
+      "club": "Real Madrid",
+      "league": "LALIGA EA SPORTS",
+      "age": 21,
+      "photo_url": "https://ratings-images-prod.pulse.ea.com/FC25/full/player-portraits/p264309.png?padding=0.7"
+     }
+    },
+    "kenan yıldız": {
+     "tier": "exact",
+     "row": {
+      "name": "Kenan Yıldız",
+      "overall": 84,
+      "pace": 85,
+      "shooting": 81,
+      "passing": 79,
+      "dribbling": 85,
+      "defending": 59,
+      "physical": 70,
+      "position": "CAM",
+      "club": "Juventus",
+      "league": "Serie A Enilive",
+      "age": 21,
+      "photo_url": "https://ratings-images-prod.pulse.ea.com/FC25/full/player-portraits/p277954.png?padding=0.7"
+     }
+    },
+    "deniz ofli": {
+     "tier": "exact",
+     "row": {
+      "name": "Deniz Ofli",
+      "overall": 60,
+      "pace": 65,
+      "shooting": 40,
+      "passing": 47,
+      "dribbling": 59,
+      "defending": 57,
+      "physical": 56,
+      "position": "LB",
+      "club": "Karlsruher SC",
+      "league": "Bundesliga 2",
+      "age": 19,
+      "photo_url": "https://ratings-images-prod.pulse.ea.com/FC25/full/player-portraits/p82811.png?padding=0.7"
+     }
+    },
+    "can uzun": {
+     "tier": "exact",
+     "row": {
+      "name": "Can Uzun",
+      "overall": 78,
+      "pace": 73,
+      "shooting": 81,
+      "passing": 72,
+      "dribbling": 81,
+      "defending": 38,
+      "physical": 64,
+      "position": "CAM",
+      "club": "Frankfurt",
+      "league": "Bundesliga",
+      "age": 20,
+      "photo_url": "https://ratings-images-prod.pulse.ea.com/FC25/full/player-portraits/p275328.png?padding=0.7"
+     }
+    },
+    "efe akman": {
+     "tier": "exact",
+     "row": {
+      "name": "Efe Akman",
+      "overall": 65,
+      "pace": 73,
+      "shooting": 56,
+      "passing": 62,
+      "dribbling": 71,
+      "defending": 55,
+      "physical": 57,
+      "position": "CM",
+      "club": "FC Andorra",
+      "league": "LALIGA HYPERMOTION",
+      "age": 20,
+      "photo_url": "https://ratings-images-prod.pulse.ea.com/FC25/full/player-portraits/p279881.png?padding=0.7"
+     }
+    },
+    "semih kılıçsoy": {
+     "tier": "exact",
+     "row": {
+      "name": "Semih Kılıçsoy",
+      "overall": 73,
+      "pace": 69,
+      "shooting": 74,
+      "passing": 67,
+      "dribbling": 77,
+      "defending": 32,
+      "physical": 67,
+      "position": "ST",
+      "club": "Beşiktaş",
+      "league": "Trendyol Süper Lig",
+      "age": 21,
+      "photo_url": "https://ratings-images-prod.pulse.ea.com/FC25/full/player-portraits/p274616.png?padding=0.7"
+     }
+    },
+    "mertcan ayhan": {
+     "tier": "exact",
+     "row": {
+      "name": "Mertcan Ayhan",
+      "overall": 69,
+      "pace": 71,
+      "shooting": 54,
+      "passing": 64,
+      "dribbling": 63,
+      "defending": 68,
+      "physical": 71,
+      "position": "CB",
+      "club": "FC Schalke 04",
+      "league": "Bundesliga",
+      "age": 20,
+      "photo_url": "https://ratings-images-prod.pulse.ea.com/FC25/full/player-portraits/p78537.png?padding=0.7"
+     }
+    },
+    "berkay yilmaz": {
+     "tier": "exact",
+     "row": {
+      "name": "Berkay Yilmaz",
+      "overall": 72,
+      "pace": 75,
+      "shooting": 35,
+      "passing": 61,
+      "dribbling": 70,
+      "defending": 67,
+      "physical": 62,
+      "position": "LB",
+      "club": "SC Freiburg",
+      "league": "Bundesliga",
+      "age": 21,
+      "photo_url": "https://ratings-images-prod.pulse.ea.com/FC25/full/player-portraits/p279115.png?padding=0.7"
+     }
+    },
+    "serhat öztaşdelen": {
+     "tier": "exact",
+     "row": {
+      "name": "Serhat Öztaşdelen",
+      "overall": 53,
+      "pace": 0,
+      "shooting": 0,
+      "passing": 0,
+      "dribbling": 0,
+      "defending": 0,
+      "physical": 0,
+      "position": "GK",
+      "club": "Kocaelispor",
+      "league": "Trendyol Süper Lig",
+      "age": 21,
+      "photo_url": "https://ratings-images-prod.pulse.ea.com/FC25/full/player-portraits/p80001.png?padding=0.7"
+     }
+    }
+   }
+  },
+  "171": {
+   "slug": "yassir-zabiri-racing-santander-s-goals-and-the-fc-27-card-that-missed-them",
+   "frozen_at": "2026-11-15",
+   "dataset": "fc27-ea-2026-09-30",
+   "cards": {
+    "yassir zabiri": {
+     "tier": "exact",
+     "row": {
+      "name": "Yassir Zabiri",
+      "overall": 66,
+      "pace": 72,
+      "shooting": 66,
+      "passing": 53,
+      "dribbling": 69,
+      "defending": 26,
+      "physical": 48,
+      "position": "ST",
+      "club": "R. Racing Club",
+      "league": "LALIGA EA SPORTS",
+      "age": 21,
+      "photo_url": "https://ratings-images-prod.pulse.ea.com/FC25/full/player-portraits/p74698.png?padding=0.7"
+     }
+    }
+   }
+  },
+  "172": {
+   "slug": "paris-brunner-monaco-s-number-9-on-a-card-built-for-the-bench",
+   "frozen_at": "2026-11-15",
+   "dataset": "fc27-ea-2026-09-30",
+   "cards": {
+    "paris brunner": {
+     "tier": "exact",
+     "row": {
+      "name": "Paris Brunner",
+      "overall": 66,
+      "pace": 65,
+      "shooting": 67,
+      "passing": 54,
+      "dribbling": 68,
+      "defending": 27,
+      "physical": 59,
+      "position": "ST",
+      "club": "AS Monaco",
+      "league": "Ligue 1 McDonald's",
+      "age": 20,
+      "photo_url": "https://ratings-images-prod.pulse.ea.com/FC25/full/player-portraits/p274126.png?padding=0.7"
      }
     }
    }

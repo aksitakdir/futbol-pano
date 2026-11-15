@@ -40,6 +40,8 @@
 
 import { createClient } from "@supabase/supabase-js";
 import { readFileSync } from "fs";
+import { spawnSync } from "child_process";
+import { fileURLToPath } from "url";
 import { runPreflight } from "./preflight.mjs";
 
 // ---- env ----------------------------------------------------------------
@@ -372,6 +374,32 @@ async function revalidate(category, slug, previous = []) {
     console.log(`  note     Revalidation could not be reached (${e.message}); the page may serve old HTML for up to a day.`);
   }
 }
+
+/**
+ * Pieces publish in the Tuesday/Friday slots, days after they are written, and the
+ * evening before, scripts/freshness-check.mjs diff prints what moved since the figures
+ * were checked. That needs a baseline taken now, while the article's numbers and
+ * Highlightly's agree. Best effort: the row is already written, so a failure here
+ * (no key, daily cap, an ambiguous name) is one line of advice, never a failed publish.
+ * The lines that need a decision (a player not tracked, a brief that disagrees with
+ * Highlightly on club or age, which is how a wrong player shows) are passed through.
+ */
+function freshnessSnapshot(id, briefPath) {
+  const script = fileURLToPath(new URL("./freshness-check.mjs", import.meta.url));
+  const run = spawnSync(process.execPath, [script, "snapshot", String(id), "--brief", briefPath], { encoding: "utf8", timeout: 180000 });
+  const out = `${run.stdout ?? ""}\n${run.stderr ?? ""}`;
+  for (const l of out.split("\n").filter((x) => /NOT TRACKED|^\s+note\s/.test(x))) console.error(`  freshness ${l.trim()}`);
+  const saved =out.match(/^saved (data\/freshness\/\S+) — ([^.]+)\./m);
+  if (run.status === 0 && saved) {
+    console.error(`  note     Freshness baseline ${saved[1]} (${saved[2]}); before publishing: node scripts/freshness-check.mjs diff ${id}`);
+  } else {
+    const why = out.match(/^error: (.+)$/m)?.[1] ?? run.error?.message ?? `exit ${run.status}`;
+    // A refusal names its own next step; anything else (cap, network, key) is retried by hand.
+    const refused = /^(kept the baseline|the brief's figures)/.test(why);
+    console.error(`  note     Freshness snapshot not taken (${why})${refused ? "" : `; take it by hand: node scripts/freshness-check.mjs snapshot ${id} --brief ${briefPath}`}`);
+  }
+}
+
 const VALID_ACCENTS = ["emerald", "cyan", "sky", "rose", "amber", "lime"];
 const VALID_HERO = ["player-cards", "cover-image", "pitch-diagram", "text-only"];
 
@@ -596,6 +624,7 @@ async function main() {
       const moved = current && (current.category !== category || current.slug !== data.slug);
       await revalidate(category, data.slug, moved ? [{ category: current.category, slug: current.slug }] : []);
     }
+    freshnessSnapshot(data.id, inputPath);
 
     console.log(JSON.stringify({
       ok: true, updated: true, id: data.id, slug: data.slug,
@@ -614,6 +643,7 @@ async function main() {
   }
 
   if (status === "published") await revalidate(category, data.slug);
+  freshnessSnapshot(data.id, inputPath);
 
   console.log(JSON.stringify({
     ok: true,

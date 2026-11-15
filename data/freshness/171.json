@@ -1,0 +1,27 @@
+{
+  "article_id": 171,
+  "slug": "yassir-zabiri-racing-santander-s-goals-and-the-fc-27-card-that-missed-them",
+  "title": "Yassir Zabiri: Racing Santander's Goals and the FC 27 Card That Missed Them",
+  "date": "2026-11-16",
+  "taken_at": "2026-11-15T22:45:33.366Z",
+  "verified_as_of": null,
+  "seasons": [
+    "26/27",
+    "2026"
+  ],
+  "players": [
+    {
+      "name": "Yassir Zabiri",
+      "from": "card",
+      "id": 73593415,
+      "hl_name": "Mohamed Yassir Zabiri",
+      "birth_date": "2005-02-23",
+      "profile_club": "Racing Santander",
+      "club": "Racing Santander",
+      "rows": [
+        { "season": "26/27", "club": "Racing Santander", "league": "LaLiga", "type": "national league", "apps": 11, "starts": 8, "minutes": 714, "goals": 8, "assists": 0 },
+        { "season": "26/27", "club": "Racing Santander", "league": "Copa del Rey", "type": "national cup", "apps": 0, "starts": 0, "minutes": 0, "goals": 0, "assists": 0 }
+      ]
+    }
+  ]
+}

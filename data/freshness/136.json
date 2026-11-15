@@ -1,0 +1,127 @@
+{
+  "article_id": 136,
+  "slug": "the-best-young-centre-backs-in-world-football-right-now",
+  "title": "The Best Young Centre-Backs in World Football Right Now",
+  "date": "2026-11-16",
+  "taken_at": "2026-11-15T22:48:32.238Z",
+  "verified_as_of": "2026-11-16",
+  "seasons": [
+    "26/27",
+    "2026"
+  ],
+  "players": [
+    {
+      "name": "Pau Cubarsí",
+      "from": "brief",
+      "id": 63856457,
+      "hl_name": "Pau Cubarsí Paredes",
+      "birth_date": "2007-01-22",
+      "profile_club": "FC Barcelona",
+      "club": "FC Barcelona",
+      "rows": [
+        { "season": "26/27", "club": "FC Barcelona", "league": "LaLiga", "type": "national league", "apps": 9, "starts": 9, "minutes": 782, "goals": 0, "assists": 2 },
+        { "season": "26/27", "club": "FC Barcelona", "league": "UEFA Champions League", "type": "international competition", "apps": 4, "starts": 4, "minutes": 360, "goals": 0, "assists": 0 }
+      ]
+    },
+    {
+      "name": "Lautaro Di Lollo",
+      "from": "brief",
+      "id": 59475486,
+      "hl_name": "Lautaro Federico Di Lollo",
+      "birth_date": "2004-03-10",
+      "profile_club": "CA Boca Juniors",
+      "club": "CA Boca Juniors",
+      "rows": [
+        { "season": "2026", "club": "CA Boca Juniors", "league": "Torneo Clausura", "type": "national league", "apps": 14, "starts": 13, "minutes": 1182, "goals": 2, "assists": 1 },
+        { "season": "2026", "club": "CA Boca Juniors", "league": "Playoff Torneo Apertura", "type": "national league", "apps": 1, "starts": 1, "minutes": 120, "goals": 0, "assists": 0 },
+        { "season": "2026", "club": "CA Boca Juniors", "league": "Torneo Apertura ", "type": "national league", "apps": 12, "starts": 12, "minutes": 1080, "goals": 1, "assists": 0 },
+        { "season": "2026", "club": "CA Boca Juniors", "league": "Copa Argentina", "type": "national cup", "apps": 3, "starts": 3, "minutes": 270, "goals": 0, "assists": 0 },
+        { "season": "2026", "club": "CA Boca Juniors", "league": "Copa Sudamericana", "type": "international competition", "apps": 5, "starts": 5, "minutes": 450, "goals": 1, "assists": 0 },
+        { "season": "2026", "club": "CA Boca Juniors", "league": "Copa Libertadores", "type": "international competition", "apps": 6, "starts": 6, "minutes": 540, "goals": 1, "assists": 0 }
+      ]
+    },
+    {
+      "name": "Dean Huijsen",
+      "from": "brief",
+      "id": 58201171,
+      "hl_name": "Dean Donny Huijsen",
+      "birth_date": "2005-04-14",
+      "profile_club": "Real Madrid",
+      "club": "Real Madrid",
+      "rows": [
+        { "season": "26/27", "club": "Real Madrid", "league": "LaLiga", "type": "national league", "apps": 9, "starts": 9, "minutes": 772, "goals": 0, "assists": 0 },
+        { "season": "26/27", "club": "Real Madrid", "league": "UEFA Champions League", "type": "international competition", "apps": 2, "starts": 2, "minutes": 180, "goals": 0, "assists": 0 }
+      ]
+    },
+    {
+      "name": "Jérémy Jacquet",
+      "from": "brief",
+      "id": 59189550,
+      "hl_name": "Jérémy Jacquet",
+      "birth_date": "2005-07-13",
+      "profile_club": "Liverpool FC",
+      "club": "Liverpool FC",
+      "rows": [
+        { "season": "26/27", "club": "Liverpool FC", "league": "Premier League", "type": "national league", "apps": 10, "starts": 10, "minutes": 865, "goals": 0, "assists": 0 },
+        { "season": "26/27", "club": "Liverpool FC", "league": "EFL Cup", "type": "national cup", "apps": 2, "starts": 0, "minutes": 63, "goals": 0, "assists": 0 },
+        { "season": "26/27", "club": "Liverpool FC", "league": "UEFA Champions League", "type": "international competition", "apps": 4, "starts": 4, "minutes": 316, "goals": 0, "assists": 0 }
+      ]
+    },
+    {
+      "name": "Luka Vušković",
+      "from": "brief",
+      "id": 62391035,
+      "hl_name": "Luka Vušković",
+      "birth_date": "2007-02-24",
+      "profile_club": "Brighton & Hove Albion",
+      "club": "Brighton & Hove Albion",
+      "rows": [
+        { "season": "26/27", "club": "Brighton & Hove Albion", "league": "Premier League", "type": "national league", "apps": 10, "starts": 10, "minutes": 888, "goals": 1, "assists": 1 },
+        { "season": "26/27", "club": "Brighton & Hove Albion", "league": "EFL Cup", "type": "national cup", "apps": 1, "starts": 1, "minutes": 90, "goals": 0, "assists": 1 },
+        { "season": "26/27", "club": "Brighton & Hove Albion", "league": "UEFA Conference League", "type": "international competition", "apps": 3, "starts": 0, "minutes": 112, "goals": 0, "assists": 0 },
+        { "season": "26/27", "club": "Brighton & Hove Albion", "league": "UEFA Conference League Qualifying", "type": "international competition", "apps": 2, "starts": 2, "minutes": 180, "goals": 0, "assists": 0 }
+      ]
+    },
+    {
+      "name": "Leny Yoro",
+      "from": "brief",
+      "id": 55218324,
+      "hl_name": "Leny Yoro",
+      "birth_date": "2005-11-13",
+      "profile_club": "Manchester United",
+      "club": "Manchester United",
+      "rows": [
+        { "season": "26/27", "club": "Manchester United", "league": "Premier League", "type": "national league", "apps": 7, "starts": 5, "minutes": 441, "goals": 0, "assists": 0 },
+        { "season": "26/27", "club": "Manchester United", "league": "EFL Cup", "type": "national cup", "apps": 1, "starts": 1, "minutes": 90, "goals": 0, "assists": 0 },
+        { "season": "26/27", "club": "Manchester United", "league": "UEFA Champions League", "type": "international competition", "apps": 3, "starts": 3, "minutes": 254, "goals": 0, "assists": 0 }
+      ]
+    },
+    {
+      "name": "Castello Lukeba",
+      "from": "brief",
+      "id": 26204675,
+      "hl_name": "Castello Junior Lukeba",
+      "birth_date": "2002-12-17",
+      "profile_club": "RB Leipzig",
+      "club": "RB Leipzig",
+      "rows": [
+        { "season": "26/27", "club": "RB Leipzig", "league": "Bundesliga", "type": "national league", "apps": 5, "starts": 5, "minutes": 434, "goals": 0, "assists": 0 },
+        { "season": "26/27", "club": "RB Leipzig", "league": "DFB-Pokal", "type": "national cup", "apps": 2, "starts": 2, "minutes": 180, "goals": 0, "assists": 0 },
+        { "season": "26/27", "club": "RB Leipzig", "league": "UEFA Champions League", "type": "international competition", "apps": 3, "starts": 3, "minutes": 270, "goals": 0, "assists": 0 }
+      ]
+    },
+    {
+      "name": "Jon Martín",
+      "from": "brief",
+      "id": 65216907,
+      "hl_name": "Jon Martín Vicente",
+      "birth_date": "2006-04-23",
+      "profile_club": "Real Sociedad",
+      "club": "Real Sociedad",
+      "rows": [
+        { "season": "26/27", "club": "Real Sociedad", "league": "LaLiga", "type": "national league", "apps": 11, "starts": 10, "minutes": 906, "goals": 1, "assists": 1 },
+        { "season": "26/27", "club": "Real Sociedad", "league": "UEFA Europa League", "type": "international competition", "apps": 4, "starts": 3, "minutes": 315, "goals": 0, "assists": 0 }
+      ]
+    }
+  ]
+}

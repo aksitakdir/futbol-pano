@@ -12,6 +12,33 @@ tekrar eden sorunları görmenin tek yolu.
 
 ---
 
+## 🎲 0a. Dictumus entegrasyonu — SIRADAKİ KONUŞMANIN İLK İŞİ (sahip, 16 Kas)
+
+Sahibin skor tahmin uygulaması (dictumus.com, app.dictumus.com): bahis yok, arkadaşlarla tahmin + puan. 11 lig
+(PL, Championship, LaLiga, Serie A, Bundesliga, Ligue 1, Eredivisie, Primeira Liga, Süper Lig, Brasileirão, UCL),
+8 dil (İngilizce dahil). Google Play'de; App Store onay bekliyor; web app iPhone'da da çalışıyor. Lig, ikinci
+yarıya kadar ücretsiz (Kasım–Aralık en iyi tanıtım penceresi). Turnuva davet linkiyle, en çok 50 kişi.
+Slogan "Say it with proof" = makbuz yazılarımızın vaadi. Sahip, Dictumus dinamikleriyle değerlendirip karar verecek.
+- [ ] Önerilen yerleşimler (sırayla): yazı sonu kartı (tahmin/makbuz yazıları + 11 ligin oyuncuları; milli takım/MLS
+      yazılarında yok) · "Scout Gamer vs You" UCL turnuvası (sahip kurar, davet linki) · `/dictumus` sayfası ·
+      menüde "Play" + alt bilgi satırı · UTM'li linkler. Etiket: "From the makers of Scout Gamer", "No betting, no money".
+- [ ] Sahibe açık sorular: ana CTA web app mı · turnuvayı kim kurar, hangi lig · Dictumus UTM okuyor mu.
+- [ ] Reklam (AdSense/Journey/Raptive): ayda ~10 bin ziyarette yeniden bak; o zamana kadar alan Dictumus'un.
+
+## 🗓 Yayın düzeni — salı ve cuma (sahip onayı, 16 Kas)
+
+Yazı yayınlanacağı hafta yazılır; stokta bitmiş yazı değil, onaylı oyuncu listesi tutulur. Yazarken
+`freshness-check snapshot`, yayından önceki akşam `diff` (yalnız değişenler), onaylanan yazı tarihiyle
+`data/publish-queue.json`'a girer; zamanlanmış görev salı/cuma sabahı kontrol edip yayınlar ve haber verir.
+
+| Tarih | Yazı | Durum |
+|---|---|---|
+| Pzt 16 Kas | #136 Centre-Backs FC 27 güncellemesi (canlı) | hazır; + #163 Leoni, kart dondurma + deploy; sonra #169 (Jacquet tarihi, Yoro mevki) ve #167 ("seven"→"eight") onaylı |
+| Sal 17 Kas | #176 Card vs Pitch #2 — Gustavo Varela (radar) | pending; kapak gerekli. Sabah: Galler–Portekiz (17 Kas) ilk forma mı? Yayından sonra #171 ve #172'den Varela'ya link (onaylı) |
+| Cum 20 Kas | #177 The Best Young Players in La Liga Right Now | pending; kapak + hero'yu cover-image'e çevir; Cubarsí kalça sağlık açıklaması kontrol |
+| Sal 24 Kas | #160 Number 10s — yeniden yazılacak (o hafta) | oyuncu listesi önce sahibe |
+| Cum 27 Kas | #161 Hollanda — yeniden yazılacak (o hafta) | oyuncu listesi önce sahibe |
+
 ## 📣 Etkileşim sprinti (3–30 Kasım 2026) — CONTENT-STRATEGY-V2 §6.2c
 
 - [x] Hafta 1 paketi (3 Kas): `docs/social/2026-11-03-engagement-pack.md` — harita, 18 X + 4 IG satırı, takip listeleri, profil düzeltmeleri

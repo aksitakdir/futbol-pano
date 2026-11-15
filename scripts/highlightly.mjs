@@ -61,13 +61,23 @@ function budget() {
   }
 }
 
-/** GET with cache and the daily cap. Returns parsed JSON. */
-export async function hl(pathname, params = {}) {
+/** Requests spent today and the cap, for scripts that report what a run cost. */
+export function budgetToday() {
+  return { ...budget(), cap: CAP };
+}
+
+/**
+ * GET with cache and the daily cap. Returns parsed JSON.
+ * opts.maxAgeMs: accept a cached answer only if it is younger than this (default 24h).
+ * A pre-publish re-check passes less, so a match played this afternoon is not hidden
+ * behind this morning's answer; 0 always asks the API.
+ */
+export async function hl(pathname, params = {}, { maxAgeMs = TTL_MS } = {}) {
   const qs = new URLSearchParams(Object.entries(params).filter(([, v]) => v !== undefined && v !== ""));
   const url = `${BASE}${pathname}${qs.size ? `?${qs}` : ""}`;
   const file = path.join(CACHE, `${url.replace(/^https?:\/\//, "").replace(/[^a-z0-9]+/gi, "_").slice(0, 180)}.json`);
 
-  if (fs.existsSync(file) && Date.now() - fs.statSync(file).mtimeMs < TTL_MS) {
+  if (fs.existsSync(file) && Date.now() - fs.statSync(file).mtimeMs < Math.min(maxAgeMs, TTL_MS)) {
     return JSON.parse(fs.readFileSync(file, "utf8"));
   }
   if (!KEY) throw new Error("HIGHLIGHTLY_API_KEY is not set in .env.local");
