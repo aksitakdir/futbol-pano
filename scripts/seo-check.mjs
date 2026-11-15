@@ -231,8 +231,12 @@ if (FULL && !RECORD) {
   console.log(`\nEvery article (${articles.size}): linked from at least one sibling's page body:`);
   const inDegree = new Map([...articles.keys()].map((p) => [p, 0]));
   const paths = [...articles.keys()];
-  for (let i = 0; i < paths.length; i += 8) {
-    await Promise.all(paths.slice(i, i + 8).map(async (path) => {
+  // Two at a time with a pause: on 16 Nov 2026 a night of checks sent bursts of
+  // "Googlebot" requests from one non-Google IP, and Vercel's DDoS mitigation put
+  // this machine behind a challenge (403 on every page, robots.txt included).
+  for (let i = 0; i < paths.length; i += 2) {
+    if (i) await new Promise((r) => setTimeout(r, 400));
+    await Promise.all(paths.slice(i, i + 2).map(async (path) => {
       try {
         const { status, html } = await get(path);
         if (status !== 200) { fail(`${path} returned HTTP ${status}`); return; }
