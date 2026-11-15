@@ -17,6 +17,7 @@ import { normalizeYoutubeId } from "@/lib/youtube-id";
 import { frozenRow, type FrozenFcRow } from "@/lib/card-snapshot";
 import { useCardSnapshot } from "../../components/card-snapshot-context";
 import MoreInSection from "../../components/more-in-section";
+import CoverCaption from "../../components/cover-caption";
 import type { RelatedLinks } from "@/lib/related-articles";
 
 type ContentRow = {
@@ -24,7 +25,7 @@ type ContentRow = {
   slug: string; category: string;
   content: string; content_en?: string | null;
   created_at: string;
-  youtube_id?: string; cover_image?: string;
+  youtube_id?: string; cover_image?: string; cover_caption?: string | null;
   youtube_query_1?: string; youtube_query_2?: string;
   player_name?: string; players_json?: string | null;
   hero_variant?: string; accent?: string;
@@ -215,6 +216,7 @@ function ListLayout({ row, related }: { row: ContentRow; related?: RelatedLinks 
             <img src={coverImg} alt={displayTitle} style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover", filter: "brightness(0.32) saturate(0.85)" }} />
             <div style={{ position: "absolute", inset: 0, background: "linear-gradient(to right, rgba(13,18,30,0.92) 0%, rgba(13,18,30,0.7) 55%, rgba(13,18,30,0.4) 100%)" }} />
             <div style={{ position: "absolute", inset: 0, background: "linear-gradient(to top, rgba(13,18,30,0.85) 0%, transparent 50%)" }} />
+            {row.cover_caption?.trim() ? <CoverCaption text={row.cover_caption} /> : null}
           </>
         )}
         <div style={{ position: "absolute", top: 0, left: 0, right: 0, height: 3, background: accent }} />

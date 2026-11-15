@@ -15,7 +15,7 @@ type ContentRow = {
   content_en?: string;
   created_at: string;
   youtube_id?: string;
-  cover_image?: string;
+  cover_image?: string; cover_caption?: string | null;
   youtube_query_1?: string;
   youtube_query_2?: string;
   news_query?: string;
@@ -68,6 +68,7 @@ export default function HubArticleDetailClient({
       backLabel={`Back to ${config.title}`}
       youtubeId={article.youtube_id}
       coverImage={article.cover_image}
+      coverCaption={article.cover_caption}
       // Passing an empty newsQuery is not enough: the layout falls back to a
       // query derived from the title. showNewsSection is the real switch.
       showNewsSection={!isFinishedEvent}

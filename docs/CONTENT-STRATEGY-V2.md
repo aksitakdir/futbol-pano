@@ -213,6 +213,20 @@ Football Manager, konumlanmamızın ("EA FC, Football Manager") yarısı. Bu tak
   8. gece projektörü (seyrek).
 
   "rain" her zaman `--no` listesinde durur, yağmur bilinçli olarak seçilmedikçe. Anonim silüet ve yüzün gölgede kalması değişmez.
+- **Gerçek oyuncu görselleri — ChatGPT (16 Kasım 2026, sahibin kararı):** Sahip görselleri artık ChatGPT'den alıyor; oyuncunun adı
+  verilince görsel o oyuncuya benziyor. Bu, yukarıdaki insan figürü kuralının iki maddesinin yerine geçer: tek oyunculu
+  yazılarda "yalnızca silüet" ve "prompt'ta oyuncu adı yok". Midjourney'deki anonim figür kuralları (arma yok, `--cref` yok)
+  Midjourney için aynen geçerli. Riskler: referans fotoğrafın telifi, oyuncunun görüntü hakkı ve AB Yapay Zekâ Yasası md. 50
+  (2 Ağustos 2026'dan beri: gerçek kişiye gerçekçi benzeyen yapay görsel yapay olduğunu söylemek zorunda). Kurallar:
+  1. **18 yaş altı oyuncunun gerçekçi görseli hiç üretilmez** (Dowman, Sullivan ve benzerleri). Onlar için anonim figür kuralı geçerli.
+  2. **Ajans ya da kulüp fotoğrafı referans olarak yüklenmez;** isim ve tarif yeterli. Çıkan görsel bilinen bir fotoğrafın
+     pozunu ya da kompozisyonunu taşıyorsa kullanılmaz.
+  3. **Foto-gerçekçi değil, illüstrasyon tarzı:** boyalı ya da çizim tarzı editoryal görsel. Kimse gerçek fotoğraf sanmamalı.
+  4. **Uydurma sahne yok:** oyuncu almadığı bir kupayla, oynamadığı bir maçta ya da başka bir kulübün formasıyla gösterilmez.
+  5. **Arma, sponsor ve marka logosu yok;** kulüp renkleri yeterli.
+  6. **Her yerde etiket:** sitede kapağın altında "Illustration: AI-generated" (sitede bu alan henüz yok, eklenecek);
+     Instagram ve X'te platformun yapay zekâ etiketi. Bu, 10. kararı da kapatır.
+  7. **Şikâyet gelirse aynı gün kaldırılır.** Prompt'lar ve üretim tarihleri not edilir.
 
 **5.4 Remotion**
 - **Yeni paketler:** `@remotion/transitions`, `@remotion/paths`, `@remotion/layout-utils`. 4.0.537'ye sabitlenerek kurulur.
@@ -380,7 +394,8 @@ Yalnızca sahibin hesaplarında görünen ölçütler kullanılır. X'in tamamla
 7. **Your Call açık temada mı** (koyu tercihine karşı, yalnız bu seride)? *Önerim: evet; ızgarada kontrast yaratır.*
 8. **Midjourney planın ne?** Döngüler için Basic yeterli mi? *Önerim: mevcut planla başla.*
 9. **ElevenLabs planın ve kalan kredin ne?** Bed ve efekt seti alınsın mı? *Önerim: önce 3 efekt dene, sonra karar ver.*
-10. **Seslendirmeli reel'lerde AI etiketi:** *Önerim: evet.*
+10. **Seslendirmeli reel'lerde AI etiketi:** *Önerim: evet.* → **Kapandı (16 Kas):** evet, ve gerçek oyuncu görsellerinin
+    olduğu her kapak ve post için de (§5.3, ChatGPT kuralları madde 6).
 
 ---
 

@@ -98,6 +98,10 @@ export default function DuzenlePage() {
   const [contentEn, setContentEn] = useState("");
   const [youtubeId, setYoutubeId] = useState("");
   const [coverImage, setCoverImage] = useState("");
+  const [coverCaption, setCoverCaption] = useState("");
+  // False until the contents.cover_caption column exists
+  // (supabase/migrations/contents_cover_caption.sql); saving it before then would fail.
+  const [captionSupported, setCaptionSupported] = useState(false);
   const [imageUploading, setImageUploading] = useState(false);
   const [youtubeQuery1, setYoutubeQuery1] = useState("");
   const [youtubeQuery2, setYoutubeQuery2] = useState("");
@@ -171,6 +175,8 @@ export default function DuzenlePage() {
       setContent(data.content ?? "");
       setYoutubeId(data.youtube_id ?? "");
       setCoverImage(data.cover_image ?? "");
+      setCaptionSupported("cover_caption" in data);
+      setCoverCaption(data.cover_caption ?? "");
       setYoutubeQuery1(data.youtube_query_1 ?? "");
       setYoutubeQuery2(data.youtube_query_2 ?? "");
       setNewsQuery(data.news_query ?? "");
@@ -371,6 +377,7 @@ export default function DuzenlePage() {
       hub_tags: [],
     };
 
+    if (captionSupported) updateData.cover_caption = coverCaption.trim() || null;
     if (publish) updateData.status = "published";
 
     const updateResult = await updateContent(id, updateData);
@@ -609,6 +616,27 @@ export default function DuzenlePage() {
                     <Image src={coverImage} alt="" width={64} height={40} unoptimized className="h-10 w-16 rounded object-cover border border-slate-700/60" />
                   )}
                 </div>
+                {captionSupported ? (
+                  <div className="flex items-center gap-2">
+                    <input
+                      type="text" value={coverCaption}
+                      onChange={(e) => setCoverCaption(e.target.value)}
+                      placeholder="Cover caption (shown under the cover)"
+                      className="w-full rounded-lg border border-slate-700/80 bg-slate-900/70 px-4 py-2 text-xs text-slate-100 placeholder-slate-500 outline-none transition focus:border-emerald-500/60"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setCoverCaption("Illustration: AI-generated")}
+                      className="shrink-0 rounded-lg border border-amber-500/40 bg-amber-500/10 px-3 py-2 text-xs font-semibold text-amber-300 transition hover:bg-amber-500/20"
+                    >
+                      AI label
+                    </button>
+                  </div>
+                ) : (
+                  <p className="text-[11px] text-slate-500">
+                    Cover caption is off until supabase/migrations/contents_cover_caption.sql is run.
+                  </p>
+                )}
               </div>
             </div>
           </div>

@@ -17,6 +17,7 @@ import type { ContentCategory } from "@/lib/category-config";
 import ArticlePlayerEmbed from "./article-player-embed";
 import HeroPlayerCard from "./hero-player-card";
 import MoreInSection from "./more-in-section";
+import CoverCaption from "./cover-caption";
 import type { RelatedLinks } from "@/lib/related-articles";
 
 type SidebarItem = { id: string; title: string; title_en?: string; slug: string; category: string; created_at: string; };
@@ -104,6 +105,8 @@ type Props = {
   activeNav: "lists" | "radar" | "tactics-lab" | "wc-2026" | "transfer";
   backHref: string; backLabel: string;
   youtubeId?: string; coverImage?: string;
+  /** Shown under the cover hero, e.g. "Illustration: AI-generated" (contents.cover_caption). */
+  coverCaption?: string | null;
   youtubeQuery1?: string; youtubeQuery2?: string;
   newsQuery?: string; playerName?: string;
   heroVariant?: string; accentOverride?: string;
@@ -119,7 +122,7 @@ type Props = {
 export default function ArticleLayoutEn({
   title, content, category, date, slug,
   activeNav, backHref, backLabel,
-  youtubeId, coverImage, playerName: _playerName,
+  youtubeId, coverImage, coverCaption, playerName: _playerName,
   excerptContent: _excerptContent, isPending: _isPending,
   youtubeQuery1, youtubeQuery2,
   newsQuery, showNewsSection = true, children,
@@ -311,6 +314,7 @@ export default function ArticleLayoutEn({
               position: "absolute", inset: 0,
               background: "linear-gradient(to top, var(--sg-bg) 0%, transparent 45%)",
             }} />
+            {coverCaption?.trim() ? <CoverCaption text={coverCaption} /> : null}
           </>
         ) : null}
         <div style={{

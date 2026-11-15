@@ -8,7 +8,7 @@ type ContentRow = {
   id: string; title: string; title_en?: string;
   slug: string; category: string;
   content: string; content_en?: string; created_at: string;
-  youtube_id?: string; cover_image?: string;
+  youtube_id?: string; cover_image?: string; cover_caption?: string | null;
   youtube_query_1?: string; youtube_query_2?: string;
   news_query?: string; player_name?: string;
   hero_variant?: string; accent?: string;
@@ -40,6 +40,7 @@ export default function TaktikLabDetailClient({ article, related }: Props) {
       backLabel="Back to Tactics Lab"
       youtubeId={article.youtube_id}
       coverImage={article.cover_image}
+      coverCaption={article.cover_caption}
       newsQuery={article.news_query}
       youtubeQuery1={article.youtube_query_1}
       youtubeQuery2={article.youtube_query_2}
