@@ -12,17 +12,41 @@ tekrar eden sorunları görmenin tek yolu.
 
 ---
 
-## 🎲 0a. Dictumus entegrasyonu — SIRADAKİ KONUŞMANIN İLK İŞİ (sahip, 16 Kas)
+## 🎲 0a. Dictumus entegrasyonu — önce BANNER testi (17 Kas akşamı); kart/sayfa/menü rafta
+
+- [x] **Banner testi kuruldu (18 Kas):** banner geldi, sitede üç alan (yazı içi ≤599, yazı sonu ≤960, sağ sütun ≥961);
+      yaş/bahis satırı sahibin kararıyla yok. **Test 0. günü = canlıya çıktığı gün; 4. hafta ara kontrol, 8. hafta karar
+      (BANNER-SLOTS §5).** Ücretli paketler açılmadan Vercel Pro.
+- [x] **Banner testi planı (17 Kas akşamı):** "ayrı sekme açmadan önce banner gibi kullanımları denemek istiyorum".
+      Sahip hareketli bannerı (960 × 480 PNG + ≤5 sn MP4, ilk/son kare aynı; fiyat mesajı yok) Dictumus projesinde ürettirecek: brief `docs/dictumus/BANNER-BRIEF.md` (İngilizce,
+      tek başına yeterli). Site tarafı `docs/dictumus/BANNER-SLOTS.md`: telefonda yazı içi + yazı sonu, 600–960 sadece
+      yazı sonu, masaüstünde sağ sütun en üst, SHARE'ın üstü (sahip seçti). Açık karar: Vercel Hobby → bannerlar ticari
+      kullanım sayılabilir. Sahibin sorusu (17 Kas gece): Dictumus ocak–şubata kadar ücret almıyor, o zamana kadar Hobby yetmez mi? Önerim: test Hobby'de başlayabilir (onayı bekliyor).
+      → **Ücretli paketler açılmadan (ocak–şubat 2027) ya da AdSense'ten önce Vercel Pro'ya geç.** Görsel gelince §7: stash'ten sadece `lib/dictumus.ts` alınır; build + seo-check + sahip OK → deploy.
 
 Sahibin skor tahmin uygulaması (dictumus.com, app.dictumus.com): bahis yok, arkadaşlarla tahmin + puan. 11 lig
 (PL, Championship, LaLiga, Serie A, Bundesliga, Ligue 1, Eredivisie, Primeira Liga, Süper Lig, Brasileirão, UCL),
 8 dil (İngilizce dahil). Google Play'de; App Store onay bekliyor; web app iPhone'da da çalışıyor. Lig, ikinci
 yarıya kadar ücretsiz (Kasım–Aralık en iyi tanıtım penceresi). Turnuva davet linkiyle, en çok 50 kişi.
 Slogan "Say it with proof" = makbuz yazılarımızın vaadi. Sahip, Dictumus dinamikleriyle değerlendirip karar verecek.
-- [ ] Önerilen yerleşimler (sırayla): yazı sonu kartı (tahmin/makbuz yazıları + 11 ligin oyuncuları; milli takım/MLS
-      yazılarında yok) · "Scout Gamer vs You" UCL turnuvası (sahip kurar, davet linki) · `/dictumus` sayfası ·
-      menüde "Play" + alt bilgi satırı · UTM'li linkler. Etiket: "From the makers of Scout Gamer", "No betting, no money".
-- [ ] Sahibe açık sorular: ana CTA web app mı · turnuvayı kim kurar, hangi lig · Dictumus UTM okuyor mu.
+- [x] Sahibin kararı (17 Kas): önce yalnızca sitede konumlandır; turnuva ve UTM soruları şimdilik yok.
+- [ ] **Stokta (sahip, 17 Kas):** "Dictumus kurumsal kimliğine özel tasarımlarla devreye alalım". Kod `git stash`'te
+      ("dictumus-placements, parked 17 Nov 2026") + yedek `docs/dictumus/dictumus-placements.patch`. Sahip,
+      `docs/dictumus/DESIGN-SLOTS.md`'deki alanlar için çıktıları verecek (18 Kas); sonra §7'deki adımlarla devreye alınır.
+      Cuma toplu deploy'una KARIŞMAZ (çalışma alanında değil).
+- [x] Yazıldı (17 Kas): her şey `lib/dictumus.ts`'te (linkler, metin, kartın çıktığı yerler).
+      · Yazı sonu kartı (`app/components/dictumus-card.tsx`): radar, lists, tactics-lab, transfer yazılarında;
+        WC 2026 arşivinde yok. #174/#175'te "We put our picks on record" versiyonu. Tek yazıyı kapatmak: NO_CARD_SLUGS.
+      · `/dictumus` sayfası (sunucuda, sitemap'te, kendi og:url'ü): nasıl oynanır, 5/2/1 puan, 11 lig, 8 dil, ücret modeli
+        (fiyatlar dictumus.com'da kalır), Golden Boy makbuzuna iç link.
+      · Menüde PREDICT (masaüstünde 1024px+, mobil menüde hep) · alt bilgide "ALSO FROM US: DICTUMUS" satırı.
+      · Ana buton web app (iPhone dahil çalışır), ikinci buton Google Play; Apple linki onaylanana kadar yok.
+      · UTM: utm_source=scoutgamer, utm_medium=referral, utm_campaign=scoutgamer_promo, utm_content=yerleşim;
+        Google Play'e aynı etiketler install referrer olarak gider.
+      · **16+**: Dictumus koşulları "You must be 16 or over" diyor; kartta ve sayfada yazıyor. Metin kuralı: "free" ya da
+        "no money" tek başına yazılmaz (ikinci yarı paketi var) → "No betting · no money between players".
+- [ ] Apple onaylanınca: `lib/dictumus.ts`'e App Store linki + sayfadaki "App Store coming soon" satırı.
+- [ ] Sonra (sahip karar verirse): "Scout Gamer vs You" turnuvası (öneri: UCL) · Dictumus'ta UTM ölçümü.
 - [ ] Reklam (AdSense/Journey/Raptive): ayda ~10 bin ziyarette yeniden bak; o zamana kadar alan Dictumus'un.
 
 ## 🗓 Yayın düzeni — salı ve cuma (sahip onayı, 16 Kas)
@@ -34,10 +58,31 @@ Yazı yayınlanacağı hafta yazılır; stokta bitmiş yazı değil, onaylı oyu
 | Tarih | Yazı | Durum |
 |---|---|---|
 | Pzt 16 Kas | #136 Centre-Backs FC 27 güncellemesi (canlı) | hazır; + #163 Leoni, kart dondurma + deploy; sonra #169 (Jacquet tarihi, Yoro mevki) ve #167 ("seven"→"eight") onaylı |
-| Sal 17 Kas | #176 Card vs Pitch #2 — Gustavo Varela (radar) | pending; kapak gerekli. Sabah: Galler–Portekiz (17 Kas) ilk forma mı? Yayından sonra #171 ve #172'den Varela'ya link (onaylı) |
+| Sal 17 Kas | #176 Card vs Pitch #2 — Gustavo Varela (radar) | ✅ YAYINDA 17 Kas 11:32 UTC; #171 ve #172 linkleri eklendi (17 Kas). Açık: Galler–Portekiz (17 Kas akşamı) ilk forma mı? |
 | Cum 20 Kas | #177 The Best Young Players in La Liga Right Now | pending; kapak + hero'yu cover-image'e çevir; Cubarsí kalça sağlık açıklaması kontrol |
 | Sal 24 Kas | #160 Number 10s — yeniden yazılacak (o hafta) | oyuncu listesi önce sahibe |
 | Cum 27 Kas | #161 Hollanda — yeniden yazılacak (o hafta) | oyuncu listesi önce sahibe |
+
+## 🔤 Site fontları uygulanmıyor — sahip kararı (bulundu 17 Kas)
+
+- [ ] 8 May 2026'dan (514e176, v2 tasarım sistemi) beri Space Grotesk / Inter Tight / IBM Plex Mono **hiç uygulanmıyor**;
+      site canlıda sistem fontuyla (Mac'te SF Pro) görünüyor. Sebep: `globals.css` `--font-display` vb. token'ları `:root`'ta
+      `var(--font-space-grotesk)` ile tanımlıyor, ama next/font bu değişkenleri `<body>`'ye koyuyor (`app/layout.tsx:61`);
+      `:root`'ta tanımsız → token geçersiz → her şey `ui-sans-serif, system-ui`'ye düşüyor. 17 Kas'ta canlıda doğrulandı.
+      Düzeltme tek satır (sınıfları `<html>`'e taşımak) ama **bütün sitenin görünümünü değiştirir** → sahip karar verir.
+      Yan fayda: Vercel build'leri kullanılmayan fontları çekerken düşüyordu. Dictumus tasarımından önce karar verilmeli
+      (`docs/dictumus/DESIGN-SLOTS.md` §0.7).
+
+## 🚚 Bekleyen deploy (sıradaki oturumda zamanla — cuma 20 Kas'tan önce)
+
+- [ ] Push edilmemiş commit: `794654b` seo-check'i yavaşlatma (Vercel DDoS kısıtlaması, 16 Kas gecesi).
+- [ ] Commit'lenmemiş: blok düzenleyicide **"+ below"** düğmesi (`app/admin/components/sections-editor.tsx`) —
+      görseli doğrudan istenen bloğun altına ekler. La Liga (#177, 49 blok) ve #136 (52 blok) görsellerinden önce yayında olmalı.
+      Deploy sonrası sahip admin'de dener (kaydetmeden).
+- [ ] Commit'lenmemiş: `docs/dictumus/` (tasarım alanları belgesi, yama yedeği, 2 referans ekran görüntüsü) ve
+      `.claude/launch.json`'a eklenen "Next.js production (3001)" ayarı. Dictumus kodu stokta, bu deploy'a girmez.
+- [ ] İsteğe bağlı: yazı tiplerini `next/font/google` yerine projeye gömmek (16 Kas'taki Vercel build hatası Google Fonts'tan;
+      17 Kas'ta yerel build de aynı hatayla bir kez düştü, ikinci denemede geçti).
 
 ## 📣 Etkileşim sprinti (3–30 Kasım 2026) — CONTENT-STRATEGY-V2 §6.2c
 

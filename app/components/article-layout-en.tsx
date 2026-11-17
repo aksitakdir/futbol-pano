@@ -19,6 +19,9 @@ import HeroPlayerCard from "./hero-player-card";
 import MoreInSection from "./more-in-section";
 import CoverCaption from "./cover-caption";
 import type { RelatedLinks } from "@/lib/related-articles";
+import DictumusSlot from "./dictumus-slot";
+import { dictumusBannersFor } from "@/lib/dictumus";
+import { inContentSlotIndex } from "@/lib/in-content-slot";
 
 type SidebarItem = { id: string; title: string; title_en?: string; slug: string; category: string; created_at: string; };
 export type YouTubeSearchItem = { title: string; thumbnail: string; videoId: string; channelTitle: string; };
@@ -167,6 +170,10 @@ export default function ArticleLayoutEn({
   };
   const accent = accentOverride ? (ACCENT_MAP[accentOverride] ?? CAT_ACCENT[category] ?? "var(--accent)") : (CAT_ACCENT[category] ?? "var(--accent)");
   const useCoverHero = heroVariant === "cover-image" && !!coverImage?.trim();
+  // Dictumus banners (docs/dictumus/BANNER-SLOTS.md): in the body, at its end, atop the sidebar.
+  // Not on pending previews, nor on the World Cup archive (lib/dictumus.ts).
+  const showDictumus = !_isPending && dictumusBannersFor(category, slug);
+  const dictumusIndex = showDictumus && sectionsJson?.length ? inContentSlotIndex(sectionsJson) : null;
   const catLabel = CATEGORY_LABEL[category] ?? category;
   const tags = CATEGORY_TAGS[category] ?? [];
   const effectiveNewsQuery = showNewsSection ? (newsQuery?.trim() || getNewsQueryFromTitle(title)) : "";
@@ -559,6 +566,7 @@ export default function ArticleLayoutEn({
                 sections={sectionsJson}
                 accent={accent}
                 addDropCap={addDropCap}
+                insertBefore={dictumusIndex !== null ? { index: dictumusIndex, node: <DictumusSlot slot="in-content" slug={slug} /> } : null}
               />
             ) : contentLooksLikeHtml(content) ? (
               <ArticleHtmlWithPlayerEmbeds html={processedHtml} />
@@ -581,6 +589,8 @@ export default function ArticleLayoutEn({
               </div>
             </div>
           )}
+
+          {showDictumus ? <DictumusSlot slot="article-end" slug={slug} className="dx-slot--gap" /> : null}
 
           {youtubeQuery1?.trim() && (
             <div style={{ marginTop: 48, paddingTop: 48, borderTop: "1px solid var(--sg-border)" }}>
@@ -687,6 +697,7 @@ export default function ArticleLayoutEn({
         </article>
 
         <aside className="article-v2-sidebar" style={{ position: "sticky", top: 100 }}>
+          {showDictumus ? <DictumusSlot slot="sidebar" slug={slug} /> : null}
           <div style={{ marginBottom: 32, padding: "20px 20px", background: "var(--sg-surface)", borderRadius: 6, border: "1px solid var(--sg-border)" }}>
             <div className="mono" style={{ fontSize: 9, letterSpacing: "0.2em", color: "var(--sg-text-muted)", marginBottom: 14 }}>SHARE</div>
             <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>

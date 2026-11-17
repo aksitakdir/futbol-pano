@@ -60,6 +60,12 @@ const nextConfig: NextConfig = {
           { key: "Referrer-Policy", value: "strict-origin-when-cross-origin" },
         ],
       },
+      {
+        // The Dictumus banner files live in a dated folder that changes whenever the
+        // design does (lib/dictumus.ts), so they can be cached for good.
+        source: "/dictumus/:path*",
+        headers: [{ key: "Cache-Control", value: "public, max-age=31536000, immutable" }],
+      },
     ];
   },
   async redirects() {

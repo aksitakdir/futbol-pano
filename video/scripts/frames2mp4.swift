@@ -47,6 +47,8 @@ let H = first.height
 
 try? FileManager.default.removeItem(at: outURL)
 guard let writer = try? AVAssetWriter(outputURL: outURL, fileType: .mp4) else { fail("cannot create \(outURL.path)") }
+// moov before mdat ("fast start"), so a browser can start playing before the whole file is in.
+writer.shouldOptimizeForNetworkUse = true
 let input = AVAssetWriterInput(mediaType: .video, outputSettings: [
   AVVideoCodecKey: AVVideoCodecType.h264,
   AVVideoWidthKey: W,

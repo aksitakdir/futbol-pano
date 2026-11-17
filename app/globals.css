@@ -1503,3 +1503,67 @@ button { font-family: inherit; cursor: pointer; }
     font-size: clamp(28px, 8vw, 48px) !important;
   }
 }
+
+/* ─── Dictumus banner (app/components/dictumus-slot.tsx) ─────────────────
+   One 2:1 design in three slots; which one shows is decided here only
+   (docs/dictumus/BANNER-SLOTS.md §4): in-content up to 599px, article-end up
+   to 960px, sidebar from 961px. Never two in one viewport. */
+.dx-slot { display: block; }
+.dx-slot--in-content { margin: 40px auto; max-width: 480px; }
+.dx-slot--article-end { margin: 0 auto 40px; max-width: 480px; }
+.dx-slot--article-end.dx-slot--gap { margin-top: 56px; }
+.dx-slot--sidebar { margin: 0 0 32px; }
+@media (min-width: 600px) { .dx-slot--in-content { display: none; } }
+@media (min-width: 961px) { .dx-slot--article-end { display: none; } }
+@media (max-width: 960px) { .dx-slot--sidebar { display: none; } }
+
+.dx-slot__label {
+  font-size: 11px;
+  line-height: 14px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--sg-text-muted);
+  margin-bottom: 8px;
+}
+
+.dx-slot__link,
+.article-v2 .dx-slot__link { display: block; color: inherit; text-decoration: none; }
+.dx-slot__frame {
+  position: relative;
+  display: block;
+  aspect-ratio: 2 / 1;
+  border-radius: 10px;
+  overflow: hidden;
+  isolation: isolate;
+  background: #0d0914;
+}
+/* The site's border, drawn over image and clip so the dark design keeps an edge. */
+.dx-slot__frame::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border: 1px solid var(--sg-border);
+  border-radius: inherit;
+  pointer-events: none;
+  z-index: 2;
+}
+.dx-slot__still,
+.article-v2 .dx-slot__still {
+  display: block;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  border-radius: 0;
+  max-width: none;
+}
+.dx-slot__video {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border-radius: inherit;
+  opacity: 0;
+  pointer-events: none;
+  z-index: 1;
+}
+.dx-slot__link:focus-visible .dx-slot__frame { outline: 2px solid var(--emerald); outline-offset: 2px; }

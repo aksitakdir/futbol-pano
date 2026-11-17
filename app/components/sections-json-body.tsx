@@ -1,5 +1,6 @@
 "use client";
 
+import { Fragment, type ReactNode } from "react";
 import ArticleHtmlWithPlayerEmbeds from "./article-html-with-player-embeds";
 import ArticlePlayerEmbed from "./article-player-embed";
 import { headingToId, plainTextToHtml, type SectionBlock } from "@/lib/section-blocks";
@@ -9,12 +10,15 @@ type Props = {
   sections: SectionBlock[];
   accent: string;
   addDropCap?: (html: string, accent: string) => string;
+  /** Rendered just before block `index` (the in-content promo, lib/in-content-slot.ts). */
+  insertBefore?: { index: number; node: ReactNode } | null;
 };
 
 export default function SectionsJsonBody({
   sections,
   accent,
   addDropCap = (html) => html,
+  insertBefore = null,
 }: Props) {
   // Pre-compute section indices for numbered rendering (01, 02, 03)
   const sectionIndices = new Map<number, number>();
@@ -26,9 +30,7 @@ export default function SectionsJsonBody({
     }
   });
 
-  return (
-    <>
-      {sections.map((sec, i) => {
+  const renderBlock = (sec: SectionBlock, i: number) => {
         if (sec.type === "intro") {
           return (
             <ArticleHtmlWithPlayerEmbeds
@@ -614,7 +616,20 @@ export default function SectionsJsonBody({
           );
         }
         return null;
-      })}
+  };
+
+  return (
+    <>
+      {sections.map((sec, i) =>
+        insertBefore && i === insertBefore.index ? (
+          <Fragment key={`slot-${i}`}>
+            {insertBefore.node}
+            {renderBlock(sec, i)}
+          </Fragment>
+        ) : (
+          renderBlock(sec, i)
+        ),
+      )}
     </>
   );
 }

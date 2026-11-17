@@ -19,6 +19,9 @@ import { useCardSnapshot } from "../../components/card-snapshot-context";
 import MoreInSection from "../../components/more-in-section";
 import CoverCaption from "../../components/cover-caption";
 import type { RelatedLinks } from "@/lib/related-articles";
+import DictumusSlot from "../../components/dictumus-slot";
+import { dictumusBannersFor } from "@/lib/dictumus";
+import { inContentSlotIndex } from "@/lib/in-content-slot";
 
 type ContentRow = {
   id: string; title: string; title_en?: string;
@@ -199,6 +202,9 @@ function ListLayout({ row, related }: { row: ContentRow; related?: RelatedLinks 
   const displayTitle   = row.title_en   || row.title;
   const coverImg = row.cover_image?.trim();
   const sections = Array.isArray(row.sections_json) ? row.sections_json : null;
+  // Dictumus banners (docs/dictumus/BANNER-SLOTS.md): in the body, at its end, atop the sidebar.
+  const showDictumus = dictumusBannersFor(row.category, row.slug);
+  const dictumusIndex = showDictumus ? inContentSlotIndex(sections) : null;
   const displayContent = row.content_en?.trim() ? row.content_en : row.content;
   const isHtml = contentLooksLikeHtml(displayContent);
   const structuredToc = sections?.length ? tocFromSections(sections) : [];
@@ -303,7 +309,11 @@ function ListLayout({ row, related }: { row: ContentRow; related?: RelatedLinks 
         <div className="article-page-main">
           {sections && sections.length > 0 ? (
             <div className="article-v2" style={{ fontSize: 18, lineHeight: 1.65, color: "var(--sg-text-secondary)", marginBottom: 56 }}>
-              <SectionsJsonBody sections={sections} accent={accent} />
+              <SectionsJsonBody
+                sections={sections}
+                accent={accent}
+                insertBefore={dictumusIndex !== null ? { index: dictumusIndex, node: <DictumusSlot slot="in-content" slug={row.slug} /> } : null}
+              />
             </div>
           ) : displayContent && stripHtml(displayContent) ? (
             <div className="article-v2" style={{ fontSize: 18, lineHeight: 1.65, color: "var(--sg-text-secondary)", marginBottom: 56 }}>
@@ -315,6 +325,7 @@ function ListLayout({ row, related }: { row: ContentRow; related?: RelatedLinks 
               <NumberedPlayerEntry player={player} rank={i + 1} accent={accent} />
             </div>
           ))}
+          {showDictumus ? <DictumusSlot slot="article-end" slug={row.slug} /> : null}
 
           {row.youtube_query_1?.trim() && (
             <div style={{ marginTop: 48, paddingTop: 48, borderTop: "1px solid var(--sg-border)" }}>
@@ -369,6 +380,7 @@ function ListLayout({ row, related }: { row: ContentRow; related?: RelatedLinks 
         </div>
 
         <aside className="article-v2-sidebar" style={{ position: "sticky", top: 88 }}>
+          {showDictumus ? <DictumusSlot slot="sidebar" slug={row.slug} /> : null}
           <div style={{ marginBottom: 32, padding: "20px", background: "var(--sg-surface)", borderRadius: 6, border: "1px solid var(--sg-border)" }}>
             <div className="mono" style={{ fontSize: 9, letterSpacing: "0.2em", color: "var(--sg-text-muted)", marginBottom: 14 }}>SHARE</div>
             <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>

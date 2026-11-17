@@ -1,0 +1,453 @@
+diff --git a/app/components/article-layout-en.tsx b/app/components/article-layout-en.tsx
+index 2b0e068..efd95db 100644
+--- a/app/components/article-layout-en.tsx
++++ b/app/components/article-layout-en.tsx
+@@ -18,6 +18,7 @@ import ArticlePlayerEmbed from "./article-player-embed";
+ import HeroPlayerCard from "./hero-player-card";
+ import MoreInSection from "./more-in-section";
+ import CoverCaption from "./cover-caption";
++import DictumusCard from "./dictumus-card";
+ import type { RelatedLinks } from "@/lib/related-articles";
+ 
+ type SidebarItem = { id: string; title: string; title_en?: string; slug: string; category: string; created_at: string; };
+@@ -666,6 +667,8 @@ export default function ArticleLayoutEn({
+             </div>
+           )}
+ 
++          <DictumusCard category={category} slug={slug} accent={accent} />
++
+           <div style={{ marginTop: 64, paddingTop: 32, borderTop: "1px solid var(--sg-border)", display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 16 }}>
+             <div style={{ display: "flex", gap: 8, flexWrap: "wrap", alignItems: "center" }}>
+               <span className="mono" style={{ fontSize: 10, letterSpacing: "0.18em", color: "var(--sg-text-muted)", marginRight: 8 }}>TAGS</span>
+diff --git a/app/components/dictumus-card.tsx b/app/components/dictumus-card.tsx
+new file mode 100644
+index 0000000..57ca665
+--- /dev/null
++++ b/app/components/dictumus-card.tsx
+@@ -0,0 +1,57 @@
++import Link from "next/link";
++import { DICTUMUS_MIN_AGE, dictumusCardFor, dictumusPlayStoreUrl, dictumusWebAppUrl } from "@/lib/dictumus";
++
++/**
++ * The Dictumus card at the end of an article (lib/dictumus.ts decides where it shows).
++ * Hook-free like MoreInSection, so it renders into the article's HTML even inside the
++ * client article layouts. data-promo marks it for scripts and for anyone auditing
++ * how many promos a page carries (the rule is one).
++ */
++export default function DictumusCard({ category, slug, accent }: { category: string; slug: string; accent: string }) {
++  const card = dictumusCardFor(category, slug);
++  if (!card) return null;
++  return (
++    <aside
++      aria-label="Dictumus, a score-prediction game from the makers of Scout Gamer"
++      data-promo="dictumus"
++      style={{
++        marginTop: 56,
++        padding: "28px 28px 24px",
++        background: "var(--sg-surface)",
++        border: "1px solid var(--sg-border)",
++        borderLeft: `3px solid ${accent}`,
++        borderRadius: 6,
++      }}
++    >
++      <div className="mono" style={{ fontSize: 10, letterSpacing: "0.2em", color: accent, marginBottom: 12 }}>
++        FROM THE MAKERS OF SCOUT GAMER
++      </div>
++      <p className="display" style={{ fontSize: 22, fontWeight: 700, letterSpacing: "-0.02em", lineHeight: 1.2, color: "var(--sg-text-primary)", margin: "0 0 10px" }}>
++        {card.title}
++      </p>
++      <p style={{ fontSize: 15, lineHeight: 1.6, color: "var(--sg-text-secondary)", margin: "0 0 20px", maxWidth: 620 }}>
++        {card.body}
++      </p>
++      <div style={{ display: "flex", flexWrap: "wrap", gap: 10, alignItems: "center" }}>
++        <a
++          href={dictumusWebAppUrl(card.placement)}
++          target="_blank"
++          rel="noopener"
++          className="btn btn-solid"
++          style={{ background: accent, borderColor: accent, fontSize: 10 }}
++        >
++          PLAY DICTUMUS IN YOUR BROWSER
++        </a>
++        <a href={dictumusPlayStoreUrl(card.placement)} target="_blank" rel="noopener" className="btn" style={{ fontSize: 10 }}>
++          GET IT ON GOOGLE PLAY
++        </a>
++        <Link href="/dictumus" className="mono u-link" style={{ fontSize: 10, letterSpacing: "0.14em", color: "var(--sg-text-muted)", marginLeft: 4 }}>
++          HOW IT WORKS →
++        </Link>
++      </div>
++      <p className="mono" style={{ fontSize: 10, letterSpacing: "0.12em", color: "var(--sg-text-muted)", margin: "18px 0 0" }}>
++        AGES {DICTUMUS_MIN_AGE}+ · NO BETTING · NO MONEY BETWEEN PLAYERS · FREE UNTIL MID-SEASON
++      </p>
++    </aside>
++  );
++}
+diff --git a/app/components/site-footer.tsx b/app/components/site-footer.tsx
+index 0b918fd..c08db91 100644
+--- a/app/components/site-footer.tsx
++++ b/app/components/site-footer.tsx
+@@ -164,6 +164,10 @@ export default function SiteFooter({ index }: Props = {}) {
+             <span className="mono" style={{ fontSize: 10, letterSpacing: "0.12em", color: "var(--sg-text-muted)" }}>
+               © 2026 SCOUTGAMER.COM · ALL RIGHTS RESERVED
+             </span>
++            <Link href="/dictumus" className="mono u-link transition hover:opacity-80"
++              style={{ fontSize: 10, letterSpacing: "0.12em", color: "var(--sg-text-secondary)" }}>
++              ALSO FROM US: DICTUMUS, PREDICT THE SCORES WITH YOUR FRIENDS →
++            </Link>
+           </div>
+         </div>
+       </footer>
+diff --git a/app/components/site-header.tsx b/app/components/site-header.tsx
+index ecb3bbe..09e0997 100644
+--- a/app/components/site-header.tsx
++++ b/app/components/site-header.tsx
+@@ -63,6 +63,12 @@ const NAV_ITEMS = [
+   { href: "/radar", label: "RADAR", key: "radar" },
+   { href: "/arena", label: "ARENA", key: "arena" },
+   { href: "/transfers", label: "TRANSFERS", key: "transfer" },
++  // Dictumus, the score-prediction game from the same makers (17 Nov 2026, lib/dictumus.ts).
++  // Points to our own /dictumus page, which explains it before sending anyone off-site.
++  // wideOnly: from 768 to ~830px a sixth desktop item leaves no gap between the logo,
++  // the items and the search button, so the desktop bar shows it from lg (1024px) up.
++  // The mobile menu always lists it; tablets still have the footer link and the cards.
++  { href: "/dictumus", label: "PREDICT", key: "dictumus", wideOnly: true },
+   // WC 2026 left the navigation on 19 Oct 2026, three months after the final: its
+   // pages stay up as an archive, linked from the footer, not offered as a live section.
+ ];
+@@ -240,7 +246,7 @@ export default function SiteHeader({ activeNav }: Props) {
+               const isActive = item.key === currentKey;
+               return (
+                 <Link key={item.key} href={item.href}
+-                  className="mono transition-all duration-150"
++                  className={`mono transition-all duration-150${"wideOnly" in item && item.wideOnly ? " hidden lg:inline" : ""}`}
+                   style={{ padding: "8px 14px", borderRadius: 999, fontSize: 11, letterSpacing: "0.16em", color: isActive ? "var(--accent)" : "var(--sg-text-muted)", background: isActive ? "oklch(1 0 0 / 0.04)" : "transparent", border: `1px solid ${isActive ? "var(--sg-surface-top)" : "transparent"}` }}>
+                   {item.label}
+                 </Link>
+diff --git a/app/dictumus/page.tsx b/app/dictumus/page.tsx
+new file mode 100644
+index 0000000..a0d524b
+--- /dev/null
++++ b/app/dictumus/page.tsx
+@@ -0,0 +1,167 @@
++import type { Metadata } from "next";
++import Link from "next/link";
++import SiteHeader from "../components/site-header";
++import SiteFooter from "../components/site-footer";
++import {
++  DICTUMUS_COMPETITIONS,
++  DICTUMUS_LANGUAGES,
++  DICTUMUS_MIN_AGE,
++  DICTUMUS_SITE_URL,
++  dictumusPlayStoreUrl,
++  dictumusWebAppUrl,
++} from "@/lib/dictumus";
++
++/**
++ * /dictumus: the page the header's PREDICT item and the article cards point to.
++ * Static and server-rendered. Facts and the copy rules (no "free" or "no money"
++ * without the qualifier) are in lib/dictumus.ts; prices stay on dictumus.com so
++ * this page cannot go stale on them.
++ */
++const TITLE = "Dictumus: Predict the Scores With Your Friends";
++// "No betting" and the age limit up front, inside the ~150 characters a snippet shows.
++const DESCRIPTION =
++  `A no-betting score-prediction game from the makers of Scout Gamer, for ages ${DICTUMUS_MIN_AGE}+. Call every match with your friends and see who reads football best.`;
++const PAGE_URL = "https://www.scoutgamer.com/dictumus";
++
++// openGraph and twitter are set here, or the root layout's og:url (the homepage) leaks
++// through and a shared /dictumus link previews as the homepage.
++export const metadata: Metadata = {
++  title: TITLE,
++  description: DESCRIPTION,
++  alternates: { canonical: PAGE_URL },
++  openGraph: { title: `${TITLE} | Scout Gamer`, description: DESCRIPTION, url: PAGE_URL, siteName: "Scout Gamer", type: "website" },
++  twitter: { card: "summary_large_image", title: `${TITLE} | Scout Gamer`, description: DESCRIPTION },
++};
++
++const STEPS = [
++  {
++    n: "01",
++    title: "Call every score",
++    text: "Write a score for every match of the week in a few taps. You can change a pick until 15 minutes before its kick-off, so team news still counts.",
++  },
++  {
++    n: "02",
++    title: "The picks open together",
++    text: "Fifteen minutes before kick-off, everyone's picks for that match open at once. Nobody copies, and it is on record who called it.",
++  },
++  {
++    n: "03",
++    title: "The table settles it",
++    text: "Points land after the final whistle and the table moves. Honours change hands each week, and the best calls get a card for the group chat.",
++  },
++];
++
++const POINTS = [
++  { pts: "+5", label: "Exact score" },
++  { pts: "+2", label: "Right result and margin" },
++  { pts: "+1", label: "Right result" },
++];
++
++const label: React.CSSProperties = { fontSize: 10, letterSpacing: "0.2em", color: "var(--sg-text-muted)", margin: "0 0 16px", fontWeight: 400 };
++
++export default function DictumusPage() {
++  return (
++    <main style={{ background: "var(--sg-bg)", color: "var(--sg-text-primary)", minHeight: "100vh" }}>
++      <SiteHeader />
++      <div style={{ paddingTop: "68px" }} />
++
++      <div className="sg-page-shell" style={{ paddingTop: 64, paddingBottom: 80, maxWidth: 880 }}>
++        <div className="eyebrow" style={{ color: "var(--accent)" }}>FROM THE MAKERS OF SCOUT GAMER</div>
++        <h1 className="display" style={{ fontSize: "clamp(36px, 5vw, 56px)", fontWeight: 700, letterSpacing: "-0.04em", lineHeight: 1.05, margin: "8px 0 0" }}>
++          Dictumus: call the scores, keep the proof
++        </h1>
++        <p style={{ fontSize: 18, color: "var(--sg-text-secondary)", lineHeight: 1.6, marginTop: 20, maxWidth: 640 }}>
++          Scout Gamer is about reading football before everyone else does. Dictumus is the same habit
++          as a game: you and your friends call the score of every match, and the table shows who
++          reads it best. We built it.
++        </p>
++
++        <div style={{ display: "flex", flexWrap: "wrap", gap: 10, marginTop: 32 }}>
++          <a href={dictumusWebAppUrl("page")} target="_blank" rel="noopener" className="btn btn-solid" style={{ background: "var(--accent)", borderColor: "var(--accent)", fontSize: 11 }}>
++            PLAY IN YOUR BROWSER
++          </a>
++          <a href={dictumusPlayStoreUrl("page")} target="_blank" rel="noopener" className="btn" style={{ fontSize: 11 }}>
++            GET IT ON GOOGLE PLAY
++          </a>
++        </div>
++        <p className="mono" style={{ fontSize: 10, letterSpacing: "0.12em", color: "var(--sg-text-muted)", marginTop: 14 }}>
++          FOR AGES {DICTUMUS_MIN_AGE} AND OVER · THE BROWSER VERSION WORKS ON ANY PHONE OR COMPUTER, IPHONE INCLUDED · APP STORE COMING SOON
++        </p>
++
++        <section style={{ marginTop: 72 }}>
++          <h2 className="mono" style={label}>HOW IT WORKS</h2>
++          <ol style={{ listStyle: "none", margin: 0, padding: 0, display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(min(100%, 240px), 1fr))", gap: 16 }}>
++            {STEPS.map((s) => (
++              <li key={s.n} style={{ background: "var(--sg-surface)", border: "1px solid var(--sg-border)", borderRadius: 6, padding: 22 }}>
++                <div className="mono" style={{ fontSize: 10, letterSpacing: "0.16em", color: "var(--accent)", marginBottom: 10 }}>{s.n}</div>
++                <h3 className="display" style={{ fontSize: 18, fontWeight: 700, letterSpacing: "-0.01em", margin: "0 0 8px" }}>{s.title}</h3>
++                <p style={{ fontSize: 14, lineHeight: 1.6, color: "var(--sg-text-secondary)", margin: 0 }}>{s.text}</p>
++              </li>
++            ))}
++          </ol>
++        </section>
++
++        <section style={{ marginTop: 56 }}>
++          <h2 className="mono" style={label}>POINTS FOR EVERY PICK</h2>
++          <div style={{ display: "flex", flexWrap: "wrap", gap: 12 }}>
++            {POINTS.map((p) => (
++              <div key={p.label} style={{ display: "flex", alignItems: "baseline", gap: 10, padding: "12px 18px", background: "var(--sg-surface)", border: "1px solid var(--sg-border)", borderRadius: 999 }}>
++                <span className="display" style={{ fontSize: 20, fontWeight: 700, color: "var(--accent)" }}>{p.pts}</span>
++                <span style={{ fontSize: 14, color: "var(--sg-text-secondary)" }}>{p.label}</span>
++              </div>
++            ))}
++          </div>
++        </section>
++
++        <section style={{ marginTop: 56, display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(min(100%, 320px), 1fr))", gap: 40 }}>
++          <div>
++            <h2 className="mono" style={label}>ELEVEN COMPETITIONS</h2>
++            <ul style={{ listStyle: "none", margin: 0, padding: 0, display: "flex", flexWrap: "wrap", gap: 8 }}>
++              {DICTUMUS_COMPETITIONS.map((c) => (
++                <li key={c} className="chip" style={{ fontSize: 11 }}>{c}</li>
++              ))}
++            </ul>
++          </div>
++          <div>
++            <h2 className="mono" style={label}>EIGHT LANGUAGES</h2>
++            <ul style={{ listStyle: "none", margin: 0, padding: 0, display: "flex", flexWrap: "wrap", gap: 8 }}>
++              {DICTUMUS_LANGUAGES.map((l) => (
++                <li key={l.lang} lang={l.lang} dir={"dir" in l ? l.dir : undefined} className="chip" style={{ fontSize: 11 }}>{l.label}</li>
++              ))}
++            </ul>
++            <p style={{ fontSize: 14, lineHeight: 1.6, color: "var(--sg-text-secondary)", marginTop: 14 }}>
++              Everyone in a group plays in their own language.
++            </p>
++          </div>
++        </section>
++
++        <section style={{ marginTop: 56, padding: 28, background: "var(--sg-surface)", border: "1px solid var(--sg-border)", borderLeft: "3px solid var(--accent)", borderRadius: 6 }}>
++          <h2 className="display" style={{ fontSize: 22, fontWeight: 700, letterSpacing: "-0.02em", margin: "0 0 12px" }}>
++            No betting. No money between players.
++          </h2>
++          <p style={{ fontSize: 15, lineHeight: 1.65, color: "var(--sg-text-secondary)", margin: 0 }}>
++            You play for the top of the table, the weekly honours and the right to say you called it.
++            Every tournament is free until its league&apos;s second half, and always for at least its first three
++            match weeks. After that, one person in the group buys a one-off pack for the second half;
++            invited friends never pay, nothing renews and there are no ads. Practice against the
++            computer is always free. Dictumus is for players aged {DICTUMUS_MIN_AGE} and over. Prices are on{" "}
++            <a href={DICTUMUS_SITE_URL} target="_blank" rel="noopener" className="u-link" style={{ color: "var(--sg-text-primary)" }}>dictumus.com</a>.
++          </p>
++        </section>
++
++        <section style={{ marginTop: 56 }}>
++          <h2 className="mono" style={label}>WHY IT LIVES HERE</h2>
++          <p style={{ fontSize: 16, lineHeight: 1.65, color: "var(--sg-text-secondary)", margin: 0, maxWidth: 680 }}>
++            We put our own calls on record and come back to mark them, right or wrong: our{" "}
++            <Link href="/lists/golden-boy-2026-our-ballot-and-the-race-behind-cubarsi" className="u-link" style={{ color: "var(--sg-text-primary)" }}>Golden Boy 2026 ballot</Link>{" "}
++            went out a week before the result, and{" "}
++            <Link href="/lists/golden-boy-2026-cubarsi-wins-and-how-our-ballot-did" className="u-link" style={{ color: "var(--sg-text-primary)" }}>the receipt</Link>{" "}
++            shows how it did. Dictumus does the same thing for every weekend of football.
++          </p>
++        </section>
++      </div>
++
++      <SiteFooter />
++    </main>
++  );
++}
+diff --git a/app/lists/[slug]/client.tsx b/app/lists/[slug]/client.tsx
+index b0da8c7..e84e5dc 100644
+--- a/app/lists/[slug]/client.tsx
++++ b/app/lists/[slug]/client.tsx
+@@ -18,6 +18,7 @@ import { frozenRow, type FrozenFcRow } from "@/lib/card-snapshot";
+ import { useCardSnapshot } from "../../components/card-snapshot-context";
+ import MoreInSection from "../../components/more-in-section";
+ import CoverCaption from "../../components/cover-caption";
++import DictumusCard from "../../components/dictumus-card";
+ import type { RelatedLinks } from "@/lib/related-articles";
+ 
+ type ContentRow = {
+@@ -366,6 +367,8 @@ function ListLayout({ row, related }: { row: ContentRow; related?: RelatedLinks
+               </div>
+             </div>
+           )}
++
++          <DictumusCard category={row.category} slug={row.slug} accent={accent} />
+         </div>
+ 
+         <aside className="article-v2-sidebar" style={{ position: "sticky", top: 88 }}>
+diff --git a/app/sitemap.ts b/app/sitemap.ts
+index bf031ce..123ac81 100644
+--- a/app/sitemap.ts
++++ b/app/sitemap.ts
+@@ -30,6 +30,7 @@ const staticEntries = [
+   { url: "/lists",                     priority: 0.85 },
+   { url: "/tactics-lab",              priority: 0.85 },
+   { url: "/arena",                    priority: 0.75 },
++  { url: "/dictumus",                 priority: 0.5 },
+ ];
+ 
+ const CAT_PATHS: Record<string, string> = {
+diff --git a/lib/dictumus.ts b/lib/dictumus.ts
+new file mode 100644
+index 0000000..228fb79
+--- /dev/null
++++ b/lib/dictumus.ts
+@@ -0,0 +1,116 @@
++/**
++ * Dictumus, the owner's score-prediction game (dictumus.com), promoted on Scout Gamer
++ * from 17 Nov 2026. Its links, copy and the rule for where the end-of-article card
++ * appears all live here, so every placement says the same thing.
++ *
++ * Checked against dictumus.com on 17 Nov 2026:
++ * - 11 competitions, 8 languages; Android on Google Play, the App Store listing is
++ *   still waiting for approval (never link Apple until it exists); the web app at
++ *   app.dictumus.com runs in any browser, iPhone included.
++ * - Every tournament is free until its league's second half (and for at least its
++ *   first three match weeks); then one person in the group buys a one-off pack.
++ *   No ads, nothing renews, and no money changes hands between players.
++ *   So the copy says "no betting" and "no money between players", never just
++ *   "free" or "no money": the second-half pack is real.
++ * - Players must be 16 or over (dictumus.com/terms and /privacy). Scout Gamer's
++ *   readers are young, so every placement that sends people to the game says 16+.
++ *
++ * Placements: the end-of-article card (DictumusCard), the /dictumus page, the
++ * PREDICT item in the header and a line in the footer. At most one promo per article.
++ */
++
++export const DICTUMUS_SITE_URL = "https://dictumus.com/";
++/** From dictumus.com/terms: "You must be 16 or over." */
++export const DICTUMUS_MIN_AGE = 16;
++const WEB_APP_URL = "https://app.dictumus.com/";
++const PLAY_STORE_URL = "https://play.google.com/store/apps/details?id=com.dictumus.app";
++
++/** Where on Scout Gamer a click came from; sent as utm_content. */
++export type DictumusPlacement = "article-card" | "prediction-card" | "page";
++
++function utm(placement: DictumusPlacement): URLSearchParams {
++  return new URLSearchParams({
++    utm_source: "scoutgamer",
++    utm_medium: "referral",
++    utm_campaign: "scoutgamer_promo",
++    utm_content: placement,
++  });
++}
++
++/** The web app with UTM tags. The primary button: it works on every phone, iPhone included. */
++export function dictumusWebAppUrl(placement: DictumusPlacement): string {
++  return `${WEB_APP_URL}?${utm(placement).toString()}`;
++}
++
++/** Google Play with the same tags as an install referrer, so installs are attributed too. */
++export function dictumusPlayStoreUrl(placement: DictumusPlacement): string {
++  const params = new URLSearchParams({ hl: "en", referrer: utm(placement).toString() });
++  return `${PLAY_STORE_URL}&${params.toString()}`;
++}
++
++export const DICTUMUS_COMPETITIONS = [
++  "Premier League",
++  "Championship",
++  "LaLiga",
++  "Serie A",
++  "Bundesliga",
++  "Ligue 1",
++  "Eredivisie",
++  "Primeira Liga",
++  "Süper Lig",
++  "Brasileirão",
++  "Champions League",
++] as const;
++
++/** Each language under its own name, with its BCP-47 code so screen readers switch voice. */
++export const DICTUMUS_LANGUAGES = [
++  { label: "English", lang: "en" },
++  { label: "Deutsch", lang: "de" },
++  { label: "Español", lang: "es" },
++  { label: "Français", lang: "fr" },
++  { label: "Italiano", lang: "it" },
++  { label: "Português", lang: "pt" },
++  { label: "Türkçe", lang: "tr" },
++  { label: "العربية", lang: "ar", dir: "rtl" },
++] as const;
++
++/**
++ * Pieces where we put our own call on record (the Golden Boy ballot and its receipt).
++ * They get the "we called it" version of the card.
++ */
++const PREDICTION_SLUGS = new Set<string>([
++  "golden-boy-2026-our-ballot-and-the-race-behind-cubarsi",
++  "golden-boy-2026-cubarsi-wins-and-how-our-ballot-did",
++]);
++
++/**
++ * No card on the World Cup 2026 archive: national-team football, which Dictumus does
++ * not cover. Add a slug to NO_CARD_SLUGS to switch the card off for a single piece.
++ */
++const NO_CARD_CATEGORIES = new Set<string>(["wc-2026"]);
++const NO_CARD_SLUGS = new Set<string>([]);
++
++export type DictumusCardCopy = {
++  placement: DictumusPlacement;
++  title: string;
++  body: string;
++};
++
++/** The card for an article, or null where it should not appear. */
++export function dictumusCardFor(category: string | null | undefined, slug: string | null | undefined): DictumusCardCopy | null {
++  if (!slug || (category && NO_CARD_CATEGORIES.has(category)) || NO_CARD_SLUGS.has(slug)) return null;
++  if (PREDICTION_SLUGS.has(slug)) {
++    return {
++      placement: "prediction-card",
++      title: "We put our picks on record. Now put yours.",
++      body:
++        "Dictumus is a score-prediction game built on the same idea as this piece: make the call before it happens and keep the proof. Your group calls every match, the picks open together before kick-off, and the table shows who read it best.",
++    };
++  }
++  return {
++    placement: "article-card",
++    title: "You read the players. Now call the scores.",
++    body:
++      "Dictumus is a score-prediction game for you and your friends. Call every match, the picks open together before kick-off, and the table settles who reads football best. Eleven competitions, eight languages.",
++  };
++}
