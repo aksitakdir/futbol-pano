@@ -227,6 +227,21 @@ Football Manager, konumlanmamızın ("EA FC, Football Manager") yarısı. Bu tak
   6. **Her yerde etiket:** sitede kapağın altında "Illustration: AI-generated" (sitede bu alan henüz yok, eklenecek);
      Instagram ve X'te platformun yapay zekâ etiketi. Bu, 10. kararı da kapatır.
   7. **Şikâyet gelirse aynı gün kaldırılır.** Prompt'lar ve üretim tarihleri not edilir.
+- **Ev stili — gerçek oyuncu illüstrasyonları (16 Kasım 2026, sahibin onayı; ilk örnek #176 Varela):** Bütün gerçek oyuncu
+  görselleri aynı stilde üretilir, böylece kapaklar bir seri gibi tanınır ve Midjourney'nin anonim figürlü kapaklarından ayrışır.
+  - **Stil:** boyalı editoryal illüstrasyon; gouache dokusu, düz geometrik fırça darbeleri, sade ve hafif stilize stadyum
+    çizgileri, yumuşak açık gökyüzü, alçak güneşin sıcak ışığı. Retro yakalı forma, yalnızca kulüp renklerinde.
+  - **Prompt kalıbı:** "Painted editorial illustration, gouache texture with flat geometric brushwork, clearly an artwork and not
+    a photograph. [Oyuncu, yaş, kulüp, pozisyon; sahnenin eylemi]. Plain retro collared kit in [kulüp renkleri] only: no crest,
+    no sponsor, no kit-maker logo, no number, no lettering. Simplified, unbranded stadium in loose blocks of colour; soft pale
+    sky; warm low sun. No trophy, no other recognisable people, no text, no watermark. [16:9 kapak / 3:2 içerik]."
+  - **Tutarlılık:** ChatGPT'de #176'nın kapağı (`video/public/backdrops/gustavo-varela-…/varela-shot.jpg`) stil referansı olarak
+    tutulur ve sonraki prompt'lara "same style as this image" eklenir. Bu kendi ürettiğimiz bir görsel; 2. kural (ajans/kulüp
+    fotoğrafı yüklenmez) yalnızca başkalarının fotoğraflarını kapsar.
+  - **Kullanım:** kapakta ve içerikte eylem sahneleri (şut, top sürme, yukarıdan kadraj), yüz küçük kalır. Yakın portre yalnızca
+    oyuncuya gerçekten benziyorsa ve sosyal medyada kullanılır. Benzerliği sahip, oyuncunun gerçek fotoğraflarına bakarak kontrol
+    eder (o fotoğraflar ChatGPT'ye yüklenmez).
+  - Ev stili gerçek oyunculara özeldir; 18 yaş altı oyuncular ve genel konu görselleri anonim figür kuralında kalır.
 
 **5.4 Remotion**
 - **Yeni paketler:** `@remotion/transitions`, `@remotion/paths`, `@remotion/layout-utils`. 4.0.537'ye sabitlenerek kurulur.

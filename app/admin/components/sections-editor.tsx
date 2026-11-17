@@ -95,6 +95,7 @@ function BlockEditor({
   onDelete,
   onMoveUp,
   onMoveDown,
+  onInsertBelow,
 }: {
   block: SectionBlock;
   index: number;
@@ -103,6 +104,7 @@ function BlockEditor({
   onDelete: () => void;
   onMoveUp: () => void;
   onMoveDown: () => void;
+  onInsertBelow: () => void;
 }) {
   const [open, setOpen] = useState(true);
   const meta = blockMeta(block.type);
@@ -158,6 +160,8 @@ function BlockEditor({
           )}
         </div>
         <div className="flex items-center gap-1 ml-auto">
+          <button type="button" onClick={onInsertBelow} title="Add a block below this one"
+            className="rounded px-2 py-1 text-emerald-500/80 hover:text-emerald-300 text-xs font-semibold transition">+ below</button>
           <button type="button" onClick={onMoveUp} disabled={index === 0}
             className="rounded px-1.5 py-1 text-slate-500 hover:text-slate-200 disabled:opacity-20 text-xs transition">↑</button>
           <button type="button" onClick={onMoveDown} disabled={index === total - 1}
@@ -1015,8 +1019,33 @@ function HtmlTextArea({ value, onChange, placeholder }: { value: string; onChang
   );
 }
 
+/** The block-type menu, shared by "+ Add Block" at the end and "+ below" on each block. */
+function BlockTypeMenu({ onPick }: { onPick: (type: SectionBlock["type"]) => void }) {
+  return (
+    <>
+      {BLOCK_TYPES.map((bt) => (
+        <button
+          key={bt.type}
+          type="button"
+          onClick={() => onPick(bt.type)}
+          className="flex w-full items-center gap-3 px-4 py-2.5 text-left text-sm transition hover:bg-slate-800/80"
+        >
+          <span className={`text-lg leading-none ${COLOR_MAP[bt.color]?.split(" ")[2]}`}>{bt.icon}</span>
+          <div>
+            <div className="font-semibold text-slate-100">{bt.label}</div>
+            <div className="text-[11px] text-slate-500">{bt.desc}</div>
+          </div>
+        </button>
+      ))}
+    </>
+  );
+}
+
 export default function SectionsEditor({ value, onChange }: Props) {
   const [addOpen, setAddOpen] = useState(false);
+  // Index of the block whose "+ below" menu is open. Images now go into the
+  // middle of 50-block lists; appending and pressing ↑ thirty times did not scale.
+  const [insertAfter, setInsertAfter] = useState<number | null>(null);
   const [importOpen, setImportOpen] = useState(false);
   const [importText, setImportText] = useState("");
   const [importMsg, setImportMsg] = useState("");
@@ -1024,6 +1053,11 @@ export default function SectionsEditor({ value, onChange }: Props) {
   function addBlock(type: SectionBlock["type"]) {
     onChange([...value, defaultBlock(type)]);
     setAddOpen(false);
+  }
+
+  function insertBlock(after: number, type: SectionBlock["type"]) {
+    onChange([...value.slice(0, after + 1), defaultBlock(type), ...value.slice(after + 1)]);
+    setInsertAfter(null);
   }
 
   /**
@@ -1128,16 +1162,29 @@ export default function SectionsEditor({ value, onChange }: Props) {
       )}
 
       {value.map((block, i) => (
-        <BlockEditor
-          key={i}
-          block={block}
-          index={i}
-          total={value.length}
-          onChange={(b) => updateBlock(i, b)}
-          onDelete={() => deleteBlock(i)}
-          onMoveUp={() => moveBlock(i, -1)}
-          onMoveDown={() => moveBlock(i, 1)}
-        />
+        <React.Fragment key={i}>
+          <BlockEditor
+            block={block}
+            index={i}
+            total={value.length}
+            onChange={(b) => updateBlock(i, b)}
+            onDelete={() => deleteBlock(i)}
+            onMoveUp={() => moveBlock(i, -1)}
+            onMoveDown={() => moveBlock(i, 1)}
+            onInsertBelow={() => setInsertAfter((cur) => (cur === i ? null : i))}
+          />
+          {insertAfter === i && (
+            <div className="rounded-xl border border-emerald-600/40 bg-slate-900 shadow-2xl">
+              <div className="flex items-center justify-between px-4 pt-2.5 text-[10px] font-semibold uppercase tracking-wider text-emerald-400/80">
+                <span>Add below block {String(i + 1).padStart(2, "0")}</span>
+                <button type="button" onClick={() => setInsertAfter(null)} className="text-slate-500 hover:text-slate-200">✕</button>
+              </div>
+              <div className="max-h-72 overflow-y-auto">
+                <BlockTypeMenu onPick={(type) => insertBlock(i, type)} />
+              </div>
+            </div>
+          )}
+        </React.Fragment>
       ))}
 
       <div className="relative">
@@ -1151,20 +1198,7 @@ export default function SectionsEditor({ value, onChange }: Props) {
 
         {addOpen && (
           <div className="absolute bottom-full left-0 right-0 z-20 mb-1 max-h-72 overflow-y-auto rounded-xl border border-slate-700 bg-slate-900 shadow-2xl">
-            {BLOCK_TYPES.map((bt) => (
-              <button
-                key={bt.type}
-                type="button"
-                onClick={() => addBlock(bt.type)}
-                className="flex w-full items-center gap-3 px-4 py-2.5 text-left text-sm transition hover:bg-slate-800/80"
-              >
-                <span className={`text-lg leading-none ${COLOR_MAP[bt.color]?.split(" ")[2]}`}>{bt.icon}</span>
-                <div>
-                  <div className="font-semibold text-slate-100">{bt.label}</div>
-                  <div className="text-[11px] text-slate-500">{bt.desc}</div>
-                </div>
-              </button>
-            ))}
+            <BlockTypeMenu onPick={addBlock} />
           </div>
         )}
       </div>
