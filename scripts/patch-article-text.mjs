@@ -11,7 +11,15 @@
  *
  *   node scripts/patch-article-text.mjs edits.json            # dry run: shows every match
  *   node scripts/patch-article-text.mjs edits.json --write    # pending articles only
- *   node scripts/patch-article-text.mjs edits.json --write --published   # live pieces, owner's OK
+ *   node scripts/patch-article-text.mjs edits.json --write --published --significant   # live, real update
+ *   node scripts/patch-article-text.mjs edits.json --write --published --minor         # live, typo-level
+ *
+ * A live write must say which it is. --significant stamps content_updated_at, which
+ * becomes the page's dateModified, article:modified_time, sitemap <lastmod> and its
+ * visible "Updated" date: new figures, a corrected fact, a result, a rewritten
+ * section. --minor leaves the date alone: a typo, punctuation, a link, a caption.
+ * Google trusts a site's lastmod all or nothing, so a bump without a real change
+ * costs the real ones (supabase/migrations/contents_content_updated_at.sql).
  *
  * edits.json: [{ "article_id": 158, "edits": [{ "old": "exact text", "new": "replacement" }] }]
  *
@@ -39,8 +47,14 @@ const args = process.argv.slice(2);
 const file = args.find((a) => !a.startsWith("--"));
 const write = args.includes("--write");
 const allowPublished = args.includes("--published");
+const significant = args.includes("--significant");
+const minor = args.includes("--minor");
+if (significant && minor) {
+  console.error("Pass --significant or --minor, not both.");
+  process.exit(1);
+}
 if (!file) {
-  console.error("Usage: node scripts/patch-article-text.mjs edits.json [--write] [--published]");
+  console.error("Usage: node scripts/patch-article-text.mjs edits.json [--write] [--published --significant|--minor]");
   process.exit(1);
 }
 const batches = JSON.parse(fs.readFileSync(file, "utf8"));
@@ -146,16 +160,27 @@ for (const batch of batches) {
     console.log(`  skipped writing: #${row.id} is published — pass --published once the owner has agreed`);
     continue;
   }
+  if (row.status === "published" && !significant && !minor) {
+    console.log(`  skipped writing: #${row.id} is live — add --significant (a real update: stamps the Updated date) or --minor (typo, link: date unchanged)`);
+    failed++;
+    continue;
+  }
   fs.mkdirSync(path.join(ROOT, "backups"), { recursive: true });
   // Timestamped, so a second patch on the same day never overwrites the first backup.
   const stamp = new Date().toISOString().replace(/[:.]/g, "-");
   fs.writeFileSync(path.join(ROOT, "backups", `sections-${row.id}-before-patch-${stamp}.json`), JSON.stringify(row.sections_json));
   const { error: e2 } = await supabase
     .from("contents")
-    .update({ sections_json: blocks, content_en: sectionsToHtml(blocks) })
+    .update({
+      sections_json: blocks,
+      content_en: sectionsToHtml(blocks),
+      ...(row.status === "published" && significant ? { content_updated_at: new Date().toISOString() } : {}),
+    })
     .eq("id", row.id);
-  console.log(e2 ? `  ERROR ${e2.message}` : `  written: ${applied} edit(s); backup in backups/`);
+  const stamped = row.status === "published" && significant ? "; Updated date stamped" : "";
+  console.log(e2 ? `  ERROR ${e2.message}` : `  written: ${applied} edit(s); backup in backups/${stamped}`);
+  if (e2) failed++;
   if (!e2 && row.status === "published") await revalidate(row);
 }
-if (!write) console.log("\n--dry: nothing written. Pass --write (and --published for live pieces) to apply.");
+if (!write) console.log("\n--dry: nothing written. Pass --write (and --published --significant|--minor for live pieces) to apply.");
 process.exit(failed ? 2 : 0);

@@ -17,6 +17,7 @@ const CATEGORY_PATH: Record<string, string> = {
 };
 
 import { articlePlainText as plainText } from "./article-excerpt";
+import { articleDates } from "./article-dates";
 
 export function articleJsonLd(article: {
   title_en?: string;
@@ -25,6 +26,7 @@ export function articleJsonLd(article: {
   content: string;
   cover_image?: string;
   created_at: string;
+  content_updated_at?: string | null;
   slug: string;
   category?: string;
 }, urlPath: string) {
@@ -35,13 +37,15 @@ export function articleJsonLd(article: {
   const category = article.category ?? "";
   const catLabel = CATEGORY_LABEL[category] ?? category;
   const catPath = CATEGORY_PATH[category] ?? "/";
+  const dates = articleDates(article);
 
   const articleSchema = {
     "@type": "Article",
     "headline": title,
     "description": description,
     "image": image,
-    "datePublished": article.created_at,
+    "datePublished": dates.published,
+    "dateModified": dates.modified,
     "url": `${BASE}${urlPath}`,
     "inLanguage": "en",
     "author": { "@type": "Organization", "name": "Scout Gamer", "url": BASE },

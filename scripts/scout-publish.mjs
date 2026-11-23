@@ -511,7 +511,30 @@ async function main() {
     console.error("  preflight OK\n");
   }
 
-  // --dry: parse + validate only, never touch the DB
+  /*
+   * --update on a live article must say whether readers get something new:
+   * --significant stamps content_updated_at (the page's dateModified, sitemap <lastmod>
+   * and visible "Updated" date), --minor leaves them alone. Google trusts a site's
+   * lastmod all or nothing (supabase/migrations/contents_content_updated_at.sql).
+   * Checked here, before --dry returns and before the confirmed-deal insert, so a
+   * missing flag stops the run before anything is written: a re-run after a late
+   * stop would file the deal twice. A read only, so --dry still writes nothing.
+   */
+  const updateArgAt = process.argv.indexOf("--update");
+  if (updateArgAt !== -1 && hasArticle && !process.argv.includes("--unpublish")) {
+    const { data: target, error: readErr } = await supabase
+      .from("contents").select("status").eq("id", process.argv[updateArgAt + 1]).maybeSingle();
+    if (readErr) {
+      console.error("Could not read the article to update:", readErr.message);
+      process.exit(1);
+    }
+    if (target?.status === "published" && process.argv.includes("--significant") === process.argv.includes("--minor")) {
+      console.error("Article is live: pass --significant (a real update: stamps the Updated date) or --minor (date unchanged), one of the two.");
+      process.exit(1);
+    }
+  }
+
+  // --dry: parse + validate only, never write to the DB
   if (process.argv.includes("--dry")) {
     console.log(JSON.stringify({
       ok: true,
@@ -598,6 +621,11 @@ async function main() {
       .select("status, category, slug")
       .eq("id", updateId)
       .maybeSingle();
+
+    // --significant on a live article (flags checked before --dry, above).
+    if (current?.status === "published" && !process.argv.includes("--unpublish") && process.argv.includes("--significant")) {
+      row.content_updated_at = new Date().toISOString();
+    }
 
     if (current?.status === "published" && status !== "published") {
       if (process.argv.includes("--unpublish")) {

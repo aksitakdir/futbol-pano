@@ -14,6 +14,7 @@ type ContentRow = {
   content: string;
   content_en?: string;
   created_at: string;
+  content_updated_at?: string | null;
   youtube_id?: string;
   cover_image?: string; cover_caption?: string | null;
   youtube_query_1?: string;
@@ -62,6 +63,7 @@ export default function HubArticleDetailClient({
       excerptContent={article.content_en || article.content}
       category={hubId}
       date={article.created_at}
+      modifiedDate={article.content_updated_at}
       slug={article.slug}
       activeNav={config.navKey}
       backHref={config.path}

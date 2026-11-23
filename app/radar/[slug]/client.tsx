@@ -11,7 +11,7 @@ import type { SectionBlock } from "@/lib/section-blocks";
 type ContentRow = {
   id: string; title: string; title_en?: string;
   slug: string; category: string;
-  content: string; content_en?: string; created_at: string;
+  content: string; content_en?: string; created_at: string; content_updated_at?: string | null;
   youtube_id?: string; cover_image?: string; cover_caption?: string | null;
   youtube_query_1?: string; youtube_query_2?: string;
   news_query?: string; player_name?: string;
@@ -68,6 +68,7 @@ export default function RadarDetailClient({ article, playerCard, related }: Prop
       excerptContent={article.content_en || article.content}
       category={article.category}
       date={article.created_at}
+      modifiedDate={article.content_updated_at}
       slug={article.slug}
       activeNav="radar"
       backHref="/radar"

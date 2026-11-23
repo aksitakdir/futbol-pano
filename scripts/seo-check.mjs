@@ -19,7 +19,8 @@
  *   - counts only <a href> in <body>, outside <script>, and splits page BODY from
  *     FOOTER links, so moving links into the footer can no longer pass;
  *   - checks each hub links its section's newest piece (publish → revalidation);
- *   - samples the newest and oldest article of each section;
+ *   - samples the newest and oldest article of each section (by go-live time) and the
+ *     most recently updated one, and checks that its dates agree everywhere;
  *   - checks canonicals, and reports <main>, <h1> and client-render bailouts.
  * ROUTES holds today's floor. Each phase of the server-rendering plan (docs/TODO.md)
  * raises its route's numbers and switches on its `require` flags in the same change.
@@ -124,6 +125,30 @@ function parse(html) {
 
 const articleLinks = (hrefs, articles, self) => new Set(hrefs.filter((h) => articles.has(h) && h !== self));
 
+/**
+ * An article's dates, from every place Google reads one. They must agree
+ * (lib/article-dates.ts): article:published_time / modified_time, JSON-LD
+ * datePublished / dateModified, the sitemap <lastmod> and the visible <time>.
+ * Added 24 Nov 2026, when it turned out the site had sent no modified date at all.
+ */
+function dateProblems(html, sitemapLastmod) {
+  const meta = (prop) => html.match(new RegExp(`<meta[^>]*property="${prop}"[^>]*content="([^"]*)"`, "i"))?.[1];
+  const ld = (key) => html.match(new RegExp(`"${key}":"([^"]*)"`))?.[1];
+  const visible = (kind) => html.match(new RegExp(`<time[^>]*data-date="${kind}"[^>]*>`, "i"))?.[0]?.match(/datetime="([^"]*)"/i)?.[1];
+  const same = (a, b) => a && b && Date.parse(a) === Date.parse(b);
+  const day = (iso) => new Date(iso).toISOString().slice(0, 10);
+  const pub = meta("article:published_time"), mod = meta("article:modified_time");
+  const problems = [];
+  if (!pub) problems.push("no article:published_time");
+  if (!mod) problems.push("no article:modified_time");
+  if (!same(ld("datePublished"), pub)) problems.push(`JSON-LD datePublished ${ld("datePublished") ?? "missing"} ≠ article:published_time ${pub ?? "missing"}`);
+  if (!same(ld("dateModified"), mod)) problems.push(`JSON-LD dateModified ${ld("dateModified") ?? "missing"} ≠ article:modified_time ${mod ?? "missing"}`);
+  if (mod && sitemapLastmod && Date.parse(mod) !== sitemapLastmod) problems.push(`sitemap lastmod ${new Date(sitemapLastmod).toISOString()} ≠ article:modified_time ${mod}`);
+  if (pub && !same(visible("published"), pub)) problems.push(`visible Published date ${visible("published") ?? "missing"} ≠ article:published_time`);
+  if (pub && mod && day(mod) !== day(pub) && !same(visible("modified"), mod)) problems.push(`updated on ${day(mod)} but the visible Updated date is ${visible("modified") ?? "missing"}`);
+  return { problems, pub, mod };
+}
+
 // ── Sitemap: the published article set ───────────────────────────────────────
 console.log(`\nRaw-HTML SEO check against ${BASE}${RECORD ? " (record mode)" : ""}\n`);
 console.log("Crawl basics:");
@@ -151,7 +176,27 @@ if (articles.size === 0) {
 }
 const articleSet = new Set(articles.keys());
 const bySection = (s) => [...articles].filter(([, a]) => s === "*" || a.section === s).sort((a, b) => b[1].lastmod - a[1].lastmod);
-const newest = (s) => bySection(s).find(([, a]) => Date.now() - a.lastmod > FRESH_GRACE_MS)?.[0];
+
+// <lastmod> is an article's last real update, not its publish date (lib/article-dates.ts),
+// so a July piece refreshed yesterday sorts first by it. "Newest" means newest published:
+// take that from the RSS feed, the 30 latest by go-live time. Anything not in the feed
+// went live before the feed's oldest item.
+const published = new Map(); // path → go-live ms
+try {
+  // The query string skips the CDN copy (s-maxage=3600): a piece published within the
+  // hour must already count as the newest.
+  const { status, html } = await get(`/feed?ts=${Date.now()}`);
+  if (status !== 200) throw new Error(`HTTP ${status}`);
+  for (const item of html.match(/<item>[\s\S]*?<\/item>/g) ?? []) {
+    const path = normalize(item.match(/<link>([^<]*)<\/link>/)?.[1] ?? "");
+    const at = Date.parse(item.match(/<pubDate>([^<]*)<\/pubDate>/)?.[1] ?? "");
+    if (path && articles.has(path) && at) published.set(path, at);
+  }
+  published.size ? pass(`/feed — ${published.size} publish dates`) : fail("/feed has no items that match the sitemap");
+} catch (e) { fail(`/feed — ${e.message}`); }
+const feedFloor = published.size ? Math.min(...published.values()) - 1 : Infinity;
+const publishedAt = (path) => published.get(path) ?? Math.min(articles.get(path).lastmod, feedFloor);
+const newest = (s) => bySection(s).map(([path]) => path).sort((a, b) => publishedAt(b) - publishedAt(a)).find((path) => Date.now() - publishedAt(path) > FRESH_GRACE_MS);
 
 // ── Hubs and the homepage ─────────────────────────────────────────────────────
 const record = [];
@@ -198,10 +243,13 @@ for (const r of ROUTES) {
 }
 
 // ── Articles: newest and oldest of each section ───────────────────────────────
-console.log("\nArticles (newest and oldest per section): sibling links, title, canonical:");
+console.log("\nArticles (newest, oldest, last updated per section): sibling links, title, canonical, dates:");
 for (const s of SECTIONS) {
-  const list = bySection(s);
-  const samples = [...new Set([list[0]?.[0], list[list.length - 1]?.[0]].filter(Boolean))];
+  // Newest and oldest by go-live time, plus the most recently updated piece, whose
+  // modified date is the one most likely to disagree somewhere.
+  const lastUpdated = bySection(s)[0]?.[0];
+  const list = bySection(s).sort((a, b) => publishedAt(b[0]) - publishedAt(a[0]));
+  const samples = [...new Set([list[0]?.[0], list[list.length - 1]?.[0], lastUpdated].filter(Boolean))];
   for (const path of samples) {
     try {
       const { status, html, cache } = await get(path);
@@ -221,6 +269,7 @@ for (const s of SECTIONS) {
       if (!p.canonical) problems.push("no canonical");
       else if (canonical !== path) problems.push(`canonical points at ${p.canonical}`);
       if (/^\s*Not Found\b/i.test(p.title)) problems.push(`title is "${p.title}"`);
+      problems.push(...dateProblems(html, articles.get(path)?.lastmod).problems);
       problems.length ? fail(`${path} — ${problems.join("; ")}  (${facts})`) : pass(`${path} — ${facts}`);
     } catch (e) { fail(`${path} — request failed: ${e.message}`); }
   }
@@ -247,7 +296,7 @@ if (FULL && !RECORD) {
       } catch (e) { fail(`${path} — request failed: ${e.message}`); }
     }));
   }
-  const orphans = [...inDegree].filter(([p, n]) => n === 0 && bySection(articles.get(p).section).length > 1 && Date.now() - articles.get(p).lastmod > INDEGREE_GRACE_MS);
+  const orphans = [...inDegree].filter(([p, n]) => n === 0 && bySection(articles.get(p).section).length > 1 && Date.now() - publishedAt(p) > INDEGREE_GRACE_MS);
   if (orphans.length) fail(`${orphans.length} article(s) linked from no sibling's body: ${orphans.slice(0, 5).map(([p]) => p).join(", ")}${orphans.length > 5 ? ` +${orphans.length - 5}` : ""}`);
   else pass(`all ${articles.size} articles have at least one in-body link from a sibling (min ${Math.min(...inDegree.values())}, max ${Math.max(...inDegree.values())})`);
 }

@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { createClient } from "./supabase";
 
 import { articlePlainText as plainText, truncateAtWord } from "./article-excerpt";
+import { articleDates } from "./article-dates";
 
 /**
  * Build a description from the block editor's sections_json.
@@ -42,9 +43,13 @@ export async function articleMetadata(
   // cached as a page titled "Not Found" with no canonical), and only a missing row,
   // or a duplicate slug (PGRST116), gets the Not Found title.
   const supabase = createClient();
+  // "*" rather than a column list: content_updated_at only exists once its migration
+  // has run (supabase/migrations/contents_content_updated_at.sql). Naming it here
+  // would fail every article's metadata, and with it the build, if the code got
+  // there first. The row already carries sections_json, the bulk of it.
   const { data, error } = await supabase
     .from("contents")
-    .select("title,title_en,content,content_en,sections_json,cover_image,created_at")
+    .select("*")
     .eq("slug", slug)
     .maybeSingle();
   if (error && error.code !== "PGRST116") throw error;
@@ -59,6 +64,7 @@ export async function articleMetadata(
     const description = truncate(fromLegacy.length >= 60 ? fromLegacy : descriptionFromBlocks(data.sections_json) || fromLegacy);
     const url = `https://www.scoutgamer.com${urlPath}`;
     const ogImage = data.cover_image || "https://www.scoutgamer.com/og-image.png";
+    const dates = articleDates(data);
 
     return {
       title,
@@ -72,7 +78,8 @@ export async function articleMetadata(
         siteName: "Scout Gamer",
         locale: "en_US",
         images: [{ url: ogImage, alt: title }],
-        publishedTime: data.created_at,
+        publishedTime: dates.published,
+        modifiedTime: dates.modified,
       },
       twitter: {
         card: "summary_large_image",

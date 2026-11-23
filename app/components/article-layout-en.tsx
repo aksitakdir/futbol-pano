@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState, useMemo } from "react";
+import { articleDates, formatArticleDate } from "@/lib/article-dates";
 import Link from "next/link";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
@@ -105,6 +106,8 @@ function getNewsQueryFromTitle(title: string): string {
 
 type Props = {
   title: string; content: string; category: string; date: string; slug: string;
+  /** contents.content_updated_at: shown as "Updated" after a real change (lib/article-dates.ts). */
+  modifiedDate?: string | null;
   activeNav: "lists" | "radar" | "tactics-lab" | "wc-2026" | "transfer";
   backHref: string; backLabel: string;
   youtubeId?: string; coverImage?: string;
@@ -123,7 +126,7 @@ type Props = {
 };
 
 export default function ArticleLayoutEn({
-  title, content, category, date, slug,
+  title, content, category, date, slug, modifiedDate,
   activeNav, backHref, backLabel,
   youtubeId, coverImage, coverCaption, playerName: _playerName,
   excerptContent: _excerptContent, isPending: _isPending,
@@ -178,7 +181,8 @@ export default function ArticleLayoutEn({
   const tags = CATEGORY_TAGS[category] ?? [];
   const effectiveNewsQuery = showNewsSection ? (newsQuery?.trim() || getNewsQueryFromTitle(title)) : "";
 
-  const formattedDate = new Date(date).toLocaleDateString("en-US", { day: "numeric", month: "long", year: "numeric" });
+  const dates = articleDates({ created_at: date, content_updated_at: modifiedDate });
+  const formattedDate = formatArticleDate(dates.published);
   const plainText = stripHtml(content);
 
   const { processedHtml, toc } = useMemo(() => {
@@ -378,8 +382,17 @@ export default function ArticleLayoutEn({
               }}>
                 <div>
                   <div className="mono" style={{ fontSize: 9, letterSpacing: "0.18em", color: "var(--sg-text-muted)" }}>PUBLISHED</div>
-                  <div className="mono" style={{ fontSize: 13, color: "var(--sg-text-primary)", marginTop: 2, letterSpacing: "0.04em" }}>{formattedDate}</div>
+                  <time dateTime={dates.published} data-date="published" className="mono" style={{ display: "block", fontSize: 13, color: "var(--sg-text-primary)", marginTop: 2, letterSpacing: "0.04em" }}>{formattedDate}</time>
                 </div>
+                {dates.showUpdated && (
+                  <>
+                    <div style={{ width: 1, height: 32, background: "var(--sg-border)" }} />
+                    <div>
+                      <div className="mono" style={{ fontSize: 9, letterSpacing: "0.18em", color: "var(--sg-text-muted)" }}>UPDATED</div>
+                      <time dateTime={dates.modified} data-date="modified" className="mono" style={{ display: "block", fontSize: 13, color: "var(--sg-text-primary)", marginTop: 2, letterSpacing: "0.04em" }}>{formatArticleDate(dates.modified)}</time>
+                    </div>
+                  </>
+                )}
                 <div style={{ width: 1, height: 32, background: "var(--sg-border)" }} />
                 <div>
                   <div className="mono" style={{ fontSize: 9, letterSpacing: "0.18em", color: "var(--sg-text-muted)" }}>EDITOR</div>
@@ -417,8 +430,17 @@ export default function ArticleLayoutEn({
               }}>
                 <div>
                   <div className="mono" style={{ fontSize: 9, letterSpacing: "0.18em", color: "var(--sg-text-muted)" }}>PUBLISHED</div>
-                  <div className="mono" style={{ fontSize: 13, color: "var(--sg-text-primary)", marginTop: 2, letterSpacing: "0.04em" }}>{formattedDate}</div>
+                  <time dateTime={dates.published} data-date="published" className="mono" style={{ display: "block", fontSize: 13, color: "var(--sg-text-primary)", marginTop: 2, letterSpacing: "0.04em" }}>{formattedDate}</time>
                 </div>
+                {dates.showUpdated && (
+                  <>
+                    <div style={{ width: 1, height: 32, background: "var(--sg-border)" }} />
+                    <div>
+                      <div className="mono" style={{ fontSize: 9, letterSpacing: "0.18em", color: "var(--sg-text-muted)" }}>UPDATED</div>
+                      <time dateTime={dates.modified} data-date="modified" className="mono" style={{ display: "block", fontSize: 13, color: "var(--sg-text-primary)", marginTop: 2, letterSpacing: "0.04em" }}>{formatArticleDate(dates.modified)}</time>
+                    </div>
+                  </>
+                )}
                 <div style={{ width: 1, height: 32, background: "var(--sg-border)" }} />
                 <div>
                   <div className="mono" style={{ fontSize: 9, letterSpacing: "0.18em", color: "var(--sg-text-muted)" }}>EDITOR</div>

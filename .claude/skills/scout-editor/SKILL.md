@@ -143,6 +143,12 @@ schema, same rendering — zero spend.
      reset the clock); after re-verifying, `refresh-baseline <id>` moves it. A "NOT TRACKED"
      or "note" line it passes through (age or club disagreeing with the brief) usually means
      search found the wrong player: pin the right one with `--ids "Name=<id>"`.
+   - **Updating a live piece says what kind of update it is (since 24 Nov 2026).** `scout-publish
+     --update <id>` and `patch-article-text --write --published` refuse a live article unless
+     given `--significant` (new figures, a corrected fact, a result, a rewritten section: stamps
+     `content_updated_at`, which becomes the page's dateModified, sitemap lastmod and visible
+     "Updated" date) or `--minor` (typo, link, caption: date unchanged). Never `--significant`
+     for a cosmetic edit: Google trusts a site's lastmod all or nothing.
    - **Queue it once the owner approves it:** `node scripts/publish-queue.mjs add <id> <date>`
      (pending pieces only; it warns on a date that is not a Tuesday or Friday). `list` shows the
      slots with cover and baseline status; `due` shows what goes out today.

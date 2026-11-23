@@ -50,15 +50,20 @@ export async function createContent(
 export async function updateContent(
   id: string,
   payload: Record<string, unknown>,
+  opts: { significant?: boolean } = {},
 ): Promise<UpdateResult> {
   if (!(await isAdminRequest())) return { ok: false, error: "Unauthorized" };
   // Read the row first: a changed slug or section must also refresh the pages that
   // listed it under the old one.
   const cols = "category,slug,hub_tags,status";
   const { data: before, error: readErr } = await supabaseAdmin.from("contents").select(cols).eq("id", id).maybeSingle();
+  // "Significant update" on a live article stamps its Updated date. Only a row that was
+  // already live: a first publish is dated by created_at (contents_publish_date_trigger.sql).
+  if (opts.significant && !before) return { ok: false, error: `Could not read the article first (${readErr?.message ?? "no row"}), so "Significant update" was not applied. Nothing was saved; try again.` };
+  const stamp = opts.significant && before?.status === "published" ? { content_updated_at: new Date().toISOString() } : {};
   const { data: after, error } = await supabaseAdmin
     .from("contents")
-    .update(withHubTags(payload))
+    .update({ ...withHubTags(payload), ...stamp })
     .eq("id", id)
     .select(cols)
     .maybeSingle();

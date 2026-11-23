@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useEffect, useState, useMemo } from "react";
+import { articleDates, formatArticleDate } from "@/lib/article-dates";
 import Link from "next/link";
 import { supabase } from "@/lib/supabase";
 import SiteHeader from "../../components/site-header";
@@ -28,6 +29,7 @@ type ContentRow = {
   slug: string; category: string;
   content: string; content_en?: string | null;
   created_at: string;
+  content_updated_at?: string | null;
   youtube_id?: string; cover_image?: string; cover_caption?: string | null;
   youtube_query_1?: string; youtube_query_2?: string;
   player_name?: string; players_json?: string | null;
@@ -208,7 +210,8 @@ function ListLayout({ row, related }: { row: ContentRow; related?: RelatedLinks 
   const displayContent = row.content_en?.trim() ? row.content_en : row.content;
   const isHtml = contentLooksLikeHtml(displayContent);
   const structuredToc = sections?.length ? tocFromSections(sections) : [];
-  const formattedDate = new Date(row.created_at).toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric" });
+  const dates = articleDates(row);
+  const formattedDate = formatArticleDate(dates.published);
 
   return (
     <main style={{ background: "var(--sg-bg)", color: "var(--sg-text-primary)", minHeight: "100vh" }}>
@@ -242,7 +245,13 @@ function ListLayout({ row, related }: { row: ContentRow; related?: RelatedLinks 
           </div>
           <h1 className="display grad-text" style={{ fontSize: "clamp(36px, 5vw, 72px)", fontWeight: 700, letterSpacing: "-0.04em", margin: 0, lineHeight: 0.92, paddingBottom: "0.14em", textWrap: "balance", maxWidth: 800 }}>{displayTitle}</h1>
           <div style={{ display: "flex", gap: 20, marginTop: 32, alignItems: "center", paddingTop: 20, borderTop: "1px solid var(--sg-border)", maxWidth: 560 }}>
-            <div><div className="mono" style={{ fontSize: 9, letterSpacing: "0.18em", color: "var(--sg-text-muted)" }}>PUBLISHED</div><div className="mono" style={{ fontSize: 13, color: "var(--sg-text-primary)", marginTop: 2 }}>{formattedDate}</div></div>
+            <div><div className="mono" style={{ fontSize: 9, letterSpacing: "0.18em", color: "var(--sg-text-muted)" }}>PUBLISHED</div><time dateTime={dates.published} data-date="published" className="mono" style={{ display: "block", fontSize: 13, color: "var(--sg-text-primary)", marginTop: 2 }}>{formattedDate}</time></div>
+            {dates.showUpdated && (
+              <>
+                <div style={{ width: 1, height: 28, background: "var(--sg-border)" }} />
+                <div><div className="mono" style={{ fontSize: 9, letterSpacing: "0.18em", color: "var(--sg-text-muted)" }}>UPDATED</div><time dateTime={dates.modified} data-date="modified" className="mono" style={{ display: "block", fontSize: 13, color: "var(--sg-text-primary)", marginTop: 2 }}>{formatArticleDate(dates.modified)}</time></div>
+              </>
+            )}
             <div style={{ width: 1, height: 28, background: "var(--sg-border)" }} />
             <div><div className="mono" style={{ fontSize: 9, letterSpacing: "0.18em", color: "var(--sg-text-muted)" }}>EDITOR</div><div className="mono" style={{ fontSize: 13, color: "var(--sg-text-primary)", marginTop: 2 }}>SCOUT GAMER</div></div>
           </div>

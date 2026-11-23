@@ -69,6 +69,11 @@ Rules that follow from it:
   from the sitemap. Its `ROUTES` table is the floor; a change that moves a route's links into
   the body raises that route's `body` number and switches on its `require` flags in the same
   commit (plan: docs/TODO.md). `--record` prints the current counts.
+- **Tell Google when a live page really changed.** `contents.content_updated_at` feeds
+  `article:modified_time`, JSON-LD `dateModified`, the sitemap `<lastmod>` and the visible
+  "Updated" date (`lib/article-dates.ts`). It is set explicitly — `--significant` on
+  `patch-article-text.mjs`/`scout-publish.mjs --update`, or the admin "Significant update"
+  box — never by trigger (page views update the row). seo-check fails when the surfaces disagree.
 - Client-side rendering is fine for interactivity layered *on top of* server-rendered content.
 
 ## Layout

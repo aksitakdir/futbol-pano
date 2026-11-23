@@ -109,6 +109,9 @@ export default function DuzenlePage() {
   const [newsQuery, setNewsQuery] = useState("");
   // For the social panel: an unpublished link 404s, and an old piece needs its facts re-checked.
   const [status, setStatus] = useState("");
+  // Live articles only: stamps content_updated_at, the page's dateModified and visible
+  // "Updated" date (supabase/migrations/contents_content_updated_at.sql). Off by default.
+  const [significantUpdate, setSignificantUpdate] = useState(false);
   const [publishedAt, setPublishedAt] = useState("");
   const [playerName, setPlayerName] = useState("");
 
@@ -381,13 +384,14 @@ export default function DuzenlePage() {
     if (captionSupported) updateData.cover_caption = coverCaption.trim() || null;
     if (publish) updateData.status = "published";
 
-    const updateResult = await updateContent(id, updateData);
+    const updateResult = await updateContent(id, updateData, { significant: significantUpdate && status === "published" });
 
     if (!updateResult.ok) {
       setError("Update error: " + updateResult.error);
       setSaving(false);
       return;
     }
+    setSignificantUpdate(false);
 
     const pinResult = await saveCoverStoryPinsViaApi(id, saveCategory, coverStoryScopes);
     if (!pinResult.ok) {
@@ -921,6 +925,21 @@ export default function DuzenlePage() {
 
           {error && <p className="text-xs text-rose-400">{error}</p>}
           {enrichResult && <p className="text-xs text-sky-400">{enrichResult}</p>}
+
+          {status === "published" && (
+            <label className="flex items-start gap-2 text-xs text-slate-300">
+              <input
+                type="checkbox" checked={significantUpdate}
+                onChange={(e) => setSignificantUpdate(e.target.checked)}
+                className="mt-0.5"
+              />
+              <span>
+                <strong className="text-slate-100">Significant update</strong>: new figures, a corrected fact, a result,
+                a rewritten section. Shows an &ldquo;Updated&rdquo; date on the page and tells Google it changed. Leave
+                it unticked for typos, links, captions and covers.
+              </span>
+            </label>
+          )}
 
           <div className="flex flex-wrap items-center gap-3">
             <button
