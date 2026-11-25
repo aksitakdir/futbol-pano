@@ -105,7 +105,8 @@ const nextConfig: NextConfig = {
       // Turkish article slugs → English (migrated 2025-06-05)
       { source: "/world-cup-2026/adidas-trionda-teknik-analiz-2026-dunya-kupasi-topu", destination: "/world-cup-2026/adidas-trionda-tech-analysis-2026-world-cup-ball", permanent: true },
       { source: "/world-cup-2026/2026-dunya-kupasi-48-takim-format-analiz", destination: "/world-cup-2026/2026-world-cup-48-team-format-analysis", permanent: true },
-      { source: "/lists/brezilya-2026-genc-oyuncular", destination: "/lists/brazil-2026-young-players-world-cup", permanent: true },
+      // Straight to the Brazil pillar since 2026-11-25 (was the April list, now redirected below): no chain.
+      { source: "/lists/brezilya-2026-genc-oyuncular", destination: "/lists/brazil-s-best-young-players-the-wonderkids-and-the-deep-cut-to-watch", permanent: true },
       { source: "/lists/arjantin-20-yas-alti-oyuncular-2026-liste", destination: "/lists/argentina-s-best-young-players-the-wonderkids-carrying-the-next-generation", permanent: true },
       { source: "/lists/premier-lig-goz-actirtan-15-genc-yetenek", destination: "/lists/premier-league-15-young-talents-to-watch", permanent: true },
       { source: "/lists/bundesliga-en-potansiyelii-10-gen-futbolcu", destination: "/lists/bundesliga-top-10-young-talents", permanent: true },
@@ -114,6 +115,14 @@ const nextConfig: NextConfig = {
       // #39 (March 2026, thin) consolidated into #170 (2026-11-16): carries the
       // rising "most valuable turkish players" query signal to the new page.
       { source: "/lists/turkey-most-valuable-players-arda-kenan", destination: "/lists/turkey-s-best-young-footballers-and-where-they-are-getting-their-minutes", permanent: true },
+      // #46 (April, World Cup framed) consolidated into the Brazil pillar #135 (2026-11-25).
+      // Both aimed at "brazil young players"; the July pillar had sat unindexed since
+      // publication, most likely read as a duplicate of the older page. Same move as
+      // Turkey #39 → #170. #46 is set to "rejected" so it leaves the sitemap and hubs.
+      { source: "/lists/brazil-2026-young-players-world-cup", destination: "/lists/brazil-s-best-young-players-the-wonderkids-and-the-deep-cut-to-watch", permanent: true },
+      // The pillar's slug flipped between "deep-cuts" and "deep-cut" on publish day (2026-07-09);
+      // the plural URL then answered 404.
+      { source: "/lists/brazil-s-best-young-players-the-wonderkids-and-the-deep-cuts-to-watch", destination: "/lists/brazil-s-best-young-players-the-wonderkids-and-the-deep-cut-to-watch", permanent: true },
       { source: "/lists/u21-parlayan-yildizlar-hizli-yukselen-gencler", destination: "/lists/u21-rising-stars-fast-tracking-youngsters", permanent: true },
       { source: "/tactics-lab/big-six-savunma-hatasi-premier-league-taktik", destination: "/tactics-lab/big-six-defensive-failures-premier-league-tactical", permanent: true },
       { source: "/tactics-lab/pressing-baskisi-modern-futbolun-silahi", destination: "/tactics-lab/pressing-intensity-modern-football-weapon", permanent: true },
