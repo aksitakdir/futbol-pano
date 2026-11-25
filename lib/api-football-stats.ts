@@ -1,6 +1,9 @@
 /**
  * API-Football (api-sports.io) — player & team statistics fetcher
  *
+ * DROPPED 26 Nov 2026 (account suspended). Every caller checks FOOTBALL_API_KEY first and
+ * skips when it is unset, so this module is inert. Remove it with the legacy admin AI pipeline.
+ *
  * Free plan: 100 requests/day, seasons 2022-2024.
  * Used exclusively for content enrichment (Faz 4) — feeding verified stats
  * into the Lead Editor prompt so generated articles cite real numbers.

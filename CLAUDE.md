@@ -116,8 +116,9 @@ Copy `.env.example` to `.env.local`. Keys:
 - `ANTHROPIC_API_KEY` — admin AI content features (the app's own AI, unrelated to the
   Claude Code agent's billing).
 - `CRON_SECRET` — protects the cron routes.
-- `YOUTUBE_API_KEY`, `FOOTBALL_DATA_API_KEY` (football-data.org), `API_FOOTBALL_KEY`
-  (api-football.com) — external data sources (transfers, fixtures, video).
+- `YOUTUBE_API_KEY`, `FOOTBALL_DATA_API_KEY` (football-data.org, free tier; attribution required),
+  `HIGHLIGHTLY_API_KEY` (Highlightly, the main player-data source; see scripts/highlightly.mjs) — external data
+  sources. API-Football (`FOOTBALL_API_KEY`) was dropped on 26 Nov 2026; its code paths skip when the key is unset.
 - `ADMIN_PASSWORD` — required to enable the `/admin` area (see Auth).
 
 ## Deploy / cron

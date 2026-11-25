@@ -1,15 +1,31 @@
 /**
- * WC 2026 Kadro Çekme Script'i
- * API-Football → Supabase wc_squad_players
+ * WC 2026 squad fetch: API-Football → Supabase wc_squad_players. RETIRED.
  *
- * Çalıştırma: node scripts/fetch-wc-squads.mjs
- * Onaylanan ID'ler: WC 2022 league endpoint + search endpoint ile doğrulandı.
+ * API-Football was dropped on 26 Nov 2026 (account suspended; Highlightly and
+ * football-data.org cover what it did). This script also had the API key and the
+ * Supabase anon key written into the source, in a public repository since
+ * 21 May 2026. Both now come from .env.local, and the script refuses to run
+ * without them. Kept for the record of how the squad table was built.
+ *
+ * Run (only if the account is ever restored, with a NEW key): node scripts/fetch-wc-squads.mjs
  */
+import fs from "node:fs";
+import path from "node:path";
+import { fileURLToPath } from "node:url";
 
-const API_KEY = "6bc2194fe42ad4adf233d4c11be131a6";
-const SUPABASE_URL = "https://bfjpatsihrzlknrpghvm.supabase.co";
-const SUPABASE_KEY =
-  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJmanBhdHNpaHJ6bGtucnBnaHZtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM1ODk4NTUsImV4cCI6MjA4OTE2NTg1NX0.bz3pxGE7HBNQ39lRoO7rqbbZWnPnAcZRozJqWD7Etkc";
+const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
+for (const line of fs.existsSync(path.join(ROOT, ".env.local")) ? fs.readFileSync(path.join(ROOT, ".env.local"), "utf8").split("\n") : []) {
+  const m = line.match(/^\s*([A-Z0-9_]+)\s*=\s*(.*)\s*$/);
+  if (m && !process.env[m[1]]) process.env[m[1]] = m[2].replace(/^["']|["']$/g, "");
+}
+
+const API_KEY = process.env.FOOTBALL_API_KEY;
+const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL;
+const SUPABASE_KEY = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+if (!API_KEY || !SUPABASE_URL || !SUPABASE_KEY) {
+  console.error("Retired: FOOTBALL_API_KEY (API-Football was dropped on 26 Nov 2026), NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY must be set in .env.local.");
+  process.exit(1);
+}
 
 const API_BASE = "https://v3.football.api-sports.io";
 
