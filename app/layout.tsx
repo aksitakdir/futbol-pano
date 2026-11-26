@@ -34,7 +34,7 @@ export const metadata: Metadata = {
     default: "Scout Gamer | Young Talent Scouting, Rising Footballers & Game Culture",
     template: "%s | Scout Gamer",
   },
-  description: "Discover the brightest young football talents, World Cup 2026 squads, transfer analysis, tactical deep-dives, and interactive bracket tournaments.",
+  description: "Discover the brightest young football talents: scouting lists by country and position, player reports, transfer analysis, tactical deep-dives and interactive bracket tournaments.",
   // Lets Google Discover and Search show our covers as large images, not
   // thumbnails. Pages that set their own robots (not-found) replace this.
   robots: { "max-image-preview": "large" },

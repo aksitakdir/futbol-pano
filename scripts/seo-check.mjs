@@ -22,6 +22,10 @@
  *   - samples the newest and oldest article of each section (by go-live time) and the
  *     most recently updated one, and checks that its dates agree everywhere;
  *   - checks canonicals, and reports <main>, <h1> and client-render bailouts.
+ * RETIRED (2026-11-26): the World Cup 2026 section closed. Its hub floor left ROUTES on
+ * purpose; in its place, the retired addresses must answer 308 to a live page in one
+ * hop or 410 Gone, none may be in the sitemap, and no hub, /feed item or sampled article
+ * may link one (an article's link to a 308 only warns: its text is patched in the DB).
  * ROUTES holds today's floor. Each phase of the server-rendering plan (docs/TODO.md)
  * raises its route's numbers and switches on its `require` flags in the same change.
  *
@@ -43,9 +47,7 @@ const FULL = args.includes("--full");
 const UA = "Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)";
 const ORIGINS = ["https://www.scoutgamer.com", "https://scoutgamer.com", BASE];
 
-const SECTIONS = ["lists", "radar", "tactics-lab", "transfers", "world-cup-2026"];
-/** Two-segment sitemap paths that are hub pages, not articles. */
-const NOT_ARTICLES = new Set(["/world-cup-2026/schedule", "/world-cup-2026/squads"]);
+const SECTIONS = ["lists", "radar", "tactics-lab", "transfers"];
 /** A piece published less than this long ago may not be on its hub yet. */
 const FRESH_GRACE_MS = 15 * 60_000;
 
@@ -66,10 +68,73 @@ const ROUTES = [
   { path: "/radar", section: "radar", body: "all", total: "all", require: { h1: true, main: true } },
   { path: "/tactics-lab", section: "tactics-lab", body: "all", total: "all", require: { h1: true, main: true } },
   { path: "/transfers", section: "transfers", body: 0, total: "all" },
-  { path: "/world-cup-2026", section: "world-cup-2026", body: 0, total: "all" },
   // Every published piece: the newest as cards, the rest as plain links.
   { path: "/articles", section: "*", body: "all", total: "all", require: { h1: true, main: true }, fresh: SECTIONS },
 ];
+/**
+ * The World Cup 2026 section, closed on 2026-11-26 (docs/WC-SECTION-TRIAGE-2026-11-26.md).
+ * Redirects live in next.config.ts, the 410s in proxy.ts. Each redirect must answer 308
+ * with exactly this Location, and the Location must answer 200: one hop, no chain. That
+ * also catches a loop if Proof (#140) were ever moved back to the wc-2026 category.
+ */
+const PROOF = "/lists/proof-not-projection-2026-world-cup-breakout-young-players";
+const RETIRED_REDIRECTS = [
+  ["/world-cup-2026", PROOF],
+  ["/en/world-cup-2026", PROOF],
+  ["/dunya-kupasi-2026", PROOF],
+  ["/tr/world-cup-2026", PROOF],
+  ["/tr/dunya-kupasi-2026", PROOF],
+  ["/world-cup-2026/proof-not-projection-2026-world-cup-breakout-young-players", PROOF],
+  ["/world-cup-2026/beyond-endrick-and-yamal-the-underrated-teenagers-changing-the-world-cup-narrati", PROOF],
+  ["/world-cup-2026/young-talents-world-cup-round-1", PROOF],
+  ["/world-cup-2026/hidden-gems-shine-tournament-world-cup-2026", PROOF],
+  ["/lists/world-cup-2026-scouting-top-10-debutants", PROOF],
+  ["/lists/world-cup-2026-scouting-top-10-prospects-analysis", PROOF],
+  ["/lists/world-cup-2026-top-10-wonderkids-tactical-analysis", PROOF],
+  ["/radar/rising-stars-scouts-world-cup", PROOF],
+  ["/lists/under-20-players-2026-world-cup", PROOF],
+  ["/world-cup-2026/nico-paz-thiago-almada-world-cup-breakout", "/radar/argentina-s-next-messi-the-real-contenders-to-inherit-the-no-10"],
+  ["/world-cup-2026/endrick-brazil-elite-forwards", "/lists/the-best-young-strikers-in-world-football-right-now"],
+];
+/** Samples of what must answer 410 Gone (proxy.ts), one per kind of retired address. */
+const RETIRED_GONE = [
+  "/world-cup-2026/2026-world-cup-48-team-format-analysis", // a WC article
+  "/world-cup-2026/schedule",
+  "/world-cup-2026/schedule/brazil",
+  "/world-cup-2026/squads",
+  "/world-cup-2026/squads/brazil",
+  "/world-cup-2026/squads/almanya", // legacy Turkish squad slug
+  "/world-cup-2026/adidas-trionda-teknik-analiz-2026-dunya-kupasi-topu", // legacy Turkish article slug
+  "/world-cup-2026/opengraph-image",
+  "/en/world-cup-2026/squads",
+  "/dunya-kupasi-2026/schedule",
+  "/kadrolar",
+  "/kadrolar/almanya",
+  "/arena/world-cup-2026-favorites",
+  "/arena/world-cup-2026-knockout-bracket",
+  "/lists/top-20-all-time-world-cup-goal-scorers-ranking", // #102, filed under /lists
+  "/lists/world-cup-breakout-stars-elite-transfer-targets", // #83
+  "/lists/world-cup-2026-scouting-4-debutants-analysis", // #54's old /lists alias
+];
+/**
+ * Is this href a retired address? "redirect" = a next.config.ts source (308 to a live page),
+ * "gone" = anything proxy.ts answers 410. Path rules only, no DB: the listings drop the
+ * retired rows by category and id (lib/retired-content.mjs), and this is what catches one
+ * of those filters going missing, since articleLinks() keeps only sitemap paths and would
+ * discard a link to a retired address without a word.
+ */
+const RETIRED_REDIRECT_SET = new Set(RETIRED_REDIRECTS.map(([from]) => from));
+const RETIRED_GONE_SET = new Set(RETIRED_GONE);
+const GONE_PREFIX = /^\/(world-cup-2026|dunya-kupasi-2026|en\/world-cup-2026|kadrolar|arena\/world-cup-2026-knockout-bracket|arena\/world-cup-2026-favorites)(\/|$)/;
+function retiredKind(href) {
+  if (!href) return null;
+  if (RETIRED_REDIRECT_SET.has(href)) return "redirect";
+  if (RETIRED_GONE_SET.has(href) || GONE_PREFIX.test(href)) return "gone";
+  return null;
+}
+/** Every distinct retired href in a list, as "path (308|410)". */
+const retiredLinks = (hrefs) => [...new Set(hrefs.filter(retiredKind))].map((h) => `${h} (${retiredKind(h) === "gone" ? 410 : 308})`);
+
 /**
  * Sibling links an article must carry. P2 (2026-10-19): the server-rendered "More in"
  * block puts six in the body; the footer index still adds the rest.
@@ -88,6 +153,8 @@ async function get(path) {
   const res = await fetch(`${BASE}${path}`, { headers: { "User-Agent": UA }, redirect: "manual" });
   return {
     status: res.status,
+    location: res.headers.get("location"),
+    robots: res.headers.get("x-robots-tag"),
     html: await res.text(),
     cache: [res.headers.get("x-vercel-cache"), res.headers.get("age") && `age ${res.headers.get("age")}s`].filter(Boolean).join(", "),
   };
@@ -153,6 +220,7 @@ function dateProblems(html, sitemapLastmod) {
 console.log(`\nRaw-HTML SEO check against ${BASE}${RECORD ? " (record mode)" : ""}\n`);
 console.log("Crawl basics:");
 const articles = new Map(); // path → { section, lastmod }
+const sitemapPaths = []; // every <loc>, articles or not
 try {
   const { status, html } = await get("/robots.txt");
   status === 200 ? pass("/robots.txt reachable") : fail(`/robots.txt returned HTTP ${status}`);
@@ -162,8 +230,9 @@ try {
   if (status !== 200) fail(`/sitemap.xml returned HTTP ${status}`);
   for (const u of html.match(/<url>[\s\S]*?<\/url>/g) ?? []) {
     const path = normalize(u.match(/<loc>([^<]*)<\/loc>/)?.[1] ?? "");
+    if (path) sitemapPaths.push(path);
     const [, section, slug, extra] = (path ?? "").split("/");
-    if (!path || extra !== undefined || !slug || !SECTIONS.includes(section) || NOT_ARTICLES.has(path)) continue;
+    if (!path || extra !== undefined || !slug || !SECTIONS.includes(section)) continue;
     articles.set(path, { section, lastmod: Date.parse(u.match(/<lastmod>([^<]*)<\/lastmod>/)?.[1] ?? "") || 0 });
   }
   const total = (html.match(/<loc>/g) ?? []).length;
@@ -187,12 +256,16 @@ try {
   // hour must already count as the newest.
   const { status, html } = await get(`/feed?ts=${Date.now()}`);
   if (status !== 200) throw new Error(`HTTP ${status}`);
+  const feedRetired = [];
   for (const item of html.match(/<item>[\s\S]*?<\/item>/g) ?? []) {
     const path = normalize(item.match(/<link>([^<]*)<\/link>/)?.[1] ?? "");
     const at = Date.parse(item.match(/<pubDate>([^<]*)<\/pubDate>/)?.[1] ?? "");
+    if (retiredKind(path)) feedRetired.push(path);
     if (path && articles.has(path) && at) published.set(path, at);
   }
   published.size ? pass(`/feed — ${published.size} publish dates`) : fail("/feed has no items that match the sitemap");
+  const feedDead = retiredLinks(feedRetired);
+  if (feedDead.length) fail(`/feed — ${feedDead.length} item(s) link a retired address: ${feedDead.slice(0, 3).join(", ")}${feedDead.length > 3 ? ` +${feedDead.length - 3}` : ""}`);
 } catch (e) { fail(`/feed — ${e.message}`); }
 const feedFloor = published.size ? Math.min(...published.values()) - 1 : Infinity;
 const publishedAt = (path) => published.get(path) ?? Math.min(articles.get(path).lastmod, feedFloor);
@@ -228,6 +301,8 @@ for (const r of ROUTES) {
       const missing = r.total === "all" ? bySection(r.section).map(([path]) => path).filter((path) => !all.has(path)) : [];
       problems.push(`${all.size} article links in all, expected ${r.total === "all" ? `all ${want}` : `>= ${want}`}${missing.length ? ` — missing ${missing.slice(0, 3).join(", ")}${missing.length > 3 ? ` +${missing.length - 3}` : ""}` : ""}`);
     }
+    const dead = retiredLinks([...p.pageHrefs, ...p.footerHrefs]);
+    if (dead.length) problems.push(`links ${dead.length} retired address(es): ${dead.slice(0, 3).join(", ")}${dead.length > 3 ? ` +${dead.length - 3}` : ""}`);
     if (r.require?.main && p.main < 1) problems.push("no <main> in the raw HTML");
     if (r.require?.h1 && p.h1 !== 1) problems.push(`${p.h1} <h1> in the raw HTML, expected exactly 1`);
     // The hub (or home) must already link the newest piece: proof that publishing refreshed it.
@@ -270,7 +345,54 @@ for (const s of SECTIONS) {
       else if (canonical !== path) problems.push(`canonical points at ${p.canonical}`);
       if (/^\s*Not Found\b/i.test(p.title)) problems.push(`title is "${p.title}"`);
       problems.push(...dateProblems(html, articles.get(path)?.lastmod).problems);
+      // A retired address in an article: a 410 is a dead link; a 308 still lands on a live
+      // page, so it only warns until the piece's own text is patched.
+      const retired = retiredLinks([...p.pageHrefs, ...p.footerHrefs]);
+      const gone = retired.filter((l) => l.endsWith("(410)"));
+      if (gone.length) problems.push(`links ${gone.length} retired address(es) that answer 410: ${gone.slice(0, 3).join(", ")}${gone.length > 3 ? ` +${gone.length - 3}` : ""}`);
+      if (retired.length > gone.length) warn(`${path} links a retired address that redirects: ${retired.filter((l) => l.endsWith("(308)")).join(", ")}`);
       problems.length ? fail(`${path} — ${problems.join("; ")}  (${facts})`) : pass(`${path} — ${facts}`);
+    } catch (e) { fail(`${path} — request failed: ${e.message}`); }
+  }
+}
+
+// ── Retired World Cup 2026 addresses: 308 in one hop, or 410 ─────────────────────
+if (!RECORD) {
+  console.log("\nRetired World Cup 2026 addresses (Googlebot, redirects not followed):");
+  const targets = new Map(); // target → status, fetched once each
+  for (const [from, to] of RETIRED_REDIRECTS) {
+    try {
+      const { status, location } = await get(from);
+      const at = location ? normalize(location) : null;
+      if (status !== 308) { fail(`${from} returned HTTP ${status}, expected 308 → ${to}${location ? ` (Location ${location})` : ""}`); continue; }
+      if (at !== to) { fail(`${from} redirects to ${location}, expected ${to}`); continue; }
+      if (!targets.has(to)) targets.set(to, (await get(to)).status);
+      const end = targets.get(to);
+      if (end === 200) pass(`${from} → 308 → ${to} (200)`);
+      else fail(`${from} → ${to}, which returned HTTP ${end}: not one hop to a live page`);
+    } catch (e) { fail(`${from} — request failed: ${e.message}`); }
+  }
+  for (const path of RETIRED_GONE) {
+    try {
+      const { status, robots } = await get(path);
+      if (status !== 410) fail(`${path} returned HTTP ${status}, expected 410`);
+      else if (!/noindex/i.test(robots ?? "")) fail(`${path} answered 410 without x-robots-tag: noindex`);
+      else pass(`${path} → 410`);
+    } catch (e) { fail(`${path} — request failed: ${e.message}`); }
+  }
+  // None of them may be offered to Google again.
+  const listed = sitemapPaths.filter(retiredKind);
+  if (listed.length) fail(`sitemap lists ${listed.length} retired address(es): ${listed.slice(0, 3).join(", ")}${listed.length > 3 ? ` +${listed.length - 3}` : ""}`);
+  else pass(`sitemap — no /world-cup-2026 URL and no retired address among ${sitemapPaths.length}`);
+  // The admin guard shares the proxy's matcher: an edit that drops /admin from it
+  // would leave the CMS open, so prove it still answers. "/admin" and "/admin/:path*"
+  // are separate matcher entries, so check one of each.
+  for (const path of ["/admin", "/admin/articles"]) {
+    try {
+      const { status } = await get(path);
+      if (status === 401) pass(`${path} without credentials → 401`);
+      else if (status === 503) warn(`${path} → 503: ADMIN_PASSWORD is not set on this server (the guard ran, but cannot be tested)`);
+      else fail(`${path} without credentials returned HTTP ${status}, expected 401: is it still in the proxy matcher?`);
     } catch (e) { fail(`${path} — request failed: ${e.message}`); }
   }
 }

@@ -1,5 +1,6 @@
 import { createClient } from "@/lib/supabase";
 import { articleExcerpt } from "@/lib/article-excerpt";
+import { RETIRED_CATEGORY, RETIRED_IDS_FILTER } from "@/lib/retired-content.mjs";
 
 const BASE = "https://www.scoutgamer.com";
 
@@ -7,7 +8,6 @@ const CAT_PATHS: Record<string, string> = {
   radar: "radar",
   lists: "lists",
   "tactics-lab": "tactics-lab",
-  "wc-2026": "world-cup-2026",
   transfer: "transfers",
 };
 
@@ -27,6 +27,10 @@ export async function GET() {
     .from("contents")
     .select("title,title_en,slug,category,content,content_en,created_at,cover_image")
     .eq("status", "published")
+    // Retired World Cup rows answer 308/410 (lib/retired-content.mjs); filtered in the
+    // query, not after it, so the feed still carries 30 items.
+    .neq("category", RETIRED_CATEGORY)
+    .not("id", "in", RETIRED_IDS_FILTER)
     .order("created_at", { ascending: false })
     .limit(30);
 
@@ -65,7 +69,7 @@ export async function GET() {
   <channel>
     <title>ScoutGamer</title>
     <link>${BASE}</link>
-    <description>Football scouting, tactics, transfers and World Cup 2026 content</description>
+    <description>Football scouting, tactics, transfers and young-talent lists</description>
     <language>en</language>
     <lastBuildDate>${lastBuildDate}</lastBuildDate>
     <atom:link href="${BASE}/feed" rel="self" type="application/rss+xml" />

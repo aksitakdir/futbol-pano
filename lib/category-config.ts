@@ -25,7 +25,8 @@ export const CONTENT_CATEGORIES: { value: ContentCategory; label: string; desc: 
   { value: "lists", label: "Lists", desc: "Permanent site section · /lists/your-slug" },
   { value: "radar", label: "Radar", desc: "Permanent site section · /radar/your-slug" },
   { value: "tactics-lab", label: "Tactics Lab", desc: "Permanent site section · /tactics-lab/your-slug" },
-  { value: "wc-2026", label: "World Cup 2026", desc: "Tournament section · /world-cup-2026/your-slug" },
+  // No "wc-2026": the World Cup 2026 section closed on 2026-11-26 and takes no new pieces.
+  // The type, label and paths stay until the remaining rows are rejected (lib/retired-content.mjs).
   { value: "transfer", label: "Transfers", desc: "Transfers section · /transfers/your-slug" },
 ];
 

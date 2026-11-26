@@ -70,7 +70,8 @@ async function buildPlayersJson(
   return results.length > 0 ? JSON.stringify(results) : null;
 }
 
-const CATEGORIES = ["radar", "tactics-lab", "lists", "wc-2026", "transfer"] as const;
+// No "wc-2026": the World Cup 2026 section closed on 2026-11-26, and a piece there would answer 410.
+const CATEGORIES = ["radar", "tactics-lab", "lists", "transfer"] as const;
 type Category = (typeof CATEGORIES)[number];
 
 const FALLBACK_TOPICS: Record<Category, string[]> = {
@@ -97,14 +98,6 @@ const FALLBACK_TOPICS: Record<Category, string[]> = {
     "The best pressing teams in Europe this season",
     "Most improved players in the Champions League",
     "The next generation: talents to watch in the next 12 months",
-  ],
-  "wc-2026": [
-    "Group stage dark horses who could upset the favourites",
-    "World Cup 2026 breakout stars to watch",
-    "Which host nation has the best shot at a deep run",
-    "The key tactical battles in World Cup 2026 group stage",
-    "World Cup 2026 goalkeepers who could define the tournament",
-    "How the expanded 48-team format changes World Cup strategy",
   ],
   transfer: [
     "The most impactful free agent signings of the summer",
@@ -279,7 +272,7 @@ Respond with ONLY this JSON, nothing else:
 {
   "title": "compelling title (no year, under 65 chars)",
   "slug": "url-friendly-slug",
-  "category": "radar | tactics-lab | lists | wc-2026 | transfer",
+  "category": "radar | tactics-lab | lists | transfer",
   "content": "Full article in block markup format as described above",
   "players": ["Player Name 1", "Player Name 2"],
   "featured_player": "Main Player Name (the single most important player in the article — used for hero card)",
@@ -294,7 +287,6 @@ Category rules:
 - **radar**: Player deep-dives, form analysis, transfer context. "players": the 1-2 featured players. "featured_player": the main subject. hero_variant: "player-cards".
 - **tactics-lab**: System breakdowns, tactical evolution, positional analysis. "players": example players (max 3). "featured_player": the best example player. hero_variant: "pitch-diagram". When verified formation data is provided (e.g. "4-2-3-1 (18x)"), reference those EXACT formations — do NOT invent formation usage stats.
 - **lists**: Curated rankings with analysis per entry. "players": ALL ranked players (max 10). "featured_player": the #1 ranked player. hero_variant: "player-cards".
-- **wc-2026**: World Cup 2026 content — group previews, match analysis, squad breakdowns, star players, tactical previews, tournament narratives. "players": key players (2-4). "featured_player": the star of the piece. hero_variant: "player-cards" or "cover-image". accent: "amber" preferred.
 - **transfer**: Transfer market analysis — rumours, done deals, market analysis, club strategies. "players": featured transfer subjects (1-3). "featured_player": the main transfer subject. hero_variant: "player-cards". accent: "cyan" preferred.
 
 Accent mood: emerald=evergreen, cyan=tactical/analytical, sky=player spotlight, rose=debate/controversy, amber=heritage/history, lime=breakout/underdog.
@@ -660,7 +652,7 @@ async function generateWithClaude(
   const slug  = typeof parsed.slug  === "string" && parsed.slug.trim()  ? parsed.slug.trim()  : slugify(title);
 
   // Honour the model's choice only if it's valid, else fall back to targetCategory
-  const category = (["radar", "tactics-lab", "lists", "wc-2026", "transfer"] as string[]).includes(String(parsed.category ?? ""))
+  const category = (CATEGORIES as readonly string[]).includes(String(parsed.category ?? ""))
     ? (parsed.category as string)
     : targetCategory;
 

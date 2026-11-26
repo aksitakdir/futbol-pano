@@ -1,18 +1,19 @@
 import type { NextConfig } from "next";
 
-/** Legacy Turkish country slugs (still in Google's index) → English squad slugs */
-const TR_SQUAD_SLUGS: Record<string, string> = {
-  "guney-afrika": "south-africa", almanya: "germany", "yeni-zelanda": "new-zealand",
-  misir: "egypt", "kosta-rika": "costa-rica", brezilya: "brazil", portekiz: "portugal",
-  ispanya: "spain", fransa: "france", ingiltere: "england", hollanda: "netherlands",
-  belcika: "belgium", arjantin: "argentina", kanada: "canada", cezayir: "algeria",
-  meksika: "mexico", avustralya: "australia", avusturya: "austria", isvicre: "switzerland",
-  "suudi-arabistan": "saudi-arabia", norvec: "norway", ozbekistan: "uzbekistan",
-  hirvatistan: "croatia", "guney-kore": "south-korea", tunus: "tunisia", japonya: "japan",
-  polonya: "poland", abd: "usa", urdun: "jordan", katar: "qatar", kolombiya: "colombia",
-  danimarka: "denmark", fas: "morocco", ukrayna: "ukraine", kamerun: "cameroon",
-  jamaika: "jamaica", gana: "ghana", ekvador: "ecuador",
-};
+/**
+ * World Cup 2026 section closed on 2026-11-26 (docs/WC-SECTION-TRIAGE-2026-11-26.md).
+ * Proof, Not Projection (#140) moved from the section to /lists and is the one page
+ * left that answers "World Cup 2026" for the site's young-talent focus, so the hub
+ * and the pre-tournament "young players to watch" pieces point at it.
+ *
+ * Every WC rule below points at a live page in one hop. Everything else under the
+ * section (articles, schedule and squad pages, legacy aliases) answers 410 from
+ * proxy.ts. These redirects run before the proxy, so their sources never reach it.
+ * The Proof rule is safe only while #140 is in category "lists": moved back to
+ * wc-2026, its page route would redirect to the old URL and loop
+ * (scripts/seo-check.mjs checks every target answers 200).
+ */
+const PROOF = "/lists/proof-not-projection-2026-world-cup-breakout-young-players";
 
 const nextConfig: NextConfig = {
   /**
@@ -70,6 +71,30 @@ const nextConfig: NextConfig = {
   },
   async redirects() {
     return [
+      // World Cup 2026 closure (2026-11-26): exact sources, one hop each (see PROOF above).
+      // The hub and its legacy aliases.
+      { source: "/world-cup-2026", destination: PROOF, permanent: true },
+      { source: "/en/world-cup-2026", destination: PROOF, permanent: true },
+      // Ahead of the /tr/:path* catch-all below, which would add a hop through the old hub.
+      { source: "/tr/world-cup-2026", destination: PROOF, permanent: true },
+      { source: "/tr/dunya-kupasi-2026", destination: PROOF, permanent: true },
+      // #140's own old address.
+      { source: "/world-cup-2026/proof-not-projection-2026-world-cup-breakout-young-players", destination: PROOF, permanent: true },
+      // Young-talent pieces from the section (#129, #121, #94): Proof is their post-tournament verdict.
+      { source: "/world-cup-2026/beyond-endrick-and-yamal-the-underrated-teenagers-changing-the-world-cup-narrati", destination: PROOF, permanent: true },
+      { source: "/world-cup-2026/young-talents-world-cup-round-1", destination: PROOF, permanent: true },
+      { source: "/world-cup-2026/hidden-gems-shine-tournament-world-cup-2026", destination: PROOF, permanent: true },
+      // "Young players to watch at the World Cup" pieces filed outside the section (#48, #53, #64, #82, #106).
+      { source: "/lists/world-cup-2026-scouting-top-10-debutants", destination: PROOF, permanent: true },
+      { source: "/lists/world-cup-2026-scouting-top-10-prospects-analysis", destination: PROOF, permanent: true },
+      { source: "/lists/world-cup-2026-top-10-wonderkids-tactical-analysis", destination: PROOF, permanent: true },
+      { source: "/radar/rising-stars-scouts-world-cup", destination: PROOF, permanent: true },
+      // Not the kept Argentina list's old address (/lists/argentina-under-20-players-2026-world-cup, below).
+      { source: "/lists/under-20-players-2026-world-cup", destination: PROOF, permanent: true },
+      // #116 → Argentina's Next Messi (#131): covers Nico Paz and Almada and the Argentina frame.
+      { source: "/world-cup-2026/nico-paz-thiago-almada-world-cup-breakout", destination: "/radar/argentina-s-next-messi-the-real-contenders-to-inherit-the-no-10", permanent: true },
+      // #81 → The Best Young Strikers (#145), whose Endrick section tells the same story.
+      { source: "/world-cup-2026/endrick-brazil-elite-forwards", destination: "/lists/the-best-young-strikers-in-world-football-right-now", permanent: true },
       // EN prefix redirects — strip /en
       { source: "/en", destination: "/", permanent: true },
       { source: "/en/radar/:path*", destination: "/radar/:path*", permanent: true },
@@ -78,14 +103,12 @@ const nextConfig: NextConfig = {
       { source: "/en/taktik-lab/:path*", destination: "/tactics-lab/:path*", permanent: true },
       { source: "/en/tactics-lab/:path*", destination: "/tactics-lab/:path*", permanent: true },
       { source: "/en/arena/:path*", destination: "/arena/:path*", permanent: true },
-      { source: "/en/world-cup-2026/:path*", destination: "/world-cup-2026/:path*", permanent: true },
       { source: "/en/transfers/:path*", destination: "/transfers/:path*", permanent: true },
       // Turkish root redirects
       { source: "/tr", destination: "/", permanent: true },
       { source: "/tr/:path*", destination: "/:path*", permanent: true },
-      // Turkish hub paths
-      { source: "/dunya-kupasi-2026/:path*", destination: "/world-cup-2026/:path*", permanent: true },
-      { source: "/dunya-kupasi-2026", destination: "/world-cup-2026", permanent: true },
+      // Turkish hub paths. The old WC hub goes straight to PROOF, not through /world-cup-2026.
+      { source: "/dunya-kupasi-2026", destination: PROOF, permanent: true },
       { source: "/transfer/:path*", destination: "/transfers/:path*", permanent: true },
       { source: "/transfer", destination: "/transfers", permanent: true },
       // Deleted arena games → arena index
@@ -102,9 +125,6 @@ const nextConfig: NextConfig = {
       // The old URL said "under-20 / 2026 world cup" while the demand is the
       // evergreen "argentina young players" — 3,136 impressions at 1.75% CTR.
       { source: "/lists/argentina-under-20-players-2026-world-cup", destination: "/lists/argentina-s-best-young-players-the-wonderkids-carrying-the-next-generation", permanent: true },
-      // Turkish article slugs → English (migrated 2025-06-05)
-      { source: "/world-cup-2026/adidas-trionda-teknik-analiz-2026-dunya-kupasi-topu", destination: "/world-cup-2026/adidas-trionda-tech-analysis-2026-world-cup-ball", permanent: true },
-      { source: "/world-cup-2026/2026-dunya-kupasi-48-takim-format-analiz", destination: "/world-cup-2026/2026-world-cup-48-team-format-analysis", permanent: true },
       // Straight to the Brazil pillar since 2026-11-25 (was the April list, now redirected below): no chain.
       { source: "/lists/brezilya-2026-genc-oyuncular", destination: "/lists/brazil-s-best-young-players-the-wonderkids-and-the-deep-cut-to-watch", permanent: true },
       { source: "/lists/arjantin-20-yas-alti-oyuncular-2026-liste", destination: "/lists/argentina-s-best-young-players-the-wonderkids-carrying-the-next-generation", permanent: true },
@@ -134,7 +154,6 @@ const nextConfig: NextConfig = {
       { source: "/radar/roma-bologna-2025-26-sezonunun-anahtar-oyunculari", destination: "/radar/roma-bologna-2025-26-key-players", permanent: true },
       { source: "/radar/Radardabirdefansoyuncusu", destination: "/radar/jair-cunha-defensive-colossus-scouting-report", permanent: true },
       // Turkish category slugs → English
-      { source: "/kadrolar/:path*", destination: "/world-cup-2026/squads/:path*", permanent: true },
       { source: "/listeler/:path*", destination: "/lists/:path*", permanent: true },
       { source: "/listeler", destination: "/lists", permanent: true },
       { source: "/taktik-lab/:path*", destination: "/tactics-lab/:path*", permanent: true },
@@ -142,12 +161,6 @@ const nextConfig: NextConfig = {
       // Renamed arena games (Turkish → English slugs)
       { source: "/arena/gelecek-yildizlar", destination: "/arena/future-stars", permanent: true },
       { source: "/arena/teknik-direktor", destination: "/arena/manager-arena", permanent: true },
-      // Legacy Turkish country slugs under the English squads path → English
-      ...Object.entries(TR_SQUAD_SLUGS).map(([tr, en]) => ({
-        source: `/world-cup-2026/squads/${tr}`,
-        destination: `/world-cup-2026/squads/${en}`,
-        permanent: true as const,
-      })),
     ];
   },
 };

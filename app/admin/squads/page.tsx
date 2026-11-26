@@ -209,8 +209,6 @@ export default function AdminKadrolarPage() {
     setMessage(`Parsed ${parsed.length} players — review and click Save.`);
   }
 
-  const team = WC_TEAMS.find((t) => t.slug === teamSlug);
-
   return (
     <AdminLayout>
       <div style={{ maxWidth: 1200, margin: "0 auto" }}>
@@ -218,7 +216,7 @@ export default function AdminKadrolarPage() {
           WC 2026 Squads
         </h1>
         <p style={{ color: "var(--sg-text-muted)", fontSize: 14, marginBottom: 24 }}>
-          Enter players by position. Default view on site is OVR colored list; FC card only opens on click.
+          Enter players by position. Squads no longer have public pages.
         </p>
 
         <div style={{ display: "flex", flexWrap: "wrap", gap: 12, marginBottom: 32, alignItems: "flex-end" }}>
@@ -424,11 +422,9 @@ export default function AdminKadrolarPage() {
           </div>
         )}
 
-        {team ? (
-          <p className="mono" style={{ marginTop: 32, fontSize: 10, color: "var(--sg-text-muted)" }}>
-            Preview: /world-cup-2026/squads/{team.slug}
-          </p>
-        ) : null}
+        <p className="mono" style={{ marginTop: 32, fontSize: 10, color: "var(--sg-text-muted)" }}>
+          The public squad pages were retired on 26 Nov 2026 (410). The squad data is kept; no public page reads it.
+        </p>
       </div>
     </AdminLayout>
   );

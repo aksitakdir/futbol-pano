@@ -66,7 +66,8 @@ export default function SettingsPage() {
     setTimeout(() => setMessage(""), 4000);
   }
 
-  const promoSlides = (slider.wcPromo ? 1 : 0) + (slider.arena ? 1 : 0);
+  // Only the arena promo: the World Cup promo slide went with the section (2026-11-26).
+  const promoSlides = slider.arena ? 1 : 0;
 
   return (
     <AdminLayout>

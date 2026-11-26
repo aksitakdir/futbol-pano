@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { createClient } from "@/lib/supabase";
 import { groupTopics, shortTitle } from "@/lib/list-topics";
+import { RETIRED_IDS_FILTER } from "@/lib/retired-content.mjs";
 
 /**
  * Server-rendered archive index for a category.
@@ -60,6 +61,7 @@ async function fetchRows(category: string, limit: number): Promise<Row[]> {
     .select("id,title,title_en,slug,created_at")
     .eq("status", "published")
     .eq("category", category)
+    .not("id", "in", RETIRED_IDS_FILTER) // retired World Cup pieces (lib/retired-content.mjs)
     .order("created_at", { ascending: false })
     .limit(limit);
   // Throw rather than render an empty index: an error is never cached as a crawl path

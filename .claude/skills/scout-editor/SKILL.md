@@ -1,6 +1,6 @@
 ---
 name: scout-editor
-description: Author and publish a Scout Gamer football article end to end — web-search the current facts, write it in the site's block-markup format, and insert it straight into Supabase as a pending article. Use when the user wants to create/generate/write site content, an article, a scouting report, a transfer analysis, a tactics piece, a list, or World Cup content for Scout Gamer (scoutgamer.com). Replaces the admin panel's paid AI generate pipeline with zero API cost.
+description: Author and publish a Scout Gamer football article end to end — web-search the current facts, write it in the site's block-markup format, and insert it straight into Supabase as a pending article. Use when the user wants to create/generate/write site content, an article, a scouting report, a transfer analysis, a tactics piece, or a list for Scout Gamer (scoutgamer.com). Replaces the admin panel's paid AI generate pipeline with zero API cost.
 ---
 
 # Scout Gamer Editor
@@ -76,7 +76,6 @@ schema, same rendering — zero spend.
    - **How the player is currently being used** — position, and whether that has just changed.
    - Current-season (2025-26) stats: goals, assists, appearances, minutes.
    - League standings, recent results, injury status.
-   - For World Cup 2026 content: the tournament runs June 11 – July 19, 2026 in USA/Canada/Mexico.
    A single outdated fact (e.g. naming a departed manager) destroys the article's credibility
    and is exactly the failure the user is trying to eliminate. If a search returns nothing for
    a specific number, write qualitatively ("an elite creative outlet") instead of inventing a stat.
@@ -257,7 +256,7 @@ the divergence is the article's argument, never to get past the gate.
 ```json
 {
   "title": "Exact article title (English, no year/season in it)",
-  "category": "radar | tactics-lab | lists | wc-2026 | transfer",
+  "category": "radar | tactics-lab | lists | transfer",
   "markup": "the full block-markup string",
   "player_name": "Featured player for the hero card (optional)",
   "accent": "emerald | cyan | sky | rose | amber | lime",
@@ -289,18 +288,21 @@ transfer without a full write-up.
 - **tactics-lab** — Tactical analysis: formations, pressing systems, positional play, set
   pieces, coaching philosophies. Default hero `pitch-diagram`, accent `cyan` or `sky`.
 - **lists** — Ranked lists, top-N compilations, best XI, award predictions.
-- **wc-2026** — World Cup 2026 content: group previews, match analysis, squad breakdowns,
-  star players. Accent `amber`. (Auto-tagged `hub_tags: ["wc-2026"]`.)
 - **transfer** — Transfer market: rumours, done deals, market analysis, club strategy.
   Accent `cyan`. (Auto-tagged `hub_tags: ["transfer"]`.)
 
 `radar`, `tactics-lab`, and `lists` render from `sections_json` (the block editor). `transfer`
-and `wc-2026` also store the markup and appear in their hubs via `hub_tags`.
+also stores the markup and appears in its hub via `hub_tags`.
+
+There is no `wc-2026` category any more: the World Cup 2026 section closed on 26 Nov 2026
+(its addresses redirect or answer 410), and `scout-publish.mjs` refuses it. Tournament-related
+scouting goes in `lists` or `radar`, framed for the evergreen query.
 
 ## Transfer content playbook
 
-Transfer content is a strategic priority — once the World Cup ends, the transfer window
-becomes the site's highest-SEO subject. Treat it as a content lane to develop deliberately,
+Transfer content is a strategic lane: the post-World Cup windows (January, summer) are its
+peaks. The evergreen scouting core below stays the main SEO engine. Treat transfers as a
+content lane to develop deliberately,
 not a single article type. The `/transfers` hub already has three layers: the auto **Transfer
 Wire** (RSS headlines), **Scout Analysis** (our `transfer`-category articles), and the
 **Confirmed Deals** strip (`hub_completed_transfers`). This skill feeds the latter two.
@@ -519,7 +521,7 @@ Treat these as the natural toolkit for each archetype — then adapt to the actu
 - **Single player profile / scouting report (radar):** `@lead:` → one `@player:` card for the
   subject → `@section:` beats (style, weaknesses, ceiling) → one `@stat:` group for their key
   numbers → maybe a `>` quote. A `@vs:` only if you're genuinely measuring them against a peer.
-- **Multi-player shortlist / "best young talents" (lists, radar, wc-2026):** the player-led
+- **Multi-player shortlist / "best young talents" (lists, radar):** the player-led
   pattern — for **each** highlighted player a `@section:` header + their `@player:` card +
   analysis. Optionally a `@stat:` summary and one `@vs:` between the two headline names.
 - **Tactical analysis (tactics-lab):** `@lead:` → `@section:` beats for each tactical idea →
@@ -528,8 +530,6 @@ Treat these as the natural toolkit for each archetype — then adapt to the actu
 - **Transfer analysis (transfer):** `@lead:` → a `@callout:` verdict → `@stat:` for fee/age/
   numbers → maybe one `@player:` for the subject and a `@vs:` against who they replace → a
   `@faq:` for the deal specifics.
-- **World Cup match/preview (wc-2026):** `@vs:` for the two sides → `@stat:` for form/numbers →
-  1–2 `@player:` cards for the men who decide it (not forced) → `@faq:` for quick facts.
 - **Ranked list (lists):** a numbered `1.` list for the ranking spine, or the player-led
   `@section:` + `@player:` pattern if each entry deserves depth → a `@stat:` highlight.
 

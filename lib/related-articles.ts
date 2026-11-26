@@ -1,6 +1,7 @@
 import { createClient } from "@/lib/supabase";
 import { categoryArticlePath, categoryPublicPath, CAT_LABEL } from "@/lib/category-config";
 import { classify } from "@/lib/list-topics";
+import { RETIRED_IDS_FILTER } from "@/lib/retired-content.mjs";
 
 /**
  * "More in <section>": the links at the end of every article, chosen on the server.
@@ -52,6 +53,9 @@ export async function getMoreInSection(
     .select("id,slug,title,title_en,category,created_at,player_name")
     .eq("status", "published")
     .eq("category", article.category)
+    // Retired World Cup pieces filed under /lists and /radar answer 308/410
+    // (lib/retired-content.mjs): never offered as a sibling.
+    .not("id", "in", RETIRED_IDS_FILTER)
     .order("created_at", { ascending: false });
   // Throw rather than render an empty block: an error is never cached as a page
   // whose siblings vanished (see app/components/article-index-links.tsx).

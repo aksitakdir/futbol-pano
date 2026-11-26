@@ -7,8 +7,11 @@ Guidance for Claude Code when working in this repository.
 **futbol-pano** (a.k.a. Scout Gamer, scoutgamer.com) — an English-only football content
 site for a global audience, with no geographic or league bias. Core focus: young-talent
 scouting, rising footballers, and game culture. Content includes editorial articles, player
-scouting lists, transfer analysis, a World Cup 2026 hub, tournament/arena brackets, and
-tactical deep-dives, plus an admin CMS with AI-assisted content generation.
+scouting lists, transfer analysis, tournament/arena brackets, and tactical deep-dives, plus an
+admin CMS with AI-assisted content generation. The World Cup 2026 section closed on 2026-11-26:
+its addresses answer 308 (`next.config.ts`) or 410 (`proxy.ts`); its data
+(`lib/wc-2026-teams|results|schedule.ts`, `lib/wc-squad-*.ts`, `wc_squad_players`) is kept as
+source data.
 
 ## Stack
 
@@ -80,16 +83,22 @@ Rules that follow from it:
 
 - `app/` — App Router; each top-level folder is a site section:
   - `admin/` — CMS: article editor (block + HTML), cover story, hubs.
-  - `api/` — route handlers, incl. `admin/*`, `cron` + `cron/transfer-wire`, `transfers`,
-    `world-cup/*`, `wc-squads`, `hub-contents`, `cover-story`, `revalidate`, `og-image`.
+  - `api/` — route handlers, incl. `admin/*`, `cron/*` (`transfer-wire`, `hub-sync`),
+    `transfer-hub`, `transfer-wire`, `cover-stories`, `revalidate`, `preview`, `social-card`,
+    `popular`, `view`, and the admin AI routes (`generate-content`, `content-check`,
+    `enrich-content`, `suggest-titles`).
   - `arena/` (brackets), `oyuncular/` (players), `radar/`, `tactics-lab/`, `transfers/`,
-    `turnuva/` (tournament), `world-cup-2026/`, `lists/`.
+    `turnuva/` (tournament), `lists/`, `articles/`.
   - `components/` — shared UI (Header, Footer, HeroSlider, EditorialArticle, …).
-- `lib/` — domain logic (transfers, World Cup squads/schedule/teams, hub system, cover
-  story, article metadata, Supabase client). Most business logic lives here, not in pages.
+- `lib/` — domain logic (transfers, hub system, cover story, article metadata, Supabase
+  client, and the frozen World Cup 2026 teams/schedule/results/squads data, kept as source
+  data: scripts/talent-vs-trust.mjs reads the team list, and the results are the planned
+  source for a Tactics Lab piece). Most business logic lives here, not in pages.
 - `scripts/` — one-off and periodic data scripts + SQL helpers.
 - `supabase/migrations/` — schema & seed SQL.
-- `proxy.ts` — request proxy: sets `x-pathname` header and guards `/admin` (see Auth).
+- `proxy.ts` — the Next 16 proxy (middleware), scoped by its matcher: guards `/admin` (see
+  Auth) and answers 410 Gone for the retired World Cup 2026 paths. `next.config.ts` redirects
+  run before it.
 
 ## Conventions
 
@@ -123,6 +132,5 @@ Copy `.env.example` to `.env.local`. Keys:
 
 ## Deploy / cron
 
-Vercel. `vercel.json` defines two crons:
-- `/api/cron` — weekly, Mondays 05:00 UTC.
-- `/api/cron/transfer-wire` — daily, 06:00 UTC.
+Vercel. `vercel.json` defines one cron: `/api/cron/transfer-wire` — daily, 06:00 UTC. The
+weekly `/api/cron` AI-content route still exists but is not scheduled (disabled to cut API cost).

@@ -18,7 +18,7 @@ export const revalidate = 3600;
 
 export const metadata: Metadata = {
   title: "All Articles",
-  description: "Every Scout Gamer piece in one place: scouting lists, player reports, tactical analysis, transfers and the World Cup 2026 archive.",
+  description: "Every Scout Gamer piece in one place: scouting lists, player reports, tactical analysis and transfers.",
   alternates: { canonical: "https://www.scoutgamer.com/articles" },
 };
 
@@ -41,7 +41,7 @@ export default async function ArticlesPage() {
             All Articles
           </h1>
           <p style={{ fontSize: 17, color: "var(--sg-text-secondary)", lineHeight: 1.5, marginTop: 12, maxWidth: 520 }}>
-            Every piece of content across all categories — scouting, tactics, transfers, lists, and World Cup 2026.
+            Every piece of content across all categories — scouting, tactics, transfers and lists.
           </p>
         </div>
 

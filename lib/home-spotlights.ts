@@ -1,5 +1,6 @@
 import { createClient } from "@/lib/supabase";
 import { categoryArticlePath } from "@/lib/category-config";
+import { RETIRED_CATEGORY, RETIRED_IDS_FILTER } from "@/lib/retired-content.mjs";
 
 /**
  * The homepage "In focus" block: cards for what is live on the site right now.
@@ -136,6 +137,9 @@ export async function loadHomeSpotlights(now = new Date()): Promise<SpotlightCar
     .from("contents")
     .select("id,title,title_en,slug,category,hub_tags,created_at")
     .eq("status", "published")
+    // Retired World Cup rows answer 308/410 (lib/retired-content.mjs).
+    .neq("category", RETIRED_CATEGORY)
+    .not("id", "in", RETIRED_IDS_FILTER)
     .order("created_at", { ascending: false })
     .limit(500);
   if (error) throw error; // never cache an empty block (see article-index-links.tsx)

@@ -1,6 +1,7 @@
 import type { MetadataRoute } from "next";
 import { createClient } from "@/lib/supabase";
 import { articleDates } from "@/lib/article-dates";
+import { RETIRED_CATEGORY, RETIRED_IDS_FILTER } from "@/lib/retired-content.mjs";
 
 const base = "https://www.scoutgamer.com";
 
@@ -20,8 +21,9 @@ export const dynamic = "force-dynamic";
 
 /**
  * `section` gives a hub its <lastmod>: the go-live date of the newest article it
- * lists, the day the page itself last changed. "*" is the home page. Entries with
- * no section (the frozen World Cup schedule and squads) carry no <lastmod>.
+ * lists, the day the page itself last changed. "*" is the home page. An entry with
+ * no section would carry no <lastmod>; since the World Cup schedule and squads left
+ * on 26 Nov 2026, every entry has one.
  *
  * Until 24 Nov 2026 every static entry said `now`, so each fetch told Google the
  * whole site had changed that minute. Google trusts a site's lastmod all or
@@ -30,12 +32,6 @@ export const dynamic = "force-dynamic";
  */
 const staticEntries: { url: string; priority: number; section?: string }[] = [
   { url: "",                          priority: 1.0,  section: "*" },
-  { url: "/world-cup-2026",           priority: 0.92, section: "wc-2026" },
-  { url: "/world-cup-2026/schedule",   priority: 0.90 },
-  { url: "/world-cup-2026/squads",    priority: 0.88 },
-  // /world-cup-2026/lists was listed here without ever being built — the route
-  // folder is empty, so the sitemap sent Googlebot to a 404 of our own making.
-  // Put it back only alongside a page.tsx.
   { url: "/transfers",                priority: 0.9,  section: "transfer" },
   { url: "/radar",                    priority: 0.85, section: "radar" },
   { url: "/lists",                     priority: 0.85, section: "lists" },
@@ -47,7 +43,6 @@ const CAT_PATHS: Record<string, string> = {
   radar: "radar",
   lists: "lists",
   "tactics-lab": "tactics-lab",
-  "wc-2026": "world-cup-2026",
   transfer: "transfers",
 };
 
@@ -56,10 +51,15 @@ type ArticleRow = { slug: string; category: string; created_at: string; content_
 /**
  * content_updated_at exists only once its migration has run. Until then the query
  * naming it fails, so ask again without it rather than lose every article.
+ *
+ * Retired World Cup rows (lib/retired-content.mjs) stay out: their addresses answer
+ * 308 or 410, and they must not move a hub's <lastmod> either.
  */
 async function publishedArticles(supabase: ReturnType<typeof createClient>): Promise<ArticleRow[]> {
   const query = (cols: string) =>
-    supabase.from("contents").select(cols).eq("status", "published").order("created_at", { ascending: false });
+    supabase.from("contents").select(cols).eq("status", "published")
+      .neq("category", RETIRED_CATEGORY).not("id", "in", RETIRED_IDS_FILTER)
+      .order("created_at", { ascending: false });
   const first = await query("slug,category,created_at,content_updated_at");
   if (!first.error) return (first.data ?? []) as unknown as ArticleRow[];
   // Only a missing column earns the retry. After the migration, a passing failure
@@ -117,19 +117,11 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: 0.72,
   }));
 
-  // The 48 per-team schedule pages and 48 per-team squad pages are deliberately
-  // NOT listed. They were here for the hype window, when "<country> world cup
-  // squad" was high-intent search. The tournament ended on 19 July 2026 and the
-  // 28 days to 13 September measured the result: 33 World Cup pages drew 1,257
-  // impressions and 6 clicks between them, the squad pages sitting at positions
-  // 21 to 52, and not one of the 48 team schedule pages registered at all.
-  //
-  // They were also 96 of the sitemap's 224 URLs — 69% of what we were asking
-  // Google to prioritise, for a finished event, while the scouting lists that
-  // earn 96.8% of the site's clicks were a minority of it.
-  //
-  // The pages themselves still exist, still render, and stay reachable through
-  // /world-cup-2026. Removing them from the sitemap withdraws a crawl-priority
-  // request; it does not deindex anything.
+  // The 48 per-team schedule pages and 48 per-team squad pages left this sitemap in
+  // September 2026: the tournament ended on 19 July, and in the 28 days to 13
+  // September 33 World Cup pages drew 1,257 impressions and 6 clicks between them,
+  // while they were 96 of the sitemap's 224 URLs. On 26 Nov 2026 the whole section
+  // closed: its addresses answer 308 to a live page (next.config.ts) or 410 Gone
+  // (proxy.ts), so none of them belongs here.
   return [...staticItems, ...articleItems, ...arenaItems];
 }

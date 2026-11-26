@@ -65,7 +65,7 @@ Extract and respond with ONLY valid JSON:
   "players": ["Player Name 1", "Player Name 2"],
   "teams": ["Team 1", "Team 2"],
   "suggested_title": "A compelling article title based on this brief (English, under 65 chars, no year)",
-  "suggested_category": "radar | tactics-lab | lists | wc-2026 | transfer",
+  "suggested_category": "radar | tactics-lab | lists | transfer",
   "key_angles": ["angle 1", "angle 2"],
   "seo_terms": ["search term 1", "search term 2"]
 }
@@ -73,7 +73,7 @@ Extract and respond with ONLY valid JSON:
 Rules:
 - Extract ALL player names mentioned or implied in the brief
 - Include explicit players provided
-- suggested_category: pick the BEST fit. wc-2026 for World Cup topics, transfer for market topics, radar for player spotlights, tactics-lab for tactical analysis, lists for rankings.
+- suggested_category: pick the BEST fit. transfer for market topics, radar for player spotlights, tactics-lab for tactical analysis, lists for rankings and for World Cup topics (there is no World Cup category).
 - key_angles: 2-3 specific editorial angles this brief could explore
 - seo_terms: 2-3 search terms a football fan would Google for this topic`;
 
@@ -207,7 +207,8 @@ Rules:
     }
   }
 
-  const validCats = ["radar", "tactics-lab", "lists", "wc-2026", "transfer"];
+  // No "wc-2026": the World Cup 2026 section closed on 2026-11-26, a piece there would answer 410.
+  const validCats = ["radar", "tactics-lab", "lists", "transfer"];
   const suggestedCategory = validCats.includes(analysis.suggested_category ?? "")
     ? analysis.suggested_category
     : category || "radar";

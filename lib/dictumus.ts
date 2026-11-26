@@ -102,7 +102,11 @@ const PREDICTION_SLUGS = new Set<string>([
  * not cover. Add a slug to NO_CARD_SLUGS to switch the card off for a single piece.
  */
 const NO_CARD_CATEGORIES = new Set<string>(["wc-2026"]);
-const NO_CARD_SLUGS = new Set<string>([]);
+const NO_CARD_SLUGS = new Set<string>([
+  // Proof, Not Projection (#140) left wc-2026 for /lists on 2026-11-26 when the section
+  // closed, but it is still a national-team tournament piece.
+  "proof-not-projection-2026-world-cup-breakout-young-players",
+]);
 
 export type DictumusCardCopy = {
   placement: DictumusPlacement;

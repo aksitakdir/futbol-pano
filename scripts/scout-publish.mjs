@@ -14,7 +14,7 @@
  * Input JSON shape:
  *   {
  *     "title": "string (required)",
- *     "category": "radar|tactics-lab|lists|wc-2026|transfer (required)",
+ *     "category": "radar|tactics-lab|lists|transfer (required)",
  *     "markup": "block-markup string (required)",
  *     "slug": "optional — derived from title if omitted",
  *     "accent": "emerald|cyan|sky|rose|amber|lime (default emerald)",
@@ -330,14 +330,23 @@ function slugify(text, maxLength = MAX_SLUG_LENGTH) {
   return wordSafe.replace(/-+$/g, "");
 }
 
-const CATEGORIES = ["radar", "tactics-lab", "lists", "wc-2026", "transfer"];
+const CATEGORIES = ["radar", "tactics-lab", "lists", "transfer"];
+
+/**
+ * The World Cup 2026 section closed on 2026-11-26: /world-cup-2026 redirects and its
+ * articles answer 410 (next.config.ts, proxy.ts), so a piece filed there would publish
+ * to an address nobody can reach. Refused by name, with where to put it instead.
+ */
+const RETIRED_CATEGORIES = {
+  "wc-2026": "The World Cup 2026 section closed on 26 Nov 2026 and takes no new pieces. " +
+    "File tournament-related scouting under `lists` or `radar`, framed for the evergreen query.",
+};
 
 /** Mirrors lib/category-config.ts — the URL folder each category lives under. */
 const CATEGORY_PATHS = {
   radar: "radar",
   lists: "lists",
   "tactics-lab": "tactics-lab",
-  "wc-2026": "world-cup-2026",
   transfer: "transfers",
 };
 
@@ -475,6 +484,10 @@ async function main() {
   let sectionsJson = [];
   if (hasArticle) {
     if (!title) { console.error("`title` is required for an article"); process.exit(1); }
+    if (Object.hasOwn(RETIRED_CATEGORIES, category)) {
+      console.error(`\`category\` "${category}" is retired. ${RETIRED_CATEGORIES[category]}`);
+      process.exit(1);
+    }
     if (!CATEGORIES.includes(category)) {
       console.error(`\`category\` must be one of: ${CATEGORIES.join(", ")}`);
       process.exit(1);
@@ -582,9 +595,7 @@ async function main() {
     : (category === "tactics-lab" ? "pitch-diagram" : "player-cards");
   const status = brief.status === "published" ? "published" : "pending";
 
-  const hub_tags =
-    category === "transfer" ? ["transfer"] :
-    category === "wc-2026" ? ["wc-2026"] : [];
+  const hub_tags = category === "transfer" ? ["transfer"] : [];
 
   const row = {
     title,

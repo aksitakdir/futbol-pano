@@ -26,15 +26,15 @@ ${isWcPeriod ? `\n⚽ ${wcPhase}\n` : ""}
 The user provides a keyword or topic; you suggest 8 article titles.
 
 CATEGORIES — use ALL of them strategically. Each title MUST have one:
-- "wc-2026" — World Cup 2026 content: group previews, match analysis, squad breakdowns, star players, tactical previews, tournament narratives. ${isWcPeriod ? "HIGH PRIORITY right now." : ""}
 - "transfer" — Transfer market: rumours, done deals, market analysis, club strategies, contract situations, free agents.
 - "radar" — Player spotlights: scouting reports, breakout stars, statistical deep-dives, career analysis, comparison pieces.
 - "tactics-lab" — Tactical analysis: formations, pressing systems, positional play, set pieces, coaching philosophies.
 - "lists" — Ranked lists, top-N compilations, best XI selections, award predictions, stat-based rankings.
 
 IMPORTANT distribution guidance:
-${isWcPeriod ? "- During World Cup period: at least 3-4 titles should be wc-2026. Mix in other categories for variety." : "- During transfer window: prioritize transfer category. During regular season: balance across all categories."}
-- Match the keyword intent to the most natural category. If the keyword mentions a specific match, team in World Cup context → wc-2026. Transfer rumours → transfer. A single player → radar. Formation/tactics → tactics-lab. Rankings → lists.
+- During transfer window: prioritize transfer category. During regular season: balance across all categories.
+- There is no World Cup category (the World Cup 2026 section closed on 2026-11-26): a World Cup angle goes in the category that fits it, usually lists or radar.
+- Match the keyword intent to the most natural category. Transfer rumours → transfer. A single player → radar. Formation/tactics → tactics-lab. Rankings → lists.
 
 ## KEYWORD RELEVANCE
 
@@ -51,7 +51,7 @@ Rules:
 - slug: URL-friendly, lowercase, no special characters, hyphen-separated (e.g. lamine-yamal-radar).
 
 Respond with ONLY a valid JSON array, no other text or markdown:
-[{"title":"...","category":"wc-2026","seo_value":"High","slug":"..."}, ...]
+[{"title":"...","category":"lists","seo_value":"High","slug":"..."}, ...]
 
 Return exactly 8 items.`;
 }
@@ -189,7 +189,8 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Invalid array" }, { status: 502 });
   }
 
-  const validCats = new Set(["radar", "tactics-lab", "lists", "wc-2026", "transfer"]);
+  // No "wc-2026": the World Cup 2026 section closed on 2026-11-26 (a suggestion there falls back to lists).
+  const validCats = new Set(["radar", "tactics-lab", "lists", "transfer"]);
   const validSeo = new Set(["High", "Medium", "Low"]);
 
   const normalized = items

@@ -209,7 +209,8 @@ function ArticlesPageInner() {
   }
 
   async function generateFromSuggestion(s: TitleSuggestion) {
-    if (!["radar", "tactics-lab", "lists", "wc-2026", "transfer"].includes(s.category)) {
+    // No "wc-2026": the World Cup 2026 section closed on 2026-11-26 (its addresses answer 410).
+    if (!["radar", "tactics-lab", "lists", "transfer"].includes(s.category)) {
       setHubNoticeOk(false);
       setHubNotice("Invalid category — please re-suggest the title.");
       setTimeout(() => setHubNotice(""), 8000);
@@ -597,7 +598,6 @@ function ArticlesPageInner() {
                 className="rounded-lg border border-slate-700/80 bg-slate-900/80 px-3 py-2 text-sm text-slate-100 outline-none transition focus:border-violet-500/50 disabled:opacity-50"
               >
                 <option value="">Auto-detect category</option>
-                <option value="wc-2026">WC 2026</option>
                 <option value="transfer">Transfers</option>
                 <option value="radar">Radar</option>
                 <option value="tactics-lab">Tactics Lab</option>

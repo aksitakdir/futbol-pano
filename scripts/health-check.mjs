@@ -36,6 +36,8 @@
  */
 
 import { readFileSync } from "fs";
+// No dependencies, so a credential-free CI run still needs nothing but node.
+import { RETIRED_CATEGORY, RETIRED_IDS_FILTER } from "../lib/retired-content.mjs";
 
 /**
  * Local runs read .env.local; CI has no such file and passes the same names in
@@ -69,10 +71,9 @@ const CATEGORY_PATHS = {
   lists: "/lists",
   "tactics-lab": "/tactics-lab",
   transfer: "/transfers",
-  "wc-2026": "/world-cup-2026",
 };
 
-const ARTICLE_HREF = /\/(radar|lists|tactics-lab|transfers|world-cup-2026)\/([a-z0-9][a-z0-9-]*)/gi;
+const ARTICLE_HREF = /\/(radar|lists|tactics-lab|transfers)\/([a-z0-9][a-z0-9-]*)/gi;
 
 const args = process.argv.slice(2);
 const QUICK = args.includes("--quick");
@@ -166,17 +167,11 @@ async function main() {
   // The article URLs the sitemap itself advertises. Everything except the
   // database cross-check below works from these alone, which is what lets this
   // run in CI with no credentials at all — and a check that needs no setup is
-  // a check that actually runs.
-  // /world-cup-2026/<slug> is the article route, but schedule and squads are
-  // their own folders sitting at the same depth — leaving them in would have
-  // them judged as orphaned articles, and leaving the whole section out silently
-  // dropped 52 published pieces from the sweep.
-  const WC_NON_ARTICLE = new Set(["schedule", "squads", "lists"]);
-  const articlePaths = pages.map((p) => pathOf(p.url)).filter((path) => {
-    const m = path.match(/^\/(radar|lists|tactics-lab|transfers|world-cup-2026)\/([^/]+)$/);
-    if (!m) return false;
-    return !(m[1] === "world-cup-2026" && WC_NON_ARTICLE.has(m[2]));
-  });
+  // a check that actually runs. (/world-cup-2026 left with its section on
+  // 26 Nov 2026: its addresses answer 308 or 410 and are no longer in the sitemap.)
+  const articlePaths = pages
+    .map((p) => pathOf(p.url))
+    .filter((path) => /^\/(radar|lists|tactics-lab|transfers)\/[^/]+$/.test(path));
 
   // ---- 2. inbound internal links ---------------------------------------
   if (!QUICK) {
@@ -229,10 +224,15 @@ async function main() {
     // node_modules at all — checkout and node, nothing else.
     const { createClient } = await import("@supabase/supabase-js");
     const supabase = createClient(supabaseUrl, supabaseKey);
+    // Retired World Cup rows (lib/retired-content.mjs) are published until they are
+    // rejected, but their addresses answer 308/410 and the sitemap leaves them out on
+    // purpose: counting them would report each one as missing.
     const { data: rows, error } = await supabase
       .from("contents")
       .select("id,slug,category,status")
-      .eq("status", "published");
+      .eq("status", "published")
+      .neq("category", RETIRED_CATEGORY)
+      .not("id", "in", RETIRED_IDS_FILTER);
 
     if (error) {
       warnings.push(`could not read contents: ${error.message}`);

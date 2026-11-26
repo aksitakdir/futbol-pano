@@ -4,6 +4,7 @@ import { articleExcerpt } from "@/lib/article-excerpt";
 import { getCategoryImage } from "@/lib/category-images";
 import { categoryArticlePath } from "@/lib/category-config";
 import { COVER_STORY_SETTINGS_KEY, normalizeCoverStories, orderWithCoverPin } from "@/lib/cover-story";
+import { RETIRED_CATEGORY, RETIRED_IDS_FILTER } from "@/lib/retired-content.mjs";
 
 /**
  * Server-side data for the section hubs (/lists, /radar, /tactics-lab, /articles).
@@ -85,6 +86,9 @@ export async function getHubCards(
     .from("contents")
     .select("id,title,title_en,slug,category,content,content_en,created_at,cover_image")
     .eq("status", "published")
+    // Retired World Cup rows answer 308/410 (lib/retired-content.mjs): no hub links them.
+    .neq("category", RETIRED_CATEGORY)
+    .not("id", "in", RETIRED_IDS_FILTER)
     .order("created_at", { ascending: false });
   if (category) query = query.eq("category", category);
   if (limit) query = query.limit(limit);

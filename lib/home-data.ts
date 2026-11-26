@@ -13,6 +13,7 @@ import {
   normalizeRecentCount,
 } from "@/lib/site-settings";
 import type { PlayerCardData } from "@/app/components/player-card";
+import { RETIRED_CATEGORY, RETIRED_IDS_FILTER } from "@/lib/retired-content.mjs";
 
 /**
  * Everything the homepage shows, fetched on the server (P3, 2026-10-20).
@@ -156,15 +157,19 @@ export async function getHomeData(now = new Date()): Promise<HomeData> {
   const pinnedId = normalizeCoverStories(setting(COVER_STORY_SETTINGS_KEY)).homepage;
   const categories = enabledHeroCategories(hero);
 
+  // Retired World Cup rows answer 308/410 (lib/retired-content.mjs): never on the homepage.
   const [heroRes, recentRes, arenaRes, pinnedRes] = await Promise.all([
     supabase.from("contents").select(ROW_SELECT).eq("status", "published")
       .in("category", categories.length ? categories : ["radar"])
+      .neq("category", RETIRED_CATEGORY).not("id", "in", RETIRED_IDS_FILTER)
       .order("created_at", { ascending: false }).limit(Math.max(recentCount * 3, 24)),
     supabase.from("contents").select(ROW_SELECT).eq("status", "published")
+      .neq("category", RETIRED_CATEGORY).not("id", "in", RETIRED_IDS_FILTER)
       .order("created_at", { ascending: false }).limit(recentCount + LATEST),
     supabase.from("arena_games").select("slug,hero_title_en,hero_teaser_en").eq("status", "published"),
     pinnedId
-      ? supabase.from("contents").select(ROW_SELECT).eq("id", pinnedId).eq("status", "published").maybeSingle()
+      ? supabase.from("contents").select(ROW_SELECT).eq("id", pinnedId).eq("status", "published")
+        .neq("category", RETIRED_CATEGORY).not("id", "in", RETIRED_IDS_FILTER).maybeSingle()
       : Promise.resolve({ data: null, error: null }),
   ]);
   for (const r of [heroRes, recentRes, arenaRes, pinnedRes]) if (r.error) throw r.error;
@@ -181,9 +186,8 @@ export async function getHomeData(now = new Date()): Promise<HomeData> {
     article: toArticle(r),
     excerpt: articleExcerpt(r.content_en || r.content || "", { max: 140, title: titleOf(r) }),
   }));
-  if (hero.wcPromo) {
-    slides.unshift({ kind: "wc", key: "wc-2026-promo", eyebrow: "FIFA WORLD CUP 2026", title: "World Cup 2026", teaser: "Match schedule, squads, and scout analysis — June 11 to July 19, 2026.", href: "/world-cup-2026" });
-  }
+  // No World Cup promo slide: the section it advertised closed on 2026-11-26, and its hub
+  // now redirects. `hero.wcPromo` is ignored and no longer offered in /admin/settings.
   for (const cs of customSlides.filter((s) => s.enabled && s.title && s.href)) {
     slides.splice(Math.min(1, slides.length), 0, { kind: "custom", key: cs.id, title: cs.title, teaser: cs.teaser, href: cs.href, eyebrow: cs.eyebrow || "FEATURED", image: cs.image });
   }

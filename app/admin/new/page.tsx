@@ -114,7 +114,10 @@ function NewArticleForm() {
   useEffect(() => {
     const c = searchParams.get("category");
     const m = searchParams.get("mode");
-    if (isContentCategory(c)) setCategory(c);
+    // A new piece cannot go in wc-2026: the World Cup 2026 section closed on 2026-11-26 and
+    // its addresses answer 410. isContentCategory still accepts it so /admin/edit can load
+    // the remaining wc-2026 rows until they are rejected.
+    if (isContentCategory(c) && c !== "wc-2026") setCategory(c);
     if (m === "blocks") setContentMode("blocks");
   }, [searchParams]);
 

@@ -1,7 +1,7 @@
 import { ImageResponse } from "next/og";
 
 export const runtime = "nodejs";
-export const alt = "Scout Gamer — Young Talent Scouting, World Cup 2026 & Game Culture";
+export const alt = "Scout Gamer — Young Talent Scouting, Rising Footballers & Game Culture";
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
 
@@ -79,7 +79,7 @@ export default function OgImage() {
           }}
         />
 
-        {/* Top: Logo + WC badge */}
+        {/* Top: Logo + section badge */}
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", position: "relative", zIndex: 1 }}>
           <div style={{ display: "flex", alignItems: "center", gap: 14 }}>
             <div
@@ -114,12 +114,12 @@ export default function OgImage() {
               gap: 6,
               padding: "7px 14px",
               borderRadius: 999,
-              background: "rgba(255,184,28,0.1)",
-              border: "1px solid rgba(255,184,28,0.25)",
+              background: "rgba(0,212,170,0.1)",
+              border: "1px solid rgba(0,212,170,0.25)",
             }}
           >
-            <span style={{ fontSize: 11, fontWeight: 700, color: "#FFB81C", letterSpacing: "0.14em", fontFamily: "monospace" }}>
-              WORLD CUP 2026
+            <span style={{ fontSize: 11, fontWeight: 700, color: "#00d4aa", letterSpacing: "0.14em", fontFamily: "monospace" }}>
+              YOUNG TALENT SCOUTING
             </span>
           </div>
         </div>
@@ -151,7 +151,7 @@ export default function OgImage() {
             Scout Reports.
           </span>
           <span style={{ fontSize: 18, color: "#6a92b0", marginTop: 20, lineHeight: 1.5, maxWidth: 560 }}>
-            World Cup 2026 squads & match schedule, young talent scouting, transfer analysis, and interactive tournaments.
+            Young talent scouting lists, player radar, transfer analysis, tactical deep-dives and interactive tournaments.
           </span>
         </div>
 
@@ -168,8 +168,8 @@ export default function OgImage() {
           }}
         >
           {[
-            { label: "WC 2026 SCHEDULE", color: "#FFB81C", bg: "rgba(255,184,28,0.08)", border: "rgba(255,184,28,0.2)" },
-            { label: "48 TEAM SQUADS", color: "#E4007C", bg: "rgba(228,0,124,0.08)", border: "rgba(228,0,124,0.2)" },
+            { label: "SCOUTING LISTS", color: "#FFB81C", bg: "rgba(255,184,28,0.08)", border: "rgba(255,184,28,0.2)" },
+            { label: "TACTICS LAB", color: "#E4007C", bg: "rgba(228,0,124,0.08)", border: "rgba(228,0,124,0.2)" },
             { label: "PLAYER RADAR", color: "#00d4aa", bg: "rgba(0,212,170,0.08)", border: "rgba(0,212,170,0.2)" },
             { label: "TRANSFER WIRE", color: "#22d3ee", bg: "rgba(34,211,238,0.08)", border: "rgba(34,211,238,0.2)" },
             { label: "ARENA BRACKETS", color: "#60a5fa", bg: "rgba(96,165,250,0.08)", border: "rgba(96,165,250,0.2)" },
@@ -210,7 +210,7 @@ export default function OgImage() {
             WWW.SCOUTGAMER.COM
           </span>
           <span style={{ fontSize: 11, color: "#3d6a88", letterSpacing: "0.1em", fontFamily: "monospace" }}>
-            RADAR · WC 2026 · TRANSFERS · LISTS · ARENA
+            LISTS · RADAR · TACTICS LAB · TRANSFERS · ARENA
           </span>
         </div>
       </div>

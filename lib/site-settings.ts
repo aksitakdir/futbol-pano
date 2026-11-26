@@ -44,20 +44,22 @@ export const DEFAULT_HERO_SLIDER: HeroSliderSettings = {
   radar: true,
   lists: true,
   "tactics-lab": true,
-  "wc-2026": true,
+  // Off since the World Cup 2026 section closed (2026-11-26): its hub redirects and its
+  // articles answer 410, so a missing hero_slider row must not bring either back.
+  "wc-2026": false,
   transfer: true,
-  wcPromo: true,
+  wcPromo: false,
   arena: true,
   sliderCount: 5,
 };
 
+// No "wc-2026" or "wcPromo" toggle since the World Cup 2026 section closed (2026-11-26):
+// its rows are kept off the homepage and its promo slide is gone (lib/home-data.ts).
 export const HERO_SLIDER_TOGGLES: { key: keyof HeroSliderSettings; label: string; hint?: string }[] = [
   { key: "radar", label: "Radar" },
   { key: "lists", label: "Lists" },
   { key: "tactics-lab", label: "Tactics Lab" },
-  { key: "wc-2026", label: "WC 2026 articles" },
   { key: "transfer", label: "Transfers articles" },
-  { key: "wcPromo", label: "WC 2026 promo slide", hint: "Static hub promo — not an article" },
   { key: "arena", label: "Arena promo slide", hint: "Random published arena game" },
 ];
 

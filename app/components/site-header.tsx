@@ -5,6 +5,7 @@ import { createPortal } from "react-dom";
 import Link from "next/link";
 import { useRouter, usePathname } from "next/navigation";
 import { supabase } from "@/lib/supabase";
+import { RETIRED_CATEGORY, RETIRED_IDS_FILTER } from "@/lib/retired-content.mjs";
 import SgKeycap from "./sg-keycap";
 
 type Props = { activeNav?: string; maxWidth?: string; forceEn?: boolean };
@@ -63,8 +64,8 @@ const NAV_ITEMS = [
   { href: "/radar", label: "RADAR", key: "radar" },
   { href: "/arena", label: "ARENA", key: "arena" },
   { href: "/transfers", label: "TRANSFERS", key: "transfer" },
-  // WC 2026 left the navigation on 19 Oct 2026, three months after the final: its
-  // pages stay up as an archive, linked from the footer, not offered as a live section.
+  // WC 2026 left the navigation on 19 Oct 2026, three months after the final, and the
+  // section closed on 26 Nov 2026 (next.config.ts redirects, proxy.ts answers 410).
 ];
 
 export default function SiteHeader({ activeNav }: Props) {
@@ -112,7 +113,10 @@ export default function SiteHeader({ activeNav }: Props) {
   const doSearch = useCallback(async (q: string) => {
     if (!q.trim()) { setResults([]); setSearching(false); return; }
     setSearching(true);
-    const { data } = await supabase.from("contents").select("id,title,title_en,slug,category").eq("status", "published").or(`title.ilike.%${q}%,title_en.ilike.%${q}%`).limit(6);
+    // Retired World Cup rows answer 308/410 (lib/retired-content.mjs): not offered as results.
+    const { data } = await supabase.from("contents").select("id,title,title_en,slug,category").eq("status", "published")
+      .neq("category", RETIRED_CATEGORY).not("id", "in", RETIRED_IDS_FILTER)
+      .or(`title.ilike.%${q}%,title_en.ilike.%${q}%`).limit(6);
     setResults(data ?? []);
     setSearching(false);
     setSelectedIdx(-1);
