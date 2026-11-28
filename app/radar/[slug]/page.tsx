@@ -9,6 +9,7 @@ import { getMoreInSection } from "@/lib/related-articles";
 import { cardSnapshotFor } from "@/lib/card-snapshot-server";
 import { CardSnapshotProvider } from "@/app/components/card-snapshot-context";
 import { frozenRow } from "@/lib/card-snapshot";
+import { lookupFcByName } from "@/lib/fc-name-match.mjs";
 import RadarDetailClient from "./client";
 import type { PlayerCardData } from "@/app/components/player-card";
 
@@ -34,15 +35,16 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   return articleMetadata(slug, `/radar/${slug}`);
 }
 
-const FC_SELECT = "overall,pace,shooting,passing,dribbling,defending,physical,position,club,league,age,photo_url";
+const FC_SELECT = "name,overall,pace,shooting,passing,dribbling,defending,physical,position,club,league,age,photo_url";
 
+/**
+ * The shared matcher (lib/fc-name-match.mjs): the same name or the only row that is
+ * clearly the same person, never a substring namesake. A query error throws, like the
+ * content query below, so a failed lookup is not cached for a day as "no card".
+ */
 async function lookupFcPlayer(name: string): Promise<Partial<PlayerCardData> | null> {
-  const supabase = createClient();
-  const { data: exact } = await supabase.from("fc_players").select(FC_SELECT).ilike("name", name).limit(1).maybeSingle();
-  if (exact?.overall) return exact;
-  const two = name.split(" ").slice(0, 2).join(" ");
-  const { data: fuzzy } = await supabase.from("fc_players").select(FC_SELECT).ilike("name", `%${two}%`).order("overall", { ascending: false }).limit(1).maybeSingle();
-  return fuzzy?.overall ? fuzzy : null;
+  const hit = await lookupFcByName(createClient(), name, { cols: FC_SELECT });
+  return hit?.row?.overall ? (hit.row as Partial<PlayerCardData>) : null;
 }
 
 export default async function RadarDetailPage({ params }: Props) {
@@ -72,8 +74,8 @@ export default async function RadarDetailPage({ params }: Props) {
   let playerCard: PlayerCardData | null = null;
   if (data.player_name) {
     const hasStored = !!(data.stat_overall || data.stat_pace);
-    // A frozen card wins over the live table (lib/card-snapshot.ts); this lookup
-    // stops at first-two-words, so a last-name freeze counts as none.
+    // A frozen card wins over the live table (lib/card-snapshot.ts). This lookup used
+    // to stop at first-two-words, so a legacy last-name freeze still counts as none.
     const frozen = frozenRow(cardSnapshot, data.player_name, "two");
     const fcRow = frozen === undefined
       ? await lookupFcPlayer(data.player_name)

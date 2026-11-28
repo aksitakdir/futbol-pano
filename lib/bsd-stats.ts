@@ -9,6 +9,8 @@
  * API Schema: https://sports.bzzoiro.com/api/schema/
  */
 
+import { pickFcMatch } from "./fc-name-match.mjs";
+
 const BSD_BASE = "https://sports.bzzoiro.com/api/v2";
 
 function bsdHeaders(): Record<string, string> {
@@ -311,11 +313,17 @@ export async function resolveBsdPlayer(
     const results = await searchBsdPlayer(name, 5);
     if (results.length === 0) return null;
 
-    // Best match: exact name or highest-rated
-    const exact = results.find(
-      (p) => p.name.toLowerCase() === name.toLowerCase(),
-    );
-    const player = exact ?? results[0];
+    // The same person or nothing (lib/fc-name-match.mjs). The top search hit used to
+    // be taken when no name matched; it was shown under the written name and cached in
+    // player_cache, so a namesake's numbers became the card. A full page of results
+    // cannot prove a fuzzy match is the only one, hence `truncated`. Several players
+    // sharing the name ("Diego Costa" x4) is no proof either: none is cached under it.
+    const match = pickFcMatch(name, results, {
+      requireOverall: false,
+      truncated: results.length >= 5,
+    });
+    if (!match || match.ambiguous) return null;
+    const player = match.row;
 
     // Fetch career for latest season stats
     const career = await getBsdCareer(player.id);

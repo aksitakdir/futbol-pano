@@ -10,6 +10,7 @@
  */
 
 import { supabase } from "./supabase";
+import { lookupFcByName } from "./fc-name-match.mjs";
 import type { PlayerCardData } from "@/app/components/player-card";
 
 // ─── Types ───────────────────────────────────────────────────────
@@ -43,53 +44,17 @@ type CacheRow = FcPlayerRow & {
 
 // ─── Tier 1: fc_players (EA FC) ──────────────────────────────────
 
+/**
+ * Written name → fc_players row through the shared matcher (lib/fc-name-match.mjs):
+ * the same name, or the only row that is clearly the same person ("Ayyub Bouaddi" →
+ * "Ayyoub Bouaddi", "Junior Kroupi" → "Eli Junior Kroupi"). It no longer takes the
+ * highest-rated substring namesake ("Gilberto Mora" → "Morata"). Throws on a query error.
+ */
 async function searchFcPlayers(name: string): Promise<PlayerCardData | null> {
-  // Exact match
-  const { data: exact } = await supabase
-    .from("fc_players")
-    .select("name,overall,pace,shooting,passing,dribbling,defending,physical,position,club,league,age,photo_url")
-    .ilike("name", name)
-    .limit(1)
-    .maybeSingle();
-
-  if (exact?.overall) return fcToCard(exact as FcPlayerRow);
-
-  // Fuzzy: first two words
-  const two = name.split(" ").slice(0, 2).join(" ");
-  if (two.length < 3) return null;
-
-  const { data: fuzzy } = await supabase
-    .from("fc_players")
-    .select("name,overall,pace,shooting,passing,dribbling,defending,physical,position,club,league,age,photo_url")
-    .ilike("name", `%${two}%`)
-    .order("overall", { ascending: false })
-    .limit(1)
-    .maybeSingle();
-
-  if (fuzzy?.overall) return fcToCard(fuzzy as FcPlayerRow);
-
-  // Fuzzy: last name only (handles "Ayyub Bouaddi" → matches "Ayyoub Bouaddi")
-  const parts = name.split(" ");
-  if (parts.length >= 2) {
-    const lastName = parts[parts.length - 1];
-    if (lastName.length >= 4) {
-      const { data: lastNameMatch } = await supabase
-        .from("fc_players")
-        .select("name,overall,pace,shooting,passing,dribbling,defending,physical,position,club,league,age,photo_url")
-        .ilike("name", `%${lastName}%`)
-        .order("overall", { ascending: false })
-        .limit(3);
-      if (lastNameMatch && lastNameMatch.length > 0) {
-        // Pick the one whose name is closest (shares the most characters with the query)
-        const best = lastNameMatch.find((r) =>
-          (r.name as string).toLowerCase().includes(lastName.toLowerCase()),
-        );
-        if (best?.overall) return fcToCard(best as FcPlayerRow);
-      }
-    }
-  }
-
-  return null;
+  const hit = await lookupFcByName(supabase, name, {
+    cols: "name,overall,pace,shooting,passing,dribbling,defending,physical,position,club,league,age,photo_url",
+  });
+  return hit?.row?.overall ? fcToCard(hit.row as FcPlayerRow) : null;
 }
 
 function fcToCard(row: FcPlayerRow): PlayerCardData {
@@ -112,47 +77,13 @@ function fcToCard(row: FcPlayerRow): PlayerCardData {
 
 // ─── Tier 2: player_cache ────────────────────────────────────────
 
+/** The same matcher over player_cache. Throws on a query error. */
 async function searchPlayerCache(name: string): Promise<PlayerCardData | null> {
-  const { data: exact } = await supabase
-    .from("player_cache")
-    .select("name,overall,pace,shooting,passing,dribbling,defending,physical,position,club,league,age")
-    .ilike("name", name)
-    .limit(1)
-    .maybeSingle();
-
-  if (exact?.overall) return cacheToCard(exact as CacheRow);
-
-  // Fuzzy
-  const two = name.split(" ").slice(0, 2).join(" ");
-  if (two.length < 3) return null;
-
-  const { data: fuzzy } = await supabase
-    .from("player_cache")
-    .select("name,overall,pace,shooting,passing,dribbling,defending,physical,position,club,league,age")
-    .ilike("name", `%${two}%`)
-    .order("overall", { ascending: false })
-    .limit(1)
-    .maybeSingle();
-
-  if (fuzzy?.overall) return cacheToCard(fuzzy as CacheRow);
-
-  // Fuzzy: last name only
-  const parts = name.split(" ");
-  if (parts.length >= 2) {
-    const lastName = parts[parts.length - 1];
-    if (lastName.length >= 4) {
-      const { data: lastNameMatch } = await supabase
-        .from("player_cache")
-        .select("name,overall,pace,shooting,passing,dribbling,defending,physical,position,club,league,age")
-        .ilike("name", `%${lastName}%`)
-        .order("overall", { ascending: false })
-        .limit(1)
-        .maybeSingle();
-      if (lastNameMatch?.overall) return cacheToCard(lastNameMatch as CacheRow);
-    }
-  }
-
-  return null;
+  const hit = await lookupFcByName(supabase, name, {
+    table: "player_cache",
+    cols: "name,overall,pace,shooting,passing,dribbling,defending,physical,position,club,league,age",
+  });
+  return hit?.row?.overall ? cacheToCard(hit.row as CacheRow) : null;
 }
 
 function cacheToCard(row: CacheRow): PlayerCardData {
@@ -380,10 +311,15 @@ export async function resolvePlayer(
   const trimmed = name.trim();
   if (!trimmed) return null;
 
-  // Tier 1: EA FC database
+  // Tier 1: EA FC database. A failed request falls through to the next tier, as
+  // before; it is logged, not read as "no card".
   if (!skipFc) {
-    const fc = await searchFcPlayers(trimmed);
-    if (fc) return fc;
+    try {
+      const fc = await searchFcPlayers(trimmed);
+      if (fc) return fc;
+    } catch (err) {
+      console.warn("[player-resolver] fc_players lookup failed:", err);
+    }
   }
 
   // Tier 2: Previously cached

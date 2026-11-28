@@ -31,10 +31,12 @@ export default function HeroPlayerCard({ playerName }: { playerName: string }) {
       const skipFc = frozen === null;
       // Client-side: checks fc_players + player_cache (tiers 1-2)
       let result = await resolvePlayer(playerName.trim(), false, skipFc);
-      // If not in local tables, call server-side resolve (BSD + API-Football)
-      if (!result) {
+      // If not in local tables, call server-side resolve (BSD + API-Football). Not for a
+      // name frozen as "no card": that tier derives a rating from match stats and caches
+      // it, a number the article was written without (same rule as ArticlePlayerEmbed).
+      if (!result && !skipFc) {
         try {
-          const res = await fetch(`/api/players/resolve?name=${encodeURIComponent(playerName.trim())}${skipFc ? "&skipFc=1" : ""}`);
+          const res = await fetch(`/api/players/resolve?name=${encodeURIComponent(playerName.trim())}`);
           if (res.ok) result = await res.json();
         } catch { /* ignore */ }
       }

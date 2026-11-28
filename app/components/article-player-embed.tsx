@@ -6,6 +6,7 @@ import { supabase } from "@/lib/supabase";
 import PlayerCard, { type PlayerCardData } from "./player-card";
 import { useCardSnapshot } from "./card-snapshot-context";
 import { frozenRow, type ArticleCardSnapshot } from "@/lib/card-snapshot";
+import { lookupFcByName } from "@/lib/fc-name-match.mjs";
 
 const STAT_LABELS = ["PAC", "SHO", "PAS", "DRI", "DEF", "PHY"] as const;
 const STAT_KEYS = ["pace", "shooting", "passing", "dribbling", "defending", "physical"] as const;
@@ -17,45 +18,23 @@ function statColor(val?: number) {
   return "var(--sg-text-muted)";
 }
 
-const FC_COLS = "overall,pace,shooting,passing,dribbling,defending,physical,position,club,league,age,photo_url";
+const FC_COLS = "name,overall,pace,shooting,passing,dribbling,defending,physical,position,club,league,age,photo_url";
+const CACHE_COLS = "name,overall,pace,shooting,passing,dribbling,defending,physical,position,club,league,age";
 
-async function fetchFcPlayer(name: string): Promise<Partial<PlayerCardData> | null> {
-  // Tier 1: fc_players — exact
-  const { data: exact } = await supabase
-    .from("fc_players")
-    .select(FC_COLS)
-    .ilike("name", name)
-    .limit(1)
-    .maybeSingle();
-  if (exact?.overall) return exact;
-
-  // Tier 1b: fc_players — fuzzy (first two words)
-  const two = name.split(" ").slice(0, 2).join(" ");
-  const { data: fuzzy } = await supabase
-    .from("fc_players")
-    .select(FC_COLS)
-    .ilike("name", `%${two}%`)
-    .order("overall", { ascending: false })
-    .limit(1)
-    .maybeSingle();
-  if (fuzzy?.overall) return fuzzy;
-
-  // Tier 1c: fc_players — last name only (handles spelling variants like Ayyub→Ayyoub)
-  const parts = name.split(" ");
-  if (parts.length >= 2) {
-    const lastName = parts[parts.length - 1];
-    if (lastName.length >= 4) {
-      const { data: lastNameMatch } = await supabase
-        .from("fc_players")
-        .select(FC_COLS)
-        .ilike("name", `%${lastName}%`)
-        .order("overall", { ascending: false })
-        .limit(1)
-        .maybeSingle();
-      if (lastNameMatch?.overall) return lastNameMatch;
-    }
+/**
+ * One table, one written name, through the shared matcher (lib/fc-name-match.mjs):
+ * the same name, or the only row that is clearly the same person. Never a substring
+ * namesake: "%Mora%" used to give "Gilberto Mora" the card of Morata.
+ */
+async function lookupCard(name: string, table: "fc_players" | "player_cache"): Promise<Partial<PlayerCardData> | null> {
+  try {
+    const hit = await lookupFcByName(supabase, name, { table, cols: table === "fc_players" ? FC_COLS : CACHE_COLS });
+    return hit?.row?.overall ? (hit.row as Partial<PlayerCardData>) : null;
+  } catch (err) {
+    // A failed request is not "no card": say so, then try the next source.
+    console.warn(`[player-embed] ${table} lookup failed for "${name}":`, err);
+    return null;
   }
-  return null;
 }
 
 async function fetchPlayerStats(
@@ -67,36 +46,23 @@ async function fetchPlayerStats(
   const frozen = frozenRow(snapshot, name);
   if (frozen) return frozen as Partial<PlayerCardData>;
   if (frozen === undefined) {
-    const fc = await fetchFcPlayer(name);
+    // Tier 1: fc_players
+    const fc = await lookupCard(name, "fc_players");
     if (fc) return fc;
   }
 
-  const two = name.split(" ").slice(0, 2).join(" ");
+  // Tier 2: player_cache
+  const cached = await lookupCard(name, "player_cache");
+  if (cached) return cached;
 
-  // Tier 2: player_cache — exact
-  const cacheCols = "overall,pace,shooting,passing,dribbling,defending,physical,position,club,league,age";
-  const { data: cacheExact } = await supabase
-    .from("player_cache")
-    .select(cacheCols)
-    .ilike("name", name)
-    .limit(1)
-    .maybeSingle();
-  if (cacheExact?.overall) return cacheExact;
-
-  // Tier 2b: player_cache — fuzzy
-  const { data: cacheFuzzy } = await supabase
-    .from("player_cache")
-    .select(cacheCols)
-    .ilike("name", `%${two}%`)
-    .order("overall", { ascending: false })
-    .limit(1)
-    .maybeSingle();
-  if (cacheFuzzy?.overall) return cacheFuzzy;
+  // Frozen as "no card" (null): the article was written without one, often saying so
+  // ("Not in EA FC 27"). Do not mint one now: tier 3 builds a rating out of BSD match
+  // stats and caches it, so the card would show a number the text says does not exist.
+  if (frozen === null) return null;
 
   // Tier 3: server-side resolve (BSD + API-Football) via API
   try {
-    const skipFc = frozen === null ? "&skipFc=1" : "";
-    const res = await fetch(`/api/players/resolve?name=${encodeURIComponent(name)}${skipFc}`);
+    const res = await fetch(`/api/players/resolve?name=${encodeURIComponent(name)}`);
     if (res.ok) {
       const data = await res.json();
       if (data?.overall) return data;

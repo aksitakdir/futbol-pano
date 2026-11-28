@@ -13,11 +13,14 @@
  * game it was frozen against. Pending articles are skipped — they get updated
  * to the new game before they publish.
  *
- * It resolves names with the same tiers the renderers use (exact → first two
- * words → last name) and records the tier, so a renderer that stops earlier
- * can ignore a match it would never have made (see frozenRow in
- * lib/card-snapshot.ts). A name with no match is stored as null: after the
- * import it stays card-less instead of suddenly gaining one.
+ * It resolves names with the matcher every renderer uses (lib/fc-name-match.mjs:
+ * the same name, or the only row that is clearly the same person; never a
+ * substring namesake) and records its rule as the tier, plus `ambiguous` when
+ * namesakes share the name. Freezes before 2026-11-28 recorded the old substring
+ * tiers ("two", "last"); frozenRow in lib/card-snapshot.ts still honours them. A
+ * name with no match is stored as null: after the import it stays card-less
+ * instead of suddenly gaining one. A failed query stops the run, so it is never
+ * frozen as null.
  *
  *   node scripts/freeze-cards.mjs --dataset fc26-kaggle-2025-09 --dry
  *   node scripts/freeze-cards.mjs --dataset fc26-kaggle-2025-09
@@ -26,6 +29,7 @@ import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { createClient } from "@supabase/supabase-js";
+import { lookupFcByName } from "../lib/fc-name-match.mjs";
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const OUT = path.join(ROOT, "data", "card-snapshots.json");
@@ -85,26 +89,11 @@ function namesIn(row) {
   return [...names];
 }
 
-/** The same tiers as app/components/article-player-embed.tsx and lib/player-resolver.ts. */
+/** The matcher app/components/article-player-embed.tsx and lib/player-resolver.ts use. */
 async function resolve(name) {
-  const { data: exact } = await supabase.from("fc_players").select(COLS).ilike("name", name).limit(1).maybeSingle();
-  if (exact?.overall) return { tier: "exact", row: exact };
-
-  const two = name.split(" ").slice(0, 2).join(" ");
-  const { data: fuzzy } = await supabase
-    .from("fc_players").select(COLS).ilike("name", `%${two}%`)
-    .order("overall", { ascending: false }).limit(1).maybeSingle();
-  if (fuzzy?.overall) return { tier: "two", row: fuzzy };
-
-  const parts = name.split(" ");
-  const last = parts[parts.length - 1];
-  if (parts.length >= 2 && last.length >= 4) {
-    const { data: byLast } = await supabase
-      .from("fc_players").select(COLS).ilike("name", `%${last}%`)
-      .order("overall", { ascending: false }).limit(1).maybeSingle();
-    if (byLast?.overall) return { tier: "last", row: byLast };
-  }
-  return null;
+  const hit = await lookupFcByName(supabase, name, { cols: COLS });
+  if (!hit?.row?.overall) return null;
+  return hit.ambiguous ? { tier: hit.tier, row: hit.row, ambiguous: true } : { tier: hit.tier, row: hit.row };
 }
 
 const existing = fs.existsSync(OUT) ? JSON.parse(fs.readFileSync(OUT, "utf8")) : { articles: {} };
@@ -123,7 +112,8 @@ if (error) {
 const frozenAt = new Date().toISOString().slice(0, 10);
 const cache = new Map();
 let added = 0, skipped = 0, noCards = 0, cardCount = 0, nullCount = 0;
-const tiers = { exact: 0, two: 0, last: 0 };
+const tiers = { exact: 0, folded: 0, tokens: 0, initial: 0, mononym: 0 };
+let ambiguousCount = 0;
 
 for (const row of rows) {
   if (existing.articles[String(row.id)]) { skipped++; continue; }
@@ -136,12 +126,22 @@ for (const row of rows) {
     if (!cache.has(k)) cache.set(k, await resolve(name));
     const hit = cache.get(k);
     cards[k] = hit;
-    if (hit) { cardCount++; tiers[hit.tier]++; } else nullCount++;
+    if (hit) {
+      cardCount++;
+      tiers[hit.tier]++;
+      if (hit.ambiguous) ambiguousCount++;
+    } else nullCount++;
   }
   existing.articles[String(row.id)] = { slug: row.slug, frozen_at: frozenAt, dataset, cards };
   added++;
   if (dry) {
-    const shown = Object.entries(cards).map(([n, c]) => (c ? `${n} ${c.row.overall}` : `${n} —`)).join(", ");
+    const shown = Object.entries(cards)
+      .map(([n, c]) => {
+        if (!c) return `${n} —`;
+        const via = c.tier === "exact" ? "" : ` [${c.tier}: ${c.row.name}]`;
+        return `${n} ${c.row.overall}${via}${c.ambiguous ? " (namesakes)" : ""}`;
+      })
+      .join(", ");
     console.log(`#${row.id} ${row.slug}\n    ${shown}`);
   }
 }
@@ -149,7 +149,11 @@ for (const row of rows) {
 console.log(
   `\n${rows.length} published · ${added} frozen now · ${skipped} already frozen · ${noCards} with no player cards`,
 );
-console.log(`${cardCount} cards (exact ${tiers.exact}, first-two ${tiers.two}, last-name ${tiers.last}) · ${nullCount} names with no fc_players card`);
+console.log(
+  `${cardCount} cards (exact ${tiers.exact}, folded ${tiers.folded}, tokens ${tiers.tokens}, ` +
+    `initial ${tiers.initial}, mononym ${tiers.mononym}; ${ambiguousCount} with namesakes) · ` +
+    `${nullCount} names with no fc_players card`,
+);
 
 if (dry) {
   console.log("\n--dry: nothing written.");

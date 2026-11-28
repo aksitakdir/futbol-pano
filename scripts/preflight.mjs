@@ -24,6 +24,8 @@
  * mechanical, and impossible to publish a claim nobody looked up.
  */
 
+import { lookupFcByName } from "../lib/fc-name-match.mjs";
+
 // Position codes, matching how fc_players stores them. The one vocabulary both
 // `position_frame` and `last_match_position` must speak.
 const POSITIONS = [
@@ -209,17 +211,35 @@ export async function runPreflight({ brief, sectionsJson, supabase, today = new 
     for (const name of carded) {
       const row = verification[name];
       if (!row) continue;
-      const { data } = await supabase
-        .from("fc_players")
-        .select("name,club,age,overall,pace,shooting,passing,dribbling,defending,physical")
-        .ilike("name", name)
-        .limit(1)
-        .maybeSingle();
+      // The same matcher the card renderers use (lib/fc-name-match.mjs), so the gate
+      // checks the row the page will actually show, not merely an exact-name row.
+      let hit;
+      try {
+        hit = await lookupFcByName(supabase, name, {
+          cols: "name,club,age,overall,pace,shooting,passing,dribbling,defending,physical",
+        });
+      } catch (err) {
+        blockers.push(`fc_players lookup for "${name}" failed (${err?.message ?? err}) — rerun the gate.`);
+        continue;
+      }
+      const data = hit?.row ?? null;
 
       if (data) cards.set(name, data);
       if (!data) {
-        warnings.push(`"${name}" is not in fc_players — the player card will not render stats.`);
+        warnings.push(
+          `"${name}" has no fc_players card under this name — the card renders no EA stats. ` +
+            `If the game carries him under another spelling, write the card's name.`,
+        );
         continue;
+      }
+      if (hit.tier !== "exact") {
+        warnings.push(`"${name}" renders the fc_players card "${data.name}" (${data.club}, ${data.overall}; ${hit.tier} match) — check it is him.`);
+      }
+      if (hit.ambiguous) {
+        warnings.push(
+          `"${name}": more than one fc_players row carries this name; the card shows the highest-rated ` +
+            `(${data.club}, ${data.overall}). If yours is the other one, the card is wrong.`,
+        );
       }
       // Club names are written differently in different places ("Newcastle" vs
       // "Newcastle Utd"), so containment either way counts as agreement. Only a

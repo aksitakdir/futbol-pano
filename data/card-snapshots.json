@@ -96,24 +96,7 @@
       "photo_url": "https://cdn.sofifa.net/players/237/692/26_120.png"
      }
     },
-    "roberto firmino": {
-     "tier": "last",
-     "row": {
-      "name": "Adriano Firmino",
-      "overall": 70,
-      "pace": 55,
-      "shooting": 53,
-      "passing": 64,
-      "dribbling": 62,
-      "defending": 70,
-      "physical": 70,
-      "position": "CDM",
-      "club": "Santa Clara",
-      "league": "Liga Portugal",
-      "age": 26,
-      "photo_url": "https://cdn.sofifa.net/players/271/297/26_120.png"
-     }
-    }
+    "roberto firmino": null
    }
   },
   "29": {
@@ -415,24 +398,7 @@
       "photo_url": "https://cdn.sofifa.net/players/210/514/26_120.png"
      }
     },
-    "philipp lahm": {
-     "tier": "last",
-     "row": {
-      "name": "Noah Lahmadi",
-      "overall": 62,
-      "pace": 62,
-      "shooting": 56,
-      "passing": 60,
-      "dribbling": 63,
-      "defending": 55,
-      "physical": 57,
-      "position": "CM",
-      "club": "Toulouse FC",
-      "league": "Ligue 1 McDonald's",
-      "age": 21,
-      "photo_url": "https://cdn.sofifa.net/players/277/820/26_120.png"
-     }
-    },
+    "philipp lahm": null,
     "trent alexander-arnold": {
      "tier": "exact",
      "row": {
@@ -512,24 +478,7 @@
    "frozen_at": "2026-09-29",
    "dataset": "fc26-kaggle-2025-09",
    "cards": {
-    "roberto firmino": {
-     "tier": "last",
-     "row": {
-      "name": "Adriano Firmino",
-      "overall": 70,
-      "pace": 55,
-      "shooting": 53,
-      "passing": 64,
-      "dribbling": 62,
-      "defending": 70,
-      "physical": 70,
-      "position": "CDM",
-      "club": "Santa Clara",
-      "league": "Liga Portugal",
-      "age": 26,
-      "photo_url": "https://cdn.sofifa.net/players/271/297/26_120.png"
-     }
-    },
+    "roberto firmino": null,
     "darwin núñez": {
      "tier": "exact",
      "row": {
@@ -2645,24 +2594,7 @@
       "photo_url": "https://cdn.sofifa.net/players/158/023/26_120.png"
      }
     },
-    "julián álvarez": {
-     "tier": "last",
-     "row": {
-      "name": "Edson Álvarez",
-      "overall": 78,
-      "pace": 65,
-      "shooting": 58,
-      "passing": 69,
-      "dribbling": 72,
-      "defending": 78,
-      "physical": 79,
-      "position": "CDM",
-      "club": "Fenerbahçe",
-      "league": "Trendyol Süper Lig",
-      "age": 28,
-      "photo_url": "https://cdn.sofifa.net/players/235/844/26_120.png"
-     }
-    },
+    "julián álvarez": null,
     "lautaro martínez": {
      "tier": "exact",
      "row": {
@@ -2731,42 +2663,8 @@
    "frozen_at": "2026-09-29",
    "dataset": "fc26-kaggle-2025-09",
    "cards": {
-    "raul jimenez": {
-     "tier": "last",
-     "row": {
-      "name": "Stiven Jimenez",
-      "overall": 49,
-      "pace": 57,
-      "shooting": 34,
-      "passing": 45,
-      "dribbling": 50,
-      "defending": 48,
-      "physical": 43,
-      "position": "CDM",
-      "club": "FC Cincinnati",
-      "league": "MLS",
-      "age": 18,
-      "photo_url": "https://cdn.sofifa.net/players/274/542/26_120.png"
-     }
-    },
-    "guillermo ochoa": {
-     "tier": "last",
-     "row": {
-      "name": "Aarón Ochoa",
-      "overall": 65,
-      "pace": 66,
-      "shooting": 60,
-      "passing": 62,
-      "dribbling": 67,
-      "defending": 40,
-      "physical": 51,
-      "position": "CAM",
-      "club": "Málaga CF",
-      "league": "LALIGA HYPERMOTION",
-      "age": 18,
-      "photo_url": "https://cdn.sofifa.net/players/074/555/26_120.png"
-     }
-    },
+    "raul jimenez": null,
+    "guillermo ochoa": null,
     "raúl jiménez": {
      "tier": "exact",
      "row": {
@@ -2803,24 +2701,7 @@
       "photo_url": "https://cdn.sofifa.net/players/241/173/26_120.png"
      }
     },
-    "ronwen williams": {
-     "tier": "last",
-     "row": {
-      "name": "Nico Williams",
-      "overall": 86,
-      "pace": 93,
-      "shooting": 76,
-      "passing": 80,
-      "dribbling": 87,
-      "defending": 36,
-      "physical": 66,
-      "position": "LM",
-      "club": "Athletic Club",
-      "league": "LALIGA EA SPORTS",
-      "age": 23,
-      "photo_url": "https://cdn.sofifa.net/players/256/516/26_120.png"
-     }
-    }
+    "ronwen williams": null
    }
   },
   "91": {
@@ -3706,24 +3587,7 @@
    "dataset": "fc26-kaggle-2025-09",
    "cards": {
     "adalberto carrasquilla": null,
-    "ismael díaz": {
-     "tier": "last",
-     "row": {
-      "name": "Luis Díaz",
-      "overall": 85,
-      "pace": 88,
-      "shooting": 81,
-      "passing": 76,
-      "dribbling": 87,
-      "defending": 45,
-      "physical": 75,
-      "position": "LM",
-      "club": "FC Bayern München",
-      "league": "Bundesliga",
-      "age": 29,
-      "photo_url": "https://cdn.sofifa.net/players/241/084/26_120.png"
-     }
-    }
+    "ismael díaz": null
    }
   },
   "118": {
@@ -4189,24 +4053,7 @@
       "photo_url": "https://cdn.sofifa.net/players/268/896/26_120.png"
      }
     },
-    "gilberto mora": {
-     "tier": "last",
-     "row": {
-      "name": "Morata",
-      "overall": 81,
-      "pace": 78,
-      "shooting": 81,
-      "passing": 74,
-      "dribbling": 80,
-      "defending": 31,
-      "physical": 78,
-      "position": "ST",
-      "club": "Como",
-      "league": "Serie A Enilive",
-      "age": 33,
-      "photo_url": "https://cdn.sofifa.net/players/201/153/26_120.png"
-     }
-    }
+    "gilberto mora": null
    }
   },
   "125": {
@@ -4307,24 +4154,7 @@
    "frozen_at": "2026-09-29",
    "dataset": "fc26-kaggle-2025-09",
    "cards": {
-    "gilberto mora": {
-     "tier": "last",
-     "row": {
-      "name": "Morata",
-      "overall": 81,
-      "pace": 78,
-      "shooting": 81,
-      "passing": 74,
-      "dribbling": 80,
-      "defending": 31,
-      "physical": 78,
-      "position": "ST",
-      "club": "Como",
-      "league": "Serie A Enilive",
-      "age": 33,
-      "photo_url": "https://cdn.sofifa.net/players/201/153/26_120.png"
-     }
-    },
+    "gilberto mora": null,
     "ayyoub bouaddi": {
      "tier": "exact",
      "row": {
@@ -4343,42 +4173,8 @@
       "photo_url": "https://cdn.sofifa.net/players/278/901/26_120.png"
      }
     },
-    "johan diomandé": {
-     "tier": "last",
-     "row": {
-      "name": "Sinaly Diomandé",
-      "overall": 73,
-      "pace": 62,
-      "shooting": 50,
-      "passing": 61,
-      "dribbling": 58,
-      "defending": 73,
-      "physical": 75,
-      "position": "CB",
-      "club": "AJ Auxerre",
-      "league": "Ligue 1 McDonald's",
-      "age": 24,
-      "photo_url": "https://cdn.sofifa.net/players/257/204/26_120.png"
-     }
-    },
-    "rayan": {
-     "tier": "two",
-     "row": {
-      "name": "Rayan Cherki",
-      "overall": 81,
-      "pace": 75,
-      "shooting": 75,
-      "passing": 80,
-      "dribbling": 88,
-      "defending": 21,
-      "physical": 65,
-      "position": "RW",
-      "club": "Manchester City",
-      "league": "Premier League",
-      "age": 22,
-      "photo_url": "https://cdn.sofifa.net/players/251/570/26_120.png"
-     }
-    },
+    "johan diomandé": null,
+    "rayan": null,
     "luka vuskovic": null
    }
   },
@@ -4748,24 +4544,7 @@
       "photo_url": "https://cdn.sofifa.net/players/076/687/26_120.png"
      }
     },
-    "ryan roberto": {
-     "tier": "last",
-     "row": {
-      "name": "Sergi Roberto",
-      "overall": 77,
-      "pace": 69,
-      "shooting": 63,
-      "passing": 78,
-      "dribbling": 75,
-      "defending": 74,
-      "physical": 65,
-      "position": "CDM",
-      "club": "Como",
-      "league": "Serie A Enilive",
-      "age": 34,
-      "photo_url": "https://cdn.sofifa.net/players/199/564/26_120.png"
-     }
-    },
+    "ryan roberto": null,
     "endrick": {
      "tier": "exact",
      "row": {
@@ -4802,24 +4581,7 @@
       "photo_url": "https://cdn.sofifa.net/players/273/018/26_120.png"
      }
     },
-    "vitor roque": {
-     "tier": "last",
-     "row": {
-      "name": "Roque Santa Cruz",
-      "overall": 69,
-      "pace": 31,
-      "shooting": 74,
-      "passing": 60,
-      "dribbling": 61,
-      "defending": 36,
-      "physical": 63,
-      "position": "ST",
-      "club": "Libertad",
-      "league": "Libertadores",
-      "age": 44,
-      "photo_url": "https://cdn.sofifa.net/players/025/798/26_120.png"
-     }
-    },
+    "vitor roque": null,
     "luis guilherme": {
      "tier": "exact",
      "row": {
@@ -5180,24 +4942,7 @@
       "photo_url": "https://cdn.sofifa.net/players/277/643/26_120.png"
      }
     },
-    "gilberto mora": {
-     "tier": "last",
-     "row": {
-      "name": "Morata",
-      "overall": 81,
-      "pace": 78,
-      "shooting": 81,
-      "passing": 74,
-      "dribbling": 80,
-      "defending": 31,
-      "physical": 78,
-      "position": "ST",
-      "club": "Como",
-      "league": "Serie A Enilive",
-      "age": 33,
-      "photo_url": "https://cdn.sofifa.net/players/201/153/26_120.png"
-     }
-    },
+    "gilberto mora": null,
     "pau cubarsí": {
      "tier": "exact",
      "row": {
@@ -8015,24 +7760,7 @@
       "photo_url": "https://ratings-images-prod.pulse.ea.com/FC25/full/player-portraits/p277427.png?padding=0.7"
      }
     },
-    "arthur dias": {
-     "tier": "last",
-     "row": {
-      "name": "Rúben Dias",
-      "overall": 87,
-      "pace": 58,
-      "shooting": 44,
-      "passing": 69,
-      "dribbling": 69,
-      "defending": 87,
-      "physical": 83,
-      "position": "CB",
-      "club": "Manchester City",
-      "league": "Premier League",
-      "age": 29,
-      "photo_url": "https://ratings-images-prod.pulse.ea.com/FC25/full/player-portraits/p239818.png?padding=0.7"
-     }
-    },
+    "arthur dias": null,
     "jérémy jacquet": {
      "tier": "exact",
      "row": {

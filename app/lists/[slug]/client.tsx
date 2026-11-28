@@ -16,6 +16,7 @@ import SectionsJsonBody from "../../components/sections-json-body";
 import { tocFromSections, type SectionBlock } from "@/lib/section-blocks";
 import { normalizeYoutubeId } from "@/lib/youtube-id";
 import { frozenRow, type FrozenFcRow } from "@/lib/card-snapshot";
+import { lookupFcByName } from "@/lib/fc-name-match.mjs";
 import { useCardSnapshot } from "../../components/card-snapshot-context";
 import MoreInSection from "../../components/more-in-section";
 import CoverCaption from "../../components/cover-caption";
@@ -123,6 +124,13 @@ function PlayerInfo({ player, rank, accent, hasStats }: { player: PlayerWithStat
   );
 }
 
+const LIST_FC_COLS = "name,overall,pace,shooting,passing,dribbling,defending,physical,photo_url,position,club,league,age";
+
+/** A live row without its name: the card keeps the name the list wrote. */
+function withoutName(row: Record<string, unknown>): Partial<PlayerWithStats> {
+  return Object.fromEntries(Object.entries(row).filter(([k]) => k !== "name")) as Partial<PlayerWithStats>;
+}
+
 /** A frozen row in the shape the live select returns: no name, no nulls. */
 function stripNulls(row: FrozenFcRow): Partial<PlayerWithStats> {
   return Object.fromEntries(
@@ -139,16 +147,21 @@ function usePlayersWithStats(players: PlayerJsonEntry[]) {
     async function fetchAll() {
       const out: PlayerWithStats[] = [];
       for (const p of players) {
-        // Frozen card (lib/card-snapshot.ts). This lookup stops at first-two-words,
-        // so a card frozen through the last-name tier counts as none here.
+        // Frozen card (lib/card-snapshot.ts). This list used to stop at first-two-words,
+        // so a card frozen through the legacy last-name tier still counts as none here:
+        // that is what it showed when frozen.
         const frozen = frozenRow(snapshot, p.name, "two");
         if (frozen) { out.push({ ...p, ...stripNulls(frozen) }); continue; }
         if (frozen === null) { out.push(p); continue; }
-        const { data: exact } = await supabase.from("fc_players").select("overall,pace,shooting,passing,dribbling,defending,physical,photo_url,position,club,league,age").ilike("name", p.name).limit(1).maybeSingle();
-        if (exact?.overall) { out.push({ ...p, ...exact }); continue; }
-        const two = p.name.split(" ").slice(0, 2).join(" ");
-        const { data: fuzzy } = await supabase.from("fc_players").select("overall,pace,shooting,passing,dribbling,defending,physical,photo_url,position,club,league,age").ilike("name", `%${two}%`).order("overall", { ascending: false }).limit(1).maybeSingle();
-        out.push(fuzzy?.overall ? { ...p, ...fuzzy } : p);
+        // Live: the shared matcher (lib/fc-name-match.mjs), never a substring namesake
+        // ("Rayan" used to become "Rayan Cherki"). The entry keeps its own written name.
+        try {
+          const hit = await lookupFcByName(supabase, p.name, { cols: LIST_FC_COLS });
+          out.push(hit?.row?.overall ? { ...p, ...withoutName(hit.row) } : p);
+        } catch (err) {
+          console.warn(`[lists] fc_players lookup failed for "${p.name}":`, err);
+          out.push(p);
+        }
       }
       if (!cancelled) setEnriched(out);
     }

@@ -3,6 +3,7 @@ import { isAdminRequest } from "@/lib/admin-auth";
 import { createClient, type SupabaseClient } from "@supabase/supabase-js";
 import { parseMarkupToBlocks } from "@/lib/parse-blocks";
 import { slugify } from "@/lib/slugify";
+import { lookupFcByName } from "@/lib/fc-name-match.mjs";
 import { getPlayerContext, getTeamContext, TEAM_IDS, LEAGUE_IDS } from "@/lib/api-football-stats";
 
 export const maxDuration = 60;
@@ -29,40 +30,24 @@ async function buildPlayersJson(
     scout_note: string;
   }> = [];
   for (const name of playerNames) {
-    const { data: exactRaw } = await supabaseClient
-      .from("fc_players")
-      .select("name,overall,position,club,photo_url")
-      .ilike("name", name)
-      .limit(1)
-      .maybeSingle();
-    const exact = exactRaw as FcPlayerRow | null;
-    if (exact?.overall) {
-      results.push({
-        name: exact.name,
-        overall: exact.overall,
-        position: exact.position,
-        club: exact.club,
-        photo_url: exact.photo_url ?? undefined,
-        scout_note: "",
-      });
+    // The shared matcher (lib/fc-name-match.mjs): the same name or the only row that is
+    // clearly the same person. The old first-two-words tier stored a namesake's name,
+    // club and photo in players_json ("Rayan" → "Rayan Cherki").
+    let hit: Awaited<ReturnType<typeof lookupFcByName>>;
+    try {
+      hit = await lookupFcByName(supabaseClient, name, { cols: "name,overall,position,club,photo_url" });
+    } catch (err) {
+      console.warn(`[generate-content] fc_players lookup failed for "${name}":`, err);
       continue;
     }
-    const twoWords = name.split(" ").slice(0, 2).join(" ");
-    const { data: twoRaw } = await supabaseClient
-      .from("fc_players")
-      .select("name,overall,position,club,photo_url")
-      .ilike("name", `%${twoWords}%`)
-      .order("overall", { ascending: false })
-      .limit(1)
-      .maybeSingle();
-    const two = twoRaw as FcPlayerRow | null;
-    if (two?.overall) {
+    const row = hit?.row as FcPlayerRow | undefined;
+    if (row?.overall) {
       results.push({
-        name: two.name,
-        overall: two.overall,
-        position: two.position,
-        club: two.club,
-        photo_url: two.photo_url ?? undefined,
+        name: row.name,
+        overall: row.overall,
+        position: row.position,
+        club: row.club,
+        photo_url: row.photo_url ?? undefined,
         scout_note: "",
       });
     }
